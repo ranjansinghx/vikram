@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Vikram 🇳🇵</title>
+<meta name="theme-color" content="#5B4FCF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Vikram">
+<meta name="description" content="Vikram — Nepali Patro BS 2083. Your beautiful Nepali calendar.">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#ECEEF8;--card:#fff;--htext:#1a1a2e;--hsub:#9496a1;
+  --border:#f0f0f8;--dtext:#2d2d44;--dsub:#adb0be;
+  --wknd:#e03e3e;--hol:#d63031;--dim:#c8c9d4;--dimsub:#dcdde6;
+  --tf:#7B6EF6;--tt:#5340E8;--tvt:#fff;--tvs:rgba(255,255,255,.7);
+  --fab:#5B4FCF;--icon:#555770;--sbg:#fff;--sbdr:#eee;
+  --tgbg:#e8e9f3;--tgon:#5B4FCF;--mbg:#fff;--ov:rgba(20,20,50,.65);
+  --chip:#e8e9f3;--chipt:#888;
+}
+[data-theme="dark"]{
+  --bg:#141428;--card:#1e1e38;--htext:#e8e8ff;--hsub:#6b6d8a;
+  --border:#2a2a48;--dtext:#d0d2ee;--dsub:#4a4c6a;
+  --wknd:#ff7070;--hol:#ff6b6b;--dim:#3a3c58;--dimsub:#2d2f50;
+  --tf:#7B6EF6;--tt:#5340E8;--tvt:#fff;--tvs:rgba(255,255,255,.6);
+  --fab:#7B6EF6;--icon:#9898c0;--sbg:#1e1e38;--sbdr:#2a2a48;
+  --tgbg:#2a2a48;--tgon:#7B6EF6;--mbg:#1e1e38;--ov:rgba(0,0,0,.8);
+  --chip:#2a2a48;--chipt:#9898c0;
+}
+html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-content:center;align-items:flex-start;padding:16px 0 80px;transition:background .3s;}
+.phone{width:390px;max-width:100vw;font-family:'Nunito',sans-serif;}
+[data-lang="ne"] .ne{font-family:'Noto Sans Devanagari',sans-serif;}
+
+/* ── HEADER ── */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 14px;}
+.htitle{font-size:26px;font-weight:900;color:var(--htext);letter-spacing:-.5px;}
+.htitle .ysub{color:var(--hsub);font-weight:600;}
+.hicons{display:flex;gap:2px;}
+.ibtn{width:40px;height:40px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .2s;}
+.ibtn:hover{background:rgba(91,79,207,.1);}
+.ibtn svg{width:21px;height:21px;stroke:var(--icon);stroke-width:1.7;fill:none;transition:stroke .2s;}
+.ibtn.active svg{stroke:#7B6EF6;}
+
+/* ── CALENDAR CARD ── */
+.ccard{margin:0 14px;background:var(--card);border-radius:24px;padding:14px 6px 18px;box-shadow:0 4px 28px rgba(80,70,170,.09);transition:background .3s,box-shadow .3s;}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:0 14px 10px;}
+.nbtn{width:32px;height:32px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .2s;}
+.nbtn:hover{background:rgba(91,79,207,.1);}
+.nbtn svg{width:17px;height:17px;stroke:var(--icon);stroke-width:2.2;fill:none;}
+.nlbl{font-size:12.5px;font-weight:700;color:var(--hsub);}
+.dhdrs{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:3px;}
+.dhdr{text-align:center;font-size:10px;font-weight:800;letter-spacing:.4px;padding:3px 0;color:var(--dsub);text-transform:uppercase;}
+.dhdr.wk{color:var(--wknd);}
+.cgrid{display:grid;grid-template-columns:repeat(7,1fr);}
+
+/* ── CELLS ── */
+.cell{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 0;min-height:58px;cursor:pointer;border-radius:10px;position:relative;transition:background .15s;}
+.cell.active:hover{background:rgba(91,79,207,.06);}
+.ndate{font-size:18.5px;font-weight:700;color:var(--dtext);line-height:1.1;}
+.gdate{font-size:9.5px;font-weight:600;color:var(--dsub);margin-top:2px;}
+.cell-dots{display:flex;gap:3px;justify-content:center;align-items:center;margin-top:3px;min-height:6px;}
+.hdot{width:5px;height:5px;border-radius:50%;background:var(--hol);opacity:0;transition:opacity .2s;}
+.edot-p{width:5px;height:5px;border-radius:50%;background:#FF6B9D;opacity:0;transition:opacity .2s;}
+.edot-y{width:5px;height:5px;border-radius:50%;background:#FFD700;opacity:0;transition:opacity .2s;}
+.cell.hol .hdot{opacity:1;}
+.cell.hol .ndate{color:var(--hol);}
+.cell.has-evt:not(.today) .ndate{color:#e91e8c;}
+.cell.has-evt:not(.today){background:rgba(255,107,157,0.10);border-radius:10px;}
+.cell.has-evt:not(.today):hover{background:rgba(255,107,157,0.18) !important;}
+[data-theme=dark] .cell.has-evt:not(.today){background:rgba(255,107,157,0.15);}
+[data-theme=dark] .cell.has-evt:not(.today) .ndate{color:#ff80b5;}
+.cell.wk .ndate{color:var(--wknd);}
+.cell.dim{cursor:default;}
+.cell.dim .ndate{color:var(--dim);font-weight:600;}
+.cell.dim .gdate{color:var(--dimsub);}
+.cell.dim .hdot,.cell.dim .edot-p,.cell.dim .edot-y{opacity:0 !important;}
+.cell.dim:hover{background:transparent !important;}
+.cell.today{background:linear-gradient(165deg,var(--tf),var(--tt));border-radius:15px;box-shadow:0 6px 22px rgba(91,79,207,.42);}
+.cell.today .ndate{color:var(--tvt);font-size:20px;font-weight:900;}
+.cell.today .tlbl{font-size:7.5px;font-weight:800;color:var(--tvt);letter-spacing:.9px;opacity:.9;text-transform:uppercase;margin-top:1px;}
+.cell.today .gdate{color:var(--tvs);}
+.cell.today .hdot{background:rgba(255,255,255,.8);opacity:1;}
+.cell.today .edot-p{background:rgba(255,180,210,.95);}
+.cell.today .edot-y{background:rgba(255,230,80,.95);}
+
+/* ── FAB ── */
+.fab{position:fixed;bottom:28px;right:max(18px,calc(50vw - 177px));width:54px;height:54px;background:var(--fab);border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 22px rgba(91,79,207,.48);z-index:10;transition:transform .2s;}
+.fab:hover{transform:scale(1.08);}
+.fab:active{transform:scale(.95);}
+.fab svg{width:24px;height:24px;stroke:#fff;stroke-width:2.6;fill:none;}
+
+/* ── OVERLAY ── */
+.ov{position:fixed;inset:0;background:var(--ov);z-index:50;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px);}
+.ov.open{opacity:1;pointer-events:all;}
+
+/* ── DAY MODAL ── */
+.dmodal{position:fixed;top:50%;left:50%;transform:translate(-50%,-52%) scale(.88);width:320px;max-width:calc(100vw - 36px);background:var(--mbg);border-radius:26px;z-index:60;opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 24px 64px rgba(0,0,0,.28);}
+.dmodal.open{opacity:1;pointer-events:all;transform:translate(-50%,-50%) scale(1);}
+.mcls{position:absolute;top:13px;right:13px;width:30px;height:30px;border:none;background:var(--tgbg);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.mcls svg{width:13px;height:13px;stroke:var(--dsub);stroke-width:2.8;fill:none;}
+.mhdr{padding:28px 22px 18px;text-align:center;border-bottom:1px solid var(--border);}
+.mbignum{font-size:68px;font-weight:900;background:linear-gradient(135deg,#7B6EF6,#5340E8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.mmonth{font-size:15px;font-weight:700;color:var(--hsub);margin-top:3px;}
+.mbody{padding:16px 20px 18px;}
+.mrow{display:flex;align-items:flex-start;gap:11px;padding:9px 0;border-bottom:1px solid var(--border);}
+.mrow:last-child{border-bottom:none;}
+.micon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.mlabel{font-size:11px;color:var(--hsub);font-weight:700;letter-spacing:.3px;}
+.mval{font-size:13.5px;color:var(--dtext);font-weight:700;margin-top:2px;line-height:1.4;}
+.mbadges{display:flex;flex-wrap:wrap;gap:7px;padding-top:12px;}
+.bdg{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11.5px;font-weight:700;line-height:1.2;}
+.bdg-f{background:#EEF0FF;color:#5340E8;}
+.bdg-p{background:#F4F4F4;color:#777;}
+.bdg-t{background:linear-gradient(135deg,#7B6EF6,#5340E8);color:#fff;}
+.bdg-h{background:#FFF0F0;color:#c0392b;max-width:100%;}
+[data-theme=dark] .bdg-f{background:#2a2a55;color:#a89cf7;}
+[data-theme=dark] .bdg-p{background:#2a2a3a;color:#999;}
+[data-theme=dark] .bdg-h{background:#3a1a1a;color:#ff8080;}
+
+/* ── SHEET ── */
+.sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(102%);width:390px;max-width:100vw;background:var(--sbg);border-radius:24px 24px 0 0;z-index:70;transition:transform .35s cubic-bezier(.32,.72,0,1);box-shadow:0 -8px 40px rgba(0,0,0,.2);}
+.sheet.open{transform:translateX(-50%) translateY(0);}
+.shandle{width:38px;height:4px;background:var(--dim);border-radius:2px;margin:11px auto 0;}
+.stitle{font-size:16px;font-weight:900;color:var(--htext);padding:13px 22px 11px;border-bottom:1px solid var(--sbdr);}
+.sscroll{max-height:72vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.ssec{padding:13px 22px;}
+.ssect{font-size:10px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.9px;margin-bottom:9px;}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--sbdr);}
+.srow:last-child{border-bottom:none;}
+.slbl{font-size:13.5px;font-weight:700;color:var(--dtext);}
+.ssub{font-size:11px;color:var(--dsub);margin-top:1px;}
+.tgl{width:43px;height:23px;background:var(--tgbg);border-radius:12px;position:relative;cursor:pointer;border:none;flex-shrink:0;transition:background .25s;}
+.tgl::after{content:'';width:17px;height:17px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:transform .25s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.tgl.on{background:var(--tgon);}
+.tgl.on::after{transform:translateX(20px);}
+.chips{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.chip{padding:5px 12px;border-radius:16px;font-size:12px;font-weight:700;background:var(--chip);color:var(--chipt);border:none;cursor:pointer;transition:all .2s;}
+.chip.on{background:var(--tgon);color:#fff;}
+
+/* ── CONVERTER ── */
+.cvcard{background:var(--tgbg);border-radius:15px;padding:15px;margin-top:6px;}
+.cvtabs{display:flex;background:var(--sbg);border-radius:9px;padding:3px;gap:3px;margin-bottom:13px;}
+.cvtab{flex:1;padding:7px;border:none;border-radius:7px;font-size:12px;font-weight:800;cursor:pointer;background:transparent;color:var(--dsub);font-family:'Nunito',sans-serif;transition:all .2s;}
+.cvtab.on{background:var(--tgon);color:#fff;}
+.cvinput{width:100%;padding:9px 12px;border-radius:9px;border:1.5px solid var(--border);background:var(--sbg);color:var(--dtext);font-size:13px;font-family:'Nunito',sans-serif;font-weight:700;outline:none;margin-bottom:7px;transition:border .2s;}
+.cvinput:focus{border-color:var(--tgon);}
+.cvbtn{width:100%;padding:10px;border-radius:9px;background:var(--tgon);border:none;color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;margin-top:3px;}
+.cvres{margin-top:9px;padding:10px 12px;background:var(--sbg);border-radius:9px;font-size:13px;font-weight:700;color:var(--tgon);display:none;text-align:center;line-height:1.5;}
+.cvres.show{display:block;}
+.cvrow{display:flex;gap:6px;}
+.cvrow .cvinput{flex:1;margin-bottom:7px;}
+
+/* ── LANG ── */
+.lopt{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--sbdr);cursor:pointer;}
+.lopt:last-child{border-bottom:none;}
+.lflag{width:34px;height:34px;border-radius:50%;background:var(--tgbg);display:flex;align-items:center;justify-content:center;font-size:18px;}
+.lname{font-size:14px;font-weight:700;color:var(--dtext);}
+.lnat{font-size:11px;color:var(--dsub);}
+.lchk{width:20px;height:20px;border-radius:50%;background:var(--tgon);display:flex;align-items:center;justify-content:center;margin-left:auto;opacity:0;transition:opacity .2s;flex-shrink:0;}
+.lchk.on{opacity:1;}
+.lchk svg{width:11px;height:11px;stroke:#fff;stroke-width:3;fill:none;}
+
+/* ── ADD EVENT ── */
+.einput{width:100%;padding:11px 14px;border-radius:11px;border:1.5px solid var(--border);background:var(--tgbg);color:var(--dtext);font-size:14px;font-family:'Nunito',sans-serif;font-weight:700;outline:none;margin-bottom:9px;transition:border .2s;}
+.einput:focus{border-color:var(--tgon);}
+.ebtn{width:100%;padding:13px;border-radius:13px;background:linear-gradient(135deg,#7B6EF6,#5340E8);border:none;color:#fff;font-size:15px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;}
+
+@media(max-width:420px){.phone,.sheet{width:100vw;}.fab{right:18px;}}
+
+/* ── UPCOMING PANEL ── */
+.upcoming{margin:18px 14px 110px;}
+.up-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:0 2px;}
+.up-title{font-size:16px;font-weight:900;color:var(--htext);flex:1;}
+.up-tabs{display:flex;background:var(--card);border-radius:20px;padding:3px;gap:2px;box-shadow:0 2px 10px rgba(80,70,170,.07);}
+.up-tab{padding:5px 13px;border-radius:16px;font-size:11.5px;font-weight:800;background:transparent;color:var(--dsub);border:none;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;}
+.up-tab.on{background:var(--tgon);color:#fff;}
+.up-empty{text-align:center;padding:32px 0 20px;color:var(--dsub);}
+.up-empty-ico{font-size:34px;display:block;margin-bottom:8px;}
+.up-empty-txt{font-size:13px;font-weight:600;}
+.up-item{display:flex;align-items:center;gap:13px;background:var(--card);border-radius:16px;padding:13px 14px;margin-bottom:10px;box-shadow:0 2px 12px rgba(80,70,170,.06);cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden;}
+.up-item:active{transform:scale(.98);}
+.up-item:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(80,70,170,.12);}
+.up-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;}
+.up-item.hol::before{background:var(--hol);}
+.up-item.evt::before{background:var(--tgon);}
+.up-chip{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:48px;border-radius:11px;padding:7px 8px;flex-shrink:0;}
+.up-chip.hol{background:#FFF0F0;}
+.up-chip.evt{background:#EEF0FF;}
+[data-theme=dark] .up-chip.hol{background:#3a1a1a;}
+[data-theme=dark] .up-chip.evt{background:#1a1a3a;}
+.up-day{font-size:20px;font-weight:900;line-height:1;}
+.up-chip.hol .up-day{color:var(--hol);}
+.up-chip.evt .up-day{color:var(--tgon);}
+.up-mon{font-size:9px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+.up-info{flex:1;min-width:0;}
+.up-name{font-size:13.5px;font-weight:800;color:var(--dtext);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.up-sub{font-size:11px;color:var(--dsub);font-weight:600;margin-top:2px;}
+.up-badge{font-size:10.5px;font-weight:800;padding:4px 9px;border-radius:12px;white-space:nowrap;flex-shrink:0;}
+.up-badge.today{background:linear-gradient(135deg,#7B6EF6,#5340E8);color:#fff;}
+.up-badge.soon{background:#EEF0FF;color:var(--tgon);}
+.up-badge.red{background:#FFF0F0;color:var(--hol);}
+[data-theme=dark] .up-badge.soon{background:#2a2a55;color:#a89cf7;}
+[data-theme=dark] .up-badge.red{background:#3a1a1a;color:#ff9090;}
+
+/* ── MONTH PICKER ── */
+.mth-btn{cursor:pointer;border-radius:8px;padding:2px 4px 2px 2px;transition:background .2s;display:inline-flex;align-items:center;gap:2px;}
+.mth-btn:hover{background:rgba(91,79,207,.1);}
+.mp-yr{display:flex;align-items:center;justify-content:space-between;padding:10px 20px 14px;border-bottom:1px solid var(--sbdr);}
+.mp-yr-lbl{font-size:18px;font-weight:900;color:var(--htext);}
+.mp-arr{width:34px;height:34px;border:none;background:var(--tgbg);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+.mp-arr:hover{background:rgba(91,79,207,.15);}
+.mp-arr svg{width:16px;height:16px;stroke:var(--icon);stroke-width:2.5;fill:none;}
+.mp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:16px 16px 30px;}
+.mp-cell{padding:14px 4px;border-radius:14px;border:2px solid transparent;background:var(--tgbg);cursor:pointer;font-size:13px;font-weight:800;color:var(--dtext);font-family:'Nunito','Noto Sans Devanagari',sans-serif;transition:all .2s;text-align:center;line-height:1.2;}
+.mp-cell:hover{background:rgba(91,79,207,.12);color:var(--tgon);}
+.mp-cell.is-view{background:linear-gradient(135deg,#7B6EF6,#5340E8);color:#fff;box-shadow:0 4px 14px rgba(91,79,207,.4);border-color:transparent;}
+.mp-cell.is-today{border-color:var(--tgon);color:var(--tgon);}
+.mp-cell.is-view.is-today{border-color:rgba(255,255,255,.5);color:#fff;}
+
+/* ── INSTALL BANNER ── */
+.install-banner{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(110%);
+  width:390px;max-width:100vw;
+  background:#fff;border-radius:24px 24px 0 0;
+  box-shadow:0 -8px 40px rgba(80,70,170,.22);
+  z-index:200;padding:0 0 36px;
+  transition:transform .4s cubic-bezier(.32,.72,0,1);
+}
+.install-banner.show{transform:translateX(-50%) translateY(0);}
+[data-theme=dark] .install-banner{background:#1e1e38;}
+.ib-handle{width:38px;height:4px;background:#ddd;border-radius:2px;margin:12px auto 0;}
+[data-theme=dark] .ib-handle{background:#3a3c58;}
+.ib-body{padding:18px 24px 0;}
+.ib-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.ib-icon{width:58px;height:58px;border-radius:16px;background:linear-gradient(135deg,#7B6EF6,#5340E8);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;box-shadow:0 4px 16px rgba(91,79,207,.4);}
+.ib-info{flex:1;}
+.ib-app-name{font-size:17px;font-weight:900;color:#1a1a2e;}
+[data-theme=dark] .ib-app-name{color:#e8e8ff;}
+.ib-app-sub{font-size:12.5px;color:#888;font-weight:600;margin-top:2px;}
+.ib-steps{background:#F5F5FF;border-radius:14px;padding:12px 14px;margin-bottom:16px;font-size:12.5px;color:#555;font-weight:600;line-height:1.8;}
+[data-theme=dark] .ib-steps{background:#2a2a48;color:#aaa;}
+.ib-steps b{color:#5B4FCF;}
+.ib-btn-row{display:flex;gap:10px;}
+.ib-install{flex:1;padding:13px;border-radius:14px;background:linear-gradient(135deg,#7B6EF6,#5340E8);border:none;color:#fff;font-size:15px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(91,79,207,.35);transition:opacity .2s;}
+.ib-install:hover{opacity:.9;}
+.ib-later{padding:13px 18px;border-radius:14px;background:#F0F0F8;border:none;color:#888;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:background .2s;}
+[data-theme=dark] .ib-later{background:#2a2a48;color:#6b6d8a;}
+.ib-later:hover{background:#e8e8f5;}
+.ib-dismiss{position:absolute;top:14px;right:16px;width:28px;height:28px;border:none;background:#f0f0f8;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:#888;}
+[data-theme=dark] .ib-dismiss{background:#2a2a48;color:#6b6d8a;}
+</style>
+</head>
+<body>
+
+<!-- INSTALL BANNER -->
+<div class="install-banner" id="installBanner">
+  <div class="ib-handle"></div>
+  <button class="ib-dismiss" onclick="dismissBanner()">✕</button>
+  <div class="ib-body">
+    <div class="ib-row">
+      <div class="ib-icon" style="background:#000;padding:0;overflow:hidden;">
+    <svg viewBox="0 0 100 100" width="58" height="58" xmlns="http://www.w3.org/2000/svg">
+      <text x="50" y="50" text-anchor="middle" dominant-baseline="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="42" fill="#fff">29</text>
+    </svg>
+  </div>
+      <div class="ib-info">
+        <div class="ib-app-name">Vikram 🇳🇵</div>
+        <div class="ib-app-sub">Nepali Patro · Free Forever</div>
+      </div>
+    </div>
+    <div class="ib-steps" id="ibSteps"></div>
+    <div class="ib-btn-row">
+      <button class="ib-install" id="ibInstallBtn" onclick="triggerInstall()">⬇ Install App</button>
+      <button class="ib-later" onclick="dismissBanner()">Later</button>
+    </div>
+  </div>
+</div>
+
+<div class="phone">
+  <div class="hdr">
+    <div class="htitle ne" id="htitle"></div>
+    <div class="hicons">
+      <button class="ibtn" id="langBtn" onclick="toggleLang()" title="Switch Language">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </button>
+      <button class="ibtn" id="darkBtn" onclick="toggleDark()" title="Appearance">
+        <svg id="dkIcon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="ibtn" id="settingsBtn" onclick="openSheet('settings')" title="Settings">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="ccard">
+    <div class="nav">
+      <button class="nbtn" onclick="prevMonth()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <span class="nlbl ne" id="navlbl"></span>
+      <button class="nbtn" onclick="nextMonth()"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+    <div class="dhdrs" id="dhdrs"></div>
+    <div class="cgrid" id="cgrid"></div>
+  </div>
+
+  <!-- UPCOMING + PREVIOUS PANELS (single container) -->
+  <div class="upcoming">
+    <div class="up-hdr">
+      <span class="up-title" id="upTitle">Next 29 Days</span>
+    </div>
+    <div id="upList"></div>
+
+    <div class="up-hdr" style="margin-top:18px;">
+      <span class="up-title" id="prevTitle" style="color:var(--dsub);font-size:14px;">Previous 29 Days</span>
+    </div>
+    <div id="prevList"></div>
+  </div>
+</div>
+
+<button class="fab" onclick="openSheet('add')" title="Add Event">
+  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+
+<div class="ov" id="ov" onclick="closeAll()"></div>
+
+<!-- DAY MODAL -->
+<div class="dmodal" id="dmodal">
+  <button class="mcls" onclick="closeAll()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <div class="mhdr">
+    <div class="mbignum ne" id="mnum"></div>
+    <div class="mmonth ne" id="mmon"></div>
+  </div>
+  <div class="mbody">
+    <div class="mrow">
+      <div class="micon" style="background:#EEF0FF;">📅</div>
+      <div><div class="mlabel">ENGLISH DATE</div><div class="mval" id="mad"></div></div>
+    </div>
+    <div class="mrow">
+      <div class="micon" style="background:#FFF4E1;">🌙</div>
+      <div><div class="mlabel">TITHI (APPROX.)</div><div class="mval" id="mtithi"></div></div>
+    </div>
+    <div class="mrow" id="mEvtRow" style="display:none;">
+      <div class="micon" style="background:#FFF0F8;">📌</div>
+      <div style="flex:1;min-width:0;">
+        <div class="mlabel">YOUR EVENTS</div>
+        <div id="mEvtList" style="margin-top:4px;display:flex;flex-direction:column;gap:6px;"></div>
+      </div>
+    </div>
+    <div class="mbadges" id="mbadges"></div>
+  </div>
+</div>
+
+<!-- SETTINGS SHEET -->
+<div class="sheet" id="settingsSheet">
+  <div class="shandle"></div>
+  <div class="stitle">⚙️ Settings</div>
+  <div class="sscroll">
+    <div class="ssec">
+      <div class="ssect">Display</div>
+      <div class="srow">
+        <div><div class="slbl">Gregorian Dates</div><div class="ssub">Show AD day numbers in cells</div></div>
+        <button class="tgl on" id="tgG" onclick="togSetting('greg',this)"></button>
+      </div>
+      <div class="srow">
+        <div><div class="slbl">Show Public Holidays</div><div class="ssub">Highlight holidays in red</div></div>
+        <button class="tgl on" id="tgH" onclick="togSetting('hol',this)"></button>
+      </div>
+
+    </div>
+    <div class="ssec">
+      <div class="ssect">First Day of Week</div>
+      <div class="chips">
+        <button class="chip" onclick="setFD(0,this)">Sunday</button>
+        <button class="chip on" onclick="setFD(1,this)">Monday</button>
+        <button class="chip" onclick="setFD(6,this)">Saturday</button>
+      </div>
+    </div>
+    <div class="ssec">
+      <div class="ssect">About</div>
+      <div class="srow">
+        <div class="slbl">Vikram 🇳🇵</div>
+        <div style="font-size:12.5px;color:var(--dsub);font-weight:700;">v2.1 · BS 2083</div>
+      </div>
+      <div class="srow" style="cursor:pointer;" onclick="window.open('https://discord.gg/MP2cxxXEvZ','_blank')">
+        <div>
+          <div class="slbl" style="color:#5865F2;">♡ Join Us</div>
+          <div class="ssub">Connect with us on Discord</div>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5865F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LANG SHEET -->
+<div class="sheet" id="langSheet">
+  <div class="shandle"></div>
+  <div class="stitle">🌐 Language / भाषा</div>
+  <div class="ssec">
+    <div class="lopt" onclick="setLang('en')">
+      <div class="lflag">🇺🇸</div>
+      <div><div class="lname">English</div><div class="lnat">English</div></div>
+      <div class="lchk on" id="chkEN"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    </div>
+    <div class="lopt" onclick="setLang('ne')">
+      <div class="lflag">🇳🇵</div>
+      <div><div class="lname">नेपाली</div><div class="lnat">Nepali</div></div>
+      <div class="lchk" id="chkNE"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    </div>
+  </div>
+</div>
+
+<!-- MONTH PICKER SHEET -->
+<div class="sheet" id="mpSheet">
+  <div class="shandle"></div>
+  <div class="stitle" id="mpTitle">Select Month</div>
+  <div class="mp-yr">
+    <button class="mp-arr" onclick="mpPrevYear()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <span class="mp-yr-lbl" id="mpYrLbl"></span>
+    <button class="mp-arr" onclick="mpNextYear()"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+  </div>
+  <div class="mp-grid" id="mpGrid"></div>
+</div>
+
+<!-- ADD EVENT SHEET -->
+<div class="sheet" id="addSheet">
+  <div class="shandle"></div>
+  <div class="stitle" id="addTitle">📌 Add Event</div>
+  <div class="ssec">
+    <div class="ssect">Event Title</div>
+    <input class="einput" id="evT" placeholder="e.g. Doctor appointment…" type="text">
+    <div class="ssect" style="margin-top:4px;">Nepali Date (BS)</div>
+    <div style="display:flex;gap:7px;margin-bottom:9px;">
+      <select class="einput" id="evBsY" style="flex:1.2;">
+        <option value="2083">2083</option>
+        <option value="2084">2084</option>
+        <option value="2085">2085</option>
+        <option value="2086">2086</option>
+      </select>
+      <select class="einput" id="evBsM" style="flex:1.4;" onchange="updateDayOpts()">
+        <option value="1">Baishakh</option><option value="2">Jestha</option>
+        <option value="3">Ashadh</option><option value="4">Shrawan</option>
+        <option value="5">Bhadra</option><option value="6">Ashwin</option>
+        <option value="7">Kartik</option><option value="8">Mangsir</option>
+        <option value="9">Poush</option><option value="10">Magh</option>
+        <option value="11">Falgun</option><option value="12">Chaitra</option>
+      </select>
+      <select class="einput" id="evBsD" style="flex:0.8;"></select>
+    </div>
+    <div class="ssect" style="margin-top:4px;">Note (optional)</div>
+    <input class="einput" id="evN" placeholder="Add a note…" type="text">
+    <button class="ebtn" onclick="saveEv()">Save Event</button>
+  </div>
+</div>
+
+<script>
+// ══ BS DATA ══
+const BS={
+  2080:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2081:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2082:[31,32,31,32,31,30,30,30,29,29,30,30],
+  2083:[31,31,32,31,31,30,29,30,30,29,30,30],
+  2084:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2085:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2086:[31,32,31,32,31,30,29,30,30,29,30,30],
+};
+
+// ══ HOLIDAYS (BS key → {np, en}) ══
+const HOL={
+  "2082-12-25":{np:"राम नवमी",en:"Ram Navami"},
+  "2083-1-1":{np:"नया वर्ष",en:"Nepali New Year"},
+  "2083-1-15":{np:"बुद्ध जयन्ती",en:"Buddha Jayanti (Baishakh Purnima)"},
+  "2083-2-8":{np:"जनजाति दिवस",en:"Indigenous Peoples Day"},
+  "2083-2-15":{np:"गणतन्त्र दिवस",en:"Republic Day (Ganatantra Diwas)"},
+  "2083-3-17":{np:"ईद उल फित्र",en:"Eid al-Fitr (Approx.)"},
+  "2083-5-13":{np:"हरितालिका तीज",en:"Haritalika Teej"},
+  "2083-5-15":{np:"ऋषि पञ्चमी",en:"Rishi Panchami"},
+  "2083-6-14":{np:"घटस्थापना",en:"Ghatasthapana (Dashain Begins)"},
+  "2083-6-20":{np:"फूलपाती",en:"Fulpati (Dashain)"},
+  "2083-6-21":{np:"महाअष्टमी",en:"Maha Ashtami (Dashain)"},
+  "2083-6-22":{np:"महानवमी",en:"Maha Navami (Dashain)"},
+  "2083-6-23":{np:"विजया दशमी",en:"Vijaya Dashami (Dashain) ✦ Major"},
+  "2083-6-27":{np:"एकादशी",en:"Ekadashi"},
+  "2083-7-3":{np:"कोजाग्रत पूर्णिमा",en:"Kojagrat Purnima"},
+  "2083-7-13":{np:"धनतेरस",en:"Dhanteras (Tihar)"},
+  "2083-7-14":{np:"नर्क चतुर्दशी",en:"Narak Chaturdashi (Tihar)"},
+  "2083-7-15":{np:"लक्ष्मी पूजा",en:"Laxmi Puja (Tihar) ✦ Major"},
+  "2083-7-16":{np:"गोवर्धन पूजा",en:"Govardhan Puja / Mha Puja"},
+  "2083-7-17":{np:"भाई टीका",en:"Bhai Tika (Tihar)"},
+  "2083-7-20":{np:"छठ पर्व",en:"Chhath Parva"},
+  "2083-9-10":{np:"तमु ल्होसार",en:"Tamu Lhosar"},
+  "2083-9-15":{np:"क्रिसमस",en:"Christmas Day"},
+  "2083-10-1":{np:"माघे सक्रान्ति",en:"Maghe Sankranti"},
+  "2083-10-28":{np:"शहीद दिवस / पृथ्वी जयन्ती",en:"Martyrs' Day & Prithvi Jayanti"},
+  "2083-11-5":{np:"सोनाम ल्होसार",en:"Sonam Lhosar"},
+  "2083-11-13":{np:"महाशिवरात्री",en:"Maha Shivaratri"},
+  "2083-11-25":{np:"फागु पूर्णिमा",en:"Fagu Purnima (Holi)"},
+  "2083-12-6":{np:"घोडे जात्रा",en:"Ghode Jatra"},
+  "2083-12-24":{np:"राम नवमी",en:"Ram Navami"},
+  "2084-1-1":{np:"नया वर्ष",en:"Nepali New Year 2084"},
+};
+
+// ══ STRINGS ══
+const MEN=['Baishakh','Jestha','Ashadh','Shrawan','Bhadra','Ashwin','Kartik','Mangsir','Poush','Magh','Falgun','Chaitra'];
+const MNE=['बैशाख','जेठ','असार','साउन','भदौ','असोज','कार्तिक','मंसिर','पुस','माघ','फागुन','चैत'];
+const DEN=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+const DNE=['आइत','सोम','मंगल','बुध','बिहि','शुक्र','शनि'];
+const WDEN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const WDNE=['आइतबार','सोमबार','मंगलबार','बुधबार','बिहीबार','शुक्रबार','शनिबार'];
+const ADMEN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const NED=['०','१','२','३','४','५','६','७','८','९'];
+const TNAMES=['Pratipada','Dwitiya','Tritiya','Chaturthi','Panchami','Shashthi','Saptami','Ashtami','Navami','Dashami','Ekadashi','Dwadashi','Trayodashi','Chaturdashi','Purnima','Pratipada','Dwitiya','Tritiya','Chaturthi','Panchami','Shashthi','Saptami','Ashtami','Navami','Dashami','Ekadashi','Dwadashi','Trayodashi','Chaturdashi','Amavasya'];
+const TPAKSHA=['Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','Krishna','Krishna','Krishna','Krishna','Krishna','Krishna','Krishna','Krishna','Krishna','Krishna','Krishna','Krishna','Krishna','Krishna','Krishna'];
+
+// ══ STATE ══
+// UTC noon – safe anchor: .getDate() gives the same calendar day in every timezone (UTC-12 to UTC+14)
+const REF=new Date(Date.UTC(2026,3,14,12,0,0)); // Baishakh 1, 2083 = Apr 14, 2026
+let cfg={greg:true,hol:true,holn:true,fd:1};
+let lang='en',dark=false;
+let vY=2083,vM=2;
+
+// Nepal Standard Time = UTC+5:45.
+// Use the Intl API to read the *calendar date* in Kathmandu right now,
+// then return UTC noon for that date so all msDay() calls are exact integers.
+function getKathmanduToday(){
+  try{
+    const p=new Intl.DateTimeFormat('en-US',{
+      timeZone:'Asia/Kathmandu',
+      year:'numeric',month:'2-digit',day:'2-digit'
+    }).formatToParts(new Date());
+    return new Date(Date.UTC(
+      +p.find(x=>x.type==='year').value,
+      +p.find(x=>x.type==='month').value-1,
+      +p.find(x=>x.type==='day').value,
+      12,0,0  // noon UTC – avoids local-time date rollover in any timezone
+    ));
+  }catch(e){
+    // Fallback: manually offset to NST then snap to UTC noon
+    const nst=new Date(Date.now()+345*60000);
+    return new Date(Date.UTC(nst.getUTCFullYear(),nst.getUTCMonth(),nst.getUTCDate(),12,0,0));
+  }
+}
+const TODAY=getKathmanduToday();
+const TODAYBS=adToBs(TODAY);
+
+// ══ DATE UTILS ══
+function msDay(a,b){return Math.round((b-a)/86400000);}
+
+function bsStart(bY,bM){
+  let y=2083,m=1,days=0;
+  if(bY>y||(bY===y&&bM>m)){
+    while(!(y===bY&&m===bM)){days+=BS[y][m-1];m++;if(m>12){m=1;y++;}}
+    return new Date(REF.getTime()+days*86400000);
+  } else if(bY<y||(bY===y&&bM<m)){
+    while(!(y===bY&&m===bM)){m--;if(m<1){m=12;y--;}days+=BS[y][m-1];}
+    return new Date(REF.getTime()-days*86400000);
+  }
+  return new Date(REF.getTime());
+}
+
+function adToBs(ad){
+  let diff=msDay(REF,ad),y=2083,m=1;
+  if(diff>=0){
+    let r=diff;
+    while(BS[y]&&r>=BS[y][m-1]){r-=BS[y][m-1];m++;if(m>12){m=1;y++;}}
+    return{y,m,d:r+1};
+  } else {
+    let r=-diff-1;m--;if(m<1){m=12;y--;}
+    while(BS[y]&&r>=BS[y][m-1]){r-=BS[y][m-1];m--;if(m<1){m=12;y--;}}
+    return{y,m,d:BS[y][m-1]-r};
+  }
+}
+
+function bsToAd(bY,bM,bD){
+  return new Date(bsStart(bY,bM).getTime()+(bD-1)*86400000);
+}
+
+function ns(n){return lang==='ne'?String(n).split('').map(c=>NED[+c]??c).join(''):String(n);}
+
+// ══ TITHI ══
+function getTithi(ad){
+  const y=ad.getFullYear(),mo=ad.getMonth()+1,d=ad.getDate();
+  let yr=y,mn=mo;if(mn<=2){yr--;mn+=12;}
+  const A=Math.floor(yr/100),B=2-A+Math.floor(A/4);
+  const JD=Math.floor(365.25*(yr+4716))+Math.floor(30.6001*(mn+1))+d+B-1524.5;
+  const T=(JD-2451545)/36525;
+  let sL=((280.46646+36000.76983*T)%360+360)%360;
+  const sM=((357.52911+35999.05029*T)%360+360)%360,smr=sM*Math.PI/180;
+  const sE=1.914602*Math.sin(smr)+0.019993*Math.sin(2*smr)+0.000289*Math.sin(3*smr);
+  const sT=sL+sE;
+  let mL=((218.3164477+481267.88123421*T)%360+360)%360;
+  const mM=((134.9633964+477198.8676313*T)%360+360)%360;
+  const mD=((297.8501921+445267.1114034*T)%360+360)%360;
+  const mmr=mM*Math.PI/180,mdr=mD*Math.PI/180;
+  const mT=mL+6.289*Math.sin(mmr)-1.274*Math.sin(2*mdr-mmr)+0.658*Math.sin(2*mdr)-0.214*Math.sin(2*mmr);
+  const elong=((mT-sT)%360+360)%360;
+  return Math.min(Math.max(Math.floor(elong/12)+1,1),30);
+}
+
+// ══ HOLIDAY HELPERS ══
+function hk(y,m,d){return`${y}-${m}-${d}`;}
+function getH(y,m,d){return cfg.hol?HOL[hk(y,m,d)]:null;}
+
+// ══ RENDER ══
+function render(){
+  const mn=lang==='ne'?MNE[vM-1]:MEN[vM-1],yr=ns(vY);
+  document.getElementById('htitle').innerHTML=`<span class="ne mth-btn" onclick="openMonthPicker()" title="Switch month">${mn}<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;stroke-width:2.5;fill:none;margin-left:4px;vertical-align:middle;opacity:.6;"><polyline points="6 9 12 15 18 9"/></svg></span> <span class="ysub">${yr}</span>`;
+  document.getElementById('navlbl').textContent=`${lang==='ne'?MNE[vM-1]:MEN[vM-1]} ${ns(vY)}`;
+
+  // Day headers ordered by firstDay
+  const dn=lang==='ne'?DNE:DEN;
+  const ord=[];for(let i=0;i<7;i++)ord.push((cfg.fd+i)%7);
+  document.getElementById('dhdrs').innerHTML=ord.map(i=>`<div class="dhdr${i===0||i===6?' wk':''}">${dn[i]}</div>`).join('');
+
+  const sAD=bsStart(vY,vM);
+  const sDow=(sAD.getDay()-cfg.fd+7)%7;
+  const dims=BS[vY]?.[vM-1]??30;
+  const pM=vM===1?12:vM-1,pY=vM===1?vY-1:vY,pDims=BS[pY]?.[pM-1]??30;
+  const nM=vM===12?1:vM+1,nY=vM===12?vY+1:vY;
+  let tot=sDow+dims;if(tot%7!==0)tot+=7-tot%7;
+
+  let html='';
+  for(let i=0;i<tot;i++){
+    const col=(cfg.fd+(i%7))%7,wk=col===0||col===6;
+    if(i<sDow){
+      const nd=pDims-sDow+i+1,ad=new Date(sAD);ad.setDate(ad.getDate()-(sDow-i));
+      html+=`<div class="cell dim${wk?' wk':''}" onclick="openDay(${pY},${pM},${nd})">
+        <div class="ndate">${ns(nd)}</div>${cfg.greg?`<div class="gdate">${ad.getDate()}</div>`:''}
+        <div class="hdot"></div></div>`;
+    } else if(i>=sDow+dims){
+      const nd=i-sDow-dims+1,ad=new Date(sAD);ad.setDate(ad.getDate()+(i-sDow));
+      html+=`<div class="cell dim${wk?' wk':''}" onclick="openDay(${nY},${nM},${nd})">
+        <div class="ndate">${ns(nd)}</div>${cfg.greg?`<div class="gdate">${ad.getDate()}</div>`:''}
+        <div class="hdot"></div></div>`;
+    } else {
+      const nd=i-sDow+1,ad=new Date(sAD);ad.setDate(ad.getDate()+nd-1);
+      const isT=vY===TODAYBS.y&&vM===TODAYBS.m&&nd===TODAYBS.d;
+      const h=getH(vY,vM,nd),isH=!!h;
+      const hasEvt=userEvents.some(ev=>ev.bsY===vY&&ev.bsM===vM&&ev.bsD===nd);
+      let cls='cell active';
+      if(isT)cls+=' today';else if(isH)cls+=' hol';else if(wk)cls+=' wk';
+      if(hasEvt)cls+=' has-evt';
+      html+=`<div class="${cls}" onclick="openDay(${vY},${vM},${nd})">
+        <div class="ndate ne">${ns(nd)}</div>
+        ${isT?`<div class="tlbl ne">${lang==='ne'?'आज':'TODAY'}</div>`:''}
+        ${cfg.greg?`<div class="gdate">${ad.getDate()}</div>`:''}
+        <div class="cell-dots"><div class="hdot"></div><div class="edot-p"></div><div class="edot-y"></div></div></div>`;
+    }
+  }
+  document.getElementById('cgrid').innerHTML=html;
+}
+
+function prevMonth(){vM--;if(vM<1){vM=12;vY--;}render();}
+function nextMonth(){vM++;if(vM>12){vM=1;vY++;}render();}
+
+// ══ DAY MODAL ══
+function openDay(bY,bM,bD){
+  closeAll();
+  const ad=bsToAd(bY,bM,bD);
+  const wd=ad.getDay();
+  const ti=getTithi(ad)-1;
+  const paksha=TPAKSHA[ti],tname=TNAMES[ti];
+  const wdStr=lang==='ne'?WDNE[wd]:WDEN[wd];
+  const adStr=`${wdStr}, ${ADMEN[ad.getMonth()]} ${ad.getDate()}, ${ad.getFullYear()}`;
+
+  document.getElementById('mnum').textContent=ns(bD);
+  document.getElementById('mmon').textContent=`${lang==='ne'?MNE[bM-1]:MEN[bM-1]} ${ns(bY)}`;
+  document.getElementById('mad').textContent=adStr;
+  document.getElementById('mtithi').textContent=`${paksha} ${tname}`;
+
+  // Day diff badge
+  const tm=new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
+  const sm=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
+  const df=msDay(tm,sm);
+  let badges='';
+  if(df===0){
+    badges+=`<span class="bdg bdg-t">🌟 Today</span>`;
+  } else if(df>0){
+    badges+=`<span class="bdg bdg-f">⏳ ${df} day${df>1?'s':''} remaining</span>`;
+  } else {
+    const ago=-df;
+    badges+=`<span class="bdg bdg-p">📆 ${ago} day${ago>1?'s':''} ago</span>`;
+  }
+
+  // Holiday badge
+  const h=HOL[hk(bY,bM,bD)];
+  if(h&&cfg.holn){
+    const hn=lang==='ne'?h.np:h.en;
+    badges+=`<span class="bdg bdg-h">🇳🇵 Public Holiday · ${hn}</span>`;
+  }
+
+  document.getElementById('mbadges').innerHTML=badges;
+
+  // User events for this day
+  const dayEvts=userEvents.filter(ev=>ev.bsY===bY&&ev.bsM===bM&&ev.bsD===bD);
+  const evtRow=document.getElementById('mEvtRow');
+  const evtList=document.getElementById('mEvtList');
+  if(dayEvts.length>0){
+    evtRow.style.display='flex';
+    evtList.innerHTML=dayEvts.map(ev=>`
+      <div style="padding:8px 10px;background:var(--tgbg);border-radius:10px;border-left:3px solid #FF6B9D;">
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span style="font-size:8px;background:#FF6B9D;width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0;"></span>
+          <span style="font-size:8px;background:#FFD700;width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0;"></span>
+          <span style="font-size:13px;font-weight:800;color:var(--dtext);">${ev.title}</span>
+        </div>
+        ${ev.note?`<div style="font-size:11px;color:var(--dsub);margin-top:3px;padding-left:18px;">${ev.note}</div>`:''}
+      </div>`).join('');
+  } else {
+    evtRow.style.display='none';
+  }
+
+  document.getElementById('ov').classList.add('open');
+  document.getElementById('dmodal').classList.add('open');
+}
+
+// ══ SHEETS ══
+function closeAll(){
+  document.getElementById('ov').classList.remove('open');
+  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+}
+
+// ══ DARK MODE ══
+function toggleDark(){
+  dark=!dark;
+  applyTheme();
+  localStorage.setItem('vikram_theme',dark?'dark':'light');
+}
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme',dark?'dark':'light');
+  const ic=document.getElementById('dkIcon');
+  ic.innerHTML=dark?'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>':'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+  document.getElementById('darkBtn').classList.toggle('active',dark);
+}
+
+// ══ LANGUAGE ══
+function toggleLang(){
+  setLang(lang==='en'?'ne':'en');
+}
+function setLang(l){
+  lang=l;
+  document.documentElement.setAttribute('data-lang',l);
+  document.getElementById('chkEN').classList.toggle('on',l==='en');
+  document.getElementById('chkNE').classList.toggle('on',l==='ne');
+  document.getElementById('langBtn').classList.toggle('active',l==='ne');
+  localStorage.setItem('vikram_lang',l);
+  closeAll();render();renderUpcoming();renderPrevious();
+}
+
+// ══ SETTINGS ══
+function togSetting(k,btn){cfg[k]=!cfg[k];btn.classList.toggle('on',cfg[k]);render();}
+function setFD(v,btn){
+  cfg.fd=v;
+  document.querySelectorAll('#settingsSheet .chip').forEach(c=>c.classList.remove('on'));
+  btn.classList.add('on');render();
+}
+
+// ══ CONVERTER ══
+let cvMode='ad';
+function swConv(m){
+  cvMode=m;
+  document.getElementById('tabAD').classList.toggle('on',m==='ad');
+  document.getElementById('tabBS').classList.toggle('on',m==='bs');
+  document.getElementById('panAD').style.display=m==='ad'?'block':'none';
+  document.getElementById('panBS').style.display=m==='bs'?'block':'none';
+  ['cvADout','cvBSout'].forEach(id=>document.getElementById(id).classList.remove('show'));
+}
+function doConvAD(){
+  const val=document.getElementById('cvADin').value;
+  if(!val){alert('Please select a date.');return;}
+  const[y,mo,d]=val.split('-').map(Number);
+  const bs=adToBs(new Date(y,mo-1,d));
+  const out=document.getElementById('cvADout');
+  out.innerHTML=`🇳🇵 <strong>${bs.d} ${MEN[bs.m-1]} ${bs.y} BS</strong><br><span style="font-size:12px;opacity:.7;">${MNE[bs.m-1]} ${bs.d}, ${bs.y}</span>`;
+  out.classList.add('show');
+}
+function doConvBS(){
+  const y=+document.getElementById('cvBSy').value;
+  const m=+document.getElementById('cvBSm').value;
+  const d=+document.getElementById('cvBSd').value;
+  if(!y||!m||!d){alert('Please fill all fields.');return;}
+  if(!BS[y]){alert('Year out of supported range (2080–2086).');return;}
+  const maxD=BS[y][m-1];
+  if(d<1||d>maxD){alert(`Day must be between 1 and ${maxD} for this month.`);return;}
+  const ad=bsToAd(y,m,d);
+  const wd=WDEN[ad.getDay()];
+  const out=document.getElementById('cvBSout');
+  out.innerHTML=`📅 <strong>${wd}, ${ADMEN[ad.getMonth()]} ${ad.getDate()}, ${ad.getFullYear()} AD</strong>`;
+  out.classList.add('show');
+}
+
+// ══ ADD EVENT ══
+let userEvents=JSON.parse(localStorage.getItem('vikram_events')||'[]');
+let upTab='hol';
+
+function saveEvents(){
+  localStorage.setItem('vikram_events',JSON.stringify(userEvents));
+}
+
+// Populate the day dropdown based on selected year+month
+function updateDayOpts(){
+  const y=+document.getElementById('evBsY').value;
+  const m=+document.getElementById('evBsM').value;
+  const max=BS[y]?.[m-1]??30;
+  const sel=document.getElementById('evBsD');
+  const cur=+sel.value||1;
+  sel.innerHTML=Array.from({length:max},(_,i)=>`<option value="${i+1}"${i+1===cur?' selected':''}>${i+1}</option>`).join('');
+}
+
+function openSheet(t){
+  closeAll();
+  document.getElementById('ov').classList.add('open');
+  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet'};
+  document.getElementById(ids[t])?.classList.add('open');
+  if(t==='add'){
+    // Default date = today BS
+    document.getElementById('evBsY').value=TODAYBS.y;
+    document.getElementById('evBsM').value=TODAYBS.m;
+    updateDayOpts();
+    document.getElementById('evBsD').value=TODAYBS.d;
+    setTimeout(()=>document.getElementById('evT').focus(),360);
+  }
+}
+
+// Called from day modal to pre-fill date
+function openAddForDay(bsY,bsM,bsD){
+  openSheet('add');
+  setTimeout(()=>{
+    document.getElementById('evBsY').value=bsY;
+    document.getElementById('evBsM').value=bsM;
+    updateDayOpts();
+    document.getElementById('evBsD').value=bsD;
+  },50);
+}
+
+function saveEv(){
+  const t=document.getElementById('evT').value.trim();
+  if(!t){alert('Please enter an event title.');return;}
+  const bsY=+document.getElementById('evBsY').value;
+  const bsM=+document.getElementById('evBsM').value;
+  const bsD=+document.getElementById('evBsD').value;
+  const note=document.getElementById('evN').value.trim();
+  const adDate=bsToAd(bsY,bsM,bsD);
+  userEvents.push({title:t,bsY,bsM,bsD,adMs:adDate.getTime(),note});
+  userEvents.sort((a,b)=>a.adMs-b.adMs);
+  saveEvents();
+  document.getElementById('evT').value='';
+  document.getElementById('evN').value='';
+  closeAll();
+  renderUpcoming();
+  renderPrevious();
+  render();
+}
+
+// ══ UPCOMING — 29-DAY COMBINED LIST ══
+const WINDOW=29;
+
+function switchUpTab(t){ /* retired — tabs removed */ }
+
+function relLabel(diff){
+  if(diff===0) return{text:'Today',cls:'today'};
+  if(diff===1) return{text:'Tomorrow',cls:'soon'};
+  if(diff<=6)  return{text:`In ${diff} days`,cls:'soon'};
+  if(diff<=13) return{text:'Next week',cls:'soon'};
+  const wk=Math.round(diff/7);
+  if(wk<=4)    return{text:`In ${wk} week${wk>1?'s':''}`,cls:'soon'};
+  return{text:`In ~1 month`,cls:'red'};
+}
+
+function renderUpcoming(){
+  const todayMid=new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
+  const windowEnd=new Date(todayMid.getTime()+WINDOW*86400000);
+  const mArr=lang==='ne'?MNE:MEN;
+
+  document.getElementById('upTitle').textContent=lang==='ne'?`आगामी ${WINDOW} दिन`:`Next ${WINDOW} Days`;
+
+  const items=[];
+
+  // — Holidays within window —
+  for(const key of Object.keys(HOL)){
+    const[ky,km,kd]=key.split('-').map(Number);
+    if(!BS[ky]) continue;
+    const ad=bsToAd(ky,km,kd);
+    const adMid=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
+    const diff=Math.round((adMid-todayMid)/86400000);
+    if(diff>=0&&diff<=WINDOW)
+      items.push({type:'hol',ky,km,kd,ad,adMid,diff,hol:HOL[key]});
+  }
+
+  // — User events within window —
+  userEvents.forEach(ev=>{
+    const ad=new Date(ev.adMs);
+    const adMid=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
+    const diff=Math.round((adMid-todayMid)/86400000);
+    if(diff>=0&&diff<=WINDOW)
+      items.push({type:'evt',ky:ev.bsY,km:ev.bsM,kd:ev.bsD,ad,adMid,diff,ev});
+  });
+
+  // — Sort by date, holidays before events on same day —
+  items.sort((a,b)=>a.diff-b.diff||(a.type==='hol'?-1:1));
+
+  const list=document.getElementById('upList');
+
+  if(items.length===0){
+    list.innerHTML=`<div class="up-empty">
+      <span class="up-empty-ico">🌤️</span>
+      <div class="up-empty-txt">No holidays or events in the next ${WINDOW} days</div>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML=items.map(it=>{
+    const{text,cls}=relLabel(it.diff);
+    const nd=ns(it.kd);
+    const mName=mArr[it.km-1];
+    const adStr=`${ADMEN[it.ad.getMonth()]} ${it.ad.getDate()}, ${it.ad.getFullYear()}`;
+
+    if(it.type==='hol'){
+      const holName=lang==='ne'?it.hol.np:it.hol.en;
+      return`<div class="up-item hol" onclick="openDay(${it.ky},${it.km},${it.kd})">
+        <div class="up-chip hol">
+          <div class="up-day ne">${nd}</div>
+          <div class="up-mon">${mName.slice(0,3).toUpperCase()}</div>
+        </div>
+        <div class="up-info">
+          <div class="up-name ne">${holName}</div>
+          <div class="up-sub">🇳🇵 Holiday · ${adStr}</div>
+        </div>
+        <span class="up-badge ${cls}">${text}</span>
+      </div>`;
+    } else {
+      const ev=it.ev;
+      const realIdx=userEvents.indexOf(ev);
+      return`<div class="up-item evt" onclick="openDay(${it.ky},${it.km},${it.kd})">
+        <div class="up-chip evt">
+          <div class="up-day ne">${nd}</div>
+          <div class="up-mon">${mName.slice(0,3).toUpperCase()}</div>
+        </div>
+        <div class="up-info">
+          <div class="up-name">${ev.title}</div>
+          <div class="up-sub">📌 Event · ${adStr}${ev.note?' · '+ev.note:''}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;">
+          <span class="up-badge ${cls}">${text}</span>
+          <span style="font-size:10px;color:var(--dsub);cursor:pointer;font-weight:700;" onclick="event.stopPropagation();removeEv(${realIdx})">✕ Remove</span>
+        </div>
+      </div>`;
+    }
+  }).join('');
+}
+
+function removeEv(i){
+  if(confirm(`Remove "${userEvents[i].title}"?`)){
+    userEvents.splice(i,1);
+    saveEvents();
+    render();
+    renderUpcoming();
+    renderPrevious();
+  }
+}
+
+// ══ PREVIOUS 29 DAYS ══
+function renderPrevious(){
+  const todayMid=new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
+  const windowStart=new Date(todayMid.getTime()-29*86400000);
+  const mArr=lang==='ne'?MNE:MEN;
+
+  document.getElementById('prevTitle').textContent=
+    lang==='ne'?`विगत २९ दिन`:`Previous 29 Days`;
+
+  const items=[];
+
+  // Past holidays
+  for(const key of Object.keys(HOL)){
+    const[ky,km,kd]=key.split('-').map(Number);
+    if(!BS[ky]) continue;
+    const ad=bsToAd(ky,km,kd);
+    const adMid=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
+    const diff=Math.round((adMid-todayMid)/86400000); // negative = past
+    if(diff>=-29&&diff<0)
+      items.push({type:'hol',ky,km,kd,ad,adMid,diff,hol:HOL[key]});
+  }
+
+  // Past user events
+  userEvents.forEach(ev=>{
+    const ad=new Date(ev.adMs);
+    const adMid=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
+    const diff=Math.round((adMid-todayMid)/86400000);
+    if(diff>=-29&&diff<0)
+      items.push({type:'evt',ky:ev.bsY,km:ev.bsM,kd:ev.bsD,ad,adMid,diff,ev});
+  });
+
+  // Most recent first
+  items.sort((a,b)=>b.diff-a.diff||(a.type==='hol'?-1:1));
+
+  const list=document.getElementById('prevList');
+
+  if(items.length===0){
+    list.innerHTML=`<div class="up-empty">
+      <span class="up-empty-ico" style="font-size:26px;">📭</span>
+      <div class="up-empty-txt">No holidays or events in the past 29 days</div>
+    </div>`;
+    return;
+  }
+
+  list.innerHTML=items.map(it=>{
+    const ago=-it.diff;
+    const agoLabel=ago===1?'Yesterday':`${ago} days ago`;
+    const nd=ns(it.kd);
+    const mName=mArr[it.km-1];
+    const adStr=`${ADMEN[it.ad.getMonth()]} ${it.ad.getDate()}, ${it.ad.getFullYear()}`;
+
+    if(it.type==='hol'){
+      const holName=lang==='ne'?it.hol.np:it.hol.en;
+      return`<div class="up-item hol" style="opacity:.68;" onclick="openDay(${it.ky},${it.km},${it.kd})">
+        <div class="up-chip hol">
+          <div class="up-day ne">${nd}</div>
+          <div class="up-mon">${mName.slice(0,3).toUpperCase()}</div>
+        </div>
+        <div class="up-info">
+          <div class="up-name ne">${holName}</div>
+          <div class="up-sub">🇳🇵 Holiday · ${adStr}</div>
+        </div>
+        <span class="up-badge bdg-p" style="background:var(--tgbg);color:var(--dsub);">${agoLabel}</span>
+      </div>`;
+    } else {
+      const ev=it.ev;
+      const realIdx=userEvents.indexOf(ev);
+      return`<div class="up-item evt" style="opacity:.68;" onclick="openDay(${it.ky},${it.km},${it.kd})">
+        <div class="up-chip evt">
+          <div class="up-day ne">${nd}</div>
+          <div class="up-mon">${mName.slice(0,3).toUpperCase()}</div>
+        </div>
+        <div class="up-info">
+          <div class="up-name">${ev.title}</div>
+          <div class="up-sub">📌 Event · ${adStr}${ev.note?' · '+ev.note:''}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;">
+          <span class="up-badge" style="background:var(--tgbg);color:var(--dsub);">${agoLabel}</span>
+          <span style="font-size:10px;color:var(--dsub);cursor:pointer;font-weight:700;" onclick="event.stopPropagation();removeEv(${realIdx})">✕ Remove</span>
+        </div>
+      </div>`;
+    }
+  }).join('');
+}
+
+// ══ MONTH PICKER ══
+let mpYear = vY;
+
+function openMonthPicker(){
+  mpYear = vY;
+  closeAll();
+  document.getElementById('ov').classList.add('open');
+  document.getElementById('mpSheet').classList.add('open');
+  renderMpGrid();
+}
+
+function renderMpGrid(){
+  const mArr = lang==='ne' ? MNE : MEN;
+  document.getElementById('mpTitle').textContent = lang==='ne' ? 'महिना छान्नुहोस्' : 'Select Month';
+  document.getElementById('mpYrLbl').textContent = ns(mpYear);
+  const cells = mArr.map((name,i)=>{
+    const m = i+1;
+    const isView  = mpYear===vY && m===vM;
+    const isToday = mpYear===TODAYBS.y && m===TODAYBS.m;
+    let cls='mp-cell';
+    if(isView)  cls+=' is-view';
+    if(isToday) cls+=' is-today';
+    return `<button class="${cls}" onclick="pickMonth(${m})">${name}</button>`;
+  }).join('');
+  document.getElementById('mpGrid').innerHTML=cells;
+}
+
+function mpPrevYear(){
+  const minY=Object.keys(BS).map(Number).sort((a,b)=>a-b)[0];
+  if(mpYear>minY){ mpYear--; renderMpGrid(); }
+}
+function mpNextYear(){
+  const maxY=Object.keys(BS).map(Number).sort((a,b)=>b-a)[0];
+  if(mpYear<maxY){ mpYear++; renderMpGrid(); }
+}
+function pickMonth(m){
+  vY=mpYear; vM=m;
+  closeAll();
+  render();
+  renderUpcoming();
+  renderPrevious();
+}
+
+// ══ INIT ══
+// Restore persisted theme
+const savedTheme=localStorage.getItem('vikram_theme');
+if(savedTheme==='dark') dark=true;
+applyTheme();
+
+// Restore persisted language
+const savedLang=localStorage.getItem('vikram_lang');
+if(savedLang==='ne') setLang('ne');
+
+vY=TODAYBS.y;vM=TODAYBS.m;
+render();
+updateDayOpts();
+renderUpcoming();
+renderPrevious();
+
+// ══ PWA — INSTALL BANNER ══
+(function(){
+  // Already installed → hide banner forever
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+  if(isStandalone) return;
+
+  const isIOS     = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isAndroid = /android/i.test(navigator.userAgent);
+  const isSafari  = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+  let deferredPrompt = null;
+
+  function setBannerContent(){
+    const steps = document.getElementById('ibSteps');
+    const btn   = document.getElementById('ibInstallBtn');
+    if(isIOS && isSafari){
+      steps.innerHTML =
+        `Tap <b>Share</b> <span style="font-size:15px;">⎙</span> in Safari,`+
+        ` then choose <b>"Add to Home Screen"</b> to install Vikram.`;
+      btn.textContent = 'Got it ✓';
+      btn.onclick = dismissBanner;
+    } else if(deferredPrompt){
+      steps.innerHTML =
+        `Install <b>Vikram 🇳🇵</b> for <b>quick access</b>, offline support,`+
+        ` and a full-screen experience — no App Store needed!`;
+      btn.textContent = '⬇ Install App';
+      btn.onclick = triggerInstall;
+    } else {
+      steps.innerHTML =
+        `In Chrome tap <b>⋮ menu → "Add to Home Screen"</b> to install`+
+        ` Vikram for fast, offline access.`;
+      btn.textContent = 'Got it ✓';
+      btn.onclick = dismissBanner;
+    }
+  }
+
+  function showBanner(){
+    setBannerContent();
+    setTimeout(()=>document.getElementById('installBanner').classList.add('show'), 1800);
+  }
+
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    showBanner();
+  });
+
+  window.addEventListener('appinstalled', () => {
+    document.getElementById('installBanner').classList.remove('show');
+    localStorage.setItem('vikram_installed','1');
+  });
+
+  if(isIOS || isAndroid){
+    if(!localStorage.getItem('vikram_installed')) showBanner();
+  }
+
+  window.triggerInstall = function(){
+    if(deferredPrompt){
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(r=>{
+        if(r.outcome==='accepted'){
+          document.getElementById('installBanner').classList.remove('show');
+          localStorage.setItem('vikram_installed','1');
+        }
+        deferredPrompt = null;
+      });
+    } else { dismissBanner(); }
+  };
+
+  window.dismissBanner = function(){
+    document.getElementById('installBanner').classList.remove('show');
+  };
+
+  // Register real service worker
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js', {scope:'./'}).catch(()=>{});
+  }
+})();
+</script>
+</body>
+</html>
