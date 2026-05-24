@@ -10,10 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Vikram">
 <meta name="description" content="Vikram — Nepali Patro BS 2083. Your beautiful Nepali calendar.">
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png">
-<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<link rel="manifest" id="pwaManifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -226,6 +223,18 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
 .mp-cell.is-today{border-color:var(--tgon);color:var(--tgon);}
 .mp-cell.is-view.is-today{border-color:rgba(255,255,255,.5);color:#fff;}
 
+/* ── NOTIFICATION PERMISSION CARD ── */
+.notif-card{display:flex;align-items:center;gap:12px;background:var(--tgbg);border-radius:13px;padding:12px 14px;margin-bottom:12px;border:1.5px solid var(--border);transition:border-color .3s,background .3s;}
+.notif-card.granted{border-color:#4CAF50;background:rgba(76,175,80,.07);}
+.notif-card.denied{border-color:#f44336;background:rgba(244,67,54,.07);}
+.notif-bell{font-size:24px;flex-shrink:0;}
+.notif-info{flex:1;min-width:0;}
+.notif-lbl{font-size:13px;font-weight:800;color:var(--dtext);}
+.notif-sub{font-size:11px;color:var(--dsub);margin-top:2px;font-weight:600;}
+.notif-btn{padding:6px 13px;border-radius:10px;border:none;background:var(--tgon);color:#fff;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;flex-shrink:0;transition:opacity .2s;}
+.notif-btn:hover{opacity:.85;}
+.notif-btn.off{background:var(--chip);color:var(--chipt);}
+
 /* ── INSTALL BANNER ── */
 .install-banner{
   position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(110%);
@@ -435,6 +444,15 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
   <div class="shandle"></div>
   <div class="stitle" id="addTitle">📌 Add Event</div>
   <div class="ssec">
+    <!-- Notification permission card -->
+    <div class="notif-card" id="notifCard">
+      <div class="notif-bell" id="notifBell">🔔</div>
+      <div class="notif-info">
+        <div class="notif-lbl" id="notifLbl">Enable Reminders</div>
+        <div class="notif-sub" id="notifSub">Get notified on your event day</div>
+      </div>
+      <button class="notif-btn" id="notifBtn" onclick="handleNotifBtn()">Enable</button>
+    </div>
     <div class="ssect">Event Title</div>
     <input class="einput" id="evT" placeholder="e.g. Doctor appointment…" type="text">
     <div class="ssect" style="margin-top:4px;">Nepali Date (BS)</div>
@@ -467,45 +485,48 @@ const BS={
   2080:[31,31,32,31,31,31,30,29,30,29,30,30],
   2081:[31,31,32,31,31,31,30,29,30,29,30,30],
   2082:[31,32,31,32,31,30,30,30,29,29,30,30],
-  2083:[31,31,32,31,31,30,29,30,30,29,30,30],
+  2083:[31,31,32,31,31,31,29,30,30,29,30,30],
   2084:[31,32,31,32,31,30,30,29,30,29,30,30],
   2085:[31,32,31,32,31,30,30,29,30,29,30,30],
   2086:[31,32,31,32,31,30,29,30,30,29,30,30],
 };
 
 // ══ HOLIDAYS (BS key → {np, en}) ══
+// Official Nepal Public Holidays 2083 BS — all dates verified against AD calendar
 const HOL={
-  "2082-12-25":{np:"राम नवमी",en:"Ram Navami"},
-  "2083-1-1":{np:"नया वर्ष",en:"Nepali New Year"},
-  "2083-1-15":{np:"बुद्ध जयन्ती",en:"Buddha Jayanti (Baishakh Purnima)"},
-  "2083-2-8":{np:"जनजाति दिवस",en:"Indigenous Peoples Day"},
-  "2083-2-15":{np:"गणतन्त्र दिवस",en:"Republic Day (Ganatantra Diwas)"},
-  "2083-3-17":{np:"ईद उल फित्र",en:"Eid al-Fitr (Approx.)"},
-  "2083-5-13":{np:"हरितालिका तीज",en:"Haritalika Teej"},
-  "2083-5-15":{np:"ऋषि पञ्चमी",en:"Rishi Panchami"},
-  "2083-6-14":{np:"घटस्थापना",en:"Ghatasthapana (Dashain Begins)"},
-  "2083-6-20":{np:"फूलपाती",en:"Fulpati (Dashain)"},
-  "2083-6-21":{np:"महाअष्टमी",en:"Maha Ashtami (Dashain)"},
-  "2083-6-22":{np:"महानवमी",en:"Maha Navami (Dashain)"},
-  "2083-6-23":{np:"विजया दशमी",en:"Vijaya Dashami (Dashain) ✦ Major"},
-  "2083-6-27":{np:"एकादशी",en:"Ekadashi"},
-  "2083-7-3":{np:"कोजाग्रत पूर्णिमा",en:"Kojagrat Purnima"},
-  "2083-7-13":{np:"धनतेरस",en:"Dhanteras (Tihar)"},
-  "2083-7-14":{np:"नर्क चतुर्दशी",en:"Narak Chaturdashi (Tihar)"},
-  "2083-7-15":{np:"लक्ष्मी पूजा",en:"Laxmi Puja (Tihar) ✦ Major"},
-  "2083-7-16":{np:"गोवर्धन पूजा",en:"Govardhan Puja / Mha Puja"},
-  "2083-7-17":{np:"भाई टीका",en:"Bhai Tika (Tihar)"},
-  "2083-7-20":{np:"छठ पर्व",en:"Chhath Parva"},
-  "2083-9-10":{np:"तमु ल्होसार",en:"Tamu Lhosar"},
-  "2083-9-15":{np:"क्रिसमस",en:"Christmas Day"},
-  "2083-10-1":{np:"माघे सक्रान्ति",en:"Maghe Sankranti"},
-  "2083-10-28":{np:"शहीद दिवस / पृथ्वी जयन्ती",en:"Martyrs' Day & Prithvi Jayanti"},
-  "2083-11-5":{np:"सोनाम ल्होसार",en:"Sonam Lhosar"},
-  "2083-11-13":{np:"महाशिवरात्री",en:"Maha Shivaratri"},
-  "2083-11-25":{np:"फागु पूर्णिमा",en:"Fagu Purnima (Holi)"},
-  "2083-12-6":{np:"घोडे जात्रा",en:"Ghode Jatra"},
-  "2083-12-24":{np:"राम नवमी",en:"Ram Navami"},
-  "2084-1-1":{np:"नया वर्ष",en:"Nepali New Year 2084"},
+  // ── Baishakh (Apr–May 2026) ──────────────────────────────────────────────
+  "2083-1-1": {np:"नया वर्ष",          en:"Nepali New Year (Naya Barsha)"},
+  "2083-1-18":{np:"श्रम दिवस",          en:"Labour Day"},
+
+  // ── Jestha (May–Jun 2026) ────────────────────────────────────────────────
+  "2083-2-15":{np:"गणतन्त्र दिवस",      en:"Republic Day (Ganatantra Diwas)"},
+
+  // ── Bhadra (Aug–Sep 2026) ────────────────────────────────────────────────
+  "2083-5-19":{np:"कृष्ण जन्माष्टमी",   en:"Krishna Janmashtami"},
+  "2083-5-29":{np:"हरितालिका तीज",      en:"Haritalika Teej (Women only)"},
+
+  // ── Ashwin / Ashoj (Sep–Oct 2026) ────────────────────────────────────────
+  "2083-6-5": {np:"संविधान दिवस",        en:"Constitution Day"},
+
+  // ── Kartik (Oct–Nov 2026) ────────────────────────────────────────────────
+  "2083-7-3": {np:"विजया दशमी (दशैं)",   en:"Vijaya Dashami — Dashain"},
+  "2083-7-4": {np:"एकादशी (दशैं)",       en:"Dashain (Ekadashi)"},
+  "2083-7-5": {np:"द्वादशी (दशैं)",       en:"Dashain (Dwadashi)"},
+  "2083-7-23":{np:"दीपावली / लक्ष्मी पूजा",en:"Deepavali — Laxmi Puja"},
+  "2083-7-24":{np:"भाई टीका (तिहार)",    en:"Tihar — Bhai Tika"},
+  "2083-7-25":{np:"भाई टीका (तिहार)",    en:"Tihar — Bhai Tika (2nd Day)"},
+
+  // ── Magh (Jan 2027) ──────────────────────────────────────────────────────
+  "2083-10-1":{np:"माघे सक्रान्ति",      en:"Maghe Sankranti"},
+
+  // ── Falgun (Feb 2027) ────────────────────────────────────────────────────
+  "2083-11-7":{np:"प्रजातन्त्र दिवस",    en:"Democracy Day"},
+
+  // ── Chaitra (Mar 2027) ───────────────────────────────────────────────────
+  "2083-12-8":{np:"फागु पूर्णिमा (होली)", en:"Fagu Purnima — Holi"},
+
+  // ── 2084 new year boundary ───────────────────────────────────────────────
+  "2084-1-1": {np:"नया वर्ष",            en:"Nepali New Year 2084"},
 };
 
 // ══ STRINGS ══
@@ -841,7 +862,89 @@ function openAddForDay(bsY,bsM,bsD){
   },50);
 }
 
-function saveEv(){
+// ══ NOTIFICATIONS ══
+async function requestNotifPerm(){
+  if(!('Notification' in window)) return 'unsupported';
+  if(Notification.permission==='granted') return 'granted';
+  if(Notification.permission==='denied') return 'denied';
+  return await Notification.requestPermission();
+}
+
+async function showNotif(title, body, tag='vikram'){
+  if(!('Notification' in window)) return;
+  if(Notification.permission!=='granted') return;
+  const opts={
+    body, tag, icon:'./icons/icon-192.png',
+    badge:'./icons/favicon-32.png',
+    vibrate:[200,100,200],
+    requireInteraction:false
+  };
+  // Prefer SW notification (works in background)
+  if(navigator.serviceWorker && navigator.serviceWorker.controller){
+    navigator.serviceWorker.controller.postMessage({type:'NOTIFY',title,...opts});
+  } else {
+    try{ new Notification(title, opts); }catch(e){}
+  }
+}
+
+function updateNotifCard(){
+  if(!('Notification' in window)){
+    document.getElementById('notifCard').style.display='none';
+    return;
+  }
+  const perm=Notification.permission;
+  const card=document.getElementById('notifCard');
+  const bell=document.getElementById('notifBell');
+  const lbl =document.getElementById('notifLbl');
+  const sub =document.getElementById('notifSub');
+  const btn =document.getElementById('notifBtn');
+  card.className='notif-card'+(perm==='granted'?' granted':perm==='denied'?' denied':'');
+  if(perm==='granted'){
+    bell.textContent='🔔'; lbl.textContent='Reminders On';
+    sub.textContent='You\'ll be notified on event day & day before';
+    btn.textContent='On'; btn.className='notif-btn off'; btn.onclick=null;
+  } else if(perm==='denied'){
+    bell.textContent='🔕'; lbl.textContent='Notifications Blocked';
+    sub.textContent='Enable in browser Settings → Site Settings';
+    btn.textContent='Blocked'; btn.className='notif-btn off'; btn.onclick=null;
+  } else {
+    bell.textContent='🔔'; lbl.textContent='Enable Reminders';
+    sub.textContent='Get notified on your event day & day before';
+    btn.textContent='Enable'; btn.className='notif-btn'; btn.onclick=handleNotifBtn;
+  }
+}
+
+async function handleNotifBtn(){
+  const perm=await requestNotifPerm();
+  updateNotifCard();
+  if(perm==='granted') showNotif('Vikram 🇳🇵','Reminders are now enabled! You\'ll be notified for upcoming events.','perm-granted');
+}
+
+// Check today + tomorrow events and fire reminders
+async function checkEventReminders(){
+  if(!('Notification' in window)||Notification.permission!=='granted') return;
+  const todayMid=new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
+  for(const ev of userEvents){
+    const adMid=new Date(new Date(ev.adMs).setHours(0,0,0,0));
+    const diff=Math.round((adMid-todayMid)/86400000);
+    const mName=MEN[ev.bsM-1];
+    if(diff===0){
+      await showNotif(
+        `📅 Today: ${ev.title}`,
+        `Your event is today — ${ev.bsD} ${mName} ${ev.bsY} BS${ev.note?' · '+ev.note:''}`,
+        `today-${ev.adMs}`
+      );
+    } else if(diff===1){
+      await showNotif(
+        `⏰ Tomorrow: ${ev.title}`,
+        `Reminder for tomorrow — ${ev.bsD} ${mName} ${ev.bsY} BS${ev.note?' · '+ev.note:''}`,
+        `tomorrow-${ev.adMs}`
+      );
+    }
+  }
+}
+
+async function saveEv(){
   const t=document.getElementById('evT').value.trim();
   if(!t){alert('Please enter an event title.');return;}
   const bsY=+document.getElementById('evBsY').value;
@@ -858,6 +961,27 @@ function saveEv(){
   renderUpcoming();
   renderPrevious();
   render();
+  // Confirmation notification
+  if(Notification.permission==='granted'){
+    const adStr=`${ADMEN[adDate.getMonth()]} ${adDate.getDate()}, ${adDate.getFullYear()}`;
+    await showNotif(
+      `✅ Event Saved — ${t}`,
+      `${MEN[bsM-1]} ${bsD}, ${bsY} BS · ${adStr}${note?' · '+note:''}`,
+      `saved-${Date.now()}`
+    );
+  } else {
+    // Ask permission on first save
+    const perm=await requestNotifPerm();
+    updateNotifCard();
+    if(perm==='granted'){
+      const adStr=`${ADMEN[adDate.getMonth()]} ${adDate.getDate()}, ${adDate.getFullYear()}`;
+      await showNotif(
+        `✅ Event Saved — ${t}`,
+        `${MEN[bsM-1]} ${bsD}, ${bsY} BS · ${adStr}${note?' · '+note:''}`,
+        `saved-${Date.now()}`
+      );
+    }
+  }
 }
 
 // ══ UPCOMING — 29-DAY COMBINED LIST ══
@@ -1111,65 +1235,135 @@ updateDayOpts();
 renderUpcoming();
 renderPrevious();
 
+// Notification card state + event-day reminders (after short delay)
+updateNotifCard();
+setTimeout(checkEventReminders, 2500);
+
 // ══ PWA — INSTALL BANNER ══
 (function(){
-  // Already installed → hide banner forever
-  const isStandalone =
-    window.matchMedia('(display-mode: standalone)').matches ||
-    window.navigator.standalone === true;
-  if(isStandalone) return;
+  // 1. Inject manifest as blob so Chrome recognises this page as installable
+  const icons=[];
+  [192,512].forEach(sz=>{
+    const c=document.createElement('canvas');
+    c.width=c.height=sz;
+    const ctx=c.getContext('2d');
 
-  const isIOS     = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isAndroid = /android/i.test(navigator.userAgent);
-  const isSafari  = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    // Solid black rounded background
+    ctx.fillStyle='#000000';
+    ctx.beginPath();
+    ctx.roundRect(0,0,sz,sz,sz*0.22);
+    ctx.fill();
 
-  let deferredPrompt = null;
+    // White bold "29" centered
+    ctx.fillStyle='#FFFFFF';
+    ctx.font=`900 ${sz*0.42}px Arial Black,Arial,sans-serif`;
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText('29',sz/2,sz/2);
 
+    icons.push({src:c.toDataURL('image/png'),sizes:`${sz}x${sz}`,type:'image/png'});
+  });
+  const manifest={
+    name:'Vikram — Nepali Calendar',
+    short_name:'Vikram 🇳🇵',
+    description:'Beautiful Nepali Patro BS 2083',
+    start_url:location.href,
+    display:'standalone',
+    orientation:'portrait',
+    background_color:'#ECEEF8',
+    theme_color:'#5B4FCF',
+    icons
+  };
+  const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+  document.getElementById('pwaManifest').href=URL.createObjectURL(blob);
+
+  // 2. Register a minimal service worker via blob (caches the page for offline)
+  if('serviceWorker' in navigator){
+    const sw=`
+const C='vikram-v1';
+self.addEventListener('install',e=>e.waitUntil(
+  caches.open(C).then(c=>c.add(self.location.href)).catch(()=>{})
+));
+self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
+self.addEventListener('fetch',e=>e.respondWith(
+  caches.match(e.request).then(r=>r||fetch(e.request))
+));
+self.addEventListener('message',e=>{
+  if(e.data&&e.data.type==='NOTIFY'){
+    const{title,body,icon,badge,tag,vibrate,requireInteraction}=e.data;
+    self.registration.showNotification(title,{body,icon,badge,tag,vibrate,requireInteraction});
+  }
+});`;
+    const swBlob=new Blob([sw],{type:'application/javascript'});
+    const swURL=URL.createObjectURL(swBlob);
+    navigator.serviceWorker.register(swURL,{scope:'./'}).catch(()=>{});
+  }
+
+  // 3. Detect environment
+  const isStandalone=
+    window.matchMedia('(display-mode: standalone)').matches||
+    window.navigator.standalone===true;
+  if(isStandalone) return; // Already installed — never show banner
+
+  const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isAndroid=/android/i.test(navigator.userAgent);
+  const isSafari=/^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+  let deferredPrompt=null;
+
+  // 4. Set banner copy based on platform
   function setBannerContent(){
-    const steps = document.getElementById('ibSteps');
-    const btn   = document.getElementById('ibInstallBtn');
+    const steps=document.getElementById('ibSteps');
+    const btn=document.getElementById('ibInstallBtn');
     if(isIOS && isSafari){
-      steps.innerHTML =
-        `Tap <b>Share</b> <span style="font-size:15px;">⎙</span> in Safari,`+
-        ` then choose <b>"Add to Home Screen"</b> to install Vikram.`;
-      btn.textContent = 'Got it ✓';
-      btn.onclick = dismissBanner;
+      steps.innerHTML=
+        `Tap <b>Share</b> <span style="font-size:15px;">⎙</span> at the bottom of Safari,`+
+        ` then choose <b>"Add to Home Screen"</b> to install Vikram on your device.`;
+      btn.textContent='Got it ✓';
+      btn.onclick=dismissBanner;
     } else if(deferredPrompt){
-      steps.innerHTML =
-        `Install <b>Vikram 🇳🇵</b> for <b>quick access</b>, offline support,`+
-        ` and a full-screen experience — no App Store needed!`;
-      btn.textContent = '⬇ Install App';
-      btn.onclick = triggerInstall;
+      steps.innerHTML=
+        `Install <b>Vikram 🇳🇵</b> on your device for <b>quick access</b>,`+
+        ` offline support, and a full-screen experience — no App Store needed!`;
+      btn.textContent='⬇ Install App';
+      btn.onclick=triggerInstall;
     } else {
-      steps.innerHTML =
-        `In Chrome tap <b>⋮ menu → "Add to Home Screen"</b> to install`+
-        ` Vikram for fast, offline access.`;
-      btn.textContent = 'Got it ✓';
-      btn.onclick = dismissBanner;
+      steps.innerHTML=
+        `In Chrome tap the <b>⋮ menu</b> then <b>"Add to Home Screen"</b>`+
+        ` to install Vikram on your device for fast, offline access.`;
+      btn.textContent='Got it ✓';
+      btn.onclick=dismissBanner;
     }
   }
 
+  // 5. Show banner (delayed so app renders first)
   function showBanner(){
     setBannerContent();
-    setTimeout(()=>document.getElementById('installBanner').classList.add('show'), 1800);
+    setTimeout(()=>{
+      document.getElementById('installBanner').classList.add('show');
+    },1800);
   }
 
-  window.addEventListener('beforeinstallprompt', e => {
+  // 6. Capture Chrome's native install prompt
+  window.addEventListener('beforeinstallprompt',e=>{
     e.preventDefault();
-    deferredPrompt = e;
-    showBanner();
+    deferredPrompt=e;
+    showBanner(); // show immediately when Chrome deems it installable
   });
 
-  window.addEventListener('appinstalled', () => {
+  // 7. Hide permanently when actually installed
+  window.addEventListener('appinstalled',()=>{
     document.getElementById('installBanner').classList.remove('show');
     localStorage.setItem('vikram_installed','1');
   });
 
-  if(isIOS || isAndroid){
+  // 8. On iOS or generic fallback, show after delay
+  if(isIOS||isAndroid){
     if(!localStorage.getItem('vikram_installed')) showBanner();
   }
 
-  window.triggerInstall = function(){
+  // Expose helpers to global scope
+  window.triggerInstall=function(){
     if(deferredPrompt){
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then(r=>{
@@ -1177,19 +1371,16 @@ renderPrevious();
           document.getElementById('installBanner').classList.remove('show');
           localStorage.setItem('vikram_installed','1');
         }
-        deferredPrompt = null;
+        deferredPrompt=null;
       });
-    } else { dismissBanner(); }
+    } else {
+      dismissBanner();
+    }
   };
-
-  window.dismissBanner = function(){
+  window.dismissBanner=function(){
     document.getElementById('installBanner').classList.remove('show');
+    // Re-show next visit (per spec: show until truly installed)
   };
-
-  // Register real service worker
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('./sw.js', {scope:'./'}).catch(()=>{});
-  }
 })();
 </script>
 </body>

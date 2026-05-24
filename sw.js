@@ -34,7 +34,22 @@ self.addEventListener('activate', e => {
   );
 });
 
-// ── Fetch: cache-first, fall back to network ─────────────────────────────────
+// ── Notification message handler ─────────────────────────────────────────────
+// The page posts {type:'NOTIFY', title, body, …} so the SW can show a
+// persistent system notification even when the app is in the background.
+self.addEventListener('message', e => {
+  if (!e.data || e.data.type !== 'NOTIFY') return;
+  const { title, body, icon, badge, tag, vibrate, requireInteraction } = e.data;
+  self.registration.showNotification(title, {
+    body:               body   || '',
+    icon:               icon   || './icons/icon-192.png',
+    badge:              badge  || './icons/favicon-32.png',
+    tag:                tag    || 'vikram',
+    vibrate:            vibrate|| [200, 100, 200],
+    requireInteraction: requireInteraction || false,
+  });
+});
+
 self.addEventListener('fetch', e => {
   // Only handle GET requests
   if (e.request.method !== 'GET') return;
