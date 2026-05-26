@@ -13,6 +13,7 @@
 <link rel="manifest" id="pwaManifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 :root{
@@ -223,17 +224,113 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
 .mp-cell.is-today{border-color:var(--tgon);color:var(--tgon);}
 .mp-cell.is-view.is-today{border-color:rgba(255,255,255,.5);color:#fff;}
 
-/* ── NOTIFICATION PERMISSION CARD ── */
-.notif-card{display:flex;align-items:center;gap:12px;background:var(--tgbg);border-radius:13px;padding:12px 14px;margin-bottom:12px;border:1.5px solid var(--border);transition:border-color .3s,background .3s;}
-.notif-card.granted{border-color:#4CAF50;background:rgba(76,175,80,.07);}
-.notif-card.denied{border-color:#f44336;background:rgba(244,67,54,.07);}
-.notif-bell{font-size:24px;flex-shrink:0;}
-.notif-info{flex:1;min-width:0;}
-.notif-lbl{font-size:13px;font-weight:800;color:var(--dtext);}
-.notif-sub{font-size:11px;color:var(--dsub);margin-top:2px;font-weight:600;}
-.notif-btn{padding:6px 13px;border-radius:10px;border:none;background:var(--tgon);color:#fff;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;flex-shrink:0;transition:opacity .2s;}
-.notif-btn:hover{opacity:.85;}
-.notif-btn.off{background:var(--chip);color:var(--chipt);}
+/* ── GOOGLE CALENDAR SYNC ── */
+.gcal-wrap{margin-top:6px;display:flex;flex-direction:column;gap:10px;}
+.gcal-block{background:var(--tgbg);border-radius:14px;padding:14px;}
+.gcal-block-title{font-size:12px;font-weight:800;color:var(--dtext);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.gcal-block-sub{font-size:11px;color:var(--dsub);font-weight:600;margin-bottom:10px;line-height:1.5;}
+.gcal-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:10px;border-radius:11px;border:none;font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:opacity .2s;}
+.gcal-btn:hover{opacity:.88;}
+.gcal-btn.primary{background:linear-gradient(135deg,#7B6EF6,#5340E8);color:#fff;}
+.gcal-btn.google{background:#fff;color:#444;border:1.5px solid #ddd;box-shadow:0 1px 6px rgba(0,0,0,.08);}
+[data-theme=dark] .gcal-btn.google{background:#2a2a3e;color:#ddd;border-color:#3a3a55;}
+.gcal-btn.danger{background:#fff0f0;color:#c0392b;}
+[data-theme=dark] .gcal-btn.danger{background:#3a1a1a;color:#ff8080;}
+.gcal-status{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;background:var(--tgbg);font-size:12px;font-weight:700;color:var(--dtext);}
+.gcal-status.ok{background:rgba(76,175,80,.1);color:#2e7d32;}
+[data-theme=dark] .gcal-status.ok{background:rgba(76,175,80,.15);color:#66bb6a;}
+.gcal-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.gcal-dot.green{background:#4CAF50;} .gcal-dot.grey{background:#aaa;}
+.gcal-input{width:100%;padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--sbg);color:var(--dtext);font-size:12px;font-family:'Nunito',sans-serif;font-weight:600;outline:none;margin-bottom:8px;}
+.gcal-input:focus{border-color:var(--tgon);}
+.gcal-hint{font-size:10.5px;color:var(--dsub);font-weight:600;line-height:1.5;margin-bottom:8px;}
+.gcal-hint a{color:var(--tgon);text-decoration:none;}
+.gcal-row{display:flex;gap:7px;}
+.gcal-row .gcal-btn{flex:1;}
+.gcal-progress{font-size:11px;color:var(--tgon);font-weight:700;text-align:center;padding:6px 0;display:none;}
+
+/* ── CYCLE TRACKER ── */
+.cycle-pill{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;border:none;background:linear-gradient(135deg,#FF6B9D,#C44569);color:#fff;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 3px 12px rgba(196,69,105,.35);transition:opacity .2s;white-space:nowrap;}
+.cycle-pill:hover{opacity:.88;}
+.cycle-pill svg{width:14px;height:14px;stroke:#fff;stroke-width:2.2;fill:none;}
+
+/* Phase ring */
+.phase-ring-wrap{display:flex;flex-direction:column;align-items:center;padding:24px 0 22px;}
+.phase-ring-label{margin-top:10px;text-align:center;}
+.phase-name{font-size:15px;font-weight:900;color:var(--dtext);margin-top:4px;}
+.phase-day{font-size:12px;color:var(--dsub);font-weight:700;margin-top:2px;}
+
+/* Phase color tokens */
+.ph-menstrual{color:#FF4757;} .bg-menstrual{background:#FF4757;}
+.ph-follicular{color:#FF6B9D;} .bg-follicular{background:#FF6B9D;}
+.ph-ovulation{color:#A855F7;} .bg-ovulation{background:#A855F7;}
+.ph-luteal{color:#3B82F6;} .bg-luteal{background:#3B82F6;}
+
+/* Stat grid */
+.cyc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 18px 14px;}
+.cyc-card{background:var(--tgbg);border-radius:16px;padding:13px 14px;position:relative;overflow:hidden;}
+.cyc-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;}
+.cyc-card.menstrual::before{background:#FF4757;}
+.cyc-card.follicular::before{background:#FF6B9D;}
+.cyc-card.ovulation::before{background:#A855F7;}
+.cyc-card.luteal::before{background:#3B82F6;}
+.cyc-card.neutral::before{background:var(--tgon);}
+.cyc-card-icon{font-size:20px;margin-bottom:4px;}
+.cyc-card-val{font-size:20px;font-weight:900;color:var(--dtext);line-height:1;}
+.cyc-card-sub{font-size:10.5px;font-weight:700;color:var(--dsub);margin-top:3px;line-height:1.3;}
+
+/* Log buttons */
+.cyc-log-row{display:flex;gap:9px;padding:0 18px 14px;}
+.cyc-log-btn{flex:1;padding:11px;border-radius:13px;border:none;font-size:12.5px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:opacity .2s;}
+.cyc-log-btn:hover{opacity:.85;}
+.cyc-log-btn.period{background:rgba(255,71,87,.12);color:#FF4757;}
+.cyc-log-btn.ovul{background:rgba(168,85,247,.12);color:#A855F7;}
+.cyc-log-btn.end{background:rgba(59,130,246,.12);color:#3B82F6;}
+[data-theme=dark] .cyc-log-btn.period{background:rgba(255,71,87,.2);}
+[data-theme=dark] .cyc-log-btn.ovul{background:rgba(168,85,247,.2);}
+[data-theme=dark] .cyc-log-btn.end{background:rgba(59,130,246,.2);}
+
+/* Cycle history */
+.cyc-log-entry{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.cyc-log-entry:last-child{border-bottom:none;}
+.cyc-log-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.cyc-log-txt{font-size:12.5px;font-weight:700;color:var(--dtext);flex:1;}
+.cyc-log-date{font-size:11px;color:var(--dsub);font-weight:600;}
+
+/* Cycle settings row */
+.cyc-set-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);}
+.cyc-set-row:last-child{border-bottom:none;}
+.cyc-num-input{width:64px;padding:7px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--sbg);color:var(--dtext);font-size:14px;font-weight:800;text-align:center;font-family:'Nunito',sans-serif;outline:none;}
+.cyc-num-input:focus{border-color:#FF6B9D;}
+
+/* Partner pairing card */
+.partner-card{background:linear-gradient(135deg,rgba(255,107,157,.1),rgba(168,85,247,.1));border-radius:16px;padding:16px;border:1.5px solid rgba(255,107,157,.2);}
+[data-theme=dark] .partner-card{background:linear-gradient(135deg,rgba(255,107,157,.08),rgba(168,85,247,.08));border-color:rgba(255,107,157,.15);}
+.partner-status{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.partner-dot{width:8px;height:8px;border-radius:50%;background:#ccc;flex-shrink:0;}
+.partner-dot.paired{background:#4CAF50;}
+.partner-status-txt{font-size:13px;font-weight:800;color:var(--dtext);}
+.partner-code{background:var(--sbg);border-radius:10px;padding:10px 14px;font-size:15px;font-weight:900;letter-spacing:3px;color:var(--tgon);text-align:center;margin-bottom:10px;border:1.5px dashed var(--border);}
+.partner-btn-row{display:flex;gap:8px;}
+.partner-btn{flex:1;padding:10px;border-radius:11px;border:none;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:opacity .2s;}
+.partner-btn:hover{opacity:.85;}
+.partner-btn.share{background:linear-gradient(135deg,#FF6B9D,#C44569);color:#fff;}
+.partner-btn.enter{background:var(--tgbg);color:var(--dtext);}
+.partner-priv{margin-top:10px;}
+.partner-priv-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:12px;font-weight:700;color:var(--dsub);}
+
+/* Partner view modal */
+.pv-modal{position:fixed;inset:0;background:var(--ov);z-index:80;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
+.pv-modal.open{opacity:1;pointer-events:all;}
+.pv-card{background:var(--sbg);border-radius:24px 24px 0 0;width:390px;max-width:100vw;padding:0 0 40px;box-shadow:0 -8px 40px rgba(0,0,0,.25);}
+.pv-header{padding:16px 24px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.pv-title{font-size:16px;font-weight:900;color:var(--dtext);}
+.pv-close{width:30px;height:30px;border:none;background:var(--tgbg);border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.pv-body{padding:20px 20px;}
+.pv-phase-big{text-align:center;padding:20px 0;}
+.pv-phase-emoji{font-size:48px;}
+.pv-phase-name{font-size:22px;font-weight:900;margin-top:8px;}
+.pv-note{font-size:12px;color:var(--dsub);font-weight:600;text-align:center;margin-top:16px;line-height:1.6;}
 
 /* ── INSTALL BANNER ── */
 .install-banner{
@@ -298,11 +395,9 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
   <div class="hdr">
     <div class="htitle ne" id="htitle"></div>
     <div class="hicons">
-      <button class="ibtn" id="langBtn" onclick="toggleLang()" title="Switch Language">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-      </button>
-      <button class="ibtn" id="darkBtn" onclick="toggleDark()" title="Appearance">
-        <svg id="dkIcon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <button class="cycle-pill" id="cycleBtn" onclick="openSheet('cycle')" title="Track My Cycle">
+        <svg viewBox="0 0 24 24"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402C1 3.518 3.8 1 7 1c2.074 0 3.952 1.002 5 2.5C13.048 2.002 14.926 1 17 1c3.2 0 6 2.518 6 6.191 0 4.105-5.37 8.863-11 14.402z"/></svg>
+        Track My Cycle
       </button>
       <button class="ibtn" id="settingsBtn" onclick="openSheet('settings')" title="Settings">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -373,6 +468,28 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
   <div class="stitle">⚙️ Settings</div>
   <div class="sscroll">
     <div class="ssec">
+      <div class="ssect">Appearance & Language</div>
+      <!-- Dark / Light mode -->
+      <div class="srow">
+        <div>
+          <div class="slbl" id="sAppearLbl">Dark Mode</div>
+          <div class="ssub" id="sAppearSub">Switch to dark theme</div>
+        </div>
+        <button class="tgl" id="tgDark" onclick="toggleDark()"></button>
+      </div>
+      <!-- Language -->
+      <div class="srow">
+        <div>
+          <div class="slbl">Language</div>
+          <div class="ssub" id="sLangSub">Currently English</div>
+        </div>
+        <div class="chips" style="margin-top:0;">
+          <button class="chip on" id="chipEN" onclick="setLang('en')">EN</button>
+          <button class="chip" id="chipNE" onclick="setLang('ne')">NE</button>
+        </div>
+      </div>
+    </div>
+    <div class="ssec">
       <div class="ssect">Display</div>
       <div class="srow">
         <div><div class="slbl">Gregorian Dates</div><div class="ssub">Show AD day numbers in cells</div></div>
@@ -393,17 +510,23 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
       </div>
     </div>
     <div class="ssec">
+      <div class="ssect">🗓️ Google Calendar Sync</div>
+      <div class="gcal-wrap" id="gcalWrap">
+        <!-- Rendered by renderGcalCard() -->
+      </div>
+    </div>
+    <div class="ssec">
       <div class="ssect">About</div>
       <div class="srow">
         <div class="slbl">Vikram 🇳🇵</div>
         <div style="font-size:12.5px;color:var(--dsub);font-weight:700;">v2.1 · BS 2083</div>
       </div>
-      <div class="srow" style="cursor:pointer;" onclick="window.open('https://discord.gg/MP2cxxXEvZ','_blank')">
+      <div class="srow" style="cursor:pointer;" onclick="window.open('https://x.com/ranjansinghx','_blank')">
         <div>
-          <div class="slbl" style="color:#5865F2;">♡ Join Us</div>
-          <div class="ssub">Connect with us on Discord</div>
+          <div class="slbl">𝕏 Connect with us</div>
+          <div class="ssub">Follow us on X · @ranjansinghx</div>
         </div>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5865F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
       </div>
     </div>
   </div>
@@ -479,54 +602,100 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
   </div>
 </div>
 
+<!-- CYCLE TRACKER SHEET -->
+<div class="sheet" id="cycleSheet" style="padding-bottom:0;">
+  <div class="shandle"></div>
+  <div class="stitle" style="background:linear-gradient(135deg,#FF6B9D,#C44569);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">🌸 My Cycle Tracker</div>
+  <div class="sscroll" id="cycleBody"><!-- rendered by renderCycleSheet() --></div>
+</div>
+
+<!-- PARTNER VIEW MODAL -->
+<div class="pv-modal" id="pvModal">
+  <div class="pv-card">
+    <div class="pv-header">
+      <div class="pv-title">💞 Partner's Cycle</div>
+      <button class="pv-close" onclick="closePV()">✕</button>
+    </div>
+    <div class="pv-body" id="pvBody"><!-- rendered dynamically --></div>
+  </div>
+</div>
+
 <script>
 // ══ BS DATA ══
 const BS={
   2080:[31,31,32,31,31,31,30,29,30,29,30,30],
   2081:[31,31,32,31,31,31,30,29,30,29,30,30],
   2082:[31,32,31,32,31,30,30,30,29,29,30,30],
-  2083:[31,31,32,31,31,31,29,30,30,29,30,30],
+  2083:[31,31,32,31,31,31,30,29,30,29,30,30],
   2084:[31,32,31,32,31,30,30,29,30,29,30,30],
   2085:[31,32,31,32,31,30,30,29,30,29,30,30],
   2086:[31,32,31,32,31,30,29,30,30,29,30,30],
 };
 
 // ══ HOLIDAYS (BS key → {np, en}) ══
-// Official Nepal Public Holidays 2083 BS — all dates verified against AD calendar
+// Official Nepal Public Holidays 2083 BS — all 38 dates verified ✓
+// BS[2083] = [31,31,32,31,31,31,30,29,30,29,30,30]
 const HOL={
-  // ── Baishakh (Apr–May 2026) ──────────────────────────────────────────────
-  "2083-1-1": {np:"नया वर्ष",          en:"Nepali New Year (Naya Barsha)"},
-  "2083-1-18":{np:"श्रम दिवस",          en:"Labour Day"},
+  // ── Baishakh ────────────────────────────────────────────────────────────
+  "2083-1-1": {np:"नया वर्ष",                    en:"Nepali New Year"},
+  "2083-1-18":{np:"बुद्ध जयन्ती",                 en:"Buddha Jayanti"},
 
-  // ── Jestha (May–Jun 2026) ────────────────────────────────────────────────
-  "2083-2-15":{np:"गणतन्त्र दिवस",      en:"Republic Day (Ganatantra Diwas)"},
+  // ── Jestha ──────────────────────────────────────────────────────────────
+  "2083-2-15":{np:"गणतन्त्र दिवस",               en:"Republic Day"},
 
-  // ── Bhadra (Aug–Sep 2026) ────────────────────────────────────────────────
-  "2083-5-19":{np:"कृष्ण जन्माष्टमी",   en:"Krishna Janmashtami"},
-  "2083-5-29":{np:"हरितालिका तीज",      en:"Haritalika Teej (Women only)"},
+  // ── Bhadra ──────────────────────────────────────────────────────────────
+  "2083-5-12":{np:"जनै पूर्णिमा",                 en:"Janai Purnima"},
+  "2083-5-13":{np:"गाईजात्रा",                    en:"Gaijatra"},
+  "2083-5-19":{np:"कृष्ण जन्माष्टमी",             en:"Krishna Janmashtami"},
+  "2083-5-29":{np:"हरितालिका तीज",               en:"Haritalika Teej"},
 
-  // ── Ashwin / Ashoj (Sep–Oct 2026) ────────────────────────────────────────
-  "2083-6-5": {np:"संविधान दिवस",        en:"Constitution Day"},
+  // ── Ashwin ──────────────────────────────────────────────────────────────
+  "2083-6-3": {np:"संविधान दिवस",                en:"Constitution Day"},
+  "2083-6-9": {np:"इन्द्र जात्रा",                 en:"Indra Jatra"},
+  "2083-6-25":{np:"घटस्थापना",                   en:"Ghatasthapana (Dashain)"},
+  "2083-6-31":{np:"फूलपाती",                     en:"Fulpati (Dashain)"},
 
-  // ── Kartik (Oct–Nov 2026) ────────────────────────────────────────────────
-  "2083-7-3": {np:"विजया दशमी (दशैं)",   en:"Vijaya Dashami — Dashain"},
-  "2083-7-4": {np:"एकादशी (दशैं)",       en:"Dashain (Ekadashi)"},
-  "2083-7-5": {np:"द्वादशी (दशैं)",       en:"Dashain (Dwadashi)"},
-  "2083-7-23":{np:"दीपावली / लक्ष्मी पूजा",en:"Deepavali — Laxmi Puja"},
-  "2083-7-24":{np:"भाई टीका (तिहार)",    en:"Tihar — Bhai Tika"},
-  "2083-7-25":{np:"भाई टीका (तिहार)",    en:"Tihar — Bhai Tika (2nd Day)"},
+  // ── Kartik ──────────────────────────────────────────────────────────────
+  "2083-7-1": {np:"महाअष्टमी",                   en:"Maha Ashtami (Dashain)"},
+  "2083-7-2": {np:"दशैं छुट्टी",                  en:"Dashain Holiday"},
+  "2083-7-3": {np:"महानवमी",                     en:"Maha Nawami (Dashain)"},
+  "2083-7-4": {np:"विजया दशमी",                  en:"Bijaya Dashami ✦"},
+  "2083-7-6": {np:"दशैं छुट्टी",                  en:"Dashain Holiday"},
+  "2083-7-22":{np:"लक्ष्मी पूजा",                 en:"Laxmi Puja (Tihar)"},
+  "2083-7-23":{np:"तिहार छुट्टी",                 en:"Tihar Holiday"},
+  "2083-7-24":{np:"म्ह पूजा",                    en:"Mha Puja (Tihar)"},
+  "2083-7-25":{np:"भाई टीका",                   en:"Bhai Tika (Tihar) ✦"},
+  "2083-7-29":{np:"छठ पर्व",                    en:"Chhath Parva"},
 
-  // ── Magh (Jan 2027) ──────────────────────────────────────────────────────
-  "2083-10-1":{np:"माघे सक्रान्ति",      en:"Maghe Sankranti"},
+  // ── Mangsir ─────────────────────────────────────────────────────────────
+  "2083-8-8": {np:"गुरु नानक जयन्ती",             en:"Guru Nanak Jayanti"},
+  "2083-8-18":{np:"उदौली पर्व",                  en:"Udhauli Parva"},
 
-  // ── Falgun (Feb 2027) ────────────────────────────────────────────────────
-  "2083-11-7":{np:"प्रजातन्त्र दिवस",    en:"Democracy Day"},
+  // ── Poush ───────────────────────────────────────────────────────────────
+  "2083-9-9": {np:"योमरी पुन्ही",                 en:"Yomari Punhi"},
+  "2083-9-10":{np:"क्रिसमस",                     en:"Christmas Day"},
+  "2083-9-15":{np:"तमु ल्होसार",                 en:"Tamu Lhosar"},
+  "2083-9-27":{np:"पृथ्वी जयन्ती",               en:"Prithvi Jayanti"},
 
-  // ── Chaitra (Mar 2027) ───────────────────────────────────────────────────
-  "2083-12-8":{np:"फागु पूर्णिमा (होली)", en:"Fagu Purnima — Holi"},
+  // ── Magh ────────────────────────────────────────────────────────────────
+  "2083-10-1":{np:"माघे सक्रान्ति",              en:"Maghe Sankranti"},
+  "2083-10-16":{np:"शहीद दिवस",                 en:"Martyrs' Day"},
+  "2083-10-24":{np:"सोनाम ल्होसार",              en:"Sonam Lhosar"},
+  "2083-10-28":{np:"सरस्वती पूजा",              en:"Saraswati Puja"},
 
-  // ── 2084 new year boundary ───────────────────────────────────────────────
-  "2084-1-1": {np:"नया वर्ष",            en:"Nepali New Year 2084"},
+  // ── Falgun ──────────────────────────────────────────────────────────────
+  "2083-11-7":{np:"प्रजातन्त्र दिवस",             en:"Democracy Day"},
+  "2083-11-22":{np:"महाशिवरात्री",               en:"Maha Shivaratri"},
+  "2083-11-24":{np:"अन्तर्राष्ट्रिय महिला दिवस",  en:"International Women's Day"},
+  "2083-11-25":{np:"ग्याल्पो ल्होसार",            en:"Gyalpo Lhosar"},
+
+  // ── Chaitra ─────────────────────────────────────────────────────────────
+  "2083-12-7":{np:"होली",                       en:"Holi"},
+  "2083-12-8":{np:"होली (तराई)",                en:"Holi (Terai)"},
+  "2083-12-23":{np:"घोडे जात्रा",               en:"Ghode Jatra"},
+
+  // ── 2084 boundary ───────────────────────────────────────────────────────
+  "2084-1-1": {np:"नया वर्ष",                   en:"Nepali New Year 2084"},
 };
 
 // ══ STRINGS ══
@@ -746,7 +915,7 @@ function openDay(bY,bM,bD){
 // ══ SHEETS ══
 function closeAll(){
   document.getElementById('ov').classList.remove('open');
-  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','cycleSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
 }
 
 // ══ DARK MODE ══
@@ -757,9 +926,13 @@ function toggleDark(){
 }
 function applyTheme(){
   document.documentElement.setAttribute('data-theme',dark?'dark':'light');
-  const ic=document.getElementById('dkIcon');
-  ic.innerHTML=dark?'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>':'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
-  document.getElementById('darkBtn').classList.toggle('active',dark);
+  // Settings toggle
+  const tg=document.getElementById('tgDark');
+  if(tg) tg.classList.toggle('on',dark);
+  const lbl=document.getElementById('sAppearLbl');
+  const sub=document.getElementById('sAppearSub');
+  if(lbl) lbl.textContent=dark?'Dark Mode':'Light Mode';
+  if(sub) sub.textContent=dark?'Currently using dark theme':'Currently using light theme';
 }
 
 // ══ LANGUAGE ══
@@ -769,9 +942,16 @@ function toggleLang(){
 function setLang(l){
   lang=l;
   document.documentElement.setAttribute('data-lang',l);
+  // Settings language chips
+  const cEN=document.getElementById('chipEN');
+  const cNE=document.getElementById('chipNE');
+  if(cEN) cEN.classList.toggle('on',l==='en');
+  if(cNE) cNE.classList.toggle('on',l==='ne');
+  const sub=document.getElementById('sLangSub');
+  if(sub) sub.textContent=l==='ne'?'Currently Nepali (नेपाली)':'Currently English';
+  // Keep lang sheet checkmarks in sync
   document.getElementById('chkEN').classList.toggle('on',l==='en');
   document.getElementById('chkNE').classList.toggle('on',l==='ne');
-  document.getElementById('langBtn').classList.toggle('active',l==='ne');
   localStorage.setItem('vikram_lang',l);
   closeAll();render();renderUpcoming();renderPrevious();
 }
@@ -839,8 +1019,10 @@ function updateDayOpts(){
 function openSheet(t){
   closeAll();
   document.getElementById('ov').classList.add('open');
-  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet'};
+  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',cycle:'cycleSheet'};
   document.getElementById(ids[t])?.classList.add('open');
+  if(t==='settings') renderGcalCard();
+  if(t==='cycle') renderCycleSheet();
   if(t==='add'){
     // Default date = today BS
     document.getElementById('evBsY').value=TODAYBS.y;
@@ -1219,6 +1401,581 @@ function pickMonth(m){
   renderPrevious();
 }
 
+// ══ GOOGLE CALENDAR SYNC ══════════════════════════════════════════════════
+let gcalToken    = null;
+let gcalTokenExp = 0;
+let gcalUser     = localStorage.getItem('vikram_gcal_user') || null;
+let gcalClientId = localStorage.getItem('vikram_gcal_cid')  || '';
+
+// ── ICS export ──────────────────────────────────────────────────────────────
+function padZ(n){return String(n).padStart(2,'0');}
+function adToIcsDate(adMs){
+  const d=new Date(adMs);
+  return `${d.getFullYear()}${padZ(d.getMonth()+1)}${padZ(d.getDate())}`;
+}
+function adToIcsStamp(){
+  const d=new Date();
+  return `${d.getUTCFullYear()}${padZ(d.getUTCMonth()+1)}${padZ(d.getUTCDate())}T${padZ(d.getUTCHours())}${padZ(d.getUTCMinutes())}${padZ(d.getUTCSeconds())}Z`;
+}
+function generateICS(){
+  const stamp=adToIcsStamp();
+  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Vikram Nepali Calendar//EN',
+    'CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+  // Add public holidays
+  Object.entries(HOL).forEach(([key,h])=>{
+    const[ky,km,kd]=key.split('-').map(Number);
+    if(!BS[ky]) return;
+    const adMs=bsToAd(ky,km,kd).getTime();
+    const ds=adToIcsDate(adMs);
+    const de=adToIcsDate(adMs+86400000);
+    lines.push('BEGIN:VEVENT',
+      `UID:vikram-hol-${key}@vikram.app`,`DTSTAMP:${stamp}`,
+      `DTSTART;VALUE=DATE:${ds}`,`DTEND;VALUE=DATE:${de}`,
+      `SUMMARY:🇳🇵 ${h.en}`,`DESCRIPTION:${h.np}`,
+      'CATEGORIES:HOLIDAY','END:VEVENT');
+  });
+  // Add user events
+  userEvents.forEach((ev,i)=>{
+    const ds=adToIcsDate(ev.adMs);
+    const de=adToIcsDate(ev.adMs+86400000);
+    lines.push('BEGIN:VEVENT',
+      `UID:vikram-evt-${ev.adMs}-${i}@vikram.app`,`DTSTAMP:${stamp}`,
+      `DTSTART;VALUE=DATE:${ds}`,`DTEND;VALUE=DATE:${de}`,
+      `SUMMARY:📌 ${ev.title}`,
+      ev.note?`DESCRIPTION:${ev.note}`:'',
+      'END:VEVENT');
+  });
+  lines.push('END:VCALENDAR');
+  return lines.filter(Boolean).join('\r\n');
+}
+function exportICS(){
+  const content=generateICS();
+  const blob=new Blob([content],{type:'text/calendar;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='vikram-calendar-2083.ics'; a.click();
+  URL.revokeObjectURL(url);
+  renderGcalCard();
+}
+
+// ── Google OAuth token flow (GIS) ───────────────────────────────────────────
+function gcalIsExpired(){return Date.now()>gcalTokenExp-60000;}
+
+function gcalConnect(){
+  if(!gcalClientId.trim()){alert('Please enter your Google OAuth Client ID first.');return;}
+  if(!window.google?.accounts?.oauth2){
+    alert('Google Identity Services not loaded yet. Please check your internet connection and try again.');
+    return;
+  }
+  const client=google.accounts.oauth2.initTokenClient({
+    client_id:gcalClientId.trim(),
+    scope:'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/userinfo.email',
+    callback:async(resp)=>{
+      if(resp.error){console.error(resp);alert('Google sign-in failed: '+resp.error);return;}
+      gcalToken=resp.access_token;
+      gcalTokenExp=Date.now()+(resp.expires_in||3600)*1000;
+      // Fetch user email
+      try{
+        const r=await fetch('https://www.googleapis.com/oauth2/v3/userinfo',
+          {headers:{Authorization:'Bearer '+gcalToken}});
+        const u=await r.json();
+        gcalUser=u.email||'Connected';
+        localStorage.setItem('vikram_gcal_user',gcalUser);
+      }catch(e){gcalUser='Connected';}
+      renderGcalCard();
+    }
+  });
+  client.requestAccessToken({prompt:'consent'});
+}
+
+function gcalDisconnect(){
+  if(gcalToken&&window.google?.accounts?.oauth2)
+    google.accounts.oauth2.revoke(gcalToken,()=>{});
+  gcalToken=null; gcalTokenExp=0; gcalUser=null;
+  localStorage.removeItem('vikram_gcal_user');
+  renderGcalCard();
+}
+
+// ── Push events to Google Calendar API ─────────────────────────────────────
+async function gcalSyncNow(){
+  if(!gcalToken||gcalIsExpired()){gcalConnect();return;}
+  const prog=document.getElementById('gcalProgress');
+  prog.style.display='block';
+  const total=userEvents.length;
+  let done=0,failed=0;
+  for(const ev of userEvents){
+    const ad=new Date(ev.adMs);
+    const ds=`${ad.getFullYear()}-${padZ(ad.getMonth()+1)}-${padZ(ad.getDate())}`;
+    const de=new Date(ev.adMs+86400000);
+    const des=`${de.getFullYear()}-${padZ(de.getMonth()+1)}-${padZ(de.getDate())}`;
+    const body={
+      summary:`📌 ${ev.title}`,
+      description:`${ev.note||''}\n\n[Added via Vikram 🇳🇵 Nepali Calendar · ${MEN[ev.bsM-1]} ${ev.bsD}, ${ev.bsY} BS]`,
+      start:{date:ds},end:{date:des},
+      source:{title:'Vikram 🇳🇵 Nepali Calendar',url:location.href}
+    };
+    prog.textContent=`Syncing ${done+1}/${total}…`;
+    try{
+      const r=await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events',{
+        method:'POST',
+        headers:{Authorization:'Bearer '+gcalToken,'Content-Type':'application/json'},
+        body:JSON.stringify(body)
+      });
+      if(r.ok) done++; else failed++;
+    }catch(e){failed++;}
+  }
+  prog.style.display='none';
+  const msg=failed===0
+    ? `✅ Synced ${done} event${done!==1?'s':''} to Google Calendar!`
+    : `⚠️ ${done} synced, ${failed} failed. Token may have expired — try reconnecting.`;
+  alert(msg);
+  renderGcalCard();
+}
+
+// ── Render the Google Calendar card ────────────────────────────────────────
+function renderGcalCard(){
+  const wrap=document.getElementById('gcalWrap');
+  if(!wrap) return;
+  const evCount=userEvents.length;
+  const holCount=Object.keys(HOL).length;
+  const isConn=gcalToken&&!gcalIsExpired();
+
+  wrap.innerHTML=`
+  <!-- Block 1: Export ICS -->
+  <div class="gcal-block">
+    <div class="gcal-block-title">📥 Export as .ics File</div>
+    <div class="gcal-block-sub">Download all ${evCount} event${evCount!==1?'s':''} + ${holCount} holidays as a standard .ics file. Import directly into Google Calendar, Apple Calendar, or Outlook.</div>
+    <button class="gcal-btn primary" onclick="exportICS()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download vikram-calendar-2083.ics
+    </button>
+  </div>
+
+  <!-- Block 2: Direct Google Sync -->
+  <div class="gcal-block">
+    <div class="gcal-block-title">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 2H3v16h5v4l4-4h5l4-4V2zm-10 9V7m5 4V7"/></svg>
+      Direct Google Calendar Sync
+    </div>
+    ${isConn
+      ? `<div class="gcal-status ok"><div class="gcal-dot green"></div>Connected as <b>${gcalUser}</b></div>
+         <div style="height:8px;"></div>
+         <div id="gcalProgress" class="gcal-progress"></div>
+         <div class="gcal-row">
+           <button class="gcal-btn primary" onclick="gcalSyncNow()">
+             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.5 15a9 9 0 1 1-2.18-9.16L23 10"/></svg>
+             Sync ${evCount} Event${evCount!==1?'s':''}
+           </button>
+           <button class="gcal-btn danger" onclick="gcalDisconnect()">Disconnect</button>
+         </div>`
+      : `<div class="gcal-status"><div class="gcal-dot grey"></div>Not connected</div>
+         <div style="height:8px;"></div>
+         <div class="gcal-block-sub">Enter your Google OAuth 2.0 Client ID. <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">Get one free →</a></div>
+         <div class="gcal-hint">
+           1. Go to Google Cloud Console → APIs & Services → Credentials<br>
+           2. Create OAuth 2.0 Client ID → Web application<br>
+           3. Add <code>${location.origin}</code> as Authorised origin<br>
+           4. Paste the Client ID below
+         </div>
+         <input class="gcal-input" id="gcalCidInput" placeholder="Paste Client ID (…apps.googleusercontent.com)"
+           value="${gcalClientId}" oninput="gcalClientId=this.value;localStorage.setItem('vikram_gcal_cid',this.value)">
+         <button class="gcal-btn google" onclick="gcalConnect()">
+           <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+           Sign in with Google
+         </button>`
+    }
+  </div>`;
+}
+
+// ══ CYCLE TRACKER ════════════════════════════════════════════════════════════
+const PHASE_INFO = {
+  Menstrual:  { emoji:'🔴', color:'#FF4757', cls:'menstrual',  desc:'Period phase'   },
+  Follicular: { emoji:'🌱', color:'#FF6B9D', cls:'follicular', desc:'Building phase'  },
+  Ovulation:  { emoji:'✨', color:'#A855F7', cls:'ovulation',  desc:'Fertile window' },
+  Luteal:     { emoji:'🌙', color:'#3B82F6', cls:'luteal',     desc:'Premenstrual'   },
+};
+
+let cycleData = (()=>{
+  try{ return JSON.parse(localStorage.getItem('vikram_cycle')||'{}'); }
+  catch(e){ return {}; }
+})();
+
+function saveCycle(){ localStorage.setItem('vikram_cycle', JSON.stringify(cycleData)); }
+
+function cycleDefaults(){
+  return {
+    cycleLength:  cycleData.cycleLength  || 28,
+    periodLength: cycleData.periodLength || 5,
+    lastPeriodStart: cycleData.lastPeriodStart || null,
+    logs: cycleData.logs || [],
+    privacy: cycleData.privacy || { phase:true, fertility:true, periodDay:true },
+    pairCode: cycleData.pairCode || null,
+  };
+}
+
+function getDayOfCycle(){
+  if(!cycleData.lastPeriodStart) return null;
+  const today = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
+  const start = new Date(cycleData.lastPeriodStart);
+  const startMid = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  return Math.floor((today - startMid)/86400000) + 1;
+}
+
+function getPhase(){
+  const d = cycleData, day = getDayOfCycle();
+  if(!day || day < 1) return null;
+  const cl = d.cycleLength||28, pl = d.periodLength||5;
+  const ovDay = cl - 14; // typical ovulation day
+
+  if(day <= pl)
+    return { name:'Menstrual',  dayIn:day,          of:pl,         next: pl-day+1    };
+  const follEnd = ovDay - 3;
+  if(day <= follEnd)
+    return { name:'Follicular', dayIn:day-pl,        of:follEnd-pl, next: follEnd-day+1 };
+  const ovEnd = ovDay + 2;
+  if(day <= ovEnd)
+    return { name:'Ovulation',  dayIn:day-(ovDay-2)+1, of:5,        next: ovEnd-day+1  };
+  return   { name:'Luteal',     dayIn:day-ovEnd,    of:cl-ovEnd,   next: cl-day+1    };
+}
+
+function getDaysUntilNextPeriod(){
+  const day = getDayOfCycle();
+  if(!day) return null;
+  const cl = cycleData.cycleLength||28;
+  return day > cl ? 0 : cl - day + 1;
+}
+
+function getDaysUntilOvulation(){
+  const day = getDayOfCycle();
+  if(!day) return null;
+  const ovDay = (cycleData.cycleLength||28) - 14;
+  const remaining = ovDay - day;
+  return remaining < 0 ? null : remaining;
+}
+
+// ── SVG phase ring ──────────────────────────────────────────────────────────
+function buildPhaseRing(dayOfCycle){
+  const CX=80,CY=80,R=62,SW=12;
+  const C = 2*Math.PI*R;
+  const cl = cycleData.cycleLength||28;
+  const pl = cycleData.periodLength||5;
+  const ovDay = cl-14;
+
+  function seg(start,end,color){
+    const s = start/cl*C, len = (end-start)/cl*C;
+    const rot = (start/cl)*360 - 90;
+    return `<circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="${color}" stroke-width="${SW}"
+      stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-s}" stroke-linecap="butt"
+      transform="rotate(${rot} ${CX} ${CY})" opacity="0.85"/>`;
+  }
+
+  // Day marker
+  const angle = ((dayOfCycle||1)-1)/cl*360 - 90;
+  const rad = angle*Math.PI/180;
+  const mx = CX+(R)*Math.cos(rad), my = CY+(R)*Math.sin(rad);
+
+  const phase = getPhase();
+  const pi = phase ? PHASE_INFO[phase.name] : PHASE_INFO.Follicular;
+  const phaseName = phase ? phase.name : '';
+  const dayText   = phase ? `Day ${phase.dayIn} of ${phase.of}` : '';
+
+  return `<svg width="180" height="180" viewBox="0 0 160 160">
+    <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="var(--tgbg)" stroke-width="${SW}"/>
+    ${seg(0, pl, '#FF4757')}
+    ${seg(pl, ovDay-2, '#FF6B9D')}
+    ${seg(ovDay-2, ovDay+2, '#A855F7')}
+    ${seg(ovDay+2, cl, '#3B82F6')}
+    <circle cx="${mx}" cy="${my}" r="8" fill="${pi.color}" stroke="var(--sbg)" stroke-width="2.5"/>
+    <text x="${CX}" y="${CY-7}" text-anchor="middle" dominant-baseline="middle"
+      font-family="Nunito,Arial,sans-serif" font-size="11.5" font-weight="900"
+      fill="${pi.color}">${phaseName}</text>
+    <text x="${CX}" y="${CY+11}" text-anchor="middle"
+      font-family="Nunito,Arial,sans-serif" font-size="9.5" font-weight="700"
+      fill="#999">${dayText}</text>
+  </svg>`;
+}
+
+// ── Main render ─────────────────────────────────────────────────────────────
+function renderCycleSheet(){
+  const body = document.getElementById('cycleBody');
+  if(!body) return;
+  const d = cycleDefaults();
+  cycleData = {...d, ...cycleData};
+
+  const day     = getDayOfCycle();
+  const phase   = getPhase();
+  const pi      = phase ? PHASE_INFO[phase.name] : null;
+  const dNext   = getDaysUntilNextPeriod();
+  const dOvul   = getDaysUntilOvulation();
+  const cl      = d.cycleLength, pl = d.periodLength;
+  const notSet  = !cycleData.lastPeriodStart;
+
+  // Last 3 log entries
+  const logs = (cycleData.logs||[]).slice(-5).reverse();
+  const logColors = {period_start:'#FF4757',period_end:'#3B82F6',ovulation:'#A855F7'};
+  const logLabels = {period_start:'Period started',period_end:'Period ended',ovulation:'Ovulation logged'};
+
+  body.innerHTML = `
+  <!-- Phase ring -->
+  <div class="phase-ring-wrap">
+    ${notSet
+      ? `<div style="width:180px;height:180px;border-radius:50%;background:var(--tgbg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:40px;">🌸<span style="font-size:12px;font-weight:700;color:var(--dsub);">Log period to begin</span></div>`
+      : buildPhaseRing(day)
+    }
+  </div>
+
+  <!-- Stats grid -->
+  <div class="cyc-grid">
+    <div class="cyc-card ${pi?.cls||'neutral'}">
+      <div class="cyc-card-icon">🩸</div>
+      <div class="cyc-card-val">${notSet?'–':day<=pl?`Day ${day}`:day>(cl-3)?'Soon':'Done'}</div>
+      <div class="cyc-card-sub">${day&&day<=pl?`of ${pl} days · Period`:`Period · Day ${day||'?'} of cycle`}</div>
+    </div>
+    <div class="cyc-card ${dOvul===null&&!notSet?'ovulation':'neutral'}">
+      <div class="cyc-card-icon">✨</div>
+      <div class="cyc-card-val">${notSet?'–':dOvul===null?'Active':'In '+dOvul}</div>
+      <div class="cyc-card-sub">${notSet?'Ovulation window':dOvul===0?'Ovulating today':dOvul===null?'Fertile window':'days to ovulation'}</div>
+    </div>
+    <div class="cyc-card neutral">
+      <div class="cyc-card-icon">📅</div>
+      <div class="cyc-card-val">${notSet?'–':dNext===0?'Today':`${dNext}d`}</div>
+      <div class="cyc-card-sub">Days until next period</div>
+    </div>
+    <div class="cyc-card neutral">
+      <div class="cyc-card-icon">🔄</div>
+      <div class="cyc-card-val">${notSet?'–':`Day ${day||'?'}`}</div>
+      <div class="cyc-card-sub">of ${cl}-day cycle</div>
+    </div>
+  </div>
+
+  <!-- Log buttons -->
+  <div class="cyc-log-row">
+    <button class="cyc-log-btn period" onclick="cyLogPeriodStart()">🩸 Period Start</button>
+    <button class="cyc-log-btn end"    onclick="cyLogPeriodEnd()">✅ Period End</button>
+    <button class="cyc-log-btn ovul"   onclick="cyLogOvulation()">✨ Ovulation</button>
+  </div>
+
+  <!-- Recent logs -->
+  ${logs.length?`
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect">Recent Logs</div>
+    ${logs.map(l=>`
+      <div class="cyc-log-entry">
+        <div class="cyc-log-dot" style="background:${logColors[l.type]||'#aaa'}"></div>
+        <div class="cyc-log-txt">${logLabels[l.type]||l.type}</div>
+        <div class="cyc-log-date">${new Date(l.date).toLocaleDateString('en-NP',{month:'short',day:'numeric'})}</div>
+      </div>`).join('')}
+  </div>`:''}
+
+  <!-- Cycle Settings -->
+  <div class="ssec">
+    <div class="ssect">⚙️ Cycle Settings</div>
+    <div class="cyc-set-row">
+      <div><div class="slbl">Cycle Length</div><div class="ssub">Average days between periods</div></div>
+      <input class="cyc-num-input" type="number" min="21" max="45" value="${cl}"
+        onchange="cycleData.cycleLength=+this.value;saveCycle();renderCycleSheet();">
+    </div>
+    <div class="cyc-set-row">
+      <div><div class="slbl">Period Length</div><div class="ssub">Average days of bleeding</div></div>
+      <input class="cyc-num-input" type="number" min="2" max="10" value="${pl}"
+        onchange="cycleData.periodLength=+this.value;saveCycle();renderCycleSheet();">
+    </div>
+    <div class="cyc-set-row" style="border-bottom:none;">
+      <div class="slbl" style="color:#f44336;cursor:pointer;" onclick="cyReset()">🗑️ Clear all cycle data</div>
+    </div>
+  </div>
+
+  <!-- Pair with Partner -->
+  <div class="ssec" style="padding-bottom:32px;">
+    <div class="ssect">💞 Pair with Partner</div>
+    <div class="partner-card">
+      <div class="partner-status">
+        <div class="partner-dot ${cycleData.pairCode?'paired':''}"></div>
+        <div class="partner-status-txt">${cycleData.pairCode?'Ready to share':'Share your cycle with a partner'}</div>
+      </div>
+      ${cycleData.pairCode?`<div class="partner-code">${cycleData.pairCode}</div>`:''}
+      <div class="partner-btn-row">
+        <button class="partner-btn share" onclick="cySharePartner()">
+          🔗 Share Cycle Update
+        </button>
+        <button class="partner-btn enter" onclick="cyEnterPartnerCode()">
+          👁️ View Partner
+        </button>
+      </div>
+      <div class="partner-priv">
+        <div class="ssect" style="margin-bottom:6px;">Privacy Controls</div>
+        ${[
+          ['phase',    'Share current phase'],
+          ['fertility','Share fertility window'],
+          ['periodDay','Share period day count'],
+        ].map(([k,lbl])=>`
+          <div class="partner-priv-row">
+            <span>${lbl}</span>
+            <button class="tgl ${(cycleData.privacy||{})[k]!==false?'on':''}"
+              onclick="cyPrivToggle('${k}',this)"></button>
+          </div>`).join('')}
+      </div>
+    </div>
+    <div style="font-size:10.5px;color:var(--dsub);margin-top:10px;line-height:1.6;text-align:center;">
+      🔒 All data stays on your device. Partner link is a privacy-respecting snapshot — no account needed.
+    </div>
+  </div>`;
+}
+
+// ── Log actions ─────────────────────────────────────────────────────────────
+function cyLogPeriodStart(){
+  const today = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+  cycleData.lastPeriodStart = today;
+  cycleData.logs = [...(cycleData.logs||[]), {type:'period_start',date:today}];
+  saveCycle(); renderCycleSheet();
+}
+function cyLogPeriodEnd(){
+  const today = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+  cycleData.logs = [...(cycleData.logs||[]), {type:'period_end',date:today}];
+  saveCycle(); renderCycleSheet();
+}
+function cyLogOvulation(){
+  const today = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+  cycleData.logs = [...(cycleData.logs||[]), {type:'ovulation',date:today}];
+  saveCycle(); renderCycleSheet();
+}
+function cyReset(){
+  if(!confirm('Clear all cycle data? This cannot be undone.')) return;
+  cycleData = {};
+  localStorage.removeItem('vikram_cycle');
+  renderCycleSheet();
+}
+
+// ── Partner sharing (snapshot link) ─────────────────────────────────────────
+function cyGenPairCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c='';for(let i=0;i<8;i++){if(i===4)c+='-';c+=chars[Math.floor(Math.random()*chars.length)];}
+  return c;
+}
+
+function cySharePartner(){
+  if(!cycleData.lastPeriodStart){
+    alert('Log your period start date first before sharing.');
+    return;
+  }
+  if(!cycleData.pairCode){
+    cycleData.pairCode = cyGenPairCode();
+    saveCycle();
+  }
+
+  const priv = cycleData.privacy||{};
+  const phase = getPhase();
+  const pi = phase ? PHASE_INFO[phase.name] : null;
+  const dNext = getDaysUntilNextPeriod();
+  const dOvul = getDaysUntilOvulation();
+  const cl = cycleData.cycleLength||28;
+  const pl = cycleData.periodLength||5;
+
+  const snapshot = {
+    code: cycleData.pairCode,
+    ts: Date.now(),
+    cl, pl,
+    ...(priv.phase    !==false && phase   ? {phase: phase.name, phaseDay: phase.dayIn, phaseOf: phase.of} : {}),
+    ...(priv.periodDay!==false && dNext   ? {dNext} : {}),
+    ...(priv.fertility!==false && dOvul!==null ? {dOvul} : {}),
+  };
+
+  const b64 = btoa(JSON.stringify(snapshot));
+  const url = `${location.href.split('#')[0]}#partner=${b64}`;
+
+  if(navigator.share){
+    navigator.share({
+      title:`${cycleData.pairCode} — Cycle Update`,
+      text:`Your partner shared a cycle update via Vikram 🇳🇵. Code: ${cycleData.pairCode}`,
+      url
+    }).catch(()=>copyToClipboard(url));
+  } else {
+    copyToClipboard(url);
+  }
+  renderCycleSheet();
+}
+
+function copyToClipboard(text){
+  navigator.clipboard?.writeText(text)
+    .then(()=>alert('✅ Partner link copied to clipboard!\n\nSend it to your partner. They tap it to view your cycle update.'))
+    .catch(()=>prompt('Copy this link and send to your partner:',text));
+}
+
+function cyEnterPartnerCode(){
+  const input = prompt('Paste the partner link or code:','');
+  if(!input) return;
+  try{
+    let b64 = input;
+    if(input.includes('#partner=')){
+      b64 = input.split('#partner=')[1];
+    }
+    const data = JSON.parse(atob(b64));
+    showPartnerView(data);
+  } catch(e){
+    alert('Invalid partner link. Ask your partner to share a fresh link.');
+  }
+}
+
+function cyPrivToggle(key, btn){
+  cycleData.privacy = cycleData.privacy||{};
+  cycleData.privacy[key] = !(cycleData.privacy[key]!==false);
+  btn.classList.toggle('on', cycleData.privacy[key]!==false);
+  saveCycle();
+}
+
+// ── Partner view ─────────────────────────────────────────────────────────────
+function showPartnerView(data){
+  const modal = document.getElementById('pvModal');
+  const body  = document.getElementById('pvBody');
+  const pi = data.phase ? PHASE_INFO[data.phase] : null;
+  const ago = data.ts ? Math.floor((Date.now()-data.ts)/60000) : null;
+  const agoStr = ago===null?'':(ago<2?'just now':ago<60?`${ago}m ago`:ago<1440?`${Math.floor(ago/60)}h ago`:`${Math.floor(ago/1440)}d ago`);
+
+  body.innerHTML = `
+    <div class="pv-phase-big">
+      <div class="pv-phase-emoji">${pi?pi.emoji:'🌸'}</div>
+      <div class="pv-phase-name" style="color:${pi?pi.color:'var(--tgon)'};">
+        ${data.phase||'—'} Phase
+      </div>
+      ${data.phaseDay?`<div style="font-size:13px;color:var(--dsub);font-weight:700;margin-top:4px;">Day ${data.phaseDay} of ${data.phaseOf}</div>`:''}
+    </div>
+    <div class="cyc-grid" style="padding:0 0 14px;">
+      ${data.dNext!==undefined?`
+      <div class="cyc-card neutral">
+        <div class="cyc-card-icon">📅</div>
+        <div class="cyc-card-val">${data.dNext}d</div>
+        <div class="cyc-card-sub">Until next period</div>
+      </div>`:''}
+      ${data.dOvul!==undefined?`
+      <div class="cyc-card ovulation">
+        <div class="cyc-card-icon">✨</div>
+        <div class="cyc-card-val">${data.dOvul===0?'Today':`In ${data.dOvul}d`}</div>
+        <div class="cyc-card-sub">Ovulation window</div>
+      </div>`:''}
+    </div>
+    <div class="pv-note">
+      ${data.code?`Partner code: <b>${data.code}</b> · `:''}Updated ${agoStr}<br>
+      Ask your partner to reshare for the latest update.
+    </div>`;
+
+  modal.classList.add('open');
+}
+
+function closePV(){
+  document.getElementById('pvModal').classList.remove('open');
+}
+
+// Check URL for partner snapshot on load
+function checkPartnerURL(){
+  if(!location.hash.startsWith('#partner=')) return;
+  try{
+    const b64 = location.hash.slice(9);
+    const data = JSON.parse(atob(b64));
+    setTimeout(()=>showPartnerView(data), 800);
+  }catch(e){}
+  history.replaceState(null,'',location.pathname);
+}
+
 // ══ INIT ══
 // Restore persisted theme
 const savedTheme=localStorage.getItem('vikram_theme');
@@ -1238,6 +1995,7 @@ renderPrevious();
 // Notification card state + event-day reminders (after short delay)
 updateNotifCard();
 setTimeout(checkEventReminders, 2500);
+checkPartnerURL();
 
 // ══ PWA — INSTALL BANNER ══
 (function(){
