@@ -363,6 +363,22 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
 .ib-later:hover{background:#e8e8f5;}
 .ib-dismiss{position:absolute;top:14px;right:16px;width:28px;height:28px;border:none;background:#f0f0f8;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:#888;}
 [data-theme=dark] .ib-dismiss{background:#2a2a48;color:#6b6d8a;}
+
+/* ── HOME SCREEN WIDGET ── */
+.widget-card{background:var(--tgbg);border-radius:16px;padding:16px;margin-top:6px;}
+.widget-preview-row{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;}
+.widget-thumb{border-radius:14px;overflow:hidden;box-shadow:0 4px 18px rgba(0,0,0,.18);flex-shrink:0;display:block;}
+.widget-info-title{font-size:13px;font-weight:800;color:var(--dtext);margin-bottom:4px;}
+.widget-info-sub{font-size:11.5px;color:var(--dsub);font-weight:600;line-height:1.55;}
+.widget-dl-btn{width:100%;padding:11px;border-radius:12px;background:linear-gradient(135deg,#7B6EF6,#5340E8);border:none;color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:opacity .2s;margin-bottom:12px;}
+.widget-dl-btn:hover{opacity:.88;}
+.widget-os-tabs{display:flex;gap:6px;margin-bottom:10px;}
+.widget-os-tab{flex:1;padding:6px 0;border-radius:9px;border:none;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;background:var(--sbg);color:var(--dsub);transition:all .2s;}
+.widget-os-tab.on{background:var(--tgon);color:#fff;}
+.widget-steps{background:var(--sbg);border-radius:12px;padding:12px 14px;}
+.widget-step{display:flex;align-items:flex-start;gap:9px;padding:5px 0;font-size:11.5px;font-weight:600;color:var(--dsub);line-height:1.55;border-bottom:1px solid var(--border);}
+.widget-step:last-child{border-bottom:none;padding-bottom:0;}
+.ws-num{width:19px;height:19px;border-radius:50%;background:var(--tgon);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
 </style>
 </head>
 <body>
@@ -513,6 +529,27 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
       <div class="ssect">🗓️ Google Calendar Sync</div>
       <div class="gcal-wrap" id="gcalWrap">
         <!-- Rendered by renderGcalCard() -->
+      </div>
+    </div>
+    <div class="ssec">
+      <div class="ssect">📱 Home Screen Widget</div>
+      <div class="widget-card">
+        <div class="widget-preview-row">
+          <canvas class="widget-thumb" id="widgetThumb" width="120" height="134" style="width:120px;height:134px;"></canvas>
+          <div>
+            <div class="widget-info-title">Monthly Calendar Widget</div>
+            <div class="widget-info-sub">Download a high-res calendar image. Add it as a <b>Photo Widget</b> on your home screen — no app install needed.</div>
+          </div>
+        </div>
+        <button class="widget-dl-btn" onclick="downloadWidget()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Download Widget Image
+        </button>
+        <div class="widget-os-tabs">
+          <button class="widget-os-tab on" id="wTabiOS"  onclick="switchWidgetTab('ios')"> iOS (iPhone)</button>
+          <button class="widget-os-tab"    id="wTabDroid" onclick="switchWidgetTab('android')">🤖 Android</button>
+        </div>
+        <div class="widget-steps" id="widgetSteps"></div>
       </div>
     </div>
     <div class="ssec">
@@ -1021,7 +1058,7 @@ function openSheet(t){
   document.getElementById('ov').classList.add('open');
   const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',cycle:'cycleSheet'};
   document.getElementById(ids[t])?.classList.add('open');
-  if(t==='settings') renderGcalCard();
+  if(t==='settings'){ renderGcalCard(); renderWidgetThumb(); renderWidgetSteps(); }
   if(t==='cycle') renderCycleSheet();
   if(t==='add'){
     // Default date = today BS
@@ -1974,6 +2011,202 @@ function checkPartnerURL(){
     setTimeout(()=>showPartnerView(data), 800);
   }catch(e){}
   history.replaceState(null,'',location.pathname);
+}
+
+// ══ HOME SCREEN WIDGET ══════════════════════════════════════════════════════
+let widgetTab='ios';
+
+function switchWidgetTab(t){
+  widgetTab=t;
+  document.getElementById('wTabiOS').classList.toggle('on',t==='ios');
+  document.getElementById('wTabDroid').classList.toggle('on',t==='android');
+  renderWidgetSteps();
+}
+
+const IOS_STEPS=[
+  'Tap <b>Download Widget Image</b> — save it to your Photos.',
+  'On your home screen, long-press any empty space and tap <b>+ Add Widget</b>.',
+  'Search for <b>Photos</b>, choose the square widget size, tap <b>Add Widget</b>.',
+  'Long-press the new widget → <b>Edit Widget</b> → select the Vikram calendar image.',
+  'Tap anywhere to save. Your calendar widget is live! 🎉',
+];
+const AND_STEPS=[
+  'Tap <b>Download Widget Image</b> — the image saves to your gallery.',
+  'Long-press your home screen and tap <b>Widgets</b>.',
+  'Search for <b>Photo Widget</b> (built-in on most launchers) or install <b>KWGT</b> from Play Store.',
+  'Add the widget, tap it to edit, and select the Vikram calendar image from gallery.',
+  'Resize the widget to fill the desired space. Done! 🎉',
+];
+
+function renderWidgetSteps(){
+  const el=document.getElementById('widgetSteps');
+  if(!el) return;
+  const steps=widgetTab==='ios'?IOS_STEPS:AND_STEPS;
+  el.innerHTML=steps.map((s,i)=>`
+    <div class="widget-step">
+      <div class="ws-num">${i+1}</div>
+      <div>${s}</div>
+    </div>`).join('');
+}
+
+// ── Canvas rendering ────────────────────────────────────────────────────────
+function _roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+function _renderCalendarToCanvas(canvas, PX){
+  const LW=360, LH=400;           // logical pixels
+  canvas.width  = LW*PX;
+  canvas.height = LH*PX;
+  const ctx=canvas.getContext('2d');
+  ctx.scale(PX,PX);
+
+  const isDark=dark;
+  const BG    =isDark?'#1a1a2e':'#ECEEF8';
+  const CARD  =isDark?'#1e1e38':'#ffffff';
+  const TEXT  =isDark?'#d0d2ee':'#2d2d44';
+  const SUB   =isDark?'#4a4c6a':'#adb0be';
+  const DIM   =isDark?'#3a3c58':'#c8c9d4';
+  const WKND  =isDark?'#ff7070':'#e03e3e';
+  const HOLC  =isDark?'#ff7070':'#e03e3e';
+  const EVTC  ='#FF6B9D';
+
+  // Outer background
+  ctx.fillStyle=BG;
+  ctx.fillRect(0,0,LW,LH);
+
+  // White card
+  ctx.fillStyle=CARD;
+  _roundRect(ctx,10,10,LW-20,LH-20,20);
+  ctx.fill();
+
+  // Header gradient
+  const hGrad=ctx.createLinearGradient(10,10,LW-10,66);
+  hGrad.addColorStop(0,'#7B6EF6');hGrad.addColorStop(1,'#5340E8');
+  ctx.fillStyle=hGrad;
+  _roundRect(ctx,10,10,LW-20,56,18);
+  ctx.fill();
+  // Round bottom corners of header separately (flat bottom)
+  ctx.fillRect(10,40,LW-20,26);
+
+  // Month + year in header
+  const mName=lang==='ne'?MNE[vM-1]:MEN[vM-1];
+  ctx.fillStyle='#fff';
+  ctx.font=`900 17px Nunito,Arial,sans-serif`;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText(`${mName}  ${vY}`,LW/2,38);
+
+  // Day-of-week headers
+  const dayLabels=lang==='ne'?DNE.map(d=>d.slice(0,2)):DEN.map(d=>d[0]);
+  const colW=(LW-24)/7;
+  const startX=12;
+  ctx.font=`700 10px Arial,sans-serif`;
+  ctx.fillStyle=SUB;
+  dayLabels.forEach((d,i)=>{
+    const isWkEnd=i===0||i===6;
+    ctx.fillStyle=isWkEnd?WKND:SUB;
+    ctx.fillText(d,startX+colW*i+colW/2,82);
+  });
+
+  // Grid
+  const sAD=bsStart(vY,vM);
+  const sDow=(sAD.getDay()-cfg.fd+7)%7;
+  const dims=BS[vY]?.[vM-1]??30;
+  const pM=vM===1?12:vM-1,pY=vM===1?vY-1:vY;
+  const pDims=BS[pY]?.[pM-1]??30;
+  const nM=vM===12?1:vM+1,nY=vM===12?vY+1:vY;
+  let tot=sDow+dims; if(tot%7!==0)tot+=7-tot%7;
+
+  const rowH=(LH-100)/Math.min(6,Math.ceil(tot/7));
+  const gridTop=94;
+  const ROWS=Math.min(6,Math.ceil(tot/7));
+
+  for(let i=0;i<Math.min(tot,ROWS*7);i++){
+    const col=(cfg.fd+(i%7))%7;
+    const row=Math.floor(i/7);
+    const wk=col===0||col===6;
+    const cx=startX+((i%7)+0.5)*colW;
+    const cy=gridTop+row*rowH+rowH/2;
+
+    if(i<sDow){
+      const nd=pDims-sDow+i+1;
+      ctx.fillStyle=DIM;
+      ctx.font=`600 13px Arial,sans-serif`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(ns(nd),cx,cy-3);
+    } else if(i>=sDow+dims){
+      const nd=i-sDow-dims+1;
+      ctx.fillStyle=DIM;
+      ctx.font=`600 13px Arial,sans-serif`;
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(ns(nd),cx,cy-3);
+    } else {
+      const nd=i-sDow+1;
+      const adD=new Date(sAD);adD.setDate(adD.getDate()+nd-1);
+      const isT=vY===TODAYBS.y&&vM===TODAYBS.m&&nd===TODAYBS.d;
+      const isH=cfg.hol&&!!HOL[`${vY}-${vM}-${nd}`];
+      const isEvt=userEvents.some(ev=>ev.bsY===vY&&ev.bsM===vM&&ev.bsD===nd);
+
+      if(isT){
+        // Purple pill for today
+        ctx.fillStyle='#5340E8';
+        _roundRect(ctx,cx-colW*0.36,cy-rowH*0.38,colW*0.72,rowH*0.76,10);
+        ctx.fill();
+        ctx.fillStyle='#fff';
+        ctx.font=`900 14px Arial,sans-serif`;
+      } else {
+        ctx.fillStyle=isH?HOLC:isEvt?EVTC:wk?WKND:TEXT;
+        ctx.font=`700 13px Arial,sans-serif`;
+      }
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(ns(nd),cx,cy-3);
+
+      // Sub (AD date)
+      if(cfg.greg&&!isT){
+        ctx.fillStyle=SUB;
+        ctx.font=`500 8px Arial,sans-serif`;
+        ctx.fillText(adD.getDate(),cx,cy+8);
+      }
+
+      // Dots
+      if(!isT){
+        const dotY=cy+rowH*0.35;
+        if(isH){ctx.fillStyle=HOLC;ctx.beginPath();ctx.arc(isEvt?cx-3:cx,dotY,2,0,Math.PI*2);ctx.fill();}
+        if(isEvt){ctx.fillStyle=EVTC;ctx.beginPath();ctx.arc(isH?cx+3:cx,dotY,2,0,Math.PI*2);ctx.fill();}
+      }
+    }
+  }
+
+  // Footer
+  ctx.fillStyle=SUB;
+  ctx.font=`600 9px Arial,sans-serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('Vikram · Nepali Calendar',LW/2,LH-14);
+}
+
+function renderWidgetThumb(){
+  const c=document.getElementById('widgetThumb');
+  if(!c) return;
+  _renderCalendarToCanvas(c,1);
+}
+
+function downloadWidget(){
+  const c=document.createElement('canvas');
+  _renderCalendarToCanvas(c,3);  // 3× = ~1080px, crisp on all phones
+  const a=document.createElement('a');
+  a.href=c.toDataURL('image/png');
+  a.download=`vikram-widget-${MEN[vM-1]}-${vY}.png`;
+  a.click();
 }
 
 // ══ INIT ══
