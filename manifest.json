@@ -2,6 +2,7 @@
   "name": "Vikram — Nepali Calendar",
   "short_name": "Vikram",
   "description": "Beautiful Nepali Patro · BS 2083 · Public holidays, events, tithi and more.",
+  "version": "2.0.0",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

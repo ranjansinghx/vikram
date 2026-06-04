@@ -1,7 +1,7 @@
 // Vikram Calendar — Service Worker
 // Cache-first strategy: serve from cache instantly, update in background.
 
-const CACHE = 'vikram-v1';
+const CACHE = 'vikram-v2';
 const ASSETS = [
   './',
   './index.html',

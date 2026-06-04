@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light" data-lang="en">
+<html lang="en" data-theme="dark" data-lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Vikram</title>
-<meta name="theme-color" content="#5B4FCF">
+<meta name="theme-color" content="#11111b">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -24,6 +24,48 @@
   --fab:#5B4FCF;--icon:#555770;--sbg:#fff;--sbdr:#eee;
   --tgbg:#e8e9f3;--tgon:#5B4FCF;--mbg:#fff;--ov:rgba(20,20,50,.65);
   --chip:#e8e9f3;--chipt:#888;
+  --app-bg:linear-gradient(180deg,#f5f3ff 0%,#eceef8 42%,#dde0f0 100%);
+  --hdr-grad:linear-gradient(135deg,rgba(117,67,214,.12),rgba(52,34,92,.08));
+  --hdr-icon:rgba(91,79,207,.08);
+  --hdr-icon-text:#4a3fb1;
+  --title-text:#1a1a2e;
+  --title-sub:#6d6f83;
+  --mode-text:#5d6080;
+  --mode-bg:rgba(255,255,255,.8);
+  --mode-on:linear-gradient(135deg,#8b5cf6,#7c3aed 65%,#6d28d9);
+  --nav-btn:rgba(255,255,255,.85);
+  --nav-text:#5a5d7d;
+  --nav-muted:#8b90aa;
+  --cell-bg:rgba(255,255,255,.9);
+  --cell-hover:#ffffff;
+  --cell-text:#1f2031;
+  --cell-muted:#7d8195;
+  --today-grad:linear-gradient(180deg,rgba(167,99,255,.95),rgba(109,44,232,.95));
+  --today-text:#fff;
+  --today-muted:rgba(255,255,255,.75);
+  --dot-hol:#ef8f95;
+  --dot-evt:#7ab7ff;
+  --panel-bg:linear-gradient(180deg,rgba(255,255,255,.95),rgba(247,247,252,.95));
+  --panel-border:rgba(0,0,0,.04);
+  --panel-shadow:0 10px 32px rgba(70,56,125,.08);
+  --panel-text:#1f2031;
+  --panel-muted:#64687e;
+  --chip-bg:#f0f2ff;
+  --chip-text:#5340E8;
+  --chip-hol-bg:#fff0f0;
+  --chip-hol-text:#d63031;
+  --chip-evt-bg:#eef4ff;
+  --chip-evt-text:#3b82f6;
+  --sel-bg:linear-gradient(180deg,rgba(255,255,255,.98),rgba(247,247,252,.98));
+  --sel-border:rgba(0,0,0,.05);
+  --sel-text:#1f2031;
+  --sel-muted:#6b6f85;
+  --sel-action:#7c3aed;
+  --sel-action-text:#fff;
+  --sheet-bg:#fff;
+  --sheet-border:#eee;
+  --sheet-text:#1f2031;
+  --sheet-muted:#767a8f;
 }
 [data-theme="dark"]{
   --bg:#141428;--card:#1e1e38;--htext:#e8e8ff;--hsub:#6b6d8a;
@@ -33,62 +75,134 @@
   --fab:#7B6EF6;--icon:#9898c0;--sbg:#1e1e38;--sbdr:#2a2a48;
   --tgbg:#2a2a48;--tgon:#7B6EF6;--mbg:#1e1e38;--ov:rgba(0,0,0,.8);
   --chip:#2a2a48;--chipt:#9898c0;
+  --app-bg:radial-gradient(circle at top center,rgba(123,110,246,.18),transparent 30%),radial-gradient(circle at 50% 18%,rgba(131,58,180,.16),transparent 22%),linear-gradient(180deg,#0b0b11 0%,#11111b 42%,#0a0a0f 100%);
+  --hdr-grad:linear-gradient(135deg,rgba(117,67,214,.28),rgba(52,34,92,.36));
+  --hdr-icon:rgba(255,255,255,.06);
+  --hdr-icon-text:#d8d2ff;
+  --title-text:#ece8ff;
+  --title-sub:#a7a0bf;
+  --mode-text:#cfc9e9;
+  --mode-bg:rgba(255,255,255,.06);
+  --mode-on:linear-gradient(135deg,#8b5cf6,#7c3aed 65%,#6d28d9);
+  --nav-btn:rgba(255,255,255,.06);
+  --nav-text:#ece8ff;
+  --nav-muted:#a7a0bf;
+  --cell-bg:rgba(255,255,255,.02);
+  --cell-hover:rgba(255,255,255,.05);
+  --cell-text:#ece8ff;
+  --cell-muted:#8e8aa3;
+  --today-grad:linear-gradient(180deg,rgba(167,99,255,.95),rgba(109,44,232,.95));
+  --today-text:#fff;
+  --today-muted:rgba(255,255,255,.75);
+  --dot-hol:#ef8f95;
+  --dot-evt:#7ab7ff;
+  --panel-bg:linear-gradient(180deg,rgba(31,28,42,.96),rgba(18,17,26,.96));
+  --panel-border:rgba(255,255,255,.05);
+  --panel-shadow:0 10px 32px rgba(0,0,0,.32);
+  --panel-text:#efeaff;
+  --panel-muted:#9e97b7;
+  --chip-bg:#30161a;
+  --chip-text:#ff9090;
+  --chip-hol-bg:#30161a;
+  --chip-hol-text:#ff9090;
+  --chip-evt-bg:#1a2332;
+  --chip-evt-text:#7ab7ff;
+  --sel-bg:linear-gradient(180deg,rgba(29,25,42,.98),rgba(18,17,27,.98));
+  --sel-border:rgba(255,255,255,.05);
+  --sel-text:#efeaff;
+  --sel-muted:#a39bbc;
+  --sel-action:#8b5cf6;
+  --sel-action-text:#fff;
+  --sheet-bg:linear-gradient(180deg,rgba(24,20,35,.98),rgba(15,14,22,.98));
+  --sheet-border:rgba(255,255,255,.06);
+  --sheet-text:#ece8ff;
+  --sheet-muted:#8f89a7;
 }
-html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-content:center;align-items:flex-start;padding:16px 0 80px;transition:background .3s;}
-.phone{width:390px;max-width:100vw;font-family:'Nunito',sans-serif;}
+html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;justify-content:center;align-items:flex-start;padding:10px 0 72px;transition:background .3s;}
+.phone{
+  width:390px;max-width:100vw;font-family:'Nunito',sans-serif;padding:0 0 18px;
+  transition:transform .22s cubic-bezier(.22,.85,.25,1),opacity .22s cubic-bezier(.22,.85,.25,1),filter .22s cubic-bezier(.22,.85,.25,1);
+  will-change:transform,opacity,filter;
+}
+.phone.cycle-dim{
+  transform:scale(.982) translateY(4px);
+  opacity:.7;
+  filter:blur(.9px) saturate(.88);
+  pointer-events:none;
+}
 [data-lang="ne"] .ne{font-family:'Noto Sans Devanagari',sans-serif;}
 
 /* ── HEADER ── */
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 14px;}
-.htitle{font-size:26px;font-weight:900;color:var(--htext);letter-spacing:-.5px;}
-.htitle .ysub{color:var(--hsub);font-weight:600;}
-.hicons{display:flex;gap:2px;}
-.ibtn{width:40px;height:40px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .2s;}
-.ibtn:hover{background:rgba(91,79,207,.1);}
-.ibtn svg{width:21px;height:21px;stroke:var(--icon);stroke-width:1.7;fill:none;transition:stroke .2s;}
-.ibtn.active svg{stroke:#7B6EF6;}
+.hdr{display:flex;align-items:center;gap:10px;padding:14px 14px 10px;}
+.hdrbar{flex:1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 14px;border-radius:26px;background:var(--hdr-grad);box-shadow:0 10px 30px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.05);backdrop-filter:blur(14px);}
+.nav-back,.gear-btn{width:36px;height:36px;border:none;border-radius:50%;background:var(--hdr-icon);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:transform .2s,background .2s;}
+.nav-back:hover,.gear-btn:hover{background:rgba(255,255,255,.1);transform:translateY(-1px);}
+.nav-back svg,.gear-btn svg{width:19px;height:19px;stroke:var(--hdr-icon-text);stroke-width:2;fill:none;}
+.head-title{flex:1;font-size:22px;font-weight:900;letter-spacing:-.4px;color:var(--title-text);line-height:1.1;}
+.today-pill{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border:none;border-radius:18px;background:var(--mode-bg);color:var(--title-text);font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap;transition:background .2s,transform .2s;}
+.today-pill:hover{background:rgba(255,255,255,.13);transform:translateY(-1px);}
+.today-pill svg{width:15px;height:15px;stroke:currentColor;stroke-width:2.3;fill:none;}
+.modebar{display:flex;gap:5px;padding:3px 14px 5px;}
+.mode-pill{
+  height:28px;padding:0 9px;border-radius:13px;border:1px solid rgba(255,255,255,.06);
+  background:rgba(255,255,255,.045);color:var(--mode-text);font-size:10.5px;font-weight:800;
+  cursor:pointer;display:inline-flex;align-items:center;gap:5px;
+  box-shadow:0 5px 11px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.04);
+  transition:transform .2s,background .2s,box-shadow .2s,border-color .2s,color .2s;
+}
+.mode-pill:hover{transform:translateY(-1px);background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.09);}
+.mode-pill.on{
+  background:linear-gradient(135deg,#a855f7 0%,#8b5cf6 55%,#6d28d9 100%);
+  color:#fff;border-color:rgba(255,255,255,.1);
+  box-shadow:0 0 0 1px rgba(255,255,255,.06),0 7px 15px rgba(124,58,237,.32),0 0 12px rgba(168,85,247,.14);
+}
+.mode-pill svg{width:11px;height:11px;stroke:currentColor;stroke-width:2.2;fill:none;flex-shrink:0;}
+.mode-pill.on svg{filter:drop-shadow(0 0 4px rgba(255,255,255,.18));}
+#cycleBtn{
+  background:rgba(255,255,255,.035);
+  border-color:rgba(255,255,255,.045);
+  color:var(--mode-text);
+}
+#cycleBtn:hover{background:rgba(255,255,255,.06);}
+#cycleBtn svg{opacity:.88;}
 
 /* ── CALENDAR CARD ── */
-.ccard{margin:0 14px;background:var(--card);border-radius:24px;padding:14px 6px 18px;box-shadow:0 4px 28px rgba(80,70,170,.09);transition:background .3s,box-shadow .3s;}
-.nav{display:flex;align-items:center;justify-content:space-between;padding:0 14px 10px;}
-.nbtn{width:32px;height:32px;border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .2s;}
-.nbtn:hover{background:rgba(91,79,207,.1);}
-.nbtn svg{width:17px;height:17px;stroke:var(--icon);stroke-width:2.2;fill:none;}
-.nlbl{font-size:12.5px;font-weight:700;color:var(--hsub);}
-.dhdrs{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:3px;}
-.dhdr{text-align:center;font-size:10px;font-weight:800;letter-spacing:.4px;padding:3px 0;color:var(--dsub);text-transform:uppercase;}
-.dhdr.wk{color:var(--wknd);}
-.cgrid{display:grid;grid-template-columns:repeat(7,1fr);}
+.ccard{margin:0 8px;background:transparent;border-radius:0;padding:10px 4px 8px;box-shadow:none;transition:background .3s,box-shadow .3s;}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:4px 6px 10px;gap:10px;}
+.nbtn{width:40px;height:40px;border:none;background:var(--nav-btn);cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:transform .2s,background .2s,box-shadow .2s;box-shadow:0 2px 12px rgba(0,0,0,.15);}
+.nbtn:hover{background:rgba(255,255,255,.1);transform:translateY(-1px);}
+.nbtn svg{width:18px;height:18px;stroke:var(--nav-text);stroke-width:2.4;fill:none;}
+.navtxt{flex:1;text-align:center;}
+.nlbl{font-size:24px;font-weight:900;color:var(--nav-text);letter-spacing:-.5px;line-height:1.05;}
+.nsub{font-size:14px;font-weight:700;color:var(--nav-muted);margin-top:4px;}
+.dhdrs{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:8px;padding:0 2px;}
+.dhdr{text-align:center;font-size:12px;font-weight:800;letter-spacing:.1px;padding:3px 0;color:var(--nav-muted);text-transform:uppercase;}
+.dhdr.wk{color:#e79aa5;}
+.cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px 8px;padding:0 2px;}
 
 /* ── CELLS ── */
-.cell{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 0;min-height:58px;cursor:pointer;border-radius:10px;position:relative;transition:background .15s;}
-.cell.active:hover{background:rgba(91,79,207,.06);}
-.ndate{font-size:18.5px;font-weight:700;color:var(--dtext);line-height:1.1;}
-.gdate{font-size:9.5px;font-weight:600;color:var(--dsub);margin-top:2px;}
-.cell-dots{display:flex;gap:3px;justify-content:center;align-items:center;margin-top:3px;min-height:6px;}
-.hdot{width:5px;height:5px;border-radius:50%;background:var(--hol);opacity:0;transition:opacity .2s;}
-.edot-p{width:5px;height:5px;border-radius:50%;background:#FF6B9D;opacity:0;transition:opacity .2s;}
-.edot-y{width:5px;height:5px;border-radius:50%;background:#FFD700;opacity:0;transition:opacity .2s;}
+.cell{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:9px 0 8px;min-height:66px;cursor:pointer;border-radius:18px;position:relative;transition:transform .15s,background .15s,box-shadow .15s;}
+.cell.active{background:var(--cell-bg);box-shadow:inset 0 0 0 1px rgba(255,255,255,.02);}
+.cell.active:hover{background:var(--cell-hover);transform:translateY(-1px);}
+.ndate{font-size:17px;font-weight:800;color:var(--cell-text);line-height:1.1;letter-spacing:.1px;}
+.gdate{font-size:11px;font-weight:700;color:var(--cell-muted);margin-top:2px;}
+.cell-dots{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;align-items:center;margin-top:4px;min-height:7px;max-width:50px;}
+.hdot{width:5px;height:5px;border-radius:50%;background:var(--dot-hol);opacity:0;transition:opacity .2s;}
+.evt-dot{width:5px;height:5px;border-radius:50%;background:var(--dot-evt);flex-shrink:0;box-shadow:0 0 10px rgba(122,183,255,.25);}
 .cell.hol .hdot{opacity:1;}
-.cell.hol .ndate{color:var(--hol);}
-.cell.has-evt:not(.today) .ndate{color:#e91e8c;}
-.cell.has-evt:not(.today){background:rgba(255,107,157,0.10);border-radius:10px;}
-.cell.has-evt:not(.today):hover{background:rgba(255,107,157,0.18) !important;}
-[data-theme=dark] .cell.has-evt:not(.today){background:rgba(255,107,157,0.15);}
-[data-theme=dark] .cell.has-evt:not(.today) .ndate{color:#ff80b5;}
-.cell.wk .ndate{color:var(--wknd);}
-.cell.dim{cursor:default;}
-.cell.dim .ndate{color:var(--dim);font-weight:600;}
-.cell.dim .gdate{color:var(--dimsub);}
-.cell.dim .hdot,.cell.dim .edot-p,.cell.dim .edot-y{opacity:0 !important;}
-.cell.dim:hover{background:transparent !important;}
-.cell.today{background:linear-gradient(165deg,var(--tf),var(--tt));border-radius:15px;box-shadow:0 6px 22px rgba(91,79,207,.42);}
-.cell.today .ndate{color:var(--tvt);font-size:20px;font-weight:900;}
-.cell.today .tlbl{font-size:7.5px;font-weight:800;color:var(--tvt);letter-spacing:.9px;opacity:.9;text-transform:uppercase;margin-top:1px;}
-.cell.today .gdate{color:var(--tvs);}
-.cell.today .hdot{background:rgba(255,255,255,.8);opacity:1;}
-.cell.today .edot-p{background:rgba(255,180,210,.95);}
-.cell.today .edot-y{background:rgba(255,230,80,.95);}
+.cell.hol .ndate{color:#f0a1ab;}
+.cell.wk .ndate{color:#d88d96;}
+.cell.dim{cursor:default;background:transparent;box-shadow:none;}
+.cell.dim .ndate{color:var(--cell-muted);font-weight:700;}
+.cell.dim .gdate{color:var(--cell-muted);}
+.cell.dim .hdot{opacity:0 !important;}
+.cell.dim:hover{background:transparent !important;transform:none;}
+.cell.today{background:var(--today-grad);border-radius:18px;box-shadow:0 0 0 1px rgba(255,255,255,.07),0 10px 28px rgba(123,72,240,.45),inset 0 1px 0 rgba(255,255,255,.18);}
+.cell.today .ndate{color:var(--today-text);font-size:18px;font-weight:900;}
+.cell.today .tlbl{font-size:7.5px;font-weight:900;color:rgba(255,255,255,.9);letter-spacing:.9px;opacity:.95;text-transform:uppercase;margin-top:1px;}
+.cell.today .gdate{color:var(--today-muted);}
+.cell.today .hdot{background:rgba(255,255,255,.92);opacity:1;}
+.cell.today .evt-dot{background:rgba(255,255,255,.9);box-shadow:none;}
 
 /* ── FAB ── */
 .fab{position:fixed;bottom:28px;right:max(18px,calc(50vw - 177px));width:54px;height:54px;background:var(--fab);border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 22px rgba(91,79,207,.48);z-index:10;transition:transform .2s;}
@@ -97,23 +211,25 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
 .fab svg{width:24px;height:24px;stroke:#fff;stroke-width:2.6;fill:none;}
 
 /* ── OVERLAY ── */
-.ov{position:fixed;inset:0;background:var(--ov);z-index:50;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px);}
-.ov.open{opacity:1;pointer-events:all;}
+.ov{position:fixed;inset:0;background:var(--ov);z-index:50;opacity:0;pointer-events:none;transition:opacity .18s,backdrop-filter .18s;background:radial-gradient(circle at top,rgba(123,110,246,.18),rgba(0,0,0,.78) 45%),var(--ov);backdrop-filter:blur(4px);}
+.ov.open{opacity:1;pointer-events:all;backdrop-filter:blur(8px) saturate(.92);}
 
 /* ── DAY MODAL ── */
-.dmodal{position:fixed;top:50%;left:50%;transform:translate(-50%,-52%) scale(.88);width:320px;max-width:calc(100vw - 36px);background:var(--mbg);border-radius:26px;z-index:60;opacity:0;pointer-events:none;transition:all .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 24px 64px rgba(0,0,0,.28);}
-.dmodal.open{opacity:1;pointer-events:all;transform:translate(-50%,-50%) scale(1);}
-.mcls{position:absolute;top:13px;right:13px;width:30px;height:30px;border:none;background:var(--tgbg);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.mcls svg{width:13px;height:13px;stroke:var(--dsub);stroke-width:2.8;fill:none;}
-.mhdr{padding:28px 22px 18px;text-align:center;border-bottom:1px solid var(--border);}
-.mbignum{font-size:68px;font-weight:900;background:linear-gradient(135deg,#7B6EF6,#5340E8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
-.mmonth{font-size:15px;font-weight:700;color:var(--hsub);margin-top:3px;}
-.mbody{padding:16px 20px 18px;}
-.mrow{display:flex;align-items:flex-start;gap:11px;padding:9px 0;border-bottom:1px solid var(--border);}
+.dmodal{position:fixed;bottom:0;left:50%;top:auto;transform:translate(-50%,105%);width:390px;max-width:100vw;background:var(--sheet-bg);border-radius:28px 28px 0 0;z-index:60;opacity:0;pointer-events:none;transition:all .32s cubic-bezier(.22,.85,.25,1);box-shadow:0 -20px 50px rgba(0,0,0,.45);max-height:82vh;overflow:hidden;border:1px solid var(--sheet-border);border-bottom:none;}
+.dmodal.open{opacity:1;pointer-events:all;transform:translate(-50%,0);}
+.mcls{position:absolute;top:14px;right:14px;width:32px;height:32px;border:none;background:rgba(255,255,255,.08);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;}
+.mcls svg{width:13px;height:13px;stroke:var(--nav-text);stroke-width:2.8;fill:none;}
+.mhdr{padding:28px 22px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg,rgba(123,110,246,.18),transparent);}
+.mbignum{font-size:58px;font-weight:900;background:linear-gradient(135deg,#d7c9ff,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.mmonth{font-size:15px;font-weight:700;color:var(--sheet-muted);margin-top:3px;}
+.mbody{padding:14px 18px 18px;overflow:auto;max-height:calc(82vh - 122px);}
+.mcta{display:flex;justify-content:flex-end;margin-bottom:12px;}
+.maddbtn{padding:10px 16px;border:none;border-radius:18px;background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 10px 20px rgba(109,40,217,.28);}
+.mrow{display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.06);}
 .mrow:last-child{border-bottom:none;}
-.micon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
-.mlabel{font-size:11px;color:var(--hsub);font-weight:700;letter-spacing:.3px;}
-.mval{font-size:13.5px;color:var(--dtext);font-weight:700;margin-top:2px;line-height:1.4;}
+.micon{width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;color:#fff;}
+.mlabel{font-size:11px;color:var(--sheet-muted);font-weight:800;letter-spacing:.3px;}
+.mval{font-size:13.5px;color:var(--sheet-text);font-weight:700;margin-top:2px;line-height:1.4;}
 .mbadges{display:flex;flex-wrap:wrap;gap:7px;padding-top:12px;}
 .bdg{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11.5px;font-weight:700;line-height:1.2;}
 .bdg-f{background:#EEF0FF;color:#5340E8;}
@@ -125,11 +241,40 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
 [data-theme=dark] .bdg-h{background:#3a1a1a;color:#ff8080;}
 
 /* ── SHEET ── */
-.sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(102%);width:390px;max-width:100vw;background:var(--sbg);border-radius:24px 24px 0 0;z-index:70;transition:transform .35s cubic-bezier(.32,.72,0,1);box-shadow:0 -8px 40px rgba(0,0,0,.2);}
+.sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(102%);width:390px;max-width:100vw;background:var(--sbg);border-radius:24px 24px 0 0;z-index:70;transition:transform .2s cubic-bezier(.32,.72,0,1);box-shadow:0 -8px 40px rgba(0,0,0,.2);}
 .sheet.open{transform:translateX(-50%) translateY(0);}
+.sheet.cycle-fullscreen{left:0;right:0;top:0;bottom:0;width:100vw;max-width:none;height:100vh;border-radius:0;box-shadow:none;transform:translateY(102%) scale(.99);display:flex;flex-direction:column;background:var(--sheet-bg);}
+.sheet.cycle-fullscreen.open{
+  transform:translateY(0) scale(1);
+  animation:cycleRise .22s cubic-bezier(.22,.85,.25,1);
+}
 .shandle{width:38px;height:4px;background:var(--dim);border-radius:2px;margin:11px auto 0;}
 .stitle{font-size:16px;font-weight:900;color:var(--htext);padding:13px 22px 11px;border-bottom:1px solid var(--sbdr);}
 .sscroll{max-height:72vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.sheet.cycle-fullscreen .shandle{display:none;}
+.sheet.cycle-fullscreen .cycle-head{
+  display:flex;align-items:center;gap:12px;padding:16px 16px 14px;border-bottom:1px solid var(--sheet-border);
+  background:linear-gradient(135deg,rgba(255,107,157,.18),rgba(196,69,105,.08),rgba(123,110,246,.06));
+  flex-shrink:0;
+  box-shadow:0 10px 24px rgba(0,0,0,.08);
+}
+.sheet.cycle-fullscreen .cycle-back{
+  width:38px;height:38px;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.08);cursor:pointer;flex-shrink:0;transition:transform .12s,background .12s,box-shadow .12s;
+}
+.sheet.cycle-fullscreen .cycle-back:hover{transform:translateX(-1px) scale(1.02);background:rgba(255,255,255,.12);box-shadow:0 8px 18px rgba(0,0,0,.08);}
+.sheet.cycle-fullscreen .cycle-back svg{width:18px;height:18px;stroke:var(--sheet-text);stroke-width:2.5;fill:none;}
+.sheet.cycle-fullscreen .cycle-title-wrap{min-width:0;flex:1;}
+.sheet.cycle-fullscreen .cycle-title{font-size:18px;font-weight:900;color:var(--sheet-text);line-height:1.05;letter-spacing:-.2px;}
+.sheet.cycle-fullscreen .cycle-sub{font-size:12px;font-weight:700;color:var(--sheet-muted);margin-top:3px;}
+.sheet.cycle-fullscreen .sscroll{max-height:none;flex:1;padding-bottom:18px;}
+.sheet.cycle-fullscreen .ssec:first-child{padding-top:14px;}
+
+@keyframes cycleRise{
+  0%{opacity:.1;transform:translateY(102%) scale(.992);}
+  70%{opacity:1;}
+  100%{transform:translateY(0) scale(1);}
+}
 .ssec{padding:13px 22px;}
 .ssect{font-size:10px;font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:.9px;margin-bottom:9px;}
 .srow{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--sbdr);}
@@ -175,39 +320,61 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
 @media(max-width:420px){.phone,.sheet{width:100vw;}.fab{right:18px;}}
 
 /* ── UPCOMING PANEL ── */
-.upcoming{margin:18px 14px 110px;}
+.upcoming{margin:16px 10px 110px;}
 .up-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:0 2px;}
-.up-title{font-size:16px;font-weight:900;color:var(--htext);flex:1;}
+.up-title{font-size:16px;font-weight:900;color:var(--panel-text);flex:1;}
+.up-title.sub{color:var(--panel-muted);font-size:14px;}
 .up-tabs{display:flex;background:var(--card);border-radius:20px;padding:3px;gap:2px;box-shadow:0 2px 10px rgba(80,70,170,.07);}
 .up-tab{padding:5px 13px;border-radius:16px;font-size:11.5px;font-weight:800;background:transparent;color:var(--dsub);border:none;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;}
 .up-tab.on{background:var(--tgon);color:#fff;}
+.sel-card{background:var(--sel-bg);border-radius:22px;padding:15px 14px 14px;box-shadow:var(--panel-shadow),inset 0 1px 0 rgba(255,255,255,.04);margin-bottom:18px;position:relative;overflow:hidden;border:1px solid var(--sel-border);}
+.sel-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#8b5cf6,#3b82f6);}
+.sel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;padding-left:4px;}
+.sel-date{min-width:0;}
+.sel-day{font-size:20px;font-weight:900;color:var(--sel-text);line-height:1;}
+.sel-sub{font-size:11px;font-weight:700;color:var(--sel-muted);margin-top:3px;}
+.sel-badges{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding-left:4px;}
+.sel-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;padding-left:4px;}
+.sel-btn{padding:9px 13px;border:none;border-radius:16px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:var(--sel-action-text);font-size:12px;font-weight:900;cursor:pointer;box-shadow:0 8px 16px rgba(124,58,237,.22);}
+.sel-btn.ghost{background:rgba(255,255,255,.06);box-shadow:none;color:var(--sel-text);}
+.sel-badge{font-size:10.5px;font-weight:800;padding:4px 9px;border-radius:12px;white-space:nowrap;background:var(--chip-bg);color:var(--chip-text);}
+.sel-badge.hol{background:var(--chip-hol-bg);color:var(--chip-hol-text);}
+.sel-badge.today{background:linear-gradient(135deg,#7B6EF6,#5340E8);color:#fff;}
+[data-theme=dark] .sel-badge{background:#1b1c2c;color:#cdbfff;}
+[data-theme=dark] .sel-badge.hol{background:#3a1a1a;color:#ff9090;}
+.sel-list{margin-top:12px;display:flex;flex-direction:column;gap:8px;}
+.sel-row{display:flex;align-items:flex-start;gap:8px;font-size:13px;font-weight:700;color:var(--sel-text);}
+.sel-dot{width:7px;height:7px;border-radius:50%;background:var(--dot-evt);flex-shrink:0;margin-top:5px;}
+.sel-empty{text-align:center;padding:18px 8px;color:var(--sel-muted);font-size:13px;font-weight:600;}
 .up-empty{text-align:center;padding:32px 0 20px;color:var(--dsub);}
 .up-empty-ico{font-size:34px;display:block;margin-bottom:8px;}
 .up-empty-txt{font-size:13px;font-weight:600;}
-.up-item{display:flex;align-items:center;gap:13px;background:var(--card);border-radius:16px;padding:13px 14px;margin-bottom:10px;box-shadow:0 2px 12px rgba(80,70,170,.06);cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden;}
+.up-item{display:flex;align-items:center;gap:13px;background:var(--panel-bg);border-radius:18px;padding:13px 14px;margin-bottom:10px;box-shadow:var(--panel-shadow);cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden;border:1px solid var(--panel-border);}
 .up-item:active{transform:scale(.98);}
 .up-item:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(80,70,170,.12);}
 .up-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;}
 .up-item.hol::before{background:var(--hol);}
 .up-item.evt::before{background:var(--tgon);}
+.up-item.cyc::before{background:linear-gradient(180deg,#8b5cf6,#a855f7);}
 .up-chip{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:48px;border-radius:11px;padding:7px 8px;flex-shrink:0;}
-.up-chip.hol{background:#FFF0F0;}
-.up-chip.evt{background:#EEF0FF;}
-[data-theme=dark] .up-chip.hol{background:#3a1a1a;}
-[data-theme=dark] .up-chip.evt{background:#1a1a3a;}
+.up-chip.hol{background:var(--chip-hol-bg);}
+.up-chip.evt{background:var(--chip-evt-bg);}
 .up-day{font-size:20px;font-weight:900;line-height:1;}
 .up-chip.hol .up-day{color:var(--hol);}
 .up-chip.evt .up-day{color:var(--tgon);}
+.up-chip.cyc .up-day{color:#8b5cf6;}
 .up-mon{font-size:9px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
 .up-info{flex:1;min-width:0;}
-.up-name{font-size:13.5px;font-weight:800;color:var(--dtext);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.up-sub{font-size:11px;color:var(--dsub);font-weight:600;margin-top:2px;}
-.up-badge{font-size:10.5px;font-weight:800;padding:4px 9px;border-radius:12px;white-space:nowrap;flex-shrink:0;}
+.up-name{font-size:13.5px;font-weight:800;color:var(--panel-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.up-sub{font-size:11px;color:var(--panel-muted);font-weight:600;margin-top:2px;}
+.up-badge{font-size:10.5px;font-weight:800;padding:4px 9px;border-radius:12px;white-space:nowrap;flex-shrink:0;background:var(--chip-bg);color:var(--chip-text);}
 .up-badge.today{background:linear-gradient(135deg,#7B6EF6,#5340E8);color:#fff;}
 .up-badge.soon{background:#EEF0FF;color:var(--tgon);}
 .up-badge.red{background:#FFF0F0;color:var(--hol);}
+.up-badge.cyc{background:#efe7ff;color:#7c3aed;}
 [data-theme=dark] .up-badge.soon{background:#2a2a55;color:#a89cf7;}
 [data-theme=dark] .up-badge.red{background:#3a1a1a;color:#ff9090;}
+[data-theme=dark] .up-badge.cyc{background:#2a203a;color:#c7b3ff;}
 
 /* ── MONTH PICKER ── */
 .mth-btn{cursor:pointer;border-radius:8px;padding:2px 4px 2px 2px;transition:background .2s;display:inline-flex;align-items:center;gap:2px;}
@@ -322,8 +489,33 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
 /* ── MOOD TRACKER ── */
 .mood-card{background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(239,68,68,.07));border-radius:16px;padding:14px 16px;border:1.5px solid rgba(251,191,36,.25);margin-bottom:4px;}
 [data-theme=dark] .mood-card{background:linear-gradient(135deg,rgba(251,191,36,.07),rgba(239,68,68,.05));border-color:rgba(251,191,36,.15);}
-.mood-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 14px;}
-.mood-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 4px;border-radius:13px;border:2px solid transparent;background:var(--sbg);cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;}
+.mood-grid{
+  display:flex;
+  gap:8px;
+  margin:12px 0 14px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding-bottom:4px;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.mood-grid::-webkit-scrollbar{display:none;}
+.mood-btn{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  padding:10px 8px;
+  min-width:72px;
+  flex:0 0 auto;
+  border-radius:13px;
+  border:2px solid transparent;
+  background:var(--sbg);
+  cursor:pointer;
+  transition:all .2s;
+  font-family:'Nunito',sans-serif;
+}
 .mood-btn:hover{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.3);}
 .mood-btn.active{background:linear-gradient(135deg,rgba(251,191,36,.2),rgba(239,68,68,.1));border-color:#FBBF24;box-shadow:0 2px 10px rgba(251,191,36,.25);}
 .mood-emoji{font-size:26px;line-height:1;}
@@ -438,39 +630,41 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
 
 <div class="phone">
   <div class="hdr">
-    <div class="htitle ne" id="htitle"></div>
-    <div class="hicons">
-      <button class="cycle-pill" id="cycleBtn" onclick="openSheet('cycle')" title="Track My Cycle">
-        <svg viewBox="0 0 24 24"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402C1 3.518 3.8 1 7 1c2.074 0 3.952 1.002 5 2.5C13.048 2.002 14.926 1 17 1c3.2 0 6 2.518 6 6.191 0 4.105-5.37 8.863-11 14.402z"/></svg>
-        Track My Cycle
-      </button>
-      <button class="ibtn" id="settingsBtn" onclick="openSheet('settings')" title="Settings">
+    <div class="hdrbar">
+      <div class="head-title ne">Vikram Calendar</div>
+      <button class="gear-btn" id="settingsBtn" onclick="openSheet('settings')" title="Settings">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
+      <button class="today-pill" onclick="goToday()" title="Today">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>
+        Today
+      </button>
     </div>
+  </div>
+  <div class="modebar">
+    <button class="mode-pill on" id="tabAll"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="13" width="7" height="7" rx="1.5"/><rect x="14" y="13" width="7" height="7" rx="1.5"/></svg>All</button>
+    <button class="mode-pill" id="cycleBtn" onclick="openSheet('cycle')" title="My Cycle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5" stroke-dasharray="2.2 3.2"/><circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/></svg>My cycle</button>
   </div>
 
   <div class="ccard">
     <div class="nav">
       <button class="nbtn" onclick="prevMonth()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
-      <span class="nlbl ne" id="navlbl"></span>
+      <div class="navtxt">
+        <div class="nlbl ne" id="navlbl"></div>
+        <div class="nsub" id="navsub"></div>
+      </div>
       <button class="nbtn" onclick="nextMonth()"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
     <div class="dhdrs" id="dhdrs"></div>
     <div class="cgrid" id="cgrid"></div>
   </div>
 
-  <!-- UPCOMING + PREVIOUS PANELS (single container) -->
+  <!-- UPCOMING PANEL -->
   <div class="upcoming">
-    <div class="up-hdr">
-      <span class="up-title" id="upTitle">Next 29 Days</span>
+    <div class="up-hdr" style="margin-top:18px;">
+      <span class="up-title" id="upTitle">Upcoming</span>
     </div>
     <div id="upList"></div>
-
-    <div class="up-hdr" style="margin-top:18px;">
-      <span class="up-title" id="prevTitle" style="color:var(--dsub);font-size:14px;">Previous 29 Days</span>
-    </div>
-    <div id="prevList"></div>
   </div>
 </div>
 
@@ -488,16 +682,19 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
     <div class="mmonth ne" id="mmon"></div>
   </div>
   <div class="mbody">
+    <div class="mcta">
+      <button class="maddbtn" onclick="openAddForDay(selectedDay.y,selectedDay.m,selectedDay.d)">Add Event</button>
+    </div>
     <div class="mrow">
-      <div class="micon" style="background:#EEF0FF;">📅</div>
+      <div class="micon" style="background:linear-gradient(135deg,rgba(59,130,246,.28),rgba(123,110,246,.24));">📅</div>
       <div><div class="mlabel">ENGLISH DATE</div><div class="mval" id="mad"></div></div>
     </div>
     <div class="mrow">
-      <div class="micon" style="background:#FFF4E1;">🌙</div>
+      <div class="micon" style="background:linear-gradient(135deg,rgba(255,196,90,.2),rgba(244,114,182,.14));">🌙</div>
       <div><div class="mlabel">TITHI (APPROX.)</div><div class="mval" id="mtithi"></div></div>
     </div>
     <div class="mrow" id="mEvtRow" style="display:none;">
-      <div class="micon" style="background:#FFF0F8;">📌</div>
+      <div class="micon" style="background:linear-gradient(135deg,rgba(123,110,246,.22),rgba(59,130,246,.14));">📌</div>
       <div style="flex:1;min-width:0;">
         <div class="mlabel">YOUR EVENTS</div>
         <div id="mEvtList" style="margin-top:4px;display:flex;flex-direction:column;gap:6px;"></div>
@@ -646,7 +843,7 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
     <input class="einput" id="evT" placeholder="e.g. Doctor appointment…" type="text">
     <div class="ssect" style="margin-top:4px;">Nepali Date (BS)</div>
     <div style="display:flex;gap:7px;margin-bottom:9px;">
-      <select class="einput" id="evBsY" style="flex:1.2;">
+      <select class="einput" id="evBsY" style="flex:1.2;" onchange="updateDayOpts('evBs')">
         <option value="2083">2083</option>
         <option value="2084">2084</option>
         <option value="2085">2085</option>
@@ -662,6 +859,25 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
       </select>
       <select class="einput" id="evBsD" style="flex:0.8;"></select>
     </div>
+    <div class="ssect" style="margin-top:4px;">End Date (optional)</div>
+    <div style="display:flex;gap:7px;margin-bottom:9px;">
+      <select class="einput" id="evEndBsY" style="flex:1.2;" onchange="updateDayOpts('evEndBs')">
+        <option value="2083">2083</option>
+        <option value="2084">2084</option>
+        <option value="2085">2085</option>
+        <option value="2086">2086</option>
+      </select>
+      <select class="einput" id="evEndBsM" style="flex:1.4;" onchange="updateDayOpts('evEndBs')">
+        <option value="1">Baishakh</option><option value="2">Jestha</option>
+        <option value="3">Ashadh</option><option value="4">Shrawan</option>
+        <option value="5">Bhadra</option><option value="6">Ashwin</option>
+        <option value="7">Kartik</option><option value="8">Mangsir</option>
+        <option value="9">Poush</option><option value="10">Magh</option>
+        <option value="11">Falgun</option><option value="12">Chaitra</option>
+      </select>
+      <select class="einput" id="evEndBsD" style="flex:0.8;"></select>
+    </div>
+    <div style="font-size:11px;color:var(--dsub);font-weight:700;margin:-4px 0 8px;">Leave the end date the same for a one-day event.</div>
     <div class="ssect" style="margin-top:4px;">Note (optional)</div>
     <input class="einput" id="evN" placeholder="Add a note…" type="text">
     <button class="ebtn" onclick="saveEv()">Save Event</button>
@@ -671,7 +887,15 @@ html,body{width:100%;min-height:100vh;background:var(--bg);display:flex;justify-
 <!-- CYCLE TRACKER SHEET -->
 <div class="sheet" id="cycleSheet" style="padding-bottom:0;">
   <div class="shandle"></div>
-  <div class="stitle" style="background:linear-gradient(135deg,#FF6B9D,#C44569);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">🌸 My Cycle Tracker</div>
+  <div class="cycle-head">
+    <button class="cycle-back" onclick="closeAll()" aria-label="Back">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="cycle-title-wrap">
+      <div class="cycle-title">🌸 My Cycle Tracker</div>
+      <div class="cycle-sub">Track periods, ovulation, and mood</div>
+    </div>
+  </div>
   <div class="sscroll" id="cycleBody"><!-- rendered by renderCycleSheet() --></div>
 </div>
 
@@ -780,7 +1004,7 @@ const TPAKSHA=['Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','S
 // UTC noon – safe anchor: .getDate() gives the same calendar day in every timezone (UTC-12 to UTC+14)
 const REF=new Date(Date.UTC(2026,3,14,12,0,0)); // Baishakh 1, 2083 = Apr 14, 2026
 let cfg={greg:true,hol:true,holn:true,fd:1};
-let lang='en',dark=false;
+let lang='en',dark=true;
 let vY=2083,vM=2;
 
 // Nepal Standard Time = UTC+5:45.
@@ -806,6 +1030,7 @@ function getKathmanduToday(){
 }
 const TODAY=getKathmanduToday();
 const TODAYBS=adToBs(TODAY);
+let selectedDay={y:TODAYBS.y,m:TODAYBS.m,d:TODAYBS.d};
 
 // ══ DATE UTILS ══
 function msDay(a,b){return Math.round((b-a)/86400000);}
@@ -868,8 +1093,11 @@ function getH(y,m,d){return cfg.hol?HOL[hk(y,m,d)]:null;}
 // ══ RENDER ══
 function render(){
   const mn=lang==='ne'?MNE[vM-1]:MEN[vM-1],yr=ns(vY);
-  document.getElementById('htitle').innerHTML=`<span class="ne mth-btn" onclick="openMonthPicker()" title="Switch month">${mn}<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;stroke-width:2.5;fill:none;margin-left:4px;vertical-align:middle;opacity:.6;"><polyline points="6 9 12 15 18 9"/></svg></span> <span class="ysub">${yr}</span>`;
-  document.getElementById('navlbl').textContent=`${lang==='ne'?MNE[vM-1]:MEN[vM-1]} ${ns(vY)}`;
+  const monthStart=bsToAd(vY,vM,1);
+  const monthEnd=bsToAd(vY,vM,BS[vY]?.[vM-1]??30);
+  const monthRange=`${ADMEN[monthStart.getMonth()]} ${monthStart.getFullYear()} – ${ADMEN[monthEnd.getMonth()]} ${monthEnd.getFullYear()}`;
+  document.getElementById('navlbl').textContent=`${mn} ${yr}`;
+  document.getElementById('navsub').textContent=monthRange;
 
   // Day headers ordered by firstDay
   const dn=lang==='ne'?DNE:DEN;
@@ -900,15 +1128,14 @@ function render(){
       const nd=i-sDow+1,ad=new Date(sAD);ad.setDate(ad.getDate()+nd-1);
       const isT=vY===TODAYBS.y&&vM===TODAYBS.m&&nd===TODAYBS.d;
       const h=getH(vY,vM,nd),isH=!!h;
-      const hasEvt=userEvents.some(ev=>ev.bsY===vY&&ev.bsM===vM&&ev.bsD===nd);
       let cls='cell active';
       if(isT)cls+=' today';else if(isH)cls+=' hol';else if(wk)cls+=' wk';
-      if(hasEvt)cls+=' has-evt';
+      const evtCount=userEvents.filter(ev=>eventMatchesDate(ev,vY,vM,nd)).length;
       html+=`<div class="${cls}" onclick="openDay(${vY},${vM},${nd})">
         <div class="ndate ne">${ns(nd)}</div>
         ${isT?`<div class="tlbl ne">${lang==='ne'?'आज':'TODAY'}</div>`:''}
         ${cfg.greg?`<div class="gdate">${ad.getDate()}</div>`:''}
-        <div class="cell-dots"><div class="hdot"></div><div class="edot-p"></div><div class="edot-y"></div></div></div>`;
+        <div class="cell-dots"><div class="hdot"></div>${evtCount?Array.from({length:evtCount},()=>'<div class="evt-dot"></div>').join(''):''}</div></div>`;
     }
   }
   document.getElementById('cgrid').innerHTML=html;
@@ -916,9 +1143,12 @@ function render(){
 
 function prevMonth(){vM--;if(vM<1){vM=12;vY--;}render();}
 function nextMonth(){vM++;if(vM>12){vM=1;vY++;}render();}
+function goToday(){vY=TODAYBS.y;vM=TODAYBS.m;selectedDay={y:TODAYBS.y,m:TODAYBS.m,d:TODAYBS.d};render();renderSelectedDay();}
 
 // ══ DAY MODAL ══
 function openDay(bY,bM,bD){
+  selectedDay={y:bY,m:bM,d:bD};
+  renderSelectedDay();
   closeAll();
   const ad=bsToAd(bY,bM,bD);
   const wd=ad.getDay();
@@ -956,19 +1186,19 @@ function openDay(bY,bM,bD){
   document.getElementById('mbadges').innerHTML=badges;
 
   // User events for this day
-  const dayEvts=userEvents.filter(ev=>ev.bsY===bY&&ev.bsM===bM&&ev.bsD===bD);
+  const dayEvts=userEvents.filter(ev=>eventMatchesDate(ev,bY,bM,bD));
   const evtRow=document.getElementById('mEvtRow');
   const evtList=document.getElementById('mEvtList');
   if(dayEvts.length>0){
     evtRow.style.display='flex';
     evtList.innerHTML=dayEvts.map(ev=>`
-      <div style="padding:8px 10px;background:var(--tgbg);border-radius:10px;border-left:3px solid #FF6B9D;">
-        <div style="display:flex;gap:6px;align-items:center;">
-          <span style="font-size:8px;background:#FF6B9D;width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0;"></span>
-          <span style="font-size:8px;background:#FFD700;width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0;"></span>
-          <span style="font-size:13px;font-weight:800;color:var(--dtext);">${ev.title}</span>
+      <div style="padding:10px 11px;background:rgba(255,255,255,.04);border-radius:14px;border-left:3px solid #7ab7ff;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="font-size:8px;background:#7ab7ff;width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0;box-shadow:0 0 12px rgba(122,183,255,.28);"></span>
+          <span style="font-size:13px;font-weight:800;color:#f0ecff;">${ev.title}</span>
         </div>
-        ${ev.note?`<div style="font-size:11px;color:var(--dsub);margin-top:3px;padding-left:18px;">${ev.note}</div>`:''}
+        <div style="font-size:11px;color:#a39bbc;margin-top:4px;padding-left:15px;">${formatEventRange(ev)}</div>
+        ${ev.note?`<div style="font-size:11px;color:#a39bbc;margin-top:4px;padding-left:15px;">${ev.note}</div>`:''}
       </div>`).join('');
   } else {
     evtRow.style.display='none';
@@ -982,6 +1212,8 @@ function openDay(bY,bM,bD){
 function closeAll(){
   document.getElementById('ov').classList.remove('open');
   ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','cycleSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+  document.getElementById('cycleSheet')?.classList.remove('cycle-fullscreen');
+  document.querySelector('.phone')?.classList.remove('cycle-dim');
 }
 
 // ══ DARK MODE ══
@@ -1019,7 +1251,7 @@ function setLang(l){
   document.getElementById('chkEN').classList.toggle('on',l==='en');
   document.getElementById('chkNE').classList.toggle('on',l==='ne');
   localStorage.setItem('vikram_lang',l);
-  closeAll();render();renderUpcoming();renderPrevious();
+  closeAll();render();renderUpcoming();renderSelectedDay();
 }
 
 // ══ SETTINGS ══
@@ -1073,40 +1305,76 @@ function saveEvents(){
 }
 
 // Populate the day dropdown based on selected year+month
-function updateDayOpts(){
-  const y=+document.getElementById('evBsY').value;
-  const m=+document.getElementById('evBsM').value;
+function updateDayOpts(prefix='evBs'){
+  const y=+document.getElementById(`${prefix}Y`).value;
+  const m=+document.getElementById(`${prefix}M`).value;
   const max=BS[y]?.[m-1]??30;
-  const sel=document.getElementById('evBsD');
+  const sel=document.getElementById(`${prefix}D`);
   const cur=+sel.value||1;
   sel.innerHTML=Array.from({length:max},(_,i)=>`<option value="${i+1}"${i+1===cur?' selected':''}>${i+1}</option>`).join('');
+}
+
+function setEventRange(startY,startM,startD,endY=startY,endM=startM,endD=startD){
+  document.getElementById('evBsY').value=startY;
+  document.getElementById('evBsM').value=startM;
+  updateDayOpts('evBs');
+  document.getElementById('evBsD').value=startD;
+  document.getElementById('evEndBsY').value=endY;
+  document.getElementById('evEndBsM').value=endM;
+  updateDayOpts('evEndBs');
+  document.getElementById('evEndBsD').value=endD;
+}
+
+function getEventRangeMid(ev){
+  const start = new Date(ev.adMs);
+  const startMid = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const endBase = new Date(ev.endAdMs ?? ev.adMs);
+  const endMid = new Date(endBase.getFullYear(), endBase.getMonth(), endBase.getDate());
+  return endMid >= startMid ? {startMid, endMid} : {startMid:endMid, endMid:startMid};
+}
+
+function eventMatchesDate(ev, y, m, d){
+  const day = bsToAd(y,m,d);
+  const dayMid = new Date(day.getFullYear(), day.getMonth(), day.getDate());
+  const {startMid, endMid} = getEventRangeMid(ev);
+  return dayMid >= startMid && dayMid <= endMid;
+}
+
+function formatEventRange(ev){
+  const {startMid, endMid} = getEventRangeMid(ev);
+  const startStr = `${ADMEN[startMid.getMonth()]} ${startMid.getDate()}, ${startMid.getFullYear()}`;
+  const endStr = `${ADMEN[endMid.getMonth()]} ${endMid.getDate()}, ${endMid.getFullYear()}`;
+  if(startMid.getTime() === endMid.getTime()) return startStr;
+  const days = Math.round((endMid - startMid)/86400000) + 1;
+  return `${startStr} to ${endStr} · ${days} days`;
 }
 
 function openSheet(t){
   closeAll();
   document.getElementById('ov').classList.add('open');
   const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',cycle:'cycleSheet'};
-  document.getElementById(ids[t])?.classList.add('open');
+  const sheet=document.getElementById(ids[t]);
+  sheet?.classList.add('open');
+  if(t==='cycle'){
+    sheet?.classList.add('cycle-fullscreen');
+    document.querySelector('.phone')?.classList.add('cycle-dim');
+  }
   if(t==='settings'){ renderGcalCard(); renderWidgetThumb(); renderWidgetSteps(); }
   if(t==='cycle') renderCycleSheet();
   if(t==='add'){
     // Default date = today BS
-    document.getElementById('evBsY').value=TODAYBS.y;
-    document.getElementById('evBsM').value=TODAYBS.m;
-    updateDayOpts();
-    document.getElementById('evBsD').value=TODAYBS.d;
+    setEventRange(TODAYBS.y, TODAYBS.m, TODAYBS.d);
     setTimeout(()=>document.getElementById('evT').focus(),360);
   }
 }
 
 // Called from day modal to pre-fill date
 function openAddForDay(bsY,bsM,bsD){
+  selectedDay={y:bsY,m:bsM,d:bsD};
+  renderSelectedDay();
   openSheet('add');
   setTimeout(()=>{
-    document.getElementById('evBsY').value=bsY;
-    document.getElementById('evBsM').value=bsM;
-    updateDayOpts();
-    document.getElementById('evBsD').value=bsD;
+    setEventRange(bsY, bsM, bsD);
   },50);
 }
 
@@ -1210,16 +1478,33 @@ async function saveEv(){
   const bsY=+document.getElementById('evBsY').value;
   const bsM=+document.getElementById('evBsM').value;
   const bsD=+document.getElementById('evBsD').value;
+  const endBsY=+document.getElementById('evEndBsY').value;
+  const endBsM=+document.getElementById('evEndBsM').value;
+  const endBsD=+document.getElementById('evEndBsD').value;
   const note=document.getElementById('evN').value.trim();
   const adDate=bsToAd(bsY,bsM,bsD);
-  userEvents.push({title:t,bsY,bsM,bsD,adMs:adDate.getTime(),note});
+  const endAdDate=bsToAd(endBsY,endBsM,endBsD);
+  const startMid=new Date(adDate.getFullYear(),adDate.getMonth(),adDate.getDate());
+  const endMid=new Date(endAdDate.getFullYear(),endAdDate.getMonth(),endAdDate.getDate());
+  if(endMid < startMid){
+    alert('End date must be the same as or after the start date.');
+    return;
+  }
+  userEvents.push({
+    title:t,
+    bsY,bsM,bsD,
+    endBsY,endBsM,endBsD,
+    adMs:startMid.getTime(),
+    endAdMs:endMid.getTime(),
+    note
+  });
   userEvents.sort((a,b)=>a.adMs-b.adMs);
   saveEvents();
   document.getElementById('evT').value='';
   document.getElementById('evN').value='';
   closeAll();
   renderUpcoming();
-  renderPrevious();
+  renderSelectedDay();
   render();
   // Confirmation notification
   if(Notification.permission==='granted'){
@@ -1249,6 +1534,63 @@ const WINDOW=29;
 
 function switchUpTab(t){ /* retired — tabs removed */ }
 
+function buildCycleUpcomingItems(todayMid, windowEnd){
+  if(!cycleData.lastPeriodStart) return [];
+
+  const cl = cycleData.cycleLength || 28;
+  const pl = cycleData.periodLength || 5;
+  const baseRaw = new Date(cycleData.lastPeriodStart);
+  if(isNaN(baseRaw)) return [];
+
+  const msDay = 86400000;
+  const ovDay = cl - 14;
+  const fertileOpenDay = Math.max(1, ovDay - 5);
+
+  let cycleStart = new Date(baseRaw.getFullYear(), baseRaw.getMonth(), baseRaw.getDate());
+
+  while(cycleStart.getTime() + cl*msDay <= todayMid.getTime()){
+    cycleStart = new Date(cycleStart.getTime() + cl*msDay);
+  }
+  while(cycleStart.getTime() > todayMid.getTime()){
+    cycleStart = new Date(cycleStart.getTime() - cl*msDay);
+  }
+
+  if(cycleStart.getTime() > windowEnd.getTime()) return [];
+
+  const items = [];
+  const pushItem = (date, title, sub) => {
+    const ad = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const diff = Math.round((ad - todayMid)/msDay);
+    if(diff < 0 || diff > WINDOW) return;
+    items.push({
+      type:'cyc',
+      ky: ad.getFullYear(),
+      km: ad.getMonth() + 1,
+      kd: ad.getDate(),
+      ad,
+      adMid: ad,
+      diff,
+      title,
+      sub,
+    });
+  };
+
+  for(let start = new Date(cycleStart); start <= windowEnd; start = new Date(start.getTime() + cl*msDay)){
+    pushItem(start, 'Period starts', 'Cycle Day 1 · predicted');
+
+    const periodEnd = new Date(start.getTime() + (pl - 1) * msDay);
+    pushItem(periodEnd, 'Period ends', `Cycle Day ${pl} · predicted`);
+
+    const fertileOpen = new Date(start.getTime() + (fertileOpenDay - 1) * msDay);
+    pushItem(fertileOpen, 'Fertile window opens', `Cycle Day ${fertileOpenDay} · predicted`);
+
+    const ovulation = new Date(start.getTime() + (ovDay - 1) * msDay);
+    pushItem(ovulation, 'Ovulation', `Cycle Day ${ovDay} · predicted`);
+  }
+
+  return items;
+}
+
 function relLabel(diff){
   if(diff===0) return{text:'Today',cls:'today'};
   if(diff===1) return{text:'Tomorrow',cls:'soon'};
@@ -1264,7 +1606,7 @@ function renderUpcoming(){
   const windowEnd=new Date(todayMid.getTime()+WINDOW*86400000);
   const mArr=lang==='ne'?MNE:MEN;
 
-  document.getElementById('upTitle').textContent=lang==='ne'?`आगामी ${WINDOW} दिन`:`Next ${WINDOW} Days`;
+  document.getElementById('upTitle').textContent=lang==='ne'?'आगामी':'Upcoming';
 
   const items=[];
 
@@ -1281,22 +1623,40 @@ function renderUpcoming(){
 
   // — User events within window —
   userEvents.forEach(ev=>{
-    const ad=new Date(ev.adMs);
-    const adMid=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
-    const diff=Math.round((adMid-todayMid)/86400000);
-    if(diff>=0&&diff<=WINDOW)
-      items.push({type:'evt',ky:ev.bsY,km:ev.bsM,kd:ev.bsD,ad,adMid,diff,ev});
+    const {startMid,endMid}=getEventRangeMid(ev);
+    if(endMid<todayMid||startMid>windowEnd) return;
+    const displayMid=startMid>todayMid ? startMid : todayMid;
+    const diff=Math.round((displayMid-todayMid)/86400000);
+    const startStr=`${ADMEN[startMid.getMonth()]} ${startMid.getDate()}, ${startMid.getFullYear()}`;
+    const endStr=`${ADMEN[endMid.getMonth()]} ${endMid.getDate()}, ${endMid.getFullYear()}`;
+    const rangeText=startMid.getTime()===endMid.getTime()
+      ? startStr
+      : `${startStr} to ${endStr}`;
+    items.push({
+      type:'evt',
+      ky:ev.bsY,km:ev.bsM,kd:ev.bsD,
+      ad:new Date(startMid),
+      adMid:displayMid,
+      diff,
+      ev,
+      rangeText,
+      range:{startMid,endMid}
+    });
   });
 
-  // — Sort by date, holidays before events on same day —
-  items.sort((a,b)=>a.diff-b.diff||(a.type==='hol'?-1:1));
+  // — Cycle tracker projections within window —
+  items.push(...buildCycleUpcomingItems(todayMid, windowEnd));
+
+  // — Sort by date, then holidays, cycle items, then events on same day —
+  const prio=t=>t==='hol'?0:t==='cyc'?1:2;
+  items.sort((a,b)=>a.diff-b.diff||prio(a.type)-prio(b.type));
 
   const list=document.getElementById('upList');
 
   if(items.length===0){
     list.innerHTML=`<div class="up-empty">
       <span class="up-empty-ico">🌤️</span>
-      <div class="up-empty-txt">No holidays or events in the next ${WINDOW} days</div>
+      <div class="up-empty-txt">No upcoming holidays, events, or cycle updates</div>
     </div>`;
     return;
   }
@@ -1320,6 +1680,18 @@ function renderUpcoming(){
         </div>
         <span class="up-badge ${cls}">${text}</span>
       </div>`;
+    } else if(it.type==='cyc'){
+      return`<div class="up-item cyc" onclick="openSheet('cycle')">
+        <div class="up-chip cyc">
+          <div class="up-day ne">${nd}</div>
+          <div class="up-mon">${mName.slice(0,3).toUpperCase()}</div>
+        </div>
+        <div class="up-info">
+          <div class="up-name">🌸 ${it.title}</div>
+          <div class="up-sub">My Cycle Tracker · ${adStr}${it.sub?' · '+it.sub:''}</div>
+        </div>
+        <span class="up-badge ${cls} cyc">${text}</span>
+      </div>`;
     } else {
       const ev=it.ev;
       const realIdx=userEvents.indexOf(ev);
@@ -1330,7 +1702,7 @@ function renderUpcoming(){
         </div>
         <div class="up-info">
           <div class="up-name">${ev.title}</div>
-          <div class="up-sub">📌 Event · ${adStr}${ev.note?' · '+ev.note:''}</div>
+          <div class="up-sub">📌 Event · ${it.rangeText||adStr}${ev.note?' · '+ev.note:''}</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;">
           <span class="up-badge ${cls}">${text}</span>
@@ -1341,18 +1713,80 @@ function renderUpcoming(){
   }).join('');
 }
 
+function renderSelectedDay(){
+  const y=selectedDay.y, m=selectedDay.m, d=selectedDay.d;
+  const list=document.getElementById('selectedList');
+  if(!list) return;
+  const title=document.getElementById('selectedTitle');
+  if(title) title.textContent=lang==='ne'?'चयनित दिन':'Selected Day';
+
+  if(!BS[y]||!BS[y][m-1]){
+    list.innerHTML=`<div class="sel-empty">Selected day is not available.</div>`;
+    return;
+  }
+
+  const ad=bsToAd(y,m,d);
+  const wd=ad.getDay();
+  const ti=getTithi(ad)-1;
+  const paksha=TPAKSHA[ti],tname=TNAMES[ti];
+  const wdStr=lang==='ne'?WDNE[wd]:WDEN[wd];
+  const adStr=`${wdStr}, ${ADMEN[ad.getMonth()]} ${ad.getDate()}, ${ad.getFullYear()}`;
+  const h=HOL[hk(y,m,d)];
+  const dayEvts=userEvents.filter(ev=>eventMatchesDate(ev,y,m,d));
+  const tm=new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
+  const sm=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
+  const df=msDay(tm,sm);
+  const dateBadge=df===0
+    ? `<span class="sel-badge today">${lang==='ne'?'आज':'Today'}</span>`
+    : df>0
+      ? `<span class="sel-badge">${df} day${df>1?'s':''} remaining</span>`
+      : `<span class="sel-badge">${-df} day${-df>1?'s':''} ago</span>`;
+  const holBadge=h&&cfg.holn
+    ? `<span class="sel-badge hol">${lang==='ne'?h.np:h.en}</span>`
+    : '';
+  const evtBadge=dayEvts.length
+    ? `<span class="sel-badge">${dayEvts.length} event${dayEvts.length>1?'s':''}</span>`
+    : '';
+  const kindLabel=isNaN(ti)?'' : `${paksha} ${tname}`;
+
+  list.innerHTML=`<div class="sel-card" onclick="openDay(${y},${m},${d})">
+    <div class="sel-head">
+      <div class="sel-date">
+        <div class="sel-day ne">${ns(d)} ${lang==='ne'?MNE[m-1]:MEN[m-1]} ${ns(y)}</div>
+        <div class="sel-sub">${adStr}${kindLabel?` · ${kindLabel}`:''}</div>
+      </div>
+      ${dateBadge}
+    </div>
+    <div class="sel-badges">
+      ${holBadge}
+      ${evtBadge}
+    </div>
+    <div class="sel-actions">
+      <button class="sel-btn" onclick="event.stopPropagation();openAddForDay(${y},${m},${d})">Add Event</button>
+      <button class="sel-btn ghost" onclick="event.stopPropagation();openDay(${y},${m},${d})">Details</button>
+    </div>
+    <div class="sel-list">
+      ${!h&&!dayEvts.length?`<div class="sel-empty">No holidays or events on this day</div>`:''}
+      ${h&&cfg.holn?`<div class="sel-row"><span class="sel-dot" style="background:var(--hol);"></span><span>${lang==='ne'?'सार्वजनिक बिदा':'Public holiday'} · ${lang==='ne'?h.np:h.en}</span></div>`:''}
+      ${dayEvts.map(ev=>`<div class="sel-row"><span class="sel-dot"></span><span>${ev.title}${ev.note?' · '+ev.note:''}<span style="display:block;font-size:11px;color:var(--sel-muted);font-weight:700;margin-top:2px;">${formatEventRange(ev)}</span></span></div>`).join('')}
+    </div>
+  </div>`;
+}
+
 function removeEv(i){
   if(confirm(`Remove "${userEvents[i].title}"?`)){
     userEvents.splice(i,1);
     saveEvents();
     render();
     renderUpcoming();
-    renderPrevious();
+    renderSelectedDay();
   }
 }
 
 // ══ PREVIOUS 29 DAYS ══
 function renderPrevious(){
+  renderSelectedDay();
+  return;
   const todayMid=new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
   const windowStart=new Date(todayMid.getTime()-29*86400000);
   const mArr=lang==='ne'?MNE:MEN;
@@ -1476,7 +1910,7 @@ function pickMonth(m){
   closeAll();
   render();
   renderUpcoming();
-  renderPrevious();
+  renderSelectedDay();
 }
 
 // ══ GOOGLE CALENDAR SYNC ══════════════════════════════════════════════════
@@ -1514,13 +1948,15 @@ function generateICS(){
   });
   // Add user events
   userEvents.forEach((ev,i)=>{
-    const ds=adToIcsDate(ev.adMs);
-    const de=adToIcsDate(ev.adMs+86400000);
+    const {startMid,endMid}=getEventRangeMid(ev);
+    const ds=adToIcsDate(startMid.getTime());
+    const de=adToIcsDate(endMid.getTime()+86400000);
+    const desc=[ev.note, startMid.getTime()===endMid.getTime() ? '' : formatEventRange(ev)].filter(Boolean).join('\\n');
     lines.push('BEGIN:VEVENT',
       `UID:vikram-evt-${ev.adMs}-${i}@vikram.app`,`DTSTAMP:${stamp}`,
       `DTSTART;VALUE=DATE:${ds}`,`DTEND;VALUE=DATE:${de}`,
       `SUMMARY:📌 ${ev.title}`,
-      ev.note?`DESCRIPTION:${ev.note}`:'',
+      desc?`DESCRIPTION:${desc}`:'',
       'END:VEVENT');
   });
   lines.push('END:VCALENDAR');
@@ -1582,13 +2018,18 @@ async function gcalSyncNow(){
   const total=userEvents.length;
   let done=0,failed=0;
   for(const ev of userEvents){
-    const ad=new Date(ev.adMs);
-    const ds=`${ad.getFullYear()}-${padZ(ad.getMonth()+1)}-${padZ(ad.getDate())}`;
-    const de=new Date(ev.adMs+86400000);
+    const {startMid,endMid}=getEventRangeMid(ev);
+    const ds=`${startMid.getFullYear()}-${padZ(startMid.getMonth()+1)}-${padZ(startMid.getDate())}`;
+    const de=new Date(endMid.getTime()+86400000);
     const des=`${de.getFullYear()}-${padZ(de.getMonth()+1)}-${padZ(de.getDate())}`;
     const body={
       summary:`📌 ${ev.title}`,
-      description:`${ev.note||''}\n\n[Added via Vikram · ${MEN[ev.bsM-1]} ${ev.bsD}, ${ev.bsY} BS]`,
+      description:[
+        ev.note||'',
+        startMid.getTime()===endMid.getTime()
+          ?`[Added via Vikram · ${MEN[ev.bsM-1]} ${ev.bsD}, ${ev.bsY} BS]`
+          :`[Added via Vikram · ${formatEventRange(ev)}]`
+      ].filter(Boolean).join('\n\n'),
       start:{date:ds},end:{date:des},
       source:{title:'Vikram',url:location.href}
     };
@@ -2203,7 +2644,7 @@ function _renderCalendarToCanvas(canvas, PX){
   const DIM   =isDark?'#3a3c58':'#c8c9d4';
   const WKND  =isDark?'#ff7070':'#e03e3e';
   const HOLC  =isDark?'#ff7070':'#e03e3e';
-  const EVTC  ='#FF6B9D';
+  const EVTC  ='#3B82F6';
 
   // Outer background
   ctx.fillStyle=BG;
@@ -2280,7 +2721,7 @@ function _renderCalendarToCanvas(canvas, PX){
       const adD=new Date(sAD);adD.setDate(adD.getDate()+nd-1);
       const isT=vY===TODAYBS.y&&vM===TODAYBS.m&&nd===TODAYBS.d;
       const isH=cfg.hol&&!!HOL[`${vY}-${vM}-${nd}`];
-      const isEvt=userEvents.some(ev=>ev.bsY===vY&&ev.bsM===vM&&ev.bsD===nd);
+      const evtCount=userEvents.filter(ev=>eventMatchesDate(ev,vY,vM,nd)).length;
 
       if(isT){
         // Purple pill for today
@@ -2290,7 +2731,7 @@ function _renderCalendarToCanvas(canvas, PX){
         ctx.fillStyle='#fff';
         ctx.font=`900 14px Arial,sans-serif`;
       } else {
-        ctx.fillStyle=isH?HOLC:isEvt?EVTC:wk?WKND:TEXT;
+        ctx.fillStyle=isH?HOLC:wk?WKND:TEXT;
         ctx.font=`700 13px Arial,sans-serif`;
       }
       ctx.textAlign='center';ctx.textBaseline='middle';
@@ -2304,10 +2745,22 @@ function _renderCalendarToCanvas(canvas, PX){
       }
 
       // Dots
-      if(!isT){
-        const dotY=cy+rowH*0.35;
-        if(isH){ctx.fillStyle=HOLC;ctx.beginPath();ctx.arc(isEvt?cx-3:cx,dotY,2,0,Math.PI*2);ctx.fill();}
-        if(isEvt){ctx.fillStyle=EVTC;ctx.beginPath();ctx.arc(isH?cx+3:cx,dotY,2,0,Math.PI*2);ctx.fill();}
+      const dotY=cy+rowH*0.35;
+      if(isH){
+        ctx.fillStyle=isT?'rgba(255,255,255,.88)':HOLC;
+        ctx.beginPath();
+        ctx.arc(cx-(evtCount?Math.max((evtCount-1)*2,3):0),dotY,2,0,Math.PI*2);
+        ctx.fill();
+      }
+      if(evtCount){
+        const gap=5;
+        const startX=cx-((evtCount-1)*gap)/2;
+        for(let j=0;j<evtCount;j++){
+          ctx.fillStyle=isT?'rgba(255,255,255,.88)':EVTC;
+          ctx.beginPath();
+          ctx.arc(startX+j*gap,dotY,2,0,Math.PI*2);
+          ctx.fill();
+        }
       }
     }
   }
@@ -2338,6 +2791,7 @@ function downloadWidget(){
 // Restore persisted theme
 const savedTheme=localStorage.getItem('vikram_theme');
 if(savedTheme==='dark') dark=true;
+else if(savedTheme==='light') dark=false;
 applyTheme();
 
 // Restore persisted language
@@ -2373,7 +2827,7 @@ vY=TODAYBS.y;vM=TODAYBS.m;
 render();
 updateDayOpts();
 renderUpcoming();
-renderPrevious();
+renderSelectedDay();
 
 // Notification card state + event-day reminders (after short delay)
 updateNotifCard();
@@ -2408,6 +2862,7 @@ checkPartnerURL();
     name:'Vikram',
     short_name:'Vikram',
     description:'Beautiful Nepali Patro BS 2083',
+    version:'2.0.0',
     start_url:location.href,
     display:'standalone',
     orientation:'portrait',
@@ -2421,7 +2876,7 @@ checkPartnerURL();
   // 2. Register a minimal service worker via blob (caches the page for offline)
   if('serviceWorker' in navigator){
     const sw=`
-const C='vikram-v1';
+const C='vikram-v2';
 self.addEventListener('install',e=>e.waitUntil(
   caches.open(C).then(c=>c.add(self.location.href)).catch(()=>{})
 ));
