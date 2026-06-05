@@ -673,6 +673,70 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .widget-step{display:flex;align-items:flex-start;gap:9px;padding:5px 0;font-size:11.5px;font-weight:600;color:var(--dsub);line-height:1.55;border-bottom:1px solid var(--border);}
 .widget-step:last-child{border-bottom:none;padding-bottom:0;}
 .ws-num{width:19px;height:19px;border-radius:50%;background:var(--tgon);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+/* ── SCHEDULE VIEW ── */
+.sched-day-group{padding:0;}
+.sched-day-header{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 16px 6px;
+  position:sticky;top:0;z-index:2;
+  background:var(--sheet-bg);
+  border-bottom:1px solid var(--sheet-border);
+}
+.sched-day-header.today-row .sched-date-num{
+  background:linear-gradient(135deg,#a855f7,#6d28d9);
+  color:#fff;
+  box-shadow:0 4px 12px rgba(109,40,217,.35);
+}
+.sched-date-num{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--tgbg);flex-shrink:0;
+}
+.sched-date-num .sdn{font-size:15px;font-weight:900;color:var(--dtext);line-height:1;}
+.sched-date-num .sdm{font-size:8px;font-weight:800;color:var(--dsub);text-transform:uppercase;line-height:1;margin-top:1px;}
+.sched-date-meta{flex:1;min-width:0;}
+.sched-date-full{font-size:13px;font-weight:800;color:var(--dtext);line-height:1.2;}
+.sched-date-bs{font-size:10.5px;font-weight:700;color:var(--dsub);margin-top:1px;}
+.sched-today-badge{font-size:10px;font-weight:900;padding:3px 9px;border-radius:20px;background:linear-gradient(135deg,#a855f7,#6d28d9);color:#fff;flex-shrink:0;}
+
+.sched-items{padding:4px 0 6px 16px;}
+.sched-item{
+  display:flex;align-items:flex-start;gap:11px;
+  padding:9px 16px 9px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  cursor:pointer;transition:background .15s;
+}
+.sched-item:last-child{border-bottom:none;}
+.sched-item:hover{background:rgba(255,255,255,.03);}
+.sched-item-color{width:4px;height:100%;min-height:36px;border-radius:2px;flex-shrink:0;margin-top:2px;}
+.sched-item-body{flex:1;min-width:0;}
+.sched-item-title{font-size:13.5px;font-weight:800;color:var(--sheet-text);line-height:1.25;}
+.sched-item-sub{font-size:11px;font-weight:600;color:var(--sheet-muted);margin-top:3px;line-height:1.4;}
+.sched-item-tag{
+  font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;
+  flex-shrink:0;margin-top:3px;align-self:flex-start;
+}
+.sched-item-tag.hol{background:rgba(255,71,87,.12);color:#FF4757;}
+[data-theme=dark] .sched-item-tag.hol{background:rgba(255,71,87,.22);}
+.sched-item-tag.evt{background:rgba(122,183,255,.14);color:#3b82f6;}
+[data-theme=dark] .sched-item-tag.evt{background:rgba(122,183,255,.2);}
+.sched-item-tag.cyc{background:rgba(255,107,157,.13);color:#FF6B9D;}
+[data-theme=dark] .sched-item-tag.cyc{background:rgba(255,107,157,.22);}
+
+.sched-empty-day{padding:8px 16px 10px;font-size:12px;color:var(--sheet-muted);font-weight:600;font-style:italic;}
+
+.sched-month-divider{
+  display:flex;align-items:center;gap:10px;
+  padding:16px 16px 8px;
+  font-size:12px;font-weight:900;color:var(--dsub);
+  letter-spacing:.6px;text-transform:uppercase;
+}
+.sched-month-divider::after{content:'';flex:1;height:1px;background:var(--sheet-border);}
+
+.sched-range-bar{
+  height:3px;border-radius:2px;background:rgba(122,183,255,.3);
+  margin:4px 0 2px;
+}
 </style>
 </head>
 <body>
@@ -716,6 +780,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   </div>
   <div class="modebar">
     <button class="mode-pill on" id="tabAll"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="13" width="7" height="7" rx="1.5"/><rect x="14" y="13" width="7" height="7" rx="1.5"/></svg>All</button>
+    <button class="mode-pill" id="scheduleBtn" onclick="openSheet('schedule')" title="Schedule"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2.5"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="3" x2="8" y2="6"/><line x1="16" y1="3" x2="16" y2="6"/><line x1="7" y1="14" x2="13" y2="14"/><line x1="7" y1="17" x2="11" y2="17"/></svg>Schedule</button>
     <button class="mode-pill" id="cycleBtn" onclick="openSheet('cycle')" title="My Cycle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5" stroke-dasharray="2.2 3.2"/><circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/></svg>My cycle</button>
   </div>
 
@@ -955,6 +1020,23 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     <input class="einput" id="evN" placeholder="Add a note…" type="text">
     <button class="ebtn" onclick="saveEv()">Save Event</button>
   </div>
+</div>
+
+<!-- SCHEDULE SHEET -->
+<div class="sheet cycle-fullscreen" id="scheduleSheet" style="padding-bottom:0;">
+  <div class="cycle-head" style="background:linear-gradient(135deg,rgba(91,79,207,.22),rgba(83,64,232,.10),rgba(59,130,246,.07));">
+    <button class="cycle-back" onclick="closeAll()" aria-label="Back">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="cycle-title-wrap">
+      <div class="cycle-title">📅 Schedule</div>
+      <div class="cycle-sub" id="schedSubtitle">Upcoming events &amp; holidays</div>
+    </div>
+    <div style="display:flex;gap:7px;align-items:center;margin-left:auto;">
+      <button id="schedTodayBtn" onclick="schedScrollToday()" style="padding:6px 12px;border-radius:13px;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:11px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">Today</button>
+    </div>
+  </div>
+  <div class="sscroll" id="scheduleBody" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0;"></div>
 </div>
 
 <!-- CYCLE TRACKER SHEET -->
@@ -1286,8 +1368,9 @@ function openDay(bY,bM,bD){
 // ══ SHEETS ══
 function closeAll(){
   document.getElementById('ov').classList.remove('open');
-  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','cycleSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','cycleSheet','scheduleSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
   document.getElementById('cycleSheet')?.classList.remove('cycle-fullscreen');
+  document.getElementById('scheduleSheet')?.classList.remove('cycle-fullscreen');
   document.querySelector('.phone')?.classList.remove('cycle-dim');
 }
 
@@ -1437,12 +1520,17 @@ function formatEventRange(ev){
 function openSheet(t){
   closeAll();
   document.getElementById('ov').classList.add('open');
-  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',cycle:'cycleSheet'};
+  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',cycle:'cycleSheet',schedule:'scheduleSheet'};
   const sheet=document.getElementById(ids[t]);
   sheet?.classList.add('open');
   if(t==='cycle'){
     sheet?.classList.add('cycle-fullscreen');
     document.querySelector('.phone')?.classList.add('cycle-dim');
+  }
+  if(t==='schedule'){
+    sheet?.classList.add('cycle-fullscreen');
+    document.querySelector('.phone')?.classList.add('cycle-dim');
+    renderSchedule();
   }
   if(t==='settings'){ renderGcalCard(); renderWidgetThumb(); renderWidgetSteps(); }
   if(t==='cycle') renderCycleSheet();
@@ -1799,6 +1887,174 @@ function renderUpcoming(){
       </div>`;
     }
   }).join('');
+}
+
+// ══ SCHEDULE VIEW ══
+const SCHED_DAYS = 90; // show 90 days ahead
+
+function renderSchedule(){
+  const todayMid = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
+  const windowEnd = new Date(todayMid.getTime() + SCHED_DAYS * 86400000);
+  const body = document.getElementById('scheduleBody');
+  if(!body) return;
+
+  // Build flat event map: dateKey (YYYY-MM-DD) → [{type,title,sub,color,tag,action}]
+  const dayMap = new Map();
+
+  function addToDay(dateKey, item){
+    if(!dayMap.has(dateKey)) dayMap.set(dateKey, []);
+    dayMap.get(dateKey).push(item);
+  }
+
+  // Holidays
+  for(const key of Object.keys(HOL)){
+    const[ky,km,kd] = key.split('-').map(Number);
+    if(!BS[ky]) continue;
+    const ad = bsToAd(ky,km,kd);
+    const adMid = new Date(ad.getFullYear(), ad.getMonth(), ad.getDate());
+    if(adMid < todayMid || adMid > windowEnd) continue;
+    const dk = `${ad.getFullYear()}-${String(ad.getMonth()+1).padStart(2,'0')}-${String(ad.getDate()).padStart(2,'0')}`;
+    addToDay(dk, {
+      type:'hol', color:'#FF4757',
+      title: lang==='ne' ? HOL[key].np : HOL[key].en,
+      sub: `🇳🇵 Public Holiday · ${MEN[km-1]} ${kd}, ${ky} BS`,
+      tag:'Holiday', tagCls:'hol',
+      action:()=>{ closeAll(); setTimeout(()=>openDay(ky,km,kd),60); }
+    });
+  }
+
+  // User events (multi-day: add to each day in range)
+  userEvents.forEach(ev=>{
+    const {startMid, endMid} = getEventRangeMid(ev);
+    let cur = new Date(Math.max(startMid.getTime(), todayMid.getTime()));
+    const stop = new Date(Math.min(endMid.getTime(), windowEnd.getTime()));
+    while(cur <= stop){
+      const dk = `${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`;
+      const bs = adToBs(cur);
+      const rangeStr = startMid.getTime()===endMid.getTime()
+        ? `${ADMEN[startMid.getMonth()]} ${startMid.getDate()}, ${startMid.getFullYear()}`
+        : `${ADMEN[startMid.getMonth()]} ${startMid.getDate()} – ${ADMEN[endMid.getMonth()]} ${endMid.getDate()}, ${endMid.getFullYear()}`;
+      addToDay(dk, {
+        type:'evt', color:'#7ab7ff',
+        title: ev.title,
+        sub: `📌 ${rangeStr}${ev.note?' · '+ev.note:''}`,
+        tag:'Event', tagCls:'evt',
+        action:()=>{ closeAll(); setTimeout(()=>openDay(bs.y,bs.m,bs.d),60); }
+      });
+      cur = new Date(cur.getTime() + 86400000);
+    }
+  });
+
+  // Cycle projections
+  const cycItems = buildCycleUpcomingItems(todayMid, windowEnd);
+  cycItems.forEach(ci=>{
+    const dk = `${ci.ad.getFullYear()}-${String(ci.ad.getMonth()+1).padStart(2,'0')}-${String(ci.ad.getDate()).padStart(2,'0')}`;
+    addToDay(dk, {
+      type:'cyc', color:'#FF6B9D',
+      title: '🌸 ' + ci.title,
+      sub: `My Cycle · ${ADMEN[ci.ad.getMonth()]} ${ci.ad.getDate()}, ${ci.ad.getFullYear()}${ci.sub?' · '+ci.sub:''}`,
+      tag:'Cycle', tagCls:'cyc',
+      action:()=>{ closeAll(); setTimeout(()=>openSheet('cycle'),60); }
+    });
+  });
+
+  // Build sorted list of days
+  const allDays = [];
+  for(let d = new Date(todayMid); d <= windowEnd; d = new Date(d.getTime()+86400000)){
+    allDays.push(new Date(d));
+  }
+
+  // Render
+  let html = '';
+  let lastMonth = -1;
+  let todayFound = false;
+
+  allDays.forEach(day=>{
+    const dk = `${day.getFullYear()}-${String(day.getMonth()+1).padStart(2,'0')}-${String(day.getDate()).padStart(2,'0')}`;
+    const items = dayMap.get(dk) || [];
+    const isToday = day.getTime() === todayMid.getTime();
+
+    // Month divider
+    if(day.getMonth() !== lastMonth){
+      lastMonth = day.getMonth();
+      const mo = ADMEN[day.getMonth()];
+      html += `<div class="sched-month-divider">${mo} ${day.getFullYear()}</div>`;
+    }
+
+    // Day row (skip empty non-today days)
+    if(!isToday && items.length === 0) return;
+
+    const dow = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][day.getDay()];
+    const bs = adToBs(day);
+    const bsStr = `${MEN[bs.m-1]} ${bs.d}, ${bs.y} BS`;
+
+    if(isToday) todayFound = true;
+
+    html += `<div class="sched-day-group" id="sched-${dk}">
+      <div class="sched-day-header${isToday?' today-row':''}">
+        <div class="sched-date-num">
+          <div class="sdn">${day.getDate()}</div>
+          <div class="sdm">${dow}</div>
+        </div>
+        <div class="sched-date-meta">
+          <div class="sched-date-full">${dow}, ${ADMEN[day.getMonth()]} ${day.getDate()}, ${day.getFullYear()}</div>
+          <div class="sched-date-bs">${bsStr}</div>
+        </div>
+        ${isToday ? '<span class="sched-today-badge">Today</span>' : ''}
+      </div>
+      <div class="sched-items">`;
+
+    if(items.length === 0){
+      html += `<div class="sched-empty-day">No events</div>`;
+    } else {
+      items.forEach(it=>{
+        const evIdx = it.type==='evt' ? JSON.stringify(it) : null;
+        html += `<div class="sched-item" onclick="_schedItemClick('${dk}',${items.indexOf(it)})">
+          <div class="sched-item-color" style="background:${it.color};"></div>
+          <div class="sched-item-body">
+            <div class="sched-item-title">${it.title}</div>
+            <div class="sched-item-sub">${it.sub}</div>
+          </div>
+          <span class="sched-item-tag ${it.tagCls}">${it.tag}</span>
+        </div>`;
+      });
+    }
+
+    html += `</div></div>`;
+  });
+
+  body.innerHTML = html;
+
+  // Store item actions for click handler
+  window._schedActions = {};
+  allDays.forEach(day=>{
+    const dk = `${day.getFullYear()}-${String(day.getMonth()+1).padStart(2,'0')}-${String(day.getDate()).padStart(2,'0')}`;
+    const items = dayMap.get(dk) || [];
+    items.forEach((it,i)=>{ window._schedActions[dk+'_'+i] = it.action; });
+  });
+
+  // Subtitle
+  const totalItems = [...dayMap.values()].reduce((a,b)=>a+b.length,0);
+  const sub = document.getElementById('schedSubtitle');
+  if(sub) sub.textContent = `${totalItems} event${totalItems!==1?'s':''} in next ${SCHED_DAYS} days`;
+
+  // Scroll to today
+  setTimeout(schedScrollToday, 80);
+}
+
+window._schedItemClick = function(dk, idx){
+  const fn = window._schedActions && window._schedActions[dk+'_'+idx];
+  if(fn) fn();
+};
+
+function schedScrollToday(){
+  const todayMid = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
+  const dk = `${todayMid.getFullYear()}-${String(todayMid.getMonth()+1).padStart(2,'0')}-${String(todayMid.getDate()).padStart(2,'0')}`;
+  const el = document.getElementById('sched-'+dk);
+  const body = document.getElementById('scheduleBody');
+  if(el && body){
+    body.scrollTo({ top: el.offsetTop - 8, behavior:'smooth' });
+  }
 }
 
 function renderSelectedDay(){
