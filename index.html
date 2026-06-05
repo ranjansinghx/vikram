@@ -80,6 +80,11 @@
   --sheet-border:rgba(123,110,246,.08);
   --sheet-text:#1f2031;
   --sheet-muted:#767a8f;
+  --up-pill-bg:linear-gradient(180deg,rgba(34,34,38,.98),rgba(22,22,25,.98));
+  --up-pill-border:rgba(255,255,255,.08);
+  --up-pill-text:#f4f4f8;
+  --up-count-bg:linear-gradient(180deg,#7e5bf1,#5e39e3);
+  --up-count-text:#fff;
 }
 [data-theme="dark"]{
   --bg:#141428;--card:#1e1e38;--htext:#e8e8ff;--hsub:#6b6d8a;
@@ -133,6 +138,11 @@
   --sheet-border:rgba(255,255,255,.06);
   --sheet-text:#ece8ff;
   --sheet-muted:#8f89a7;
+  --up-pill-bg:linear-gradient(180deg,rgba(34,34,38,.98),rgba(22,22,25,.98));
+  --up-pill-border:rgba(255,255,255,.08);
+  --up-pill-text:#f4f4f8;
+  --up-count-bg:linear-gradient(180deg,#7e5bf1,#5e39e3);
+  --up-count-text:#fff;
 }
 html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;justify-content:center;align-items:flex-start;padding:10px 0 72px;transition:background .3s;}
 .phone{
@@ -357,23 +367,36 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
 /* ── UPCOMING PANEL ── */
 .upcoming{
-  margin:12px 10px 110px;
+  margin:6px 6px 94px;
   background:var(--sheet-bg);
-  border-radius:34px;
-  padding:12px 12px 16px;
+  border-radius:26px;
+  padding:6px 6px 10px;
   box-shadow:var(--panel-shadow),inset 0 1px 0 rgba(255,255,255,.84);
   border:1px solid var(--sheet-border);
 }
-.up-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:0 2px;}
+.up-hdr{display:flex;align-items:center;gap:5px;margin-bottom:6px;padding:0;}
 .up-title{
-  font-size:16px;font-weight:900;color:#fff;flex:0 0 auto;
-  display:inline-flex;align-items:center;gap:7px;
-  padding:10px 16px 10px 14px;border-radius:18px;
-  background:linear-gradient(135deg,#8f67f6,#7c53ea 55%,#6f3edc);
-  box-shadow:0 8px 18px rgba(123,72,240,.22),0 0 0 1px rgba(255,255,255,.12) inset;
+  font-size:11px;font-weight:900;color:var(--up-pill-text);flex:0 0 auto;
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 8px 5px 9px;border-radius:999px;
+  background:var(--up-pill-bg);
+  border:1px solid var(--up-pill-border);
+  box-shadow:0 8px 18px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.04);
 }
-.up-title::before{content:'◔';font-size:14px;line-height:1;opacity:.95;}
+.up-title::before{
+  content:'☕';
+  font-size:8px;
+  line-height:1;
+  opacity:.95;
+  filter:grayscale(1) brightness(1.7);
+}
 .up-title.sub{color:var(--sheet-muted);font-size:14px;}
+.up-count{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:21px;height:18px;padding:0 6px;border-radius:999px;
+  background:var(--up-count-bg);color:var(--up-count-text);
+  font-size:9px;font-weight:900;box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+}
 .up-tabs{display:flex;background:var(--card);border-radius:20px;padding:3px;gap:2px;box-shadow:0 2px 10px rgba(80,70,170,.07);}
 .up-tab{padding:5px 13px;border-radius:16px;font-size:11.5px;font-weight:800;background:transparent;color:var(--dsub);border:none;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;}
 .up-tab.on{background:var(--tgon);color:#fff;}
@@ -712,7 +735,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   <!-- UPCOMING PANEL -->
   <div class="upcoming">
     <div class="up-hdr" style="margin-top:18px;">
-      <span class="up-title" id="upTitle">Upcoming</span>
+      <span class="up-title"><span id="upTitle">Upcoming</span><span class="up-count" id="upCount">0</span></span>
     </div>
     <div id="upList"></div>
   </div>
@@ -1714,12 +1737,15 @@ function renderUpcoming(){
   items.sort((a,b)=>a.diff-b.diff||prio(a.type)-prio(b.type));
 
   const list=document.getElementById('upList');
+  const countEl=document.getElementById('upCount');
+  if(countEl) countEl.textContent=String(items.length);
 
   if(items.length===0){
     list.innerHTML=`<div class="up-empty">
       <span class="up-empty-ico">🌤️</span>
       <div class="up-empty-txt">No upcoming holidays, events, or cycle updates</div>
     </div>`;
+    if(countEl) countEl.textContent='0';
     return;
   }
 
