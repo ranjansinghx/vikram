@@ -365,89 +365,131 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
 @media(max-width:420px){.phone,.sheet{width:100vw;}.fab{right:18px;}}
 
-/* ── UPCOMING PANEL ── */
+/* ── UPCOMING PANEL — GCal style ── */
 .upcoming{
-  margin:6px 6px 94px;
-  background:var(--sheet-bg);
-  border-radius:26px;
-  padding:6px 6px 10px;
-  box-shadow:var(--panel-shadow),inset 0 1px 0 rgba(255,255,255,.84);
-  border:1px solid var(--sheet-border);
+  margin:4px 0 94px;
+  padding:0;
+  background:transparent;
 }
-.up-hdr{display:flex;align-items:center;gap:5px;margin-bottom:6px;padding:0;}
+.up-hdr{
+  display:flex;align-items:center;gap:8px;
+  padding:4px 14px 10px;
+}
 .up-title{
-  font-size:11px;font-weight:900;color:var(--up-pill-text);flex:0 0 auto;
-  display:inline-flex;align-items:center;gap:5px;
-  padding:5px 8px 5px 9px;border-radius:999px;
+  font-size:13px;font-weight:900;color:var(--up-pill-text);
+  display:inline-flex;align-items:center;gap:7px;
+  padding:7px 13px 7px 11px;border-radius:999px;
   background:var(--up-pill-bg);
   border:1px solid var(--up-pill-border);
-  box-shadow:0 8px 18px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.04);
+  box-shadow:0 6px 16px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.06);
+  cursor:default;
 }
-.up-title::before{
-  content:'☕';
-  font-size:8px;
-  line-height:1;
-  opacity:.95;
-  filter:grayscale(1) brightness(1.7);
-}
-.up-title.sub{color:var(--sheet-muted);font-size:14px;}
+.up-title-icon{font-size:13px;line-height:1;}
 .up-count{
   display:inline-flex;align-items:center;justify-content:center;
-  min-width:21px;height:18px;padding:0 6px;border-radius:999px;
+  min-width:22px;height:19px;padding:0 6px;border-radius:999px;
   background:var(--up-count-bg);color:var(--up-count-text);
-  font-size:9px;font-weight:900;box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+  font-size:10px;font-weight:900;
 }
-.up-tabs{display:flex;background:var(--card);border-radius:20px;padding:3px;gap:2px;box-shadow:0 2px 10px rgba(80,70,170,.07);}
-.up-tab{padding:5px 13px;border-radius:16px;font-size:11.5px;font-weight:800;background:transparent;color:var(--dsub);border:none;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;}
-.up-tab.on{background:var(--tgon);color:#fff;}
-.sel-card{background:var(--sel-bg);border-radius:22px;padding:15px 14px 14px;box-shadow:var(--panel-shadow),inset 0 1px 0 rgba(255,255,255,.04);margin-bottom:18px;position:relative;overflow:hidden;border:1px solid var(--sel-border);}
-.sel-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#8b5cf6,#3b82f6);}
-.sel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;padding-left:4px;}
-.sel-date{min-width:0;}
-.sel-day{font-size:20px;font-weight:900;color:var(--sel-text);line-height:1;}
-.sel-sub{font-size:11px;font-weight:700;color:var(--sel-muted);margin-top:3px;}
-.sel-badges{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;padding-left:4px;}
-.sel-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;padding-left:4px;}
-.sel-btn{padding:9px 13px;border:none;border-radius:16px;background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:var(--sel-action-text);font-size:12px;font-weight:900;cursor:pointer;box-shadow:0 8px 16px rgba(124,58,237,.22);}
-.sel-btn.ghost{background:rgba(255,255,255,.06);box-shadow:none;color:var(--sel-text);}
-.sel-badge{font-size:10.5px;font-weight:800;padding:4px 9px;border-radius:12px;white-space:nowrap;background:var(--chip-bg);color:var(--chip-text);}
-.sel-badge.hol{background:var(--chip-hol-bg);color:var(--chip-hol-text);}
-.sel-badge.today{background:linear-gradient(135deg,#7B6EF6,#5340E8);color:#fff;}
-[data-theme=dark] .sel-badge{background:#1b1c2c;color:#cdbfff;}
-[data-theme=dark] .sel-badge.hol{background:#3a1a1a;color:#ff9090;}
-.sel-list{margin-top:12px;display:flex;flex-direction:column;gap:8px;}
-.sel-row{display:flex;align-items:flex-start;gap:8px;font-size:13px;font-weight:700;color:var(--sel-text);}
-.sel-dot{width:7px;height:7px;border-radius:50%;background:var(--dot-evt);flex-shrink:0;margin-top:5px;}
-.sel-empty{text-align:center;padding:18px 8px;color:var(--sel-muted);font-size:13px;font-weight:600;}
-.up-empty{text-align:center;padding:32px 0 20px;color:var(--sheet-muted);}
-.up-empty-ico{font-size:34px;display:block;margin-bottom:8px;}
+
+/* Day group */
+.up-day-group{ padding:0 0 2px; }
+.up-day-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px 6px;
+}
+.up-day-left{ display:flex;align-items:baseline;gap:8px; }
+.up-day-name{ font-size:14px;font-weight:900;color:var(--dtext); }
+.up-day-bs{   font-size:11.5px;font-weight:700;color:var(--dsub); }
+.up-day-badge{
+  font-size:10px;font-weight:900;padding:3px 10px;border-radius:999px;
+  white-space:nowrap;
+}
+.up-day-badge.today{ background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff; }
+.up-day-badge.tomorrow{ background:rgba(123,110,246,.13);color:#7c3aed; }
+[data-theme=dark] .up-day-badge.tomorrow{ background:rgba(139,92,246,.2);color:#c4b5fd; }
+
+/* Event card */
+.up-item{
+  display:flex;align-items:center;gap:12px;
+  background:var(--panel-bg);
+  border-radius:18px;
+  padding:13px 14px 13px 13px;
+  margin:0 10px 8px;
+  box-shadow:var(--panel-shadow);
+  cursor:pointer;
+  transition:transform .14s,box-shadow .14s;
+  border:1px solid var(--panel-border);
+  position:relative;overflow:hidden;
+}
+.up-item:active{ transform:scale(.98); }
+.up-item:hover{ transform:translateY(-1px);box-shadow:0 10px 26px rgba(80,70,170,.14); }
+
+/* Icon circle */
+.up-icon{
+  width:42px;height:42px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.up-icon.hol { background:rgba(255,71,87,.14); }
+.up-icon.evt { background:rgba(59,130,246,.14); }
+.up-icon.cyc { background:rgba(168,85,247,.14); }
+[data-theme=dark] .up-icon.hol{ background:rgba(255,71,87,.22); }
+[data-theme=dark] .up-icon.evt{ background:rgba(59,130,246,.22); }
+[data-theme=dark] .up-icon.cyc{ background:rgba(168,85,247,.22); }
+
+/* Middle content */
+.up-info{ flex:1;min-width:0; }
+.up-name{
+  font-size:14px;font-weight:900;color:var(--sheet-text);
+  line-height:1.25;margin-bottom:5px;
+}
+.up-tag-row{ display:flex;align-items:center;gap:6px;flex-wrap:wrap; }
+.up-tag{
+  font-size:10px;font-weight:900;padding:3px 9px;border-radius:999px;
+  white-space:nowrap;letter-spacing:.2px;
+}
+.up-tag.hol{ background:rgba(255,71,87,.12);color:#FF4757; }
+.up-tag.evt{ background:rgba(59,130,246,.12);color:#3b82f6; }
+.up-tag.cyc{ background:rgba(168,85,247,.12);color:#a855f7; }
+.up-tag.neu{ background:rgba(123,110,246,.1);color:#7c3aed; }
+[data-theme=dark] .up-tag.hol{ background:rgba(255,71,87,.22);color:#ff7880; }
+[data-theme=dark] .up-tag.evt{ background:rgba(59,130,246,.22);color:#7ab7ff; }
+[data-theme=dark] .up-tag.cyc{ background:rgba(168,85,247,.22);color:#c4a7ff; }
+[data-theme=dark] .up-tag.neu{ background:rgba(139,92,246,.18);color:#c4b5fd; }
+.up-sub-pill{
+  font-size:10px;font-weight:700;color:var(--sheet-muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* Chevron */
+.up-chev{
+  width:22px;height:22px;border-radius:50%;
+  background:rgba(255,255,255,.06);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.up-chev svg{ width:12px;height:12px;stroke:var(--sheet-muted);stroke-width:2.5;fill:none; }
+
+/* Remove button */
+.up-remove{
+  font-size:10px;color:var(--dsub);cursor:pointer;font-weight:700;
+  padding:2px 0;white-space:nowrap;
+}
+.up-remove:hover{ color:#FF4757; }
+
+.up-empty{text-align:center;padding:40px 0 28px;color:var(--sheet-muted);}
+.up-empty-ico{font-size:38px;display:block;margin-bottom:10px;}
 .up-empty-txt{font-size:13px;font-weight:600;}
-.up-item{display:flex;align-items:center;gap:13px;background:var(--panel-bg);border-radius:20px;padding:13px 14px;margin-bottom:10px;box-shadow:var(--panel-shadow);cursor:pointer;transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden;border:1px solid var(--panel-border);}
-.up-item:active{transform:scale(.98);}
-.up-item:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(80,70,170,.12);}
-.up-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;}
-.up-item.hol::before{background:var(--hol);}
-.up-item.evt::before{background:var(--tgon);}
-.up-item.cyc::before{background:linear-gradient(180deg,#8b5cf6,#a855f7);}
-.up-chip{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:48px;border-radius:14px;padding:8px 8px;flex-shrink:0;}
-.up-chip.hol{background:var(--chip-hol-bg);box-shadow:inset 0 0 0 1px rgba(214,61,79,.08);}
-.up-chip.evt{background:var(--chip-evt-bg);box-shadow:inset 0 0 0 1px rgba(91,79,207,.08);}
-.up-day{font-size:20px;font-weight:900;line-height:1;}
-.up-chip.hol .up-day{color:var(--chip-hol-text);}
-.up-chip.evt .up-day{color:var(--chip-evt-text);}
-.up-chip.cyc .up-day{color:#8b5cf6;}
-.up-mon{font-size:9px;font-weight:800;color:var(--sheet-muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
-.up-info{flex:1;min-width:0;}
-.up-name{font-size:13.5px;font-weight:800;color:var(--sheet-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.up-sub{font-size:11px;color:var(--sheet-muted);font-weight:600;margin-top:2px;}
-.up-badge{font-size:10.5px;font-weight:800;padding:4px 9px;border-radius:12px;white-space:nowrap;flex-shrink:0;background:rgba(123,110,246,.08);color:#7c3aed;}
-.up-badge.today{background:linear-gradient(135deg,#7B6EF6,#5340E8);color:#fff;}
-.up-badge.soon{background:#EEF0FF;color:var(--tgon);}
-.up-badge.red{background:#FFF0F0;color:var(--hol);}
-.up-badge.cyc{background:#efe7ff;color:#7c3aed;}
-[data-theme=dark] .up-badge.soon{background:#2a2a55;color:#a89cf7;}
-[data-theme=dark] .up-badge.red{background:#3a1a1a;color:#ff9090;}
-[data-theme=dark] .up-badge.cyc{background:#2a203a;color:#c7b3ff;}
+
+/* Legacy sel-* kept for selectedDay panel (unused in new flow) */
+.sel-card{display:none;}
+.sel-empty{display:none;}
+.up-tabs{display:none;}
+.up-badge{display:none;}
+.up-chip{display:none;}
+.up-day{display:none;}
+.up-mon{display:none;}
 
 /* ── MONTH PICKER ── */
 .mth-btn{cursor:pointer;border-radius:8px;padding:2px 4px 2px 2px;transition:background .2s;display:inline-flex;align-items:center;gap:2px;}
@@ -799,8 +841,12 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
   <!-- UPCOMING PANEL -->
   <div class="upcoming">
-    <div class="up-hdr" style="margin-top:18px;">
-      <span class="up-title"><span id="upTitle">Upcoming</span><span class="up-count" id="upCount">0</span></span>
+    <div class="up-hdr">
+      <span class="up-title">
+        <span class="up-title-icon">✦</span>
+        <span id="upTitle">Upcoming</span>
+        <span class="up-count" id="upCount">0</span>
+      </span>
     </div>
     <div id="upList"></div>
   </div>
@@ -1774,6 +1820,21 @@ function relLabel(diff){
   return{text:`In ~1 month`,cls:'red'};
 }
 
+// Icon & tag config per event type
+function upItemMeta(type, subtype){
+  if(type==='hol') return {icon:'🇳🇵', iconCls:'hol', tagLabel:'HOLIDAY',    tagCls:'hol'};
+  if(type==='evt') return {icon:'📌',  iconCls:'evt', tagLabel:'EVENT',      tagCls:'evt'};
+  // cycle subtypes
+  const cm={
+    'Period starts':         {icon:'🩸', tagLabel:'PERIOD START',  tagCls:'cyc'},
+    'Period ends':           {icon:'✅', tagLabel:'PERIOD END',    tagCls:'cyc'},
+    'Fertile window opens':  {icon:'🌸', tagLabel:'FERTILE WINDOW',tagCls:'cyc'},
+    'Ovulation':             {icon:'✨', tagLabel:'OVULATION',     tagCls:'cyc'},
+  };
+  const m = cm[subtype] || {icon:'🌸', tagLabel:'CYCLE', tagCls:'cyc'};
+  return {...m, iconCls:'cyc'};
+}
+
 function renderUpcoming(){
   const todayMid=new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
   const windowEnd=new Date(todayMid.getTime()+WINDOW*86400000);
@@ -1805,22 +1866,20 @@ function renderUpcoming(){
     const rangeText=startMid.getTime()===endMid.getTime()
       ? startStr
       : `${startStr} to ${endStr}`;
+    const bs=adToBs(displayMid);
     items.push({
       type:'evt',
       ky:ev.bsY,km:ev.bsM,kd:ev.bsD,
-      ad:new Date(startMid),
-      adMid:displayMid,
-      diff,
-      ev,
-      rangeText,
-      range:{startMid,endMid}
+      ad:new Date(startMid),adMid:displayMid,diff,ev,rangeText,
+      range:{startMid,endMid},
+      bsDisp:bs
     });
   });
 
   // — Cycle tracker projections within window —
   items.push(...buildCycleUpcomingItems(todayMid, windowEnd));
 
-  // — Sort by date, then holidays, cycle items, then events on same day —
+  // — Sort by date, then hol, cyc, evt —
   const prio=t=>t==='hol'?0:t==='cyc'?1:2;
   items.sort((a,b)=>a.diff-b.diff||prio(a.type)-prio(b.type));
 
@@ -1831,62 +1890,101 @@ function renderUpcoming(){
   if(items.length===0){
     list.innerHTML=`<div class="up-empty">
       <span class="up-empty-ico">🌤️</span>
-      <div class="up-empty-txt">No upcoming holidays, events, or cycle updates</div>
+      <div class="up-empty-txt">No upcoming holidays, events, or cycle updates in the next ${WINDOW} days</div>
     </div>`;
-    if(countEl) countEl.textContent='0';
     return;
   }
 
-  list.innerHTML=items.map(it=>{
-    const{text,cls}=relLabel(it.diff);
-    const nd=ns(it.kd);
-    const mName=mArr[it.km-1];
-    const adStr=`${ADMEN[it.ad.getMonth()]} ${it.ad.getDate()}, ${it.ad.getFullYear()}`;
-
-    if(it.type==='hol'){
-      const holName=lang==='ne'?it.hol.np:it.hol.en;
-      return`<div class="up-item hol" onclick="openDay(${it.ky},${it.km},${it.kd})">
-        <div class="up-chip hol">
-          <div class="up-day ne">${nd}</div>
-          <div class="up-mon">${mName.slice(0,3).toUpperCase()}</div>
-        </div>
-        <div class="up-info">
-          <div class="up-name ne">${holName}</div>
-          <div class="up-sub">🇳🇵 Holiday · ${adStr}</div>
-        </div>
-        <span class="up-badge ${cls}">${text}</span>
-      </div>`;
-    } else if(it.type==='cyc'){
-      return`<div class="up-item cyc" onclick="openSheet('cycle')">
-        <div class="up-chip cyc">
-          <div class="up-day ne">${nd}</div>
-          <div class="up-mon">${mName.slice(0,3).toUpperCase()}</div>
-        </div>
-        <div class="up-info">
-          <div class="up-name">🌸 ${it.title}</div>
-          <div class="up-sub">My Cycle Tracker · ${adStr}${it.sub?' · '+it.sub:''}</div>
-        </div>
-        <span class="up-badge ${cls} cyc">${text}</span>
-      </div>`;
-    } else {
-      const ev=it.ev;
-      const realIdx=userEvents.indexOf(ev);
-      return`<div class="up-item evt" onclick="openDay(${it.ky},${it.km},${it.kd})">
-        <div class="up-chip evt">
-          <div class="up-day ne">${nd}</div>
-          <div class="up-mon">${mName.slice(0,3).toUpperCase()}</div>
-        </div>
-        <div class="up-info">
-          <div class="up-name">${ev.title}</div>
-          <div class="up-sub">📌 Event · ${it.rangeText||adStr}${ev.note?' · '+ev.note:''}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;">
-          <span class="up-badge ${cls}">${text}</span>
-          <span style="font-size:10px;color:var(--dsub);cursor:pointer;font-weight:700;" onclick="event.stopPropagation();removeEv(${realIdx})">✕ Remove</span>
-        </div>
-      </div>`;
+  // Group items by day
+  const groups = new Map(); // dateKey → {diff, adMid, bsY, bsM, bsD, items[]}
+  items.forEach(it=>{
+    const d = it.adMid;
+    const dk = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    if(!groups.has(dk)){
+      // get BS for display
+      const bs = adToBs(d);
+      groups.set(dk, {diff:it.diff, adMid:d, bs, items:[]});
     }
-  }).join('');
+    groups.get(dk).items.push(it);
+  });
+
+  const WDEN_SHORT=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  let html='';
+  groups.forEach(g=>{
+    const {diff, adMid, bs} = g;
+    const dow = WDEN_SHORT[adMid.getDay()];
+    const dayLabel = `${dow}, ${adMid.getDate()} ${ADMEN[adMid.getMonth()]}`;
+    const bsLabel  = `· ${ns(bs.d)} ${lang==='ne'?MNE[bs.m-1]:MEN[bs.m-1]}`;
+    const badgeHtml = diff===0
+      ? `<span class="up-day-badge today">Today</span>`
+      : diff===1
+        ? `<span class="up-day-badge tomorrow">Tomorrow</span>`
+        : '';
+
+    html += `<div class="up-day-group">
+      <div class="up-day-row">
+        <div class="up-day-left">
+          <span class="up-day-name">${dayLabel}</span>
+          <span class="up-day-bs ne">${bsLabel}</span>
+        </div>
+        ${badgeHtml}
+      </div>`;
+
+    g.items.forEach(it=>{
+      if(it.type==='hol'){
+        const holName=lang==='ne'?it.hol.np:it.hol.en;
+        const meta=upItemMeta('hol');
+        html+=`<div class="up-item" onclick="openDay(${it.ky},${it.km},${it.kd})">
+          <div class="up-icon ${meta.iconCls}">${meta.icon}</div>
+          <div class="up-info">
+            <div class="up-name ne">${holName}</div>
+            <div class="up-tag-row">
+              <span class="up-tag ${meta.tagCls}">${meta.tagLabel}</span>
+              <span class="up-sub-pill">${MEN[it.km-1]} ${it.kd}, ${it.ky} BS</span>
+            </div>
+          </div>
+          <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>`;
+      } else if(it.type==='cyc'){
+        const meta=upItemMeta('cyc', it.title);
+        html+=`<div class="up-item" onclick="openSheet('cycle')">
+          <div class="up-icon ${meta.iconCls}">${meta.icon}</div>
+          <div class="up-info">
+            <div class="up-name">${it.title}</div>
+            <div class="up-tag-row">
+              <span class="up-tag ${meta.tagCls}">${meta.tagLabel}</span>
+              <span class="up-sub-pill">${it.sub||'Tracking Cycle Progress'}</span>
+            </div>
+          </div>
+          <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>`;
+      } else {
+        const ev=it.ev;
+        const realIdx=userEvents.indexOf(ev);
+        const meta=upItemMeta('evt');
+        html+=`<div class="up-item" onclick="openDay(${it.ky},${it.km},${it.kd})">
+          <div class="up-icon ${meta.iconCls}">${meta.icon}</div>
+          <div class="up-info">
+            <div class="up-name">${ev.title}</div>
+            <div class="up-tag-row">
+              <span class="up-tag ${meta.tagCls}">${meta.tagLabel}</span>
+              <span class="up-sub-pill">${it.rangeText||''}</span>
+            </div>
+            ${ev.note?`<div style="font-size:11px;color:var(--sheet-muted);font-weight:600;margin-top:3px;">${ev.note}</div>`:''}
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+            <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+            <span class="up-remove" onclick="event.stopPropagation();removeEv(${realIdx})">✕ Remove</span>
+          </div>
+        </div>`;
+      }
+    });
+
+    html += `</div>`;
+  });
+
+  list.innerHTML = html;
 }
 
 // ══ SCHEDULE VIEW ══
