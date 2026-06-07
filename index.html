@@ -491,32 +491,109 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:9px 7px;padding:2px 1px 0;}
 
 /* ── COLLAPSIBLE CALENDAR ── */
-.cal-clip{overflow:hidden;transition:height .38s cubic-bezier(.22,.85,.25,1);will-change:height;}
-#cgrid{transition:transform .38s cubic-bezier(.22,.85,.25,1);will-change:transform;}
+.cal-clip{
+  overflow:hidden;
+  will-change:height;
+}
+#cgrid{
+  will-change:transform;
+}
+
+/* Expand handle pill */
 .cal-expand-handle{
   display:flex;align-items:center;justify-content:center;
-  padding:6px 0 2px;cursor:pointer;gap:6px;
-  color:var(--nav-muted);font-size:11px;font-weight:800;letter-spacing:.3px;
+  padding:8px 0 4px;cursor:pointer;
   user-select:none;-webkit-user-select:none;
-  transition:color .2s;
+  -webkit-tap-highlight-color:transparent;
 }
-.cal-expand-handle:active{color:var(--nav-text);}
-.cal-expand-handle svg{
-  width:16px;height:16px;stroke:currentColor;stroke-width:2.5;fill:none;
-  transition:transform .38s cubic-bezier(.22,.85,.25,1);
+.cal-handle-pill{
+  display:flex;align-items:center;gap:7px;
+  padding:5px 14px 5px 11px;
+  border-radius:999px;
+  background:rgba(123,110,246,.10);
+  border:1px solid rgba(123,110,246,.14);
+  color:var(--nav-muted);
+  font-size:10.5px;font-weight:800;letter-spacing:.3px;
+  transition:background .22s, border-color .22s, color .22s, transform .22s, box-shadow .22s;
+  box-shadow:0 2px 8px rgba(123,110,246,.06);
 }
-.cal-expanded .cal-expand-handle svg{transform:rotate(180deg);}
-.cal-expand-dots{display:flex;gap:3px;align-items:center;}
-.cal-expand-dot{width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.5;}
-/* Week indicator strip */
+.cal-expand-handle:active .cal-handle-pill{
+  background:rgba(123,110,246,.18);
+  transform:scale(.96);
+}
+.cal-handle-pill svg{
+  width:13px;height:13px;stroke:currentColor;stroke-width:2.8;fill:none;flex-shrink:0;
+  transition:transform .42s cubic-bezier(.34,1.56,.64,1);
+}
+.cal-expanded .cal-handle-pill{
+  background:rgba(123,110,246,.16);
+  border-color:rgba(123,110,246,.28);
+  color:var(--tf);
+  box-shadow:0 4px 14px rgba(123,110,246,.15);
+}
+.cal-expanded .cal-handle-pill svg{transform:rotate(180deg);}
+
+/* Dragging state — pill glows */
+.cal-clip.dragging ~ .cal-week-indicator ~ .cal-expand-handle .cal-handle-pill,
+.cal-dragging .cal-handle-pill{
+  background:rgba(123,110,246,.22);
+  border-color:rgba(123,110,246,.38);
+  color:var(--tf);
+  box-shadow:0 6px 20px rgba(123,110,246,.22);
+}
+
+/* Week indicator dots */
 .cal-week-indicator{
-  display:flex;justify-content:center;gap:4px;padding:4px 0 2px;
+  display:flex;justify-content:center;gap:5px;padding:5px 0 2px;
 }
 .cal-week-dot{
-  width:5px;height:5px;border-radius:50%;
-  background:var(--dim);transition:background .2s,transform .2s;
+  height:4px;border-radius:99px;
+  background:var(--dim);
+  transition:width .32s cubic-bezier(.34,1.56,.64,1), background .22s, transform .22s;
+  width:14px;
 }
-.cal-week-dot.active{background:var(--tf);transform:scale(1.3);}
+.cal-week-dot.active{
+  background:var(--tf);
+  width:22px;
+  box-shadow:0 0 8px rgba(123,110,246,.4);
+}
+
+/* Ripple canvas layer */
+#calRippleCanvas{
+  position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  opacity:0;transition:opacity .18s;z-index:0;
+}
+.ccard{position:relative;overflow:hidden;}
+.ccard > *{position:relative;z-index:1;}
+
+/* Cells unfurl during expansion */
+@keyframes cellReveal{
+  from{opacity:0;transform:scale(.82) translateY(6px);}
+  to  {opacity:1;transform:scale(1)   translateY(0);}
+}
+.cal-cell-anim{animation:cellReveal .28s cubic-bezier(.34,1.2,.64,1) both;}
+
+/* Shimmer on the calendar card while dragging */
+@keyframes calShimmer{
+  0%  {background-position:200% center;}
+  100%{background-position:-200% center;}
+}
+.cal-shimmer-bar{
+  position:absolute;bottom:0;left:0;right:0;height:3px;border-radius:0 0 16px 16px;
+  background:linear-gradient(90deg,transparent 0%,rgba(167,99,255,.7) 40%,rgba(109,44,232,.9) 50%,rgba(167,99,255,.7) 60%,transparent 100%);
+  background-size:200% auto;
+  animation:calShimmer 1.2s linear infinite;
+  opacity:0;transition:opacity .18s;pointer-events:none;z-index:2;
+}
+.cal-dragging .cal-shimmer-bar,.ccard.swiping .cal-shimmer-bar{opacity:1;}
+
+/* Glow aura behind ccard while dragging */
+.ccard::before{
+  content:'';position:absolute;inset:-4px;border-radius:20px;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(123,110,246,.22),transparent 70%);
+  opacity:0;transition:opacity .28s;
+}
+.ccard.swiping::before,.ccard.cal-expanded::before{opacity:1;}
 
 
 /* ── CELLS ── */
@@ -1142,13 +1219,12 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     </div>
     <div class="cal-week-indicator" id="calWeekDots"></div>
     <div class="cal-expand-handle" id="calExpandHandle" onclick="toggleCalExpand()">
-      <div class="cal-expand-dots">
-        <div class="cal-expand-dot"></div>
-        <div class="cal-expand-dot"></div>
-        <div class="cal-expand-dot"></div>
+      <div class="cal-handle-pill">
+        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        <span id="calHandleLabel">Show month</span>
       </div>
-      <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
+    <div class="cal-shimmer-bar"></div>
   </div>
   <div class="upcoming">
     <div class="up-hdr">
@@ -1674,21 +1750,18 @@ function goToday(){vY=TODAYBS.y;vM=TODAYBS.m;selectedDay={y:TODAYBS.y,m:TODAYBS.
 // ══ COLLAPSIBLE CALENDAR ══
 let calExpanded = false;
 
+// ── Calendar geometry helpers ──
 function getCurrentWeekRow(){
-  // Returns 0-based index of the row containing today (or selected day) in the current rendered month
   const sAD = bsStart(vY, vM);
   const sDow = (sAD.getDay() - cfg.fd + 7) % 7;
   const dims = BS[vY]?.[vM-1] ?? 30;
-  // Which day are we focusing on?
   let focusD = null;
   if(vY === TODAYBS.y && vM === TODAYBS.m) focusD = TODAYBS.d;
   else if(selectedDay.y === vY && selectedDay.m === vM) focusD = selectedDay.d;
   if(focusD === null) focusD = 1;
   focusD = Math.max(1, Math.min(focusD, dims));
-  const cellIndex = sDow + focusD - 1;
-  return Math.floor(cellIndex / 7);
+  return Math.floor((sDow + focusD - 1) / 7);
 }
-
 function getTotalWeekRows(){
   const sAD = bsStart(vY, vM);
   const sDow = (sAD.getDay() - cfg.fd + 7) % 7;
@@ -1696,118 +1769,243 @@ function getTotalWeekRows(){
   let tot = sDow + dims; if(tot % 7 !== 0) tot += 7 - tot % 7;
   return Math.floor(tot / 7);
 }
-
 function getRowHeightPx(){
   const grid = document.getElementById('cgrid');
   if(!grid) return 67;
   const cells = grid.querySelectorAll('.cell');
   if(!cells.length) return 67;
-  const first = cells[0];
   const style = getComputedStyle(grid);
   const rowGap = parseFloat(style.rowGap) || 9;
-  return first.offsetHeight + rowGap;
+  return cells[0].offsetHeight + rowGap;
 }
-
-function applyCalHeight(animate){
-  const clip = document.getElementById('calClip');
-  const ccard = document.querySelector('.ccard');
-  if(!clip) return;
-  const grid = document.getElementById('cgrid');
+function getCalHeights(){
   const rowH = getRowHeightPx();
   const totalRows = getTotalWeekRows();
-  const visibleRows = calExpanded ? totalRows : 1;
-  const targetRow = calExpanded ? 0 : getCurrentWeekRow();
-
-  // Full grid height vs single-row height
-  const fullH = rowH * totalRows + 4; // +4 for padding-top
-  const oneH  = rowH;
-
-  if(calExpanded){
-    clip.style.height = fullH + 'px';
-    grid.style.transform = 'translateY(0)';
-  } else {
-    clip.style.height = oneH + 'px';
-    // Slide the grid so the current week row is visible
-    const offsetY = -(targetRow * rowH);
-    grid.style.transform = `translateY(${offsetY}px)`;
-  }
-
-  // Arrow indicator
-  if(ccard) ccard.classList.toggle('cal-expanded', calExpanded);
-
-  // Week indicator dots
-  renderWeekDots(totalRows, calExpanded ? -1 : targetRow);
+  const collapsedH = rowH;
+  const expandedH  = rowH * totalRows + 4;
+  const collapsedOffset = -(getCurrentWeekRow() * rowH);
+  return { rowH, totalRows, collapsedH, expandedH, collapsedOffset };
 }
 
+// ── Dot indicators ──
 function renderWeekDots(total, active){
   const wrap = document.getElementById('calWeekDots');
   if(!wrap) return;
   if(total <= 1){ wrap.innerHTML = ''; return; }
-  wrap.innerHTML = Array.from({length: total}, (_,i) =>
+  wrap.innerHTML = Array.from({length:total},(_,i)=>
     `<div class="cal-week-dot${i===active?' active':''}"></div>`
   ).join('');
 }
 
-function toggleCalExpand(){
-  calExpanded = !calExpanded;
-  const grid = document.getElementById('cgrid');
-  if(grid){
-    grid.style.transition = calExpanded
-      ? 'transform .38s cubic-bezier(.22,.85,.25,1)'
-      : 'transform .38s cubic-bezier(.22,.85,.25,1)';
+// ── Snap to final state (with spring animation) ──
+function applyCalHeight(animate){
+  const clip  = document.getElementById('calClip');
+  const grid  = document.getElementById('cgrid');
+  const ccard = document.querySelector('.ccard');
+  const lbl   = document.getElementById('calHandleLabel');
+  if(!clip||!grid) return;
+
+  const { collapsedH, expandedH, collapsedOffset, totalRows } = getCalHeights();
+  const targetH      = calExpanded ? expandedH  : collapsedH;
+  const targetOffset = calExpanded ? 0           : collapsedOffset;
+  const SPRING = 'cubic-bezier(.34,1.22,.64,1)';
+  const DUR    = '.44s';
+
+  if(animate){
+    clip.style.transition  = `height ${DUR} ${SPRING}`;
+    grid.style.transition  = `transform ${DUR} ${SPRING}`;
+  } else {
+    clip.style.transition  = 'none';
+    grid.style.transition  = 'none';
   }
-  applyCalHeight(true);
+
+  clip.style.height        = targetH + 'px';
+  grid.style.transform     = `translateY(${targetOffset}px)`;
+
+  if(ccard){
+    ccard.classList.toggle('cal-expanded', calExpanded);
+    ccard.classList.remove('swiping');
+  }
+  if(lbl) lbl.textContent = calExpanded ? 'Show week' : 'Show month';
+
+  renderWeekDots(totalRows, calExpanded ? -1 : getCurrentWeekRow());
+
+  // Animate cells revealing when expanding
+  if(animate && calExpanded){
+    requestAnimationFrame(()=>{
+      const cells = grid.querySelectorAll('.cell:not(.dim)');
+      cells.forEach((c, i)=>{
+        // stagger by row, not cell index
+        const row = Math.floor(i / 7);
+        c.style.animation = 'none';
+        requestAnimationFrame(()=>{
+          c.style.animation = '';
+          c.classList.add('cal-cell-anim');
+          c.style.animationDelay = `${row * 42}ms`;
+          c.addEventListener('animationend',()=>{
+            c.classList.remove('cal-cell-anim');
+            c.style.animationDelay = '';
+          },{once:true});
+        });
+      });
+    });
+  }
 }
 
-// Patch render to apply height after building grid
+// ── Toggle (tap handle) ──
+function toggleCalExpand(){
+  calExpanded = !calExpanded;
+  applyCalHeight(true);
+  // ripple from handle centre
+  const handle = document.getElementById('calExpandHandle');
+  if(handle) spawnRipple(handle.getBoundingClientRect());
+}
+
+// ── Ripple helper ──
+function spawnRipple(rect){
+  const ccard = document.querySelector('.ccard');
+  if(!ccard) return;
+  const cardRect = ccard.getBoundingClientRect();
+  const x = rect.left + rect.width/2  - cardRect.left;
+  const y = rect.top  + rect.height/2 - cardRect.top;
+  const r = Math.max(cardRect.width, cardRect.height) * 1.1;
+  const el = document.createElement('div');
+  el.style.cssText = `
+    position:absolute;border-radius:50%;pointer-events:none;z-index:0;
+    left:${x}px;top:${y}px;
+    width:${r*2}px;height:${r*2}px;
+    transform:translate(-50%,-50%) scale(0);
+    background:radial-gradient(circle,rgba(167,99,255,.22) 0%,rgba(109,44,232,.10) 45%,transparent 70%);
+    transition:transform .55s cubic-bezier(.22,.85,.25,1),opacity .55s;
+    opacity:1;
+  `;
+  ccard.appendChild(el);
+  requestAnimationFrame(()=>{
+    el.style.transform = 'translate(-50%,-50%) scale(1)';
+    el.style.opacity   = '0';
+  });
+  setTimeout(()=>el.remove(), 600);
+}
+
+// ── Patch render ──
 const _origRender = render;
 render = function(){
   _origRender();
-  // After grid is built, apply collapsed/expanded height
-  // Use rAF so the DOM is measured correctly
-  requestAnimationFrame(() => {
-    const grid = document.getElementById('cgrid');
-    if(grid) grid.style.transition = 'transform .38s cubic-bezier(.22,.85,.25,1)';
-    applyCalHeight(false);
-  });
+  requestAnimationFrame(()=>{ applyCalHeight(false); });
 };
 
-// Touch-swipe on the calendar card: swipe down = expand, swipe up = collapse
+// ── Live-drag swipe system ──
 (function(){
-  let startY = 0, startX = 0, tracking = false;
-  const THRESHOLD = 40;
-  const card = document.querySelector('.ccard');
+  let startY=0, startX=0, isDragging=false, isVertical=false;
+  let liveH=0, liveOffset=0;
+  let startH=0, startOffset=0, startFraction=0;
+  const DECIDE_PX = 8;   // pixels before we decide horizontal vs vertical
+  const COMMIT_FRAC = 0.28; // fraction of travel to commit
+
+  function getCard(){ return document.querySelector('.ccard'); }
+  function getClip(){ return document.getElementById('calClip'); }
+  function getGrid(){ return document.getElementById('cgrid'); }
 
   function onTouchStart(e){
-    if(e.target.closest('.nbtn')) return; // don't intercept nav arrows
-    startY = e.touches[0].clientY;
-    startX = e.touches[0].clientX;
-    tracking = true;
-  }
-  function onTouchEnd(e){
-    if(!tracking) return;
-    tracking = false;
-    const dy = e.changedTouches[0].clientY - startY;
-    const dx = Math.abs(e.changedTouches[0].clientX - startX);
-    if(Math.abs(dy) < THRESHOLD || dx > Math.abs(dy) * 0.8) return; // not a vertical swipe
-    if(dy > 0 && !calExpanded){ calExpanded = true; applyCalHeight(true); }
-    else if(dy < 0 && calExpanded){ calExpanded = false; applyCalHeight(true); }
+    if(e.target.closest('.nbtn')) return;
+    if(e.touches.length > 1) return;
+    const t = e.touches[0];
+    startY = t.clientY; startX = t.clientX;
+    isDragging = false; isVertical = false;
+
+    const { collapsedH, expandedH, collapsedOffset } = getCalHeights();
+    startH      = calExpanded ? expandedH  : collapsedH;
+    startOffset = calExpanded ? 0           : collapsedOffset;
+    liveH       = startH;
+    liveOffset  = startOffset;
+
+    // Range of travel
+    startFraction = calExpanded ? 1 : 0;
+
+    // kill transitions while dragging
+    const clip = getClip(); const grid = getGrid();
+    if(clip){ clip.style.transition = 'none'; }
+    if(grid){ grid.style.transition = 'none'; }
   }
 
-  document.addEventListener('DOMContentLoaded', ()=>{
-    const c = document.querySelector('.ccard');
-    if(c){
-      c.addEventListener('touchstart', onTouchStart, {passive:true});
-      c.addEventListener('touchend',   onTouchEnd,   {passive:true});
+  function onTouchMove(e){
+    if(!e.touches.length) return;
+    const t = e.touches[0];
+    const dy = t.clientY - startY;
+    const dx = t.clientX - startX;
+
+    // Determine axis on first decisive move
+    if(!isDragging){
+      if(Math.abs(dy)<DECIDE_PX && Math.abs(dx)<DECIDE_PX) return;
+      if(Math.abs(dx) > Math.abs(dy)){ isVertical=false; isDragging=true; return; }
+      isVertical = true; isDragging = true;
     }
-  });
-  // Also attach immediately if DOM already loaded
-  if(document.readyState !== 'loading'){
-    const c = document.querySelector('.ccard');
-    if(c){
-      c.addEventListener('touchstart', onTouchStart, {passive:true});
-      c.addEventListener('touchend',   onTouchEnd,   {passive:true});
+    if(!isVertical) return;
+
+    e.preventDefault(); // prevent scroll while we handle this
+
+    const { collapsedH, expandedH, collapsedOffset } = getCalHeights();
+    const travel = expandedH - collapsedH;
+    if(travel <= 0) return;
+
+    // Fraction 0=collapsed 1=expanded
+    let frac = startFraction + dy / travel;
+    // Rubber-band beyond limits
+    if(frac < 0) frac = frac / (1 - frac * 3);
+    if(frac > 1) frac = 1 + (frac-1) / (1 + (frac-1) * 3);
+    frac = Math.max(-0.15, Math.min(1.15, frac));
+
+    liveH       = collapsedH + (expandedH - collapsedH) * Math.max(0, Math.min(1, frac));
+    liveOffset  = collapsedOffset * (1 - Math.max(0, Math.min(1, frac)));
+
+    const clip = getClip(); const grid = getGrid(); const card = getCard();
+    if(clip) clip.style.height          = liveH + 'px';
+    if(grid) grid.style.transform       = `translateY(${liveOffset}px)`;
+    if(card){ card.classList.add('swiping'); }
+
+    // update label dynamically
+    const lbl = document.getElementById('calHandleLabel');
+    if(lbl) lbl.textContent = frac > 0.5 ? 'Show week' : 'Show month';
+
+    // live dot update
+    const currentRow = Math.round(getCurrentWeekRow() * (1-frac));
+    renderWeekDots(getTotalWeekRows(), frac > 0.5 ? -1 : getCurrentWeekRow());
+  }
+
+  function onTouchEnd(e){
+    if(!isDragging || !isVertical){
+      isDragging = false; isVertical = false; return;
     }
+    isDragging = false; isVertical = false;
+
+    const dy = e.changedTouches[0].clientY - startY;
+    const { collapsedH, expandedH } = getCalHeights();
+    const travel = expandedH - collapsedH;
+    const frac   = startFraction + (travel > 0 ? dy/travel : 0);
+
+    // Decide to commit or revert
+    if(!calExpanded && frac > COMMIT_FRAC)      calExpanded = true;
+    else if(calExpanded && frac < 1-COMMIT_FRAC) calExpanded = false;
+
+    if(!calExpanded && dy > 0) spawnRipple(getCard()?.getBoundingClientRect() ?? {left:0,top:0,width:300,height:200});
+
+    applyCalHeight(true);
+    getCard()?.classList.remove('swiping');
+  }
+
+  function attachListeners(){
+    const c = getCard();
+    if(!c) return;
+    c.addEventListener('touchstart', onTouchStart, {passive:true});
+    c.addEventListener('touchmove',  onTouchMove,  {passive:false});
+    c.addEventListener('touchend',   onTouchEnd,   {passive:true});
+    c.addEventListener('touchcancel',onTouchEnd,   {passive:true});
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded', attachListeners);
+  } else {
+    attachListeners();
   }
 })();
 
