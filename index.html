@@ -490,6 +490,35 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .dhdr.wk{color:#bb6c7a;}
 .cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:9px 7px;padding:2px 1px 0;}
 
+/* ── COLLAPSIBLE CALENDAR ── */
+.cal-clip{overflow:hidden;transition:height .38s cubic-bezier(.22,.85,.25,1);will-change:height;}
+#cgrid{transition:transform .38s cubic-bezier(.22,.85,.25,1);will-change:transform;}
+.cal-expand-handle{
+  display:flex;align-items:center;justify-content:center;
+  padding:6px 0 2px;cursor:pointer;gap:6px;
+  color:var(--nav-muted);font-size:11px;font-weight:800;letter-spacing:.3px;
+  user-select:none;-webkit-user-select:none;
+  transition:color .2s;
+}
+.cal-expand-handle:active{color:var(--nav-text);}
+.cal-expand-handle svg{
+  width:16px;height:16px;stroke:currentColor;stroke-width:2.5;fill:none;
+  transition:transform .38s cubic-bezier(.22,.85,.25,1);
+}
+.cal-expanded .cal-expand-handle svg{transform:rotate(180deg);}
+.cal-expand-dots{display:flex;gap:3px;align-items:center;}
+.cal-expand-dot{width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.5;}
+/* Week indicator strip */
+.cal-week-indicator{
+  display:flex;justify-content:center;gap:4px;padding:4px 0 2px;
+}
+.cal-week-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--dim);transition:background .2s,transform .2s;
+}
+.cal-week-dot.active{background:var(--tf);transform:scale(1.3);}
+
+
 /* ── CELLS ── */
 .cell{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 0 5px;min-height:58px;cursor:pointer;border-radius:17px;position:relative;transition:transform .15s,background .15s,box-shadow .15s;}
 .cell.active{background:transparent;box-shadow:none;}
@@ -1108,10 +1137,19 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
       <button class="nbtn" onclick="nextMonth()"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
     <div class="dhdrs" id="dhdrs"></div>
-    <div class="cgrid" id="cgrid"></div>
+    <div class="cal-clip" id="calClip">
+      <div class="cgrid" id="cgrid"></div>
+    </div>
+    <div class="cal-week-indicator" id="calWeekDots"></div>
+    <div class="cal-expand-handle" id="calExpandHandle" onclick="toggleCalExpand()">
+      <div class="cal-expand-dots">
+        <div class="cal-expand-dot"></div>
+        <div class="cal-expand-dot"></div>
+        <div class="cal-expand-dot"></div>
+      </div>
+      <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
   </div>
-
-  <!-- UPCOMING PANEL -->
   <div class="upcoming">
     <div class="up-hdr">
       <span class="up-title">
@@ -1632,6 +1670,147 @@ function render(){
 function prevMonth(){vM--;if(vM<1){vM=12;vY--;}render();}
 function nextMonth(){vM++;if(vM>12){vM=1;vY++;}render();}
 function goToday(){vY=TODAYBS.y;vM=TODAYBS.m;selectedDay={y:TODAYBS.y,m:TODAYBS.m,d:TODAYBS.d};render();renderSelectedDay();}
+
+// ══ COLLAPSIBLE CALENDAR ══
+let calExpanded = false;
+
+function getCurrentWeekRow(){
+  // Returns 0-based index of the row containing today (or selected day) in the current rendered month
+  const sAD = bsStart(vY, vM);
+  const sDow = (sAD.getDay() - cfg.fd + 7) % 7;
+  const dims = BS[vY]?.[vM-1] ?? 30;
+  // Which day are we focusing on?
+  let focusD = null;
+  if(vY === TODAYBS.y && vM === TODAYBS.m) focusD = TODAYBS.d;
+  else if(selectedDay.y === vY && selectedDay.m === vM) focusD = selectedDay.d;
+  if(focusD === null) focusD = 1;
+  focusD = Math.max(1, Math.min(focusD, dims));
+  const cellIndex = sDow + focusD - 1;
+  return Math.floor(cellIndex / 7);
+}
+
+function getTotalWeekRows(){
+  const sAD = bsStart(vY, vM);
+  const sDow = (sAD.getDay() - cfg.fd + 7) % 7;
+  const dims = BS[vY]?.[vM-1] ?? 30;
+  let tot = sDow + dims; if(tot % 7 !== 0) tot += 7 - tot % 7;
+  return Math.floor(tot / 7);
+}
+
+function getRowHeightPx(){
+  const grid = document.getElementById('cgrid');
+  if(!grid) return 67;
+  const cells = grid.querySelectorAll('.cell');
+  if(!cells.length) return 67;
+  const first = cells[0];
+  const style = getComputedStyle(grid);
+  const rowGap = parseFloat(style.rowGap) || 9;
+  return first.offsetHeight + rowGap;
+}
+
+function applyCalHeight(animate){
+  const clip = document.getElementById('calClip');
+  const ccard = document.querySelector('.ccard');
+  if(!clip) return;
+  const grid = document.getElementById('cgrid');
+  const rowH = getRowHeightPx();
+  const totalRows = getTotalWeekRows();
+  const visibleRows = calExpanded ? totalRows : 1;
+  const targetRow = calExpanded ? 0 : getCurrentWeekRow();
+
+  // Full grid height vs single-row height
+  const fullH = rowH * totalRows + 4; // +4 for padding-top
+  const oneH  = rowH;
+
+  if(calExpanded){
+    clip.style.height = fullH + 'px';
+    grid.style.transform = 'translateY(0)';
+  } else {
+    clip.style.height = oneH + 'px';
+    // Slide the grid so the current week row is visible
+    const offsetY = -(targetRow * rowH);
+    grid.style.transform = `translateY(${offsetY}px)`;
+  }
+
+  // Arrow indicator
+  if(ccard) ccard.classList.toggle('cal-expanded', calExpanded);
+
+  // Week indicator dots
+  renderWeekDots(totalRows, calExpanded ? -1 : targetRow);
+}
+
+function renderWeekDots(total, active){
+  const wrap = document.getElementById('calWeekDots');
+  if(!wrap) return;
+  if(total <= 1){ wrap.innerHTML = ''; return; }
+  wrap.innerHTML = Array.from({length: total}, (_,i) =>
+    `<div class="cal-week-dot${i===active?' active':''}"></div>`
+  ).join('');
+}
+
+function toggleCalExpand(){
+  calExpanded = !calExpanded;
+  const grid = document.getElementById('cgrid');
+  if(grid){
+    grid.style.transition = calExpanded
+      ? 'transform .38s cubic-bezier(.22,.85,.25,1)'
+      : 'transform .38s cubic-bezier(.22,.85,.25,1)';
+  }
+  applyCalHeight(true);
+}
+
+// Patch render to apply height after building grid
+const _origRender = render;
+render = function(){
+  _origRender();
+  // After grid is built, apply collapsed/expanded height
+  // Use rAF so the DOM is measured correctly
+  requestAnimationFrame(() => {
+    const grid = document.getElementById('cgrid');
+    if(grid) grid.style.transition = 'transform .38s cubic-bezier(.22,.85,.25,1)';
+    applyCalHeight(false);
+  });
+};
+
+// Touch-swipe on the calendar card: swipe down = expand, swipe up = collapse
+(function(){
+  let startY = 0, startX = 0, tracking = false;
+  const THRESHOLD = 40;
+  const card = document.querySelector('.ccard');
+
+  function onTouchStart(e){
+    if(e.target.closest('.nbtn')) return; // don't intercept nav arrows
+    startY = e.touches[0].clientY;
+    startX = e.touches[0].clientX;
+    tracking = true;
+  }
+  function onTouchEnd(e){
+    if(!tracking) return;
+    tracking = false;
+    const dy = e.changedTouches[0].clientY - startY;
+    const dx = Math.abs(e.changedTouches[0].clientX - startX);
+    if(Math.abs(dy) < THRESHOLD || dx > Math.abs(dy) * 0.8) return; // not a vertical swipe
+    if(dy > 0 && !calExpanded){ calExpanded = true; applyCalHeight(true); }
+    else if(dy < 0 && calExpanded){ calExpanded = false; applyCalHeight(true); }
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    const c = document.querySelector('.ccard');
+    if(c){
+      c.addEventListener('touchstart', onTouchStart, {passive:true});
+      c.addEventListener('touchend',   onTouchEnd,   {passive:true});
+    }
+  });
+  // Also attach immediately if DOM already loaded
+  if(document.readyState !== 'loading'){
+    const c = document.querySelector('.ccard');
+    if(c){
+      c.addEventListener('touchstart', onTouchStart, {passive:true});
+      c.addEventListener('touchend',   onTouchEnd,   {passive:true});
+    }
+  }
+})();
+
 
 // ══ DAY MODAL ══
 function openDay(bY,bM,bD){
