@@ -192,6 +192,117 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 #cycleBtn:hover{background:rgba(255,255,255,.06);}
 #cycleBtn svg{opacity:.88;}
 
+/* ── ECHO BUTTON ── */
+#echoBtn{
+  background:rgba(200,146,58,.08);
+  border-color:rgba(200,146,58,.2);
+  color:#c8923a;
+}
+#echoBtn:hover{background:rgba(200,146,58,.15);border-color:rgba(200,146,58,.4);}
+#echoBtn svg{opacity:.9;stroke:currentColor;fill:none;}
+#echoBtn.on{
+  background:linear-gradient(135deg,#c8923a 0%,#a8721a 100%)!important;
+  color:#fff!important;border-color:rgba(255,255,255,.15)!important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.06),0 7px 15px rgba(200,146,58,.32),0 0 12px rgba(200,146,58,.2)!important;
+}
+
+/* ── ECHO SHEET CONTENT ── */
+#echoBody{background:transparent;}
+.echo-wrap{
+  width:100%;min-height:100%;display:flex;align-items:center;justify-content:center;
+  padding:32px 24px 48px;
+  background:radial-gradient(ellipse at 50% 30%,rgba(200,146,58,.05) 0%,transparent 65%);
+}
+.echo-inner{width:100%;max-width:440px;display:flex;flex-direction:column;gap:0;}
+.echo-phase{display:flex;flex-direction:column;align-items:center;gap:0;text-align:center;}
+.echo-icon svg{filter:none;transition:filter .8s ease;}
+.echo-icon.glow svg{filter:drop-shadow(0 0 14px rgba(200,146,58,.6));}
+.echo-h1{
+  font-size:clamp(2.2rem,8vw,3.2rem);font-weight:300;letter-spacing:.18em;
+  color:#e8d5b0;margin:0;line-height:1;
+  font-family:'Cormorant Garamond','Palatino Linotype',Georgia,serif;
+}
+.echo-sub{font-size:.72rem;letter-spacing:.35em;color:#7a6848;margin:.5rem 0 0;text-transform:uppercase;font-family:Georgia,serif;}
+.echo-desc{font-size:.95rem;color:#9a8060;line-height:1.85;max-width:320px;margin:1.5rem auto 0;font-style:italic;font-family:Georgia,serif;}
+.echo-btn{
+  background:none;border:1px solid rgba(200,146,58,.35);color:#c8923a;
+  font-family:Georgia,serif;font-size:.84rem;letter-spacing:.25em;
+  padding:.8rem 2.2rem;cursor:pointer;text-transform:uppercase;
+  transition:all .25s ease;border-radius:2px;margin-top:2.5rem;
+}
+.echo-btn:hover{background:rgba(200,146,58,.08);border-color:#c8923a;}
+.echo-btn-note{font-family:Georgia,serif;font-size:.68rem;color:#4a3f2f;letter-spacing:.1em;margin-top:.8rem;text-transform:uppercase;}
+/* Question phase */
+.echo-qlabel{font-family:Georgia,serif;font-size:.68rem;letter-spacing:.3em;color:#5a4f3f;text-transform:uppercase;margin:0 0 1rem;align-self:flex-start;}
+.echo-question{
+  font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(1.3rem,4vw,1.7rem);
+  font-weight:400;color:#e0c898;line-height:1.5;margin:0;font-style:italic;min-height:2.5em;align-self:flex-start;
+}
+.echo-textarea{
+  background:transparent;border:none;border-top:1px solid #3a3028;border-bottom:1px solid #3a3028;
+  color:#d4be96;font-family:Georgia,serif;font-size:1rem;line-height:1.8;
+  padding:1rem 0;resize:none;outline:none;width:100%;min-height:130px;
+  caret-color:#c8923a;font-style:italic;margin-top:1.5rem;
+}
+.echo-count{font-family:Georgia,serif;font-size:.68rem;color:#4a3f2f;letter-spacing:.1em;margin-top:.4rem;align-self:flex-end;}
+.echo-count.warn{color:#c87a3a;}
+/* Trigger phase */
+.echo-trigger-btn{
+  background:transparent;border:1px solid #2e2820;color:#6a5f4f;
+  font-family:Georgia,serif;font-size:.9rem;padding:.85rem 1.1rem;
+  cursor:pointer;text-align:left;transition:all .22s ease;
+  display:flex;align-items:center;gap:.9rem;border-radius:3px;width:100%;
+}
+.echo-trigger-btn.on{background:rgba(30,26,20,.55);border-color:rgba(200,146,58,.55);color:#e0c898;}
+.echo-trigger-icon{font-size:.95rem;color:#3a3028;min-width:18px;}
+.echo-trigger-btn.on .echo-trigger-icon{color:#c8923a;}
+.echo-trigger-label{display:block;letter-spacing:.04em;font-size:.9rem;}
+.echo-trigger-desc{font-size:.72rem;color:#3a3028;font-style:italic;display:block;margin-top:2px;}
+.echo-trigger-btn.on .echo-trigger-desc{color:#8a7858;}
+.echo-date-input,.echo-age-input{
+  background:transparent;border:none;border-bottom:1px solid #3a3028;
+  color:#d4be96;font-family:Georgia,serif;font-size:.95rem;padding:.5rem 0;
+  width:100%;outline:none;color-scheme:dark;
+}
+.echo-event-btn{
+  background:transparent;border:1px solid #2a241e;color:#5a5040;
+  font-family:Georgia,serif;font-size:.88rem;padding:.45rem .9rem;
+  cursor:pointer;text-align:left;transition:all .2s ease;
+  font-style:italic;border-radius:2px;
+}
+.echo-event-btn.on{background:rgba(30,26,20,.55);border-color:rgba(200,146,58,.35);color:#d4be96;}
+.echo-preview-box{
+  border:1px solid #2e2820;padding:1.1rem;margin-bottom:1.1rem;
+  background:rgba(20,17,14,.55);border-radius:3px;
+}
+.echo-preview-lbl{font-family:Georgia,serif;font-size:.7rem;letter-spacing:.2em;color:#5a4f3f;text-transform:uppercase;margin:0 0 .5rem;}
+.echo-preview-val{font-family:'Cormorant Garamond',Georgia,serif;font-size:1.05rem;color:#c8923a;margin:0;font-style:italic;}
+/* Sealing */
+.echo-sealing-step{font-family:Georgia,serif;font-size:.88rem;color:#2a2420;margin:0;letter-spacing:.1em;transition:color .5s ease;font-style:italic;}
+.echo-sealing-step.done{color:#4a3f2f;}
+.echo-sealing-step.active{color:#c8923a;}
+/* Sealed */
+.echo-sealed-h{font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(1.8rem,6vw,2.6rem);font-weight:300;color:#e0c898;margin:0 0 .4rem;letter-spacing:.1em;}
+.echo-sealed-sub{font-family:Georgia,serif;font-size:.88rem;color:#5a4f3f;margin:0;font-style:italic;line-height:1.7;}
+.echo-sealed-box{border:1px solid #1e1a14;padding:1.4rem 1.8rem;max-width:340px;background:rgba(13,11,8,.55);border-radius:3px;margin-top:1.2rem;}
+.echo-sealed-lbl{font-family:Georgia,serif;font-size:.68rem;letter-spacing:.25em;color:#3a3028;text-transform:uppercase;margin:0 0 .7rem;}
+.echo-sealed-text{font-family:'Cormorant Garamond',Georgia,serif;font-size:1rem;color:#6a5f4f;margin:0;font-style:italic;line-height:1.7;filter:blur(4px);user-select:none;}
+.echo-sealed-note{font-family:Georgia,serif;font-size:.65rem;color:#2a2418;margin:.7rem 0 0;letter-spacing:.15em;text-transform:uppercase;}
+.echo-closed-lbl{font-family:Georgia,serif;font-size:.72rem;color:#3a3028;margin:0;letter-spacing:.15em;text-transform:uppercase;}
+.echo-demo-btn{background:none;border:none;color:#3a3028;font-family:Georgia,serif;font-size:.68rem;letter-spacing:.1em;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-style:italic;margin-top:1rem;padding:0;}
+/* Delivered overlay */
+.echo-delivered{
+  position:absolute;inset:0;background:rgba(7,6,4,.97);
+  display:flex;align-items:center;justify-content:center;padding:2rem;
+  z-index:80;opacity:0;transition:opacity 1.2s ease;pointer-events:none;
+}
+.echo-delivered.show{opacity:1;pointer-events:all;}
+.echo-delivered-inner{display:flex;flex-direction:column;align-items:center;gap:1.8rem;max-width:360px;text-align:center;}
+.echo-delivered-lbl{font-family:Georgia,serif;font-size:.68rem;letter-spacing:.3em;color:#4a3f2f;text-transform:uppercase;margin:0 0 .7rem;}
+.echo-delivered-box{border:1px solid rgba(200,146,58,.22);padding:1.8rem;background:#0f0d0a;border-radius:3px;}
+.echo-delivered-msg{font-family:'Cormorant Garamond',Georgia,serif;font-size:1.15rem;color:#e0c898;margin:0;font-style:italic;line-height:1.8;}
+.echo-delivered-foot{font-family:Georgia,serif;font-size:.8rem;color:#5a4f3f;margin:0;font-style:italic;line-height:1.7;}
+
 /* ── CALENDAR CARD ── */
 .ccard{
   margin:0 8px 10px;
@@ -824,6 +935,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     <button class="mode-pill on" id="tabAll"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="13" width="7" height="7" rx="1.5"/><rect x="14" y="13" width="7" height="7" rx="1.5"/></svg>All</button>
     <button class="mode-pill" id="scheduleBtn" onclick="openSheet('schedule')" title="Schedule"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2.5"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="3" x2="8" y2="6"/><line x1="16" y1="3" x2="16" y2="6"/><line x1="7" y1="14" x2="13" y2="14"/><line x1="7" y1="17" x2="11" y2="17"/></svg>Schedule</button>
     <button class="mode-pill" id="cycleBtn" onclick="openSheet('cycle')" title="My Cycle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5" stroke-dasharray="2.2 3.2"/><circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/></svg>My cycle</button>
+    <button class="mode-pill" id="echoBtn" onclick="openSheet('echo')" title="Echo"><svg viewBox="0 0 24 24"><path d="M12 3 C7 3 3 7 3 12 C3 14.5 4 16.8 5.7 18.4 L4 21 L8.2 19.8 C9.4 20.6 10.7 21 12 21 C17 21 21 17 21 12 C21 7 17 3 12 3Z"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="14" x2="13" y2="14"/></svg>Echo</button>
   </div>
 
   <div class="ccard">
@@ -850,6 +962,20 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     </div>
     <div id="upList"></div>
   </div>
+</div>
+
+<!-- ECHO SHEET -->
+<div class="sheet cycle-fullscreen" id="echoSheet" style="padding-bottom:0;">
+  <div class="cycle-head" style="background:linear-gradient(135deg,rgba(200,146,58,.18),rgba(168,100,30,.10),rgba(120,80,20,.07));">
+    <button class="cycle-back" onclick="closeAll()" aria-label="Back">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="cycle-title-wrap">
+      <div class="cycle-title">🪞 Echo</div>
+      <div class="cycle-sub">Speak once. Listen later.</div>
+    </div>
+  </div>
+  <div class="sscroll" id="echoBody" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0;display:flex;align-items:center;justify-content:center;"></div>
 </div>
 
 <button class="fab" onclick="openSheet('add')" title="Add Event">
@@ -1414,9 +1540,10 @@ function openDay(bY,bM,bD){
 // ══ SHEETS ══
 function closeAll(){
   document.getElementById('ov').classList.remove('open');
-  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','cycleSheet','scheduleSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','cycleSheet','scheduleSheet','echoSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
   document.getElementById('cycleSheet')?.classList.remove('cycle-fullscreen');
   document.getElementById('scheduleSheet')?.classList.remove('cycle-fullscreen');
+  document.getElementById('echoSheet')?.classList.remove('cycle-fullscreen');
   document.querySelector('.phone')?.classList.remove('cycle-dim');
 }
 
@@ -1566,7 +1693,7 @@ function formatEventRange(ev){
 function openSheet(t){
   closeAll();
   document.getElementById('ov').classList.add('open');
-  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',cycle:'cycleSheet',schedule:'scheduleSheet'};
+  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',cycle:'cycleSheet',schedule:'scheduleSheet',echo:'echoSheet'};
   const sheet=document.getElementById(ids[t]);
   sheet?.classList.add('open');
   if(t==='cycle'){
@@ -1577,6 +1704,11 @@ function openSheet(t){
     sheet?.classList.add('cycle-fullscreen');
     document.querySelector('.phone')?.classList.add('cycle-dim');
     renderSchedule();
+  }
+  if(t==='echo'){
+    sheet?.classList.add('cycle-fullscreen');
+    document.querySelector('.phone')?.classList.add('cycle-dim');
+    renderEchoSheet();
   }
   if(t==='settings'){ renderGcalCard(); renderWidgetThumb(); renderWidgetSteps(); }
   if(t==='cycle') renderCycleSheet();
@@ -3419,6 +3551,234 @@ self.addEventListener('message',e=>{
     document.getElementById('installBanner').classList.remove('show');
     // Re-show next visit (per spec: show until truly installed)
   };
+})();
+
+// ══ ECHO ══
+(function(){
+const ECHO_STORAGE_KEY = 'vikram_echo_sealed';
+
+window.renderEchoSheet = function() {
+  const body = document.getElementById('echoBody');
+  if (!body) return;
+  body.innerHTML = '';
+
+  let sealed = null;
+  try { sealed = JSON.parse(localStorage.getItem(ECHO_STORAGE_KEY)); } catch {}
+
+  const wrap = document.createElement('div');
+  wrap.className = 'echo-wrap';
+  const inner = document.createElement('div');
+  inner.className = 'echo-inner';
+  wrap.appendChild(inner);
+  body.appendChild(wrap);
+
+  if (sealed) { renderEchoSealed(inner, sealed); }
+  else { renderEchoIntro(inner); }
+};
+
+function echoMirrorSVG(size, glow) {
+  return `<div class="echo-icon${glow ? ' glow' : ''}" style="margin-bottom:1.4rem;">
+    <svg width="${size}" height="${size}" viewBox="0 0 48 48" fill="none">
+      <ellipse cx="24" cy="22" rx="12" ry="16" stroke="#c8923a" stroke-width="1.5" fill="none" opacity="0.9"/>
+      <line x1="24" y1="38" x2="24" y2="44" stroke="#c8923a" stroke-width="1.5" opacity="0.7"/>
+      <line x1="18" y1="44" x2="30" y2="44" stroke="#c8923a" stroke-width="1.5" opacity="0.7"/>
+      <ellipse cx="24" cy="22" rx="8" ry="11" stroke="#c8923a" stroke-width="0.5" fill="none" opacity="0.3"/>
+    </svg></div>`;
+}
+
+function renderEchoIntro(container) {
+  container.innerHTML = `
+    <div class="echo-phase">
+      ${echoMirrorSVG(54,true)}
+      <h1 class="echo-h1">ECHO</h1>
+      <p class="echo-sub">Speak once. Listen later.</p>
+      <p class="echo-desc">This app works exactly once.<br>One question. One answer. One moment.<br>Then it seals — forever.</p>
+      <button class="echo-btn" id="echoBeginBtn">I understand</button>
+      <p class="echo-btn-note">There is no going back</p>
+    </div>`;
+  setTimeout(() => {
+    document.getElementById('echoBeginBtn')?.addEventListener('click', () => renderEchoQuestion(container));
+  }, 0);
+}
+
+function renderEchoQuestion(container) {
+  const question = "What do you want to remind your future self about right now?";
+  container.innerHTML = `
+    <div class="echo-phase" style="align-items:flex-start;text-align:left;width:100%;">
+      <p class="echo-qlabel">The question</p>
+      <h2 class="echo-question" id="echoQText" style="width:100%;"></h2>
+      <div id="echoInputWrap" style="display:none;flex-direction:column;width:100%;">
+        <textarea class="echo-textarea" id="echoTextarea" placeholder="Write honestly. No one will read this except you — years from now." maxlength="280"></textarea>
+        <span class="echo-count" id="echoCount">0 / 280</span>
+        <button class="echo-btn" id="echoNextBtn" style="display:none;margin-top:1.1rem;">This is my answer →</button>
+      </div>
+    </div>`;
+
+  let i = 0;
+  const qEl = document.getElementById('echoQText');
+  const iv = setInterval(() => {
+    i++;
+    if (qEl) qEl.textContent = question.slice(0, i);
+    if (i >= question.length) {
+      clearInterval(iv);
+      const w = document.getElementById('echoInputWrap');
+      if (w) { w.style.display = 'flex'; w.style.flexDirection = 'column'; }
+      setTimeout(() => document.getElementById('echoTextarea')?.focus(), 320);
+    }
+  }, 32);
+
+  setTimeout(() => {
+    const ta = document.getElementById('echoTextarea');
+    const cnt = document.getElementById('echoCount');
+    const btn = document.getElementById('echoNextBtn');
+    ta?.addEventListener('input', () => {
+      const l = ta.value.length;
+      if (cnt) { cnt.textContent = `${l} / 280`; cnt.className = 'echo-count'+(l > 238 ? ' warn' : ''); }
+      if (btn) btn.style.display = l > 20 ? 'block' : 'none';
+    });
+    btn?.addEventListener('click', () => { const a = ta?.value?.trim(); if (a) renderEchoTrigger(container, a); });
+  }, 60);
+}
+
+function renderEchoTrigger(container, answer) {
+  const lifeEvents = ["When I get married","When I have a child","When I buy a house","When I change careers","When I move cities","When I retire"];
+  container.innerHTML = `
+    <div class="echo-phase" style="align-items:flex-start;text-align:left;width:100%;">
+      <p class="echo-qlabel">Step 2 of 2</p>
+      <h2 class="echo-question" style="margin-bottom:1.4rem;">When should your echo return to you?</h2>
+      <div style="display:flex;flex-direction:column;gap:.45rem;width:100%;">
+        <button class="echo-trigger-btn" data-type="date"><span class="echo-trigger-icon">◈</span><span><span class="echo-trigger-label">On a date</span><span class="echo-trigger-desc">A specific day in the future</span></span></button>
+        <button class="echo-trigger-btn" data-type="age"><span class="echo-trigger-icon">◉</span><span><span class="echo-trigger-label">When I turn…</span><span class="echo-trigger-desc">A milestone birthday</span></span></button>
+        <button class="echo-trigger-btn" data-type="event"><span class="echo-trigger-icon">◇</span><span><span class="echo-trigger-label">A life event</span><span class="echo-trigger-desc">When something happens</span></span></button>
+      </div>
+      <div id="echoTriggerInput" style="width:100%;margin-top:.9rem;"></div>
+      <div id="echoSealPreview" style="width:100%;margin-top:.9rem;display:none;">
+        <div class="echo-preview-box"><p class="echo-preview-lbl">Your echo will return</p><p class="echo-preview-val" id="echoPreviewVal"></p></div>
+        <button class="echo-btn" id="echoSealBtn">Seal &amp; send to the future →</button>
+      </div>
+    </div>`;
+
+  let triggerType=null, dateVal='', ageVal='', eventVal='';
+
+  function updatePreview() {
+    const pr = document.getElementById('echoSealPreview');
+    const pv = document.getElementById('echoPreviewVal');
+    let can=false, desc='';
+    if (triggerType==='date' && dateVal) { can=true; desc=`on ${new Date(dateVal+'T12:00:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}`; }
+    else if (triggerType==='age' && ageVal && parseInt(ageVal)>0) { can=true; desc=`when you turn ${ageVal}`; }
+    else if (triggerType==='event' && eventVal) { can=true; desc=eventVal.toLowerCase(); }
+    if (pr) pr.style.display = can ? 'block' : 'none';
+    if (pv) pv.textContent = desc;
+  }
+
+  function renderTriggerInput() {
+    const box = document.getElementById('echoTriggerInput');
+    if (!box) return;
+    if (triggerType === 'date') {
+      const min = new Date(Date.now()+86400000*30).toISOString().split('T')[0];
+      box.innerHTML = `<input type="date" class="echo-date-input" id="echoDateIn" min="${min}" value="${dateVal}">`;
+      document.getElementById('echoDateIn')?.addEventListener('change', e => { dateVal=e.target.value; updatePreview(); });
+    } else if (triggerType === 'age') {
+      box.innerHTML = `<div style="display:flex;align-items:center;gap:.7rem;"><span style="font-family:Georgia,serif;color:#6a5f4f;font-style:italic;">When I turn</span><input type="number" min="1" max="120" class="echo-age-input" id="echoAgeIn" placeholder="40" value="${ageVal}" style="width:60px;text-align:center;"><span style="font-family:Georgia,serif;color:#6a5f4f;font-style:italic;">years old</span></div>`;
+      document.getElementById('echoAgeIn')?.addEventListener('input', e => { ageVal=e.target.value; updatePreview(); });
+    } else if (triggerType === 'event') {
+      box.innerHTML = `<div style="display:flex;flex-direction:column;gap:.35rem;">${lifeEvents.map(ev=>`<button class="echo-event-btn${eventVal===ev?' on':''}" data-ev="${ev}">${ev}</button>`).join('')}</div>`;
+      box.querySelectorAll('.echo-event-btn').forEach(b => b.addEventListener('click', e => {
+        eventVal=e.currentTarget.dataset.ev;
+        box.querySelectorAll('.echo-event-btn').forEach(x => x.classList.toggle('on', x.dataset.ev===eventVal));
+        updatePreview();
+      }));
+    } else { box.innerHTML=''; }
+    updatePreview();
+  }
+
+  container.querySelectorAll('.echo-trigger-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      triggerType = btn.dataset.type;
+      container.querySelectorAll('.echo-trigger-btn').forEach(b => b.classList.toggle('on', b===btn));
+      renderTriggerInput();
+    });
+  });
+
+  // Attach seal button (it may not exist yet; use event delegation via container)
+  container.addEventListener('click', function onSeal(e) {
+    if (e.target.id === 'echoSealBtn') {
+      container.removeEventListener('click', onSeal);
+      const data = {answer, triggerType, trigger:{date:dateVal,age:ageVal,event:eventVal}, sealedAt:new Date().toISOString()};
+      try { localStorage.setItem(ECHO_STORAGE_KEY, JSON.stringify(data)); } catch {}
+      renderEchoSealing(container, data);
+    }
+  });
+}
+
+function renderEchoSealing(container, data) {
+  const steps = ["Encrypting your words…","Locking the seal…","Hiding the key…","Setting the watch…","Done."];
+  container.innerHTML = `
+    <div class="echo-phase" style="gap:1.4rem;">
+      ${echoMirrorSVG(46,true)}
+      <div style="display:flex;flex-direction:column;gap:.35rem;">
+        ${steps.map((s,i)=>`<p class="echo-sealing-step">${s}</p>`).join('')}
+      </div>
+    </div>`;
+  const els = container.querySelectorAll('.echo-sealing-step');
+  let i = 0;
+  if (els[0]) els[0].className='echo-sealing-step active';
+  const iv = setInterval(() => {
+    if (els[i]) els[i].className='echo-sealing-step done';
+    i++;
+    if (i < els.length) { if(els[i]) els[i].className='echo-sealing-step active'; }
+    if (i >= steps.length-1) { clearInterval(iv); setTimeout(()=>renderEchoSealed(container, data), 1050); }
+  }, 680);
+}
+
+function renderEchoSealed(container, data) {
+  function getTriggerText() {
+    if (data.triggerType==='date') return `on ${new Date(data.trigger.date+'T12:00:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}`;
+    if (data.triggerType==='age') return `when you turn ${data.trigger.age}`;
+    if (data.triggerType==='event') return data.trigger.event.toLowerCase();
+    return 'at the moment you set';
+  }
+  const safeAnswer = (data.answer||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  container.innerHTML = `
+    <div class="echo-phase">
+      ${echoMirrorSVG(44,false)}
+      <h2 class="echo-sealed-h">Sealed.</h2>
+      <p class="echo-sealed-sub">Your echo is resting.<br>It will find you ${getTriggerText()}.</p>
+      <div class="echo-sealed-box">
+        <p class="echo-sealed-lbl">What you wrote</p>
+        <p class="echo-sealed-text">${safeAnswer}</p>
+        <p class="echo-sealed-note">Hidden until delivery</p>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:.3rem;margin-top:1.4rem;">
+        <p class="echo-closed-lbl">This echo is sealed.</p>
+        <button class="echo-demo-btn" id="echoDemoBtn">Preview your echo (demo only)</button>
+      </div>
+    </div>`;
+
+  document.getElementById('echoDemoBtn')?.addEventListener('click', () => {
+    const echoSheet = document.getElementById('echoSheet');
+    if (!echoSheet) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'echo-delivered';
+    overlay.innerHTML = `
+      <div class="echo-delivered-inner">
+        ${echoMirrorSVG(40,true)}
+        <div>
+          <p class="echo-delivered-lbl">A message from your past self</p>
+          <div class="echo-delivered-box"><p class="echo-delivered-msg">"${safeAnswer}"</p></div>
+        </div>
+        <p class="echo-delivered-foot">You wrote this.<br>You knew you'd need it.</p>
+        <button class="echo-btn" id="echoCloseOverlay" style="margin-top:0;">Close</button>
+      </div>`;
+    echoSheet.style.position = 'relative';
+    echoSheet.appendChild(overlay);
+    setTimeout(() => overlay.classList.add('show'), 60);
+    overlay.querySelector('#echoCloseOverlay')?.addEventListener('click', () => {
+      overlay.classList.remove('show');
+      setTimeout(() => overlay.remove(), 1200);
+    });
+  });
+}
 })();
 </script>
 </body>
