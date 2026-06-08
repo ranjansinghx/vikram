@@ -566,12 +566,36 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .ccard{position:relative;overflow:hidden;}
 .ccard > *{position:relative;z-index:1;}
 
-/* Cells unfurl during expansion */
+/* Cells unfurl during expansion — row rises up with a spring */
 @keyframes cellReveal{
-  from{opacity:0;transform:scale(.82) translateY(6px);}
-  to  {opacity:1;transform:scale(1)   translateY(0);}
+  0%  {opacity:0;transform:scale(.84) translateY(10px);}
+  60% {opacity:1;transform:scale(1.03) translateY(-2px);}
+  100%{opacity:1;transform:scale(1)   translateY(0);}
 }
-.cal-cell-anim{animation:cellReveal .28s cubic-bezier(.34,1.2,.64,1) both;}
+/* Cells fold away during collapse — row drops down */
+@keyframes cellFold{
+  0%  {opacity:1;transform:scale(1)   translateY(0);}
+  40% {opacity:.6;transform:scale(.97) translateY(4px);}
+  100%{opacity:0;transform:scale(.86) translateY(12px);}
+}
+.cal-cell-anim        {animation:cellReveal .32s cubic-bezier(.34,1.3,.64,1) both;}
+.cal-cell-anim-out    {animation:cellFold   .22s cubic-bezier(.4,0,1,1) both;}
+
+/* Live drag: non-active rows dim proportionally (set via JS) */
+.cgrid .cell[data-row-dim]{
+  transition:opacity .06s linear, filter .06s linear, transform .06s linear;
+}
+/* Swipe progress bar at top of card */
+.cal-swipe-progress{
+  position:absolute;top:0;left:0;right:0;height:2px;border-radius:0 0 2px 2px;
+  background:linear-gradient(90deg,rgba(123,110,246,0) 0%,rgba(167,99,255,.9) 50%,rgba(123,110,246,0) 100%);
+  transform-origin:left center;
+  transform:scaleX(0);
+  opacity:0;
+  transition:opacity .18s;
+  pointer-events:none;z-index:3;
+}
+.ccard.swiping .cal-swipe-progress{opacity:1;}
 
 /* Shimmer on the calendar card while dragging */
 @keyframes calShimmer{
@@ -1225,6 +1249,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
       </div>
     </div>
     <div class="cal-shimmer-bar"></div>
+    <div class="cal-swipe-progress" id="calSwipeProgress"></div>
   </div>
   <div class="upcoming">
     <div class="up-hdr">
@@ -1798,7 +1823,7 @@ function renderWeekDots(total, active){
 }
 
 // ── Snap to final state (with spring animation) ──
-function applyCalHeight(animate){
+function applyCalHeight(animate, velocity){
   const clip  = document.getElementById('calClip');
   const grid  = document.getElementById('cgrid');
   const ccard = document.querySelector('.ccard');
@@ -1808,12 +1833,18 @@ function applyCalHeight(animate){
   const { collapsedH, expandedH, collapsedOffset, totalRows } = getCalHeights();
   const targetH      = calExpanded ? expandedH  : collapsedH;
   const targetOffset = calExpanded ? 0           : collapsedOffset;
-  const SPRING = 'cubic-bezier(.34,1.22,.64,1)';
-  const DUR    = '.44s';
+
+  // Dynamic spring: faster if flicked, gentle if tapped/dragged slowly
+  const spd = Math.abs(velocity||0);
+  const dur  = spd > 0.8 ? '.28s' : spd > 0.3 ? '.36s' : '.44s';
+  // Expanding = bouncy overshoot; collapsing = snappy ease-in
+  const SPRING_EXP  = 'cubic-bezier(.34,1.26,.64,1)';
+  const SPRING_COL  = 'cubic-bezier(.4,0,.25,1)';
+  const spring = calExpanded ? SPRING_EXP : SPRING_COL;
 
   if(animate){
-    clip.style.transition  = `height ${DUR} ${SPRING}`;
-    grid.style.transition  = `transform ${DUR} ${SPRING}`;
+    clip.style.transition  = `height ${dur} ${spring}`;
+    grid.style.transition  = `transform ${dur} ${spring}`;
   } else {
     clip.style.transition  = 'none';
     grid.style.transition  = 'none';
@@ -1830,32 +1861,57 @@ function applyCalHeight(animate){
 
   renderWeekDots(totalRows, calExpanded ? -1 : getCurrentWeekRow());
 
-  // Animate cells revealing when expanding
-  if(animate && calExpanded){
+  if(animate){
     requestAnimationFrame(()=>{
-      const cells = grid.querySelectorAll('.cell:not(.dim)');
-      cells.forEach((c, i)=>{
-        // stagger by row, not cell index
-        const row = Math.floor(i / 7);
-        c.style.animation = 'none';
-        requestAnimationFrame(()=>{
-          c.style.animation = '';
-          c.classList.add('cal-cell-anim');
-          c.style.animationDelay = `${row * 42}ms`;
+      const cells = grid.querySelectorAll('.cell');
+      const currentRow = getCurrentWeekRow();
+
+      if(calExpanded){
+        // Reveal: rows cascade downward from the active row outward
+        cells.forEach((c, i)=>{
+          const row = Math.floor(i / 7);
+          if(row === currentRow) return; // active row already visible, skip
+          c.classList.remove('cal-cell-anim-out');
+          c.style.animation = 'none';
+          requestAnimationFrame(()=>{
+            c.style.animation = '';
+            c.classList.add('cal-cell-anim');
+            // Rows above active week stagger upward from closest to farthest
+            // Rows below active week stagger downward from closest to farthest
+            const dist = Math.abs(row - currentRow);
+            c.style.animationDelay = `${dist * 38}ms`;
+            c.addEventListener('animationend',()=>{
+              c.classList.remove('cal-cell-anim');
+              c.style.animationDelay = '';
+            },{once:true});
+          });
+        });
+      } else {
+        // Fold: rows that are NOT the active row cascade away
+        cells.forEach((c, i)=>{
+          const row = Math.floor(i / 7);
+          if(row === currentRow) return;
+          c.classList.remove('cal-cell-anim');
+          c.classList.add('cal-cell-anim-out');
+          const dist = Math.abs(row - currentRow);
+          // Farthest rows fold first so the shrink looks intentional
+          c.style.animationDelay = `${Math.max(0, (2 - dist) * 20)}ms`;
           c.addEventListener('animationend',()=>{
-            c.classList.remove('cal-cell-anim');
+            c.classList.remove('cal-cell-anim-out');
             c.style.animationDelay = '';
           },{once:true});
         });
-      });
+      }
     });
   }
 }
 
+
+
 // ── Toggle (tap handle) ──
 function toggleCalExpand(){
   calExpanded = !calExpanded;
-  applyCalHeight(true);
+  applyCalHeight(true, 0);
   // ripple from handle centre
   const handle = document.getElementById('calExpandHandle');
   if(handle) spawnRipple(handle.getBoundingClientRect());
@@ -1899,18 +1955,48 @@ render = function(){
   let startY=0, startX=0, isDragging=false, isVertical=false;
   let liveH=0, liveOffset=0;
   let startH=0, startOffset=0, startFraction=0;
+  // Velocity tracking
+  let lastY=0, lastT=0, velocity=0;
   const DECIDE_PX = 8;   // pixels before we decide horizontal vs vertical
   const COMMIT_FRAC = 0.28; // fraction of travel to commit
+  const FLICK_VEL  = 0.55;  // px/ms — flick threshold
 
   function getCard(){ return document.querySelector('.ccard'); }
   function getClip(){ return document.getElementById('calClip'); }
   function getGrid(){ return document.getElementById('cgrid'); }
+  function getProgress(){ return document.getElementById('calSwipeProgress'); }
+
+  // Live dim non-active rows proportionally to collapse progress
+  function updateLiveRowDim(frac){
+    const grid = getGrid(); if(!grid) return;
+    const currentRow = getCurrentWeekRow();
+    const cells = grid.querySelectorAll('.cell');
+    const collapseFrac = 1 - Math.max(0, Math.min(1, frac)); // 0=expanded, 1=collapsed
+    cells.forEach((c, i)=>{
+      const row = Math.floor(i / 7);
+      if(row === currentRow){ c.style.opacity=''; c.style.filter=''; return; }
+      const dist = Math.abs(row - currentRow);
+      // Rows farthest from active row fade faster
+      const dimAmt = Math.min(1, collapseFrac * (1 + dist * 0.25));
+      c.style.opacity  = 1 - dimAmt * 0.72;
+      c.style.filter   = `blur(${dimAmt * 1.6}px)`;
+      c.style.transform = `scale(${1 - dimAmt * 0.04})`;
+    });
+  }
+
+  function clearLiveRowDim(){
+    const grid = getGrid(); if(!grid) return;
+    grid.querySelectorAll('.cell').forEach(c=>{
+      c.style.opacity=''; c.style.filter=''; c.style.transform='';
+    });
+  }
 
   function onTouchStart(e){
     if(e.target.closest('.nbtn')) return;
     if(e.touches.length > 1) return;
     const t = e.touches[0];
     startY = t.clientY; startX = t.clientX;
+    lastY = startY; lastT = Date.now(); velocity = 0;
     isDragging = false; isVertical = false;
 
     const { collapsedH, expandedH, collapsedOffset } = getCalHeights();
@@ -1933,6 +2019,12 @@ render = function(){
     const t = e.touches[0];
     const dy = t.clientY - startY;
     const dx = t.clientX - startX;
+
+    // Velocity tracking
+    const now = Date.now();
+    const dt = now - lastT;
+    if(dt > 0) velocity = (t.clientY - lastY) / dt;
+    lastY = t.clientY; lastT = now;
 
     // Determine axis on first decisive move
     if(!isDragging){
@@ -1963,12 +2055,21 @@ render = function(){
     if(grid) grid.style.transform       = `translateY(${liveOffset}px)`;
     if(card){ card.classList.add('swiping'); }
 
+    // Live progress bar — shows how far through the swipe gesture you are
+    const prog = getProgress();
+    if(prog){
+      const progressFrac = Math.max(0, Math.min(1, Math.abs(frac - startFraction) / 0.7));
+      prog.style.transform = `scaleX(${progressFrac})`;
+    }
+
+    // Live dim non-active rows
+    updateLiveRowDim(frac);
+
     // update label dynamically
     const lbl = document.getElementById('calHandleLabel');
     if(lbl) lbl.textContent = frac > 0.5 ? 'Show week' : 'Show month';
 
     // live dot update
-    const currentRow = Math.round(getCurrentWeekRow() * (1-frac));
     renderWeekDots(getTotalWeekRows(), frac > 0.5 ? -1 : getCurrentWeekRow());
   }
 
@@ -1983,13 +2084,26 @@ render = function(){
     const travel = expandedH - collapsedH;
     const frac   = startFraction + (travel > 0 ? dy/travel : 0);
 
+    // Flick detection — commit even with small travel if velocity is high enough
+    const isFlickDown = velocity >  FLICK_VEL;
+    const isFlickUp   = velocity < -FLICK_VEL;
+
     // Decide to commit or revert
-    if(!calExpanded && frac > COMMIT_FRAC)      calExpanded = true;
-    else if(calExpanded && frac < 1-COMMIT_FRAC) calExpanded = false;
+    if(!calExpanded){
+      if(frac > COMMIT_FRAC || isFlickDown) calExpanded = true;
+    } else {
+      if(frac < 1-COMMIT_FRAC || isFlickUp) calExpanded = false;
+    }
+
+    // Reset progress bar
+    const prog = getProgress();
+    if(prog) prog.style.transform = 'scaleX(0)';
+
+    clearLiveRowDim();
 
     if(!calExpanded && dy > 0) spawnRipple(getCard()?.getBoundingClientRect() ?? {left:0,top:0,width:300,height:200});
 
-    applyCalHeight(true);
+    applyCalHeight(true, Math.abs(velocity));
     getCard()?.classList.remove('swiping');
   }
 
