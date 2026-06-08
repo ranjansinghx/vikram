@@ -1180,6 +1180,133 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   height:3px;border-radius:2px;background:rgba(122,183,255,.3);
   margin:4px 0 2px;
 }
+
+/* ── POMODORO FOCUS TIMER ── */
+#pomodoroBtn{
+  background:rgba(34,197,94,.08);
+  border-color:rgba(34,197,94,.2);
+  color:#16a34a;
+}
+[data-theme="dark"] #pomodoroBtn{color:#4ade80;border-color:rgba(74,222,128,.2);background:rgba(74,222,128,.07);}
+#pomodoroBtn:hover{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.4);}
+#pomodoroBtn svg{opacity:.9;stroke:currentColor;fill:none;}
+#pomodoroBtn.on{
+  background:linear-gradient(135deg,#16a34a 0%,#15803d 100%)!important;
+  color:#fff!important;border-color:rgba(255,255,255,.15)!important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.06),0 7px 15px rgba(22,163,74,.35),0 0 12px rgba(34,197,94,.2)!important;
+}
+
+/* Pomodoro body */
+#pomodoroBody{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:radial-gradient(ellipse 120% 70% at 50% -10%,rgba(22,163,74,.1) 0%,transparent 60%),
+             radial-gradient(ellipse 80% 60% at 80% 100%,rgba(34,197,94,.07) 0%,transparent 60%),
+             var(--sheet-bg);
+  display:flex;align-items:flex-start;justify-content:center;
+  position:relative;
+}
+.pomo-wrap{
+  width:100%;max-width:520px;padding:24px 16px 48px;
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  position:relative;z-index:1;
+}
+
+/* Mode tabs */
+.pomo-tabs{display:flex;gap:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:4px;margin-bottom:22px;width:100%;}
+.pomo-tab{flex:1;padding:8px 4px;border:none;border-radius:9px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;background:transparent;color:var(--sheet-muted);transition:all .2s;}
+.pomo-tab.on{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 3px 10px rgba(22,163,74,.3);}
+
+/* Timer ring */
+.pomo-ring-wrap{position:relative;width:220px;height:220px;margin-bottom:16px;flex-shrink:0;}
+.pomo-ring-svg{width:220px;height:220px;}
+.pomo-ring-bg{stroke:rgba(255,255,255,.07);stroke-width:12;fill:none;}
+.pomo-ring-progress{stroke-linecap:round;stroke-width:12;fill:none;transition:stroke-dashoffset .5s cubic-bezier(.4,0,.2,1),stroke .4s;}
+.pomo-ring-center{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px;
+}
+.pomo-time{font-size:52px;font-weight:900;color:var(--sheet-text);line-height:1;letter-spacing:-2px;font-variant-numeric:tabular-nums;}
+.pomo-phase-lbl{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--sheet-muted);}
+.pomo-session-count{font-size:11px;font-weight:700;color:var(--sheet-muted);margin-top:2px;}
+
+/* Controls */
+.pomo-controls{display:flex;gap:10px;margin-bottom:20px;}
+.pomo-ctrl-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:12px 24px;border-radius:50px;border:none;cursor:pointer;
+  font-size:14px;font-weight:900;font-family:'Nunito',sans-serif;
+  transition:all .2s;
+}
+.pomo-ctrl-btn.primary{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 6px 20px rgba(22,163,74,.35);}
+.pomo-ctrl-btn.primary:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(22,163,74,.4);}
+.pomo-ctrl-btn.primary:active{transform:scale(.97);}
+.pomo-ctrl-btn.secondary{background:rgba(255,255,255,.07);color:var(--sheet-muted);border:1px solid rgba(255,255,255,.1);}
+.pomo-ctrl-btn.secondary:hover{background:rgba(255,255,255,.12);}
+.pomo-ctrl-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5;}
+.pomo-ctrl-btn.primary svg{stroke:#fff;}
+
+/* Settings row */
+.pomo-settings-row{display:flex;gap:8px;margin-bottom:20px;width:100%;}
+.pomo-set-card{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.pomo-set-label{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--sheet-muted);}
+.pomo-set-val{display:flex;align-items:center;gap:6px;}
+.pomo-set-num{font-size:20px;font-weight:900;color:var(--sheet-text);min-width:28px;text-align:center;}
+.pomo-adj-btn{width:24px;height:24px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--sheet-muted);transition:all .2s;font-family:'Nunito',sans-serif;}
+.pomo-adj-btn:hover{background:rgba(255,255,255,.14);color:var(--sheet-text);}
+
+/* Dashboard */
+.pomo-dash{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px;margin-bottom:18px;}
+.pomo-dash-title{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--sheet-muted);margin-bottom:10px;}
+.pomo-dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.pomo-dash-item{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.pomo-dash-val{font-size:22px;font-weight:900;color:var(--sheet-text);line-height:1;}
+.pomo-dash-sub{font-size:9px;font-weight:700;color:var(--sheet-muted);text-align:center;line-height:1.3;}
+.pomo-session-dots{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;justify-content:center;}
+.pomo-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.12);transition:background .3s;}
+.pomo-dot.done{background:linear-gradient(135deg,#16a34a,#22c55e);box-shadow:0 0 8px rgba(34,197,94,.4);}
+.pomo-dot.break{background:linear-gradient(135deg,#3b82f6,#60a5fa);box-shadow:0 0 8px rgba(59,130,246,.35);}
+
+/* To-do list */
+.pomo-todo{width:100%;}
+.pomo-todo-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.pomo-todo-title{font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--sheet-muted);}
+.pomo-todo-clear{font-size:10px;font-weight:700;color:var(--sheet-muted);cursor:pointer;background:none;border:none;padding:0;font-family:'Nunito',sans-serif;transition:color .2s;}
+.pomo-todo-clear:hover{color:#ef4444;}
+.pomo-todo-input-row{display:flex;gap:7px;margin-bottom:10px;}
+.pomo-todo-input{flex:1;padding:10px 13px;border-radius:11px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:var(--sheet-text);font-size:13px;font-family:'Nunito',sans-serif;font-weight:600;outline:none;transition:border .2s;}
+.pomo-todo-input:focus{border-color:rgba(34,197,94,.5);}
+.pomo-todo-input::placeholder{color:var(--sheet-muted);}
+.pomo-todo-add-btn{width:38px;height:38px;border-radius:11px;border:none;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .2s;}
+.pomo-todo-add-btn:hover{opacity:.85;}
+.pomo-todo-list{display:flex;flex-direction:column;gap:6px;}
+.pomo-todo-item{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;padding:10px 12px;cursor:pointer;transition:all .2s;
+}
+.pomo-todo-item:hover{background:rgba(255,255,255,.08);}
+.pomo-todo-item.done-task{opacity:.55;}
+.pomo-todo-check{
+  width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;background:transparent;
+}
+.pomo-todo-item.done-task .pomo-todo-check{background:linear-gradient(135deg,#16a34a,#22c55e);border-color:transparent;}
+.pomo-todo-check svg{width:10px;height:10px;stroke:#fff;stroke-width:3;fill:none;opacity:0;transition:opacity .2s;}
+.pomo-todo-item.done-task .pomo-todo-check svg{opacity:1;}
+.pomo-todo-text{flex:1;font-size:13px;font-weight:700;color:var(--sheet-text);line-height:1.3;}
+.pomo-todo-item.done-task .pomo-todo-text{text-decoration:line-through;color:var(--sheet-muted);}
+.pomo-todo-del{width:24px;height:24px;border:none;background:none;color:var(--sheet-muted);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .2s;flex-shrink:0;}
+.pomo-todo-del:hover{background:rgba(239,68,68,.15);color:#ef4444;}
+
+/* Toast notification */
+.pomo-toast{
+  position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-80px);
+  background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;
+  padding:12px 24px;border-radius:50px;font-size:13px;font-weight:800;
+  font-family:'Nunito',sans-serif;z-index:300;transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 8px 24px rgba(22,163,74,.4);white-space:nowrap;
+}
+.pomo-toast.show{transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body>
@@ -1226,6 +1353,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     <button class="mode-pill" id="cycleBtn" draggable="true" data-pill="cycle" onclick="openSheet('cycle')" title="My Cycle"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5" stroke-dasharray="2.2 3.2"/><circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/></svg>My cycle</button>
     <button class="mode-pill" id="echoBtn" draggable="true" data-pill="echo" onclick="openSheet('echo')" title="Echo"><svg viewBox="0 0 24 24"><path d="M12 3 C7 3 3 7 3 12 C3 14.5 4 16.8 5.7 18.4 L4 21 L8.2 19.8 C9.4 20.6 10.7 21 12 21 C17 21 21 17 21 12 C21 7 17 3 12 3Z"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="14" x2="13" y2="14"/></svg>Echo</button>
     <button class="mode-pill" id="colorMatcherBtn" draggable="true" data-pill="colorMatcher" onclick="openSheet('colorMatcher')" title="Color Matcher"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="3.5" fill="#FF6B6B" stroke="none"/><circle cx="16" cy="8" r="3.5" fill="#3A86FF" stroke="none"/><circle cx="8" cy="16" r="3.5" fill="#70E000" stroke="none"/><circle cx="16" cy="16" r="3.5" fill="#FFB703" stroke="none"/></svg>Colors</button>
+    <button class="mode-pill" id="pomodoroBtn" draggable="true" data-pill="pomodoro" onclick="openSheet('pomodoro')" title="Focus Timer"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 12"/></svg>Focus</button>
   </div>
 
   <div class="ccard">
@@ -1291,6 +1419,20 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   <div id="cmBody">
     <!-- rendered by renderColorMatcherSheet() -->
   </div>
+</div>
+
+<!-- POMODORO FOCUS TIMER SHEET -->
+<div class="sheet cycle-fullscreen" id="pomodoroSheet" style="padding-bottom:0;">
+  <div class="cycle-head" style="background:linear-gradient(135deg,rgba(22,163,74,.18),rgba(15,118,61,.12),rgba(34,197,94,.06));">
+    <button class="cycle-back" onclick="closeAll()" aria-label="Back">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="cycle-title-wrap">
+      <div class="cycle-title">🍅 Pomodoro Focus Timer</div>
+      <div class="cycle-sub" id="pomoSubtitle">25 min focus · 5 min rest</div>
+    </div>
+  </div>
+  <div id="pomodoroBody" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0;display:flex;align-items:flex-start;justify-content:center;"></div>
 </div>
 
 <button class="fab" onclick="openSheet('add')" title="Add Event">
@@ -2191,12 +2333,15 @@ function openDay(bY,bM,bD){
 // ══ SHEETS ══
 function closeAll(){
   document.getElementById('ov').classList.remove('open');
-  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','cycleSheet','echoSheet','colorMatcherSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','cycleSheet','echoSheet','colorMatcherSheet','pomodoroSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
   document.getElementById('cycleSheet')?.classList.remove('cycle-fullscreen');
   document.getElementById('echoSheet')?.classList.remove('cycle-fullscreen');
   document.getElementById('colorMatcherSheet')?.classList.remove('cycle-fullscreen');
+  document.getElementById('pomodoroSheet')?.classList.remove('cycle-fullscreen');
   // Stop color matcher game if running
   if(window.cmState && window.cmState.running) window.cmStopGame && window.cmStopGame();
+  // Pause pomodoro timer if running (don't stop — just pause so state persists)
+  if(window.pomoState && window.pomoState.running) { pomoToggle(); }
   document.querySelector('.phone')?.classList.remove('cycle-dim');
 }
 
@@ -2346,7 +2491,7 @@ function formatEventRange(ev){
 function openSheet(t){
   closeAll();
   document.getElementById('ov').classList.add('open');
-  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',cycle:'cycleSheet',echo:'echoSheet',colorMatcher:'colorMatcherSheet'};
+  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',cycle:'cycleSheet',echo:'echoSheet',colorMatcher:'colorMatcherSheet',pomodoro:'pomodoroSheet'};
   const sheet=document.getElementById(ids[t]);
   sheet?.classList.add('open');
   if(t==='cycle'){
@@ -2362,6 +2507,11 @@ function openSheet(t){
     sheet?.classList.add('cycle-fullscreen');
     document.querySelector('.phone')?.classList.add('cycle-dim');
     renderColorMatcherSheet();
+  }
+  if(t==='pomodoro'){
+    sheet?.classList.add('cycle-fullscreen');
+    document.querySelector('.phone')?.classList.add('cycle-dim');
+    renderPomodoroSheet();
   }
   if(t==='settings'){ renderGcalCard(); renderWidgetThumb(); renderWidgetSteps(); }
   if(t==='cycle') renderCycleSheet();
@@ -4209,7 +4359,7 @@ self.addEventListener('message',e=>{
 // ══ PILL DRAG & DROP ══
 (function(){
   const STORAGE_KEY = 'vikram_pill_order';
-  const DRAGGABLE_IDS = ['cycleBtn','echoBtn','colorMatcherBtn'];
+  const DRAGGABLE_IDS = ['cycleBtn','echoBtn','colorMatcherBtn','pomodoroBtn'];
 
   // Restore saved order on load
   function restoreOrder(){
@@ -4854,6 +5004,437 @@ function renderEchoSealed(container, data) {
     });
   });
 }
+})();
+
+// ══ POMODORO FOCUS TIMER ══════════════════════════════════════════════════
+(function(){
+
+const POMO_KEY        = 'vikram_pomo';
+const POMO_TODOS_KEY  = 'vikram_pomo_todos';
+const POMO_STATS_KEY  = 'vikram_pomo_stats';
+
+// ── State ──────────────────────────────────────────────────────────────────
+window.pomoState = {
+  running: false,
+  phase: 'focus',    // 'focus' | 'break' | 'longbreak'
+  secondsLeft: 25*60,
+  sessionsDone: 0,   // sessions completed this run
+  interval: null,
+  workMins: 25,
+  breakMins: 5,
+  longBreakMins: 15,
+  longBreakEvery: 4,
+  totalFocusToday: 0,
+  totalBreaksToday: 0,
+  totalMinutesToday: 0,
+};
+
+// ── Persistence helpers ────────────────────────────────────────────────────
+function pomoLoadStats(){
+  try{
+    const d = JSON.parse(localStorage.getItem(POMO_STATS_KEY)||'{}');
+    const today = new Date().toDateString();
+    if(d.date !== today){
+      return {date:today, sessions:0, breakCount:0, minutes:0, dotLog:[]};
+    }
+    return d;
+  }catch(e){ return {date:new Date().toDateString(),sessions:0,breakCount:0,minutes:0,dotLog:[]}; }
+}
+function pomoSaveStats(stats){ localStorage.setItem(POMO_STATS_KEY, JSON.stringify(stats)); }
+
+function pomoLoadSettings(){
+  try{
+    const d = JSON.parse(localStorage.getItem(POMO_KEY)||'{}');
+    if(d.workMins)  window.pomoState.workMins  = d.workMins;
+    if(d.breakMins) window.pomoState.breakMins = d.breakMins;
+    if(d.longBreakMins) window.pomoState.longBreakMins = d.longBreakMins;
+  }catch(e){}
+}
+function pomoSaveSettings(){
+  localStorage.setItem(POMO_KEY, JSON.stringify({
+    workMins: window.pomoState.workMins,
+    breakMins: window.pomoState.breakMins,
+    longBreakMins: window.pomoState.longBreakMins,
+  }));
+}
+
+// ── Todos ──────────────────────────────────────────────────────────────────
+let pomoTodos = [];
+function pomoLoadTodos(){ try{ pomoTodos = JSON.parse(localStorage.getItem(POMO_TODOS_KEY)||'[]'); }catch(e){ pomoTodos=[]; } }
+function pomoSaveTodos(){ localStorage.setItem(POMO_TODOS_KEY, JSON.stringify(pomoTodos)); }
+
+// ── Timer core ─────────────────────────────────────────────────────────────
+function pomoTick(){
+  const s = window.pomoState;
+  if(!s.running) return;
+  s.secondsLeft--;
+  pomoUpdateRing();
+  if(s.secondsLeft <= 0){ pomoPhaseComplete(); }
+}
+
+function pomoPhaseComplete(){
+  const s = window.pomoState;
+  clearInterval(s.interval);
+  s.running = false;
+
+  const stats = pomoLoadStats();
+
+  if(s.phase === 'focus'){
+    s.sessionsDone++;
+    stats.sessions++;
+    stats.minutes += s.workMins;
+    stats.dotLog.push('focus');
+    pomoSaveStats(stats);
+    pomoShowToast(`✅ Focus done! Session #${stats.sessions} today · Take a break 🌿`);
+    // Decide break type
+    const isLong = (s.sessionsDone % s.longBreakEvery === 0);
+    s.phase = isLong ? 'longbreak' : 'break';
+    s.secondsLeft = (isLong ? s.longBreakMins : s.breakMins) * 60;
+  } else {
+    stats.breakCount++;
+    stats.dotLog.push('break');
+    pomoSaveStats(stats);
+    pomoShowToast(`🍅 Break over! Ready for another focus session?`);
+    s.phase = 'focus';
+    s.secondsLeft = s.workMins * 60;
+  }
+  pomoUpdateRing();
+  pomoUpdateDash();
+  // Auto-ring notification
+  if('Notification' in window && Notification.permission === 'granted'){
+    const msg = s.phase === 'focus' ? 'Break is over — time to focus!' : 'Focus session complete! Take a well-earned break.';
+    try{ new Notification('🍅 Vikram Focus Timer', {body: msg, icon:'./icons/icon-192.png', tag:'pomodoro'}); }catch(e){}
+  }
+}
+
+// ── Toggle start/pause ─────────────────────────────────────────────────────
+window.pomoToggle = function(){
+  const s = window.pomoState;
+  if(s.running){
+    clearInterval(s.interval);
+    s.running = false;
+  } else {
+    s.running = true;
+    s.interval = setInterval(pomoTick, 1000);
+  }
+  pomoUpdateRing();
+  pomoUpdateControls();
+};
+
+function pomoReset(){
+  const s = window.pomoState;
+  clearInterval(s.interval);
+  s.running = false;
+  s.phase = 'focus';
+  s.secondsLeft = s.workMins * 60;
+  pomoUpdateRing();
+  pomoUpdateControls();
+}
+
+function pomoSkip(){
+  const s = window.pomoState;
+  clearInterval(s.interval);
+  s.running = false;
+  // Force the current phase to complete
+  s.secondsLeft = 0;
+  pomoPhaseComplete();
+  pomoUpdateRing();
+  pomoUpdateControls();
+}
+
+// ── DOM helpers ────────────────────────────────────────────────────────────
+function pomoFmt(sec){ const m=Math.floor(sec/60),s=sec%60; return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; }
+
+const RING_R = 90, RING_CIRC = 2*Math.PI*RING_R;
+
+function pomoPhaseColor(){
+  const phase = window.pomoState.phase;
+  if(phase==='focus') return '#16a34a';
+  if(phase==='break') return '#3b82f6';
+  return '#a855f7';
+}
+function pomoPhaseLabel(){
+  const phase = window.pomoState.phase;
+  if(phase==='focus') return 'FOCUS';
+  if(phase==='break') return 'BREAK';
+  return 'LONG BREAK';
+}
+function pomoTotalSec(){
+  const s = window.pomoState;
+  if(s.phase==='focus') return s.workMins*60;
+  if(s.phase==='break') return s.breakMins*60;
+  return s.longBreakMins*60;
+}
+
+function pomoUpdateRing(){
+  const s = window.pomoState;
+  const progress = document.getElementById('pomoRingProgress');
+  const timeEl   = document.getElementById('pomoTimeDisplay');
+  const phaseEl  = document.getElementById('pomoPhaseLabel');
+  const sessEl   = document.getElementById('pomoSessionCount');
+  if(!progress || !timeEl) return;
+
+  const frac = s.secondsLeft / pomoTotalSec();
+  const offset = RING_CIRC * (1 - frac);
+  progress.style.strokeDashoffset = offset;
+  progress.style.stroke = pomoPhaseColor();
+  progress.style.strokeDasharray = RING_CIRC;
+  timeEl.textContent = pomoFmt(s.secondsLeft);
+  if(phaseEl) phaseEl.textContent = pomoPhaseLabel();
+  const stats = pomoLoadStats();
+  if(sessEl) sessEl.textContent = `${stats.sessions} session${stats.sessions!==1?'s':''} today`;
+}
+
+function pomoUpdateControls(){
+  const s = window.pomoState;
+  const btn = document.getElementById('pomoPlayPauseBtn');
+  if(!btn) return;
+  btn.innerHTML = s.running
+    ? `<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Pause`
+    : `<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> ${s.secondsLeft===pomoTotalSec()?'Start':'Resume'}`;
+}
+
+function pomoUpdateDash(){
+  const stats = pomoLoadStats();
+  const focusEl  = document.getElementById('pomoDashFocus');
+  const minsEl   = document.getElementById('pomoDashMins');
+  const breakEl  = document.getElementById('pomoDashBreak');
+  const dotsEl   = document.getElementById('pomoDashDots');
+  if(focusEl) focusEl.textContent = stats.sessions;
+  if(minsEl)  minsEl.textContent  = stats.minutes;
+  if(breakEl) breakEl.textContent = stats.breakCount;
+  if(dotsEl){
+    const maxDots = 12;
+    const dots = stats.dotLog.slice(-maxDots);
+    dotsEl.innerHTML = Array.from({length:maxDots},(_,i)=>{
+      const d = dots[i];
+      if(!d) return `<div class="pomo-dot"></div>`;
+      if(d==='focus') return `<div class="pomo-dot done" title="Focus session"></div>`;
+      return `<div class="pomo-dot break" title="Break"></div>`;
+    }).join('');
+  }
+}
+
+// ── Toast ──────────────────────────────────────────────────────────────────
+let _toastTimer;
+function pomoShowToast(msg){
+  let t = document.getElementById('pomoToast');
+  if(!t){ t=document.createElement('div'); t.id='pomoToast'; t.className='pomo-toast'; document.body.appendChild(t); }
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(()=>t.classList.remove('show'), 3800);
+}
+
+// ── Settings adjusters ─────────────────────────────────────────────────────
+function pomoAdjust(key, delta){
+  const s = window.pomoState;
+  const min = key==='workMins'?5:1, max = key==='longBreakMins'?60:30;
+  s[key] = Math.max(min, Math.min(max, s[key]+delta));
+  pomoSaveSettings();
+  // Update displayed value
+  const map = {workMins:'pomoWorkVal', breakMins:'pomoBreakVal', longBreakMins:'pomoLBVal'};
+  const el = document.getElementById(map[key]);
+  if(el) el.textContent = s[key];
+  // If timer is in this phase and not running, reset secondsLeft
+  if(!s.running){
+    if(key==='workMins' && s.phase==='focus') s.secondsLeft = s.workMins*60;
+    if(key==='breakMins' && s.phase==='break') s.secondsLeft = s.breakMins*60;
+    if(key==='longBreakMins' && s.phase==='longbreak') s.secondsLeft = s.longBreakMins*60;
+    pomoUpdateRing();
+  }
+  const sub = document.getElementById('pomoSubtitle');
+  if(sub) sub.textContent = `${s.workMins} min focus · ${s.breakMins} min rest`;
+}
+window.pomoAdjust = pomoAdjust;
+
+// ── To-do helpers ──────────────────────────────────────────────────────────
+function pomoAddTodo(){
+  const input = document.getElementById('pomoTodoInput');
+  if(!input) return;
+  const text = input.value.trim();
+  if(!text) return;
+  pomoTodos.unshift({id: Date.now(), text, done: false});
+  pomoSaveTodos();
+  input.value = '';
+  renderPomodoroTodos();
+}
+window.pomoAddTodo = pomoAddTodo;
+
+function pomoToggleTodo(id){
+  const t = pomoTodos.find(t=>t.id===id);
+  if(t){ t.done = !t.done; pomoSaveTodos(); renderPomodoroTodos(); }
+}
+window.pomoToggleTodo = pomoToggleTodo;
+
+function pomoDeleteTodo(id){
+  pomoTodos = pomoTodos.filter(t=>t.id!==id);
+  pomoSaveTodos();
+  renderPomodoroTodos();
+}
+window.pomoDeleteTodo = pomoDeleteTodo;
+
+function pomoClearDone(){
+  pomoTodos = pomoTodos.filter(t=>!t.done);
+  pomoSaveTodos();
+  renderPomodoroTodos();
+}
+window.pomoClearDone = pomoClearDone;
+
+function renderPomodoroTodos(){
+  const list = document.getElementById('pomoTodoList');
+  if(!list) return;
+  if(!pomoTodos.length){
+    list.innerHTML = `<div style="font-size:12px;color:var(--sheet-muted);font-weight:600;text-align:center;padding:16px 0;">No tasks yet — add one above 📝</div>`;
+    return;
+  }
+  list.innerHTML = pomoTodos.map(t=>`
+    <div class="pomo-todo-item${t.done?' done-task':''}" onclick="pomoToggleTodo(${t.id})">
+      <div class="pomo-todo-check">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <span class="pomo-todo-text">${t.text.replace(/</g,'&lt;')}</span>
+      <button class="pomo-todo-del" onclick="event.stopPropagation();pomoDeleteTodo(${t.id})" title="Remove">×</button>
+    </div>`).join('');
+}
+
+// ── Main render ────────────────────────────────────────────────────────────
+window.renderPomodoroSheet = function(){
+  const body = document.getElementById('pomodoroBody');
+  if(!body) return;
+  pomoLoadSettings();
+  pomoLoadTodos();
+
+  const s = window.pomoState;
+  // If not running and at default, reset secondsLeft based on current settings
+  if(!s.running && s.secondsLeft === 25*60 && s.workMins !== 25){
+    s.secondsLeft = s.workMins * 60;
+  }
+
+  const stats = pomoLoadStats();
+  const progressFrac = s.secondsLeft / pomoTotalSec();
+  const offset = RING_CIRC * (1 - progressFrac);
+
+  body.innerHTML = `
+  <div class="pomo-wrap">
+
+    <!-- Timer Ring -->
+    <div class="pomo-ring-wrap">
+      <svg class="pomo-ring-svg" viewBox="0 0 220 220">
+        <circle class="pomo-ring-bg" cx="110" cy="110" r="${RING_R}" stroke-dasharray="${RING_CIRC}" stroke-dashoffset="0"/>
+        <circle id="pomoRingProgress" class="pomo-ring-progress" cx="110" cy="110" r="${RING_R}"
+          stroke-dasharray="${RING_CIRC}" stroke-dashoffset="${offset}"
+          stroke="${pomoPhaseColor()}" transform="rotate(-90 110 110)"/>
+      </svg>
+      <div class="pomo-ring-center">
+        <div class="pomo-time" id="pomoTimeDisplay">${pomoFmt(s.secondsLeft)}</div>
+        <div class="pomo-phase-lbl" id="pomoPhaseLabel">${pomoPhaseLabel()}</div>
+        <div class="pomo-session-count" id="pomoSessionCount">${stats.sessions} session${stats.sessions!==1?'s':''} today</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="pomo-controls">
+      <button class="pomo-ctrl-btn secondary" onclick="pomoReset()" title="Reset">
+        <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+      </button>
+      <button class="pomo-ctrl-btn primary" id="pomoPlayPauseBtn" onclick="pomoToggle()">
+        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        ${s.running ? 'Pause' : (s.secondsLeft===pomoTotalSec()?'Start':'Resume')}
+      </button>
+      <button class="pomo-ctrl-btn secondary" onclick="pomoSkip()" title="Skip">
+        <svg viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+      </button>
+    </div>
+
+    <!-- Settings -->
+    <div class="pomo-settings-row">
+      <div class="pomo-set-card">
+        <div class="pomo-set-label">Focus</div>
+        <div class="pomo-set-val">
+          <button class="pomo-adj-btn" onclick="pomoAdjust('workMins',-5)">−</button>
+          <div class="pomo-set-num" id="pomoWorkVal">${s.workMins}</div>
+          <button class="pomo-adj-btn" onclick="pomoAdjust('workMins',5)">+</button>
+        </div>
+      </div>
+      <div class="pomo-set-card">
+        <div class="pomo-set-label">Break</div>
+        <div class="pomo-set-val">
+          <button class="pomo-adj-btn" onclick="pomoAdjust('breakMins',-1)">−</button>
+          <div class="pomo-set-num" id="pomoBreakVal">${s.breakMins}</div>
+          <button class="pomo-adj-btn" onclick="pomoAdjust('breakMins',1)">+</button>
+        </div>
+      </div>
+      <div class="pomo-set-card">
+        <div class="pomo-set-label">Long Break</div>
+        <div class="pomo-set-val">
+          <button class="pomo-adj-btn" onclick="pomoAdjust('longBreakMins',-5)">−</button>
+          <div class="pomo-set-num" id="pomoLBVal">${s.longBreakMins}</div>
+          <button class="pomo-adj-btn" onclick="pomoAdjust('longBreakMins',5)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="pomo-dash">
+      <div class="pomo-dash-title">📊 Today's Dashboard</div>
+      <div class="pomo-dash-grid">
+        <div class="pomo-dash-item">
+          <div class="pomo-dash-val" id="pomoDashFocus">${stats.sessions}</div>
+          <div class="pomo-dash-sub">Focus<br>Sessions</div>
+        </div>
+        <div class="pomo-dash-item">
+          <div class="pomo-dash-val" id="pomoDashMins">${stats.minutes}</div>
+          <div class="pomo-dash-sub">Minutes<br>Focused</div>
+        </div>
+        <div class="pomo-dash-item">
+          <div class="pomo-dash-val" id="pomoDashBreak">${stats.breakCount}</div>
+          <div class="pomo-dash-sub">Breaks<br>Taken</div>
+        </div>
+        <div class="pomo-dash-item">
+          <div class="pomo-dash-val" style="font-size:16px;">${stats.sessions>=8?'🏆':stats.sessions>=4?'🔥':stats.sessions>=1?'⚡':'😴'}</div>
+          <div class="pomo-dash-sub">${stats.sessions>=8?'Champion':stats.sessions>=4?'On Fire':stats.sessions>=1?'Building':'Not started'}</div>
+        </div>
+      </div>
+      <div class="pomo-session-dots" id="pomoDashDots">
+        ${Array.from({length:12},(_,i)=>{
+          const d = stats.dotLog[stats.dotLog.length-12+i];
+          if(i < 12 - Math.min(12,stats.dotLog.length)) return `<div class="pomo-dot"></div>`;
+          if(d==='focus') return `<div class="pomo-dot done" title="Focus"></div>`;
+          return `<div class="pomo-dot break" title="Break"></div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- To-do List -->
+    <div class="pomo-todo">
+      <div class="pomo-todo-head">
+        <div class="pomo-todo-title">📝 Focus Tasks</div>
+        <button class="pomo-todo-clear" onclick="pomoClearDone()">Clear done</button>
+      </div>
+      <div class="pomo-todo-input-row">
+        <input class="pomo-todo-input" id="pomoTodoInput" placeholder="Add a task to focus on…" type="text"
+          onkeydown="if(event.key==='Enter')pomoAddTodo()">
+        <button class="pomo-todo-add-btn" onclick="pomoAddTodo()">+</button>
+      </div>
+      <div class="pomo-todo-list" id="pomoTodoList"></div>
+    </div>
+
+  </div>`;
+
+  renderPomodoroTodos();
+  // Update subtitle
+  const sub = document.getElementById('pomoSubtitle');
+  if(sub) sub.textContent = `${s.workMins} min focus · ${s.breakMins} min rest`;
+
+  // Restore controls state if timer was running
+  if(s.running){ pomoUpdateControls(); }
+};
+
+// Expose reset/skip/toggle so onclick attrs work from inside innerHTML
+window.pomoReset = pomoReset;
+window.pomoSkip  = pomoSkip;
+
 })();
 </script>
 </body>
