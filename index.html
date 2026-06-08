@@ -547,14 +547,13 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   display:flex;justify-content:center;gap:5px;padding:5px 0 2px;
 }
 .cal-week-dot{
-  height:4px;border-radius:99px;
+  height:5px;width:5px;border-radius:99px;
   background:var(--dim);
   transition:width .32s cubic-bezier(.34,1.56,.64,1), background .22s, transform .22s;
-  width:14px;
 }
 .cal-week-dot.active{
   background:var(--tf);
-  width:22px;
+  width:5px;
   box-shadow:0 0 8px rgba(123,110,246,.4);
 }
 
@@ -626,7 +625,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .cell.active:hover{background:transparent;transform:translateY(-1px);}
 .cell.hol,.cell.wk{background:var(--cell-special-bg);box-shadow:0 2px 7px rgba(114,90,200,.03),inset 0 0 0 1px rgba(255,255,255,.76);}
 .cell.hol:hover,.cell.wk:hover{background:var(--cell-special-hover);}
-.cell.sel{background:var(--today-grad);box-shadow:0 14px 30px rgba(123,72,240,.44),inset 0 1px 0 rgba(255,255,255,.2);}
+.cell.sel{background:var(--today-grad);box-shadow:inset 0 1px 0 rgba(255,255,255,.2);}
 .cell.sel:hover{transform:translateY(-1px);}
 .ndate{font-size:18px;font-weight:800;color:var(--cell-text);line-height:1.02;letter-spacing:.1px;}
 .gdate{font-size:10px;font-weight:700;color:var(--cell-muted);margin-top:1px;}
@@ -644,7 +643,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .cell.dim .gdate{color:var(--cell-muted);}
 .cell.dim .hdot{opacity:0 !important;}
 .cell.dim:hover{background:transparent !important;transform:none;}
-.cell.today{background:var(--today-grad);border-radius:17px;box-shadow:0 0 0 1px rgba(255,255,255,.14),0 14px 30px rgba(123,72,240,.44),inset 0 1px 0 rgba(255,255,255,.24);}
+.cell.today{background:var(--today-grad);border-radius:17px;box-shadow:0 0 0 1px rgba(255,255,255,.14),inset 0 1px 0 rgba(255,255,255,.24);}
 .cell.today .ndate{color:var(--today-text);font-size:18px;font-weight:900;}
 .cell.today .tlbl{font-size:7px;font-weight:900;color:rgba(255,255,255,.94);letter-spacing:.8px;opacity:.95;text-transform:uppercase;margin-top:1px;}
 .cell.today .gdate{color:var(--today-muted);}
