@@ -6,7 +6,7 @@ A beautiful, offline-capable Nepali Patro (Bikram Sambat calendar) web app built
 
 ## ✨ Features
 
-- 📅 Full Nepali BS calendar (2080–2086 supported)
+- 📅 Full Nepali BS calendar (2055–2086 supported)
 - 🌙 Dark / Light mode (persisted across sessions)
 - 🌐 English ↔ नेपाली instant language toggle
 - 🇳🇵 25+ official Nepal public holidays highlighted in red
@@ -63,39 +63,7 @@ Because the current application architecture functions entirely on the client si
 ```bash
    git clone [https://github.com/YOUR_USERNAME/vikram.git](https://github.com/YOUR_USERNAME/vikram.git)
 
-## 🚀 Deploy to GitHub Pages (5 minutes)
 
-### Option A — Upload via GitHub web UI
-1. Create a new repository at [github.com/new](https://github.com/new) (any name, e.g. `vikram-calendar`).
-2. Click **"uploading an existing file"** on the empty repo page.
-3. Drag-and-drop the entire contents of this ZIP (not the ZIP itself — the files inside):
-   ```
-   index.html
-   manifest.json
-   sw.js
-   icons/
-   README.md
-   .nojekyll
-   ```
-4. Commit directly to `main`.
-5. Go to **Settings → Pages → Source → Deploy from branch → main → / (root)**.
-6. After ~60 seconds your site will be live at:
-   ```
-   https://<your-username>.github.io/<repo-name>/
-   ```
-
-### Option B — Git CLI
-```bash
-git clone https://github.com/<your-username>/<repo-name>.git
-cd <repo-name>
-# Copy all files from the ZIP into this folder, then:
-git add .
-git commit -m "🚀 Launch Vikram Calendar"
-git push origin main
-# Then enable GitHub Pages in repo Settings → Pages
-```
-
----
 
 ## 📁 File Structure
 
