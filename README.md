@@ -12,7 +12,7 @@ A beautiful, offline-capable Nepali Patro (Bikram Sambat calendar) web app built
 - 🇳🇵 25+ official Nepal public holidays highlighted in red
 - 🌙 Approximate Tithi (lunar day) shown on date tap
 - 📌 Add & persist custom events (pink-highlighted dates)
-- ⏳ Next 29 days  29 days panels (holidays + cycle + events combined)
+- ⏳ Next 29 days panels (holidays + cycle + events combined)
 - 📆 Month picker — tap month name to jump to any month/year
 - 📲 Installable as a PWA — works fully offline
 - 💾 Dark mode, language & events all saved in `localStorage`
