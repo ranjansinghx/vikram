@@ -6,7 +6,7 @@ A beautiful, offline-capable Nepali Patro (Bikram Sambat calendar) web app built
 
 ## ✨ Features
 
-- 📅 Full Nepali BS calendar (2080–2086 supported)
+- 📅 Full Nepali BS calendar (2055–2086 supported)
 - 🌙 Dark / Light mode (persisted across sessions)
 - 🌐 English ↔ नेपाली instant language toggle
 - 🇳🇵 25+ official Nepal public holidays highlighted in red
