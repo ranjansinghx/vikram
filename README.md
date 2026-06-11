@@ -19,13 +19,6 @@ A beautiful, offline-capable Nepali Patro (Bikram Sambat calendar) web app built
 
 ---
 
-# 📅 Vikram — Your Beautiful Nepali Calendar
-
-Vikram is a beautiful, highly polished, and feature-rich client-side Nepali Calendar (Bikram Sambat) web application designed with a mobile-first philosophy[cite: 1]. Packed with custom utilities ranging from localized conversion toolkits to health tracking and minimalist focus layers, Vikram bridges modern productivity tools with traditional Nepali timekeeping[cite: 1].
-
----
-
-## ✨ Features
 
 ### 📅 Core Calendar & Converter
 * **Localized Calendar Matrix**: A fluid calendar UI built dynamically with robust styling tailored for multi-language display (English and Devanagari script fonts)[cite: 1].
