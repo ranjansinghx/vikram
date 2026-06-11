@@ -1434,6 +1434,20 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   <div id="pomodoroBody" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0;display:flex;align-items:flex-start;justify-content:center;"></div>
 </div>
 
+<!-- DATE CONVERTER SHEET -->
+<div class="sheet cycle-fullscreen" id="converterSheet" style="padding-bottom:0;">
+  <div class="cycle-head" style="background:linear-gradient(135deg,rgba(91,79,207,.22),rgba(123,110,246,.14),rgba(83,64,180,.08));">
+    <button class="cycle-back" onclick="closeAll()" aria-label="Back">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="cycle-title-wrap">
+      <div class="cycle-title">🗓 Date Converter</div>
+      <div class="cycle-sub">BS ↔ AD · 2055–2086</div>
+    </div>
+  </div>
+  <div class="sscroll" id="converterBody" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 18px 40px;"></div>
+</div>
+
 <button class="fab" onclick="openSheet('add')" title="Add Event">
   <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
 </button>
@@ -1515,6 +1529,16 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
         <button class="chip" onclick="setFD(0,this)">Sunday</button>
         <button class="chip on" onclick="setFD(1,this)">Monday</button>
         <button class="chip" onclick="setFD(6,this)">Saturday</button>
+      </div>
+    </div>
+    <div class="ssec">
+      <div class="ssect">Tools</div>
+      <div class="srow" style="cursor:pointer;" onclick="closeAll();setTimeout(()=>openSheet('converter'),60);">
+        <div>
+          <div class="slbl">🗓 Date Converter</div>
+          <div class="ssub">BS ↔ AD · 2055–2086</div>
+        </div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
     </div>
     <div class="ssec">
@@ -1680,7 +1704,32 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 <script>
 // ══ BS DATA ══
 const BS={
-  2080:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2055:[31,31,32,31,32,31,30,29,30,29,30,30],
+  2056:[31,32,31,32,31,30,30,30,29,29,30,30],
+  2057:[31,32,31,32,31,30,30,30,29,30,29,31],
+  2058:[31,31,32,32,31,30,30,29,30,29,30,29],
+  2059:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2060:[31,32,31,32,31,31,29,30,29,30,29,31],
+  2061:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2062:[31,31,32,32,30,31,30,29,29,30,29,31],
+  2063:[31,31,32,31,31,30,30,29,29,30,29,31],
+  2064:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2065:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2066:[31,32,31,32,31,30,30,30,29,29,30,30],
+  2067:[31,31,32,31,31,31,30,29,30,29,30,31],
+  2068:[31,31,32,31,31,31,30,29,30,30,29,31],
+  2069:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2070:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2071:[31,32,31,32,31,30,30,30,29,29,30,30],
+  2072:[31,32,31,32,31,30,30,30,29,30,29,31],
+  2073:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2074:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2075:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2076:[31,32,31,32,31,30,30,30,29,29,30,30],
+  2077:[31,32,31,32,31,31,29,30,30,29,29,31],
+  2078:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2079:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2080:[31,31,32,31,31,31,30,30,29,29,30,31],
   2081:[31,31,32,31,31,31,30,29,30,29,30,30],
   2082:[31,32,31,32,31,30,30,30,29,29,30,30],
   2083:[31,31,32,31,31,31,30,29,30,29,30,30],
@@ -2332,11 +2381,12 @@ function openDay(bY,bM,bD){
 // ══ SHEETS ══
 function closeAll(){
   document.getElementById('ov').classList.remove('open');
-  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','cycleSheet','echoSheet','colorMatcherSheet','pomodoroSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','cycleSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
   document.getElementById('cycleSheet')?.classList.remove('cycle-fullscreen');
   document.getElementById('echoSheet')?.classList.remove('cycle-fullscreen');
   document.getElementById('colorMatcherSheet')?.classList.remove('cycle-fullscreen');
   document.getElementById('pomodoroSheet')?.classList.remove('cycle-fullscreen');
+  document.getElementById('converterSheet')?.classList.remove('cycle-fullscreen');
   // Stop color matcher game if running
   if(window.cmState && window.cmState.running) window.cmStopGame && window.cmStopGame();
   // Pause pomodoro timer if running (don't stop — just pause so state persists)
@@ -2490,7 +2540,7 @@ function formatEventRange(ev){
 function openSheet(t){
   closeAll();
   document.getElementById('ov').classList.add('open');
-  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',cycle:'cycleSheet',echo:'echoSheet',colorMatcher:'colorMatcherSheet',pomodoro:'pomodoroSheet'};
+  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',cycle:'cycleSheet',echo:'echoSheet',colorMatcher:'colorMatcherSheet',pomodoro:'pomodoroSheet',converter:'converterSheet'};
   const sheet=document.getElementById(ids[t]);
   sheet?.classList.add('open');
   if(t==='cycle'){
@@ -2511,6 +2561,11 @@ function openSheet(t){
     sheet?.classList.add('cycle-fullscreen');
     document.querySelector('.phone')?.classList.add('cycle-dim');
     renderPomodoroSheet();
+  }
+  if(t==='converter'){
+    sheet?.classList.add('cycle-fullscreen');
+    document.querySelector('.phone')?.classList.add('cycle-dim');
+    renderConverterSheet();
   }
   if(t==='settings'){ renderGcalCard(); renderWidgetThumb(); renderWidgetSteps(); }
   if(t==='cycle') renderCycleSheet();
@@ -5434,6 +5489,121 @@ window.renderPomodoroSheet = function(){
 window.pomoReset = pomoReset;
 window.pomoSkip  = pomoSkip;
 
+})();
+
+// ══ DATE CONVERTER ══
+(function(){
+  const MONTHS_EN = ['Baishakh','Jestha','Ashadh','Shrawan','Bhadra','Ashwin','Kartik','Mangsir','Poush','Magh','Falgun','Chaitra'];
+  const MONTHS_NE = ['बैशाख','जेठ','असार','साउन','भदौ','असोज','कार्तिक','मंसिर','पुस','माघ','फागुन','चैत'];
+  const ADMON = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  // Build year options 2055–2086
+  function bsYearOpts(sel){ let s=''; for(let y=2055;y<=2086;y++) s+=`<option value="${y}"${y===sel?' selected':''}>${y}</option>`; return s; }
+  function bsMonthOpts(sel){ let s=''; MONTHS_EN.forEach((m,i)=>s+=`<option value="${i+1}"${i+1===sel?' selected':''}>${m} (${MONTHS_NE[i]})</option>`); return s; }
+  function bsDayOpts(y,m,sel){ const max=BS[y]?.[m-1]??30; let s=''; for(let d=1;d<=max;d++) s+=`<option value="${d}"${d===sel?' selected':''}>${d}</option>`; return s; }
+  function adYearOpts(sel){ let s=''; for(let y=1998;y<=2030;y++) s+=`<option value="${y}"${y===sel?' selected':''}>${y}</option>`; return s; }
+  function adMonthOpts(sel){ let s=''; ADMON.forEach((m,i)=>s+=`<option value="${i+1}"${i+1===sel?' selected':''}>${m}</option>`); return s; }
+  function adDayOpts(y,m,sel){ const max=new Date(y,m,0).getDate(); let s=''; for(let d=1;d<=max;d++) s+=`<option value="${d}"${d===sel?' selected':''}>${d}</option>`; return s; }
+
+  function pad2(n){ return String(n).padStart(2,'0'); }
+
+  function doConvertBsToAd(){
+    const y=+document.getElementById('cvBsY').value;
+    const m=+document.getElementById('cvBsM').value;
+    const d=+document.getElementById('cvBsD').value;
+    if(!BS[y]){ document.getElementById('cvBsResult').innerHTML='<span style="color:var(--wknd)">Year out of range</span>'; return; }
+    const max=BS[y][m-1];
+    if(d<1||d>max){ document.getElementById('cvBsResult').innerHTML=`<span style="color:var(--wknd)">Day must be 1–${max}</span>`; return; }
+    const ad=bsToAd(y,m,d);
+    const wd=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][ad.getDay()];
+    const res=`${wd}, ${ADMON[ad.getMonth()]} ${ad.getDate()}, ${ad.getFullYear()}`;
+    document.getElementById('cvBsResult').innerHTML=`<div class="cv-result-box"><div class="cv-result-label">AD Date</div><div class="cv-result-val">${res}</div><div class="cv-result-iso">${ad.getFullYear()}-${pad2(ad.getMonth()+1)}-${pad2(ad.getDate())}</div></div>`;
+  }
+
+  function doConvertAdToBs(){
+    const y=+document.getElementById('cvAdY').value;
+    const m=+document.getElementById('cvAdM').value;
+    const d=+document.getElementById('cvAdD').value;
+    const ad=new Date(y,m-1,d);
+    let bs;
+    try{ bs=adToBs(ad); } catch(e){ document.getElementById('cvAdResult').innerHTML='<span style="color:var(--wknd)">Out of range</span>'; return; }
+    if(!BS[bs.y]||bs.y<2055||bs.y>2086){ document.getElementById('cvAdResult').innerHTML='<span style="color:var(--wknd)">Corresponding BS date out of range (2055–2086)</span>'; return; }
+    const mEn=MONTHS_EN[bs.m-1], mNe=MONTHS_NE[bs.m-1];
+    const wd=['आइतबार','सोमबार','मंगलबार','बुधबार','बिहीबार','शुक्रबार','शनिबार'][ad.getDay()];
+    document.getElementById('cvAdResult').innerHTML=`<div class="cv-result-box"><div class="cv-result-label">BS Date</div><div class="cv-result-val">${mEn} ${bs.d}, ${bs.y} BS</div><div class="cv-result-ne">${mNe} ${bs.d}, ${bs.y}</div><div class="cv-result-wd">${wd}</div></div>`;
+  }
+
+  function updateBsDayOpts(){
+    const y=+document.getElementById('cvBsY').value;
+    const m=+document.getElementById('cvBsM').value;
+    const cur=+document.getElementById('cvBsD').value;
+    const max=BS[y]?.[m-1]??30;
+    document.getElementById('cvBsD').innerHTML=bsDayOpts(y,m,Math.min(cur,max));
+  }
+
+  function updateAdDayOpts(){
+    const y=+document.getElementById('cvAdY').value;
+    const m=+document.getElementById('cvAdM').value;
+    const cur=+document.getElementById('cvAdD').value;
+    const max=new Date(y,m,0).getDate();
+    document.getElementById('cvAdD').innerHTML=adDayOpts(y,m,Math.min(cur,max));
+  }
+
+  window.renderConverterSheet = function(){
+    const today = TODAYBS;
+    const ad = bsToAd(today.y, today.m, today.d);
+    const body = document.getElementById('converterBody');
+    if(!body) return;
+    body.innerHTML = `
+<style>
+.cv-section{background:var(--card);border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 2px 12px rgba(91,79,207,.07);}
+.cv-section-title{font-size:13px;font-weight:800;color:var(--tf);letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px;}
+.cv-row{display:flex;gap:8px;margin-bottom:12px;}
+.cv-sel{flex:1;appearance:none;-webkit-appearance:none;background:var(--tgbg);color:var(--dtext);border:1.5px solid var(--border);border-radius:10px;padding:9px 10px;font-size:14px;font-weight:700;font-family:inherit;outline:none;cursor:pointer;}
+.cv-sel:focus{border-color:var(--tf);}
+.cv-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--tf),var(--tt));color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;letter-spacing:.2px;transition:opacity .15s,transform .1s;}
+.cv-btn:active{transform:scale(.97);opacity:.9;}
+.cv-result-box{background:linear-gradient(135deg,rgba(123,110,246,.10),rgba(91,79,207,.07));border:1.5px solid rgba(123,110,246,.18);border-radius:14px;padding:14px 16px;margin-top:12px;}
+.cv-result-label{font-size:11px;font-weight:800;color:var(--tf);letter-spacing:.6px;text-transform:uppercase;margin-bottom:4px;}
+.cv-result-val{font-size:18px;font-weight:900;color:var(--dtext);line-height:1.2;}
+.cv-result-ne{font-size:15px;font-weight:700;color:var(--tf);margin-top:3px;}
+.cv-result-iso{font-size:12px;font-weight:700;color:var(--dsub);margin-top:3px;font-variant-numeric:tabular-nums;}
+.cv-result-wd{font-size:12px;font-weight:700;color:var(--dsub);margin-top:3px;}
+.cv-divider{border:none;border-top:1.5px solid var(--border);margin:4px 0 14px;}
+.cv-quick-title{font-size:12px;font-weight:800;color:var(--dsub);letter-spacing:.4px;text-transform:uppercase;margin-bottom:10px;}
+.cv-today-chip{display:inline-flex;align-items:center;gap:6px;background:var(--chip-bg);color:var(--chip-text);border-radius:10px;padding:6px 12px;font-size:13px;font-weight:700;margin-bottom:6px;}
+</style>
+
+<div class="cv-today-chip">✦ Today: ${MONTHS_EN[today.m-1]} ${today.d}, ${today.y} BS &nbsp;·&nbsp; ${ADMON[ad.getMonth()]} ${ad.getDate()}, ${ad.getFullYear()} AD</div>
+
+<div class="cv-section">
+  <div class="cv-section-title">BS → AD</div>
+  <div class="cv-row">
+    <select class="cv-sel" id="cvBsY" onchange="updateBsDayOpts()">${bsYearOpts(today.y)}</select>
+    <select class="cv-sel" id="cvBsM" style="flex:1.4" onchange="updateBsDayOpts()">${bsMonthOpts(today.m)}</select>
+    <select class="cv-sel" id="cvBsD">${bsDayOpts(today.y,today.m,today.d)}</select>
+  </div>
+  <button class="cv-btn" onclick="doConvertBsToAd()">Convert to AD</button>
+  <div id="cvBsResult"></div>
+</div>
+
+<div class="cv-section">
+  <div class="cv-section-title">AD → BS</div>
+  <div class="cv-row">
+    <select class="cv-sel" id="cvAdY" onchange="updateAdDayOpts()">${adYearOpts(ad.getFullYear())}</select>
+    <select class="cv-sel" id="cvAdM" style="flex:1.4" onchange="updateAdDayOpts()">${adMonthOpts(ad.getMonth()+1)}</select>
+    <select class="cv-sel" id="cvAdD">${adDayOpts(ad.getFullYear(),ad.getMonth()+1,ad.getDate())}</select>
+  </div>
+  <button class="cv-btn" onclick="doConvertAdToBs()">Convert to BS</button>
+  <div id="cvAdResult"></div>
+</div>`;
+
+    // Expose helpers globally so inline onclick works
+    window.doConvertBsToAd = doConvertBsToAd;
+    window.doConvertAdToBs = doConvertAdToBs;
+    window.updateBsDayOpts = updateBsDayOpts;
+    window.updateAdDayOpts = updateAdDayOpts;
+  };
 })();
 </script>
 </body>
