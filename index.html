@@ -2367,7 +2367,7 @@ function render(){
       const isSel=selectedDay.y===vY&&selectedDay.m===vM&&selectedDay.d===nd;
       const h=getH(vY,vM,nd),isH=!!h;
       let cls='cell active';
-      if(isT)cls+=' today';else if(isSel)cls+=' sel';else if(isH)cls+=' hol';else if(wk)cls+=' wk';
+      if(isT)cls+=' today';else if(isH)cls+=' hol';else if(wk)cls+=' wk';
       const evtCount=userEvents.filter(ev=>eventMatchesDate(ev,vY,vM,nd)).length;
       html+=`<div class="${cls}" onclick="openDay(${vY},${vM},${nd})">
         <div class="ndate ne">${ns(nd)}</div>
