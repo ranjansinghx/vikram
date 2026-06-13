@@ -796,71 +796,20 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   box-shadow:0 4px 12px rgba(0,0,0,.3);
 }
 
-/* ── NOTES TAB BUTTON ── */
-.notes-tab-btn{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:0 12px;height:28px;
-  border-radius:999px;border:none;
-  background:rgba(26,26,26,.08);
-  color:var(--panel-muted);
-  font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;letter-spacing:.3px;
-  cursor:pointer;
-  transition:background .2s,color .2s,box-shadow .2s,transform .15s;
-  box-shadow:0 2px 8px rgba(26,26,26,.06);
-}
-.notes-tab-btn:hover{background:rgba(26,26,26,.14);transform:translateY(-1px);}
-.notes-tab-btn.active{
-  background:linear-gradient(135deg,#fef9e7,#fdf3c5);
-  color:#b8860b;
-  box-shadow:0 0 0 1px rgba(184,134,11,.18),0 4px 12px rgba(184,134,11,.14);
-}
-[data-theme=dark] .notes-tab-btn{background:rgba(255,255,255,.06);color:var(--panel-muted);}
-[data-theme=dark] .notes-tab-btn:hover{background:rgba(255,255,255,.1);}
-[data-theme=dark] .notes-tab-btn.active{
-  background:linear-gradient(135deg,rgba(255,214,0,.14),rgba(255,185,0,.08));
-  color:#ffd700;
-  box-shadow:0 0 0 1px rgba(255,214,0,.2),0 4px 14px rgba(255,185,0,.12);
-}
-
-/* ── NOTES PANEL ── */
-.notes-panel{
-  margin:0 10px 10px;
-  border-radius:18px;
-  background:var(--panel-bg);
-  border:1px solid var(--panel-border);
-  box-shadow:var(--panel-shadow);
-  overflow:hidden;
-  display:none;
-  flex-direction:column;
-  animation:notesSlideIn .22s cubic-bezier(.34,1.3,.64,1) both;
-}
-.notes-panel.open{display:flex;}
-@keyframes notesSlideIn{
-  from{opacity:0;transform:translateY(-8px) scale(.98);}
-  to{opacity:1;transform:translateY(0) scale(1);}
-}
-.notes-toolbar{
-  display:flex;align-items:center;gap:2px;
-  padding:8px 10px 7px;
-  border-bottom:1px solid var(--panel-border);
-  background:rgba(255,255,255,.4);
-  flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;
-}
-[data-theme=dark] .notes-toolbar{background:rgba(255,255,255,.03);}
-.notes-toolbar::-webkit-scrollbar{display:none;}
+/* ── NOTES TOOLBAR BUTTONS (shared) ── */
 .notes-fmt-btn{
-  width:30px;height:30px;border:none;border-radius:8px;
-  background:transparent;color:var(--panel-muted);
+  width:38px;height:38px;border:none;border-radius:10px;
+  background:transparent;color:var(--hsub);
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;flex-shrink:0;
   transition:background .15s,color .15s,transform .12s;
 }
-.notes-fmt-btn:hover{background:rgba(26,26,26,.08);color:var(--panel-text);}
+.notes-fmt-btn:hover{background:rgba(26,26,26,.08);color:var(--htext);}
 .notes-fmt-btn:active{transform:scale(.88);}
 [data-theme=dark] .notes-fmt-btn:hover{background:rgba(255,255,255,.08);}
-.notes-fmt-btn.active-fmt{background:rgba(26,26,26,.12);color:var(--panel-text);}
+.notes-fmt-btn.active-fmt{background:rgba(26,26,26,.12);color:var(--htext);}
 [data-theme=dark] .notes-fmt-btn.active-fmt{background:rgba(255,255,255,.12);}
-.notes-fmt-sep{width:1px;height:18px;background:var(--panel-border);margin:0 3px;flex-shrink:0;}
+.notes-fmt-sep{width:1px;height:18px;background:var(--border);margin:0 3px;flex-shrink:0;}
 .notes-clear-btn{margin-left:auto;}
 .notes-save-dot{
   width:7px;height:7px;border-radius:50%;
@@ -868,27 +817,103 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   opacity:0;transition:opacity .4s;
 }
 .notes-save-dot.show{opacity:1;}
+
+/* ── NOTES TAB (list + editor) ── */
+.notes-view{display:flex;flex-direction:column;}
+.notes-back-btn{
+  width:38px;height:38px;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:var(--chip);color:var(--htext);cursor:pointer;flex-shrink:0;
+  transition:transform .12s,background .12s;
+}
+.notes-back-btn:hover{transform:translateY(-1px);}
+.notes-back-btn:active{transform:scale(.92);}
+.notes-delete-btn{
+  width:38px;height:38px;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:rgba(214,69,63,.12);color:#d6453f;cursor:pointer;flex-shrink:0;
+  transition:transform .12s,background .12s;
+}
+.notes-delete-btn:hover{background:rgba(214,69,63,.2);transform:translateY(-1px);}
+.notes-delete-btn:active{transform:scale(.92);}
+.notes-title-input{
+  flex:1;min-width:0;border:none;background:transparent;outline:none;
+  font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;
+  color:var(--htext);letter-spacing:-.3px;line-height:1.05;padding:0 4px;
+}
+.notes-title-input::placeholder{color:var(--hsub);opacity:.8;}
+
+.notes-empty{
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;padding:64px 32px;color:var(--hsub);text-align:center;
+  margin:0 14px 12px;background:var(--card);border:1px solid var(--border);
+  border-radius:20px;box-shadow:0 4px 18px rgba(80,70,160,.06);
+}
+.notes-empty.show{display:flex;}
+[data-theme=dark] .notes-empty{box-shadow:0 4px 18px rgba(0,0,0,.24);}
+.notes-empty svg{stroke:var(--tf);opacity:.8;}
+.notes-empty-title{font-size:17px;font-weight:900;color:var(--dtext);}
+.notes-empty-sub{font-size:13px;font-weight:600;line-height:1.5;color:var(--hsub);}
+
+.notes-list-item{
+  display:flex;align-items:center;gap:12px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:18px;padding:14px 14px;margin-bottom:10px;
+  cursor:pointer;box-shadow:0 4px 18px rgba(80,70,160,.06);
+  transition:transform .15s,box-shadow .15s;
+}
+[data-theme=dark] .notes-list-item{box-shadow:0 4px 18px rgba(0,0,0,.24);}
+.notes-list-item:active{transform:scale(.99);}
+.notes-list-item-icon{
+  width:40px;height:40px;border-radius:12px;flex-shrink:0;
+  background:linear-gradient(135deg,rgba(255,214,0,.18),rgba(255,185,0,.1));
+  display:flex;align-items:center;justify-content:center;
+  color:#b8860b;
+}
+[data-theme=dark] .notes-list-item-icon{
+  background:linear-gradient(135deg,rgba(255,214,0,.14),rgba(255,185,0,.08));
+  color:#ffd700;
+}
+.notes-list-item-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+.notes-list-item-title{
+  font-size:14.5px;font-weight:900;color:var(--htext);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.notes-list-item-snippet{
+  font-size:12px;font-weight:600;color:var(--hsub);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.notes-list-item-meta{font-size:10.5px;font-weight:700;color:var(--dsub);letter-spacing:.3px;}
+.notes-list-item-chevron{flex-shrink:0;color:var(--dsub);}
+
+/* Note editor */
+.notes-toolbar{
+  display:flex;align-items:center;gap:2px;
+  margin:0 14px 10px;border-radius:14px;border:1px solid var(--border);background:var(--card);
+  padding:6px 8px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;
+}
+.notes-toolbar::-webkit-scrollbar{display:none;}
 .notes-editor{
-  min-height:160px;max-height:320px;
+  margin:0 14px 16px;
+  min-height:50vh;
   padding:14px 16px 16px;
   font-family:'Nunito',sans-serif;
   font-size:14px;font-weight:600;line-height:1.65;
-  color:var(--panel-text);
+  color:var(--htext);
   outline:none;
-  overflow-y:auto;-webkit-overflow-scrolling:touch;
   word-break:break-word;
-  background:transparent;
+  background:var(--card);border:1px solid var(--border);border-radius:18px;
+  box-shadow:0 4px 18px rgba(80,70,160,.06);
 }
+[data-theme=dark] .notes-editor{box-shadow:0 4px 18px rgba(0,0,0,.24);}
 .notes-editor:empty::before{
   content:attr(data-placeholder);
-  color:var(--panel-muted);
+  color:var(--hsub);
   pointer-events:none;
   font-weight:600;
   font-style:italic;
 }
 .notes-editor ul,.notes-editor ol{padding-left:20px;}
 .notes-editor li{margin-bottom:3px;}
-.notes-editor b,.notes-editor strong{font-weight:900;color:var(--panel-text);}
+.notes-editor b,.notes-editor strong{font-weight:900;color:var(--htext);}
 
 /* Day section */
 .up-day-group{ padding:0 0 6px; }
@@ -2014,28 +2039,8 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
         <span class="up-hdr-title" id="upTitle">Upcoming</span>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
-        <button class="notes-tab-btn" id="notesTabBtn" onclick="toggleNotesPanel()" title="Notes">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-          Notes
-        </button>
         <span class="up-count" id="upCount">0</span>
       </div>
-    </div>
-
-    <!-- NOTES PANEL -->
-    <div class="notes-panel" id="notesPanel">
-      <div class="notes-toolbar">
-        <button class="notes-fmt-btn" data-cmd="bold" title="Bold" onclick="notesFmt('bold')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg></button>
-        <button class="notes-fmt-btn" data-cmd="italic" title="Italic" onclick="notesFmt('italic')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="notes-fmt-btn" data-cmd="underline" title="Underline" onclick="notesFmt('underline')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg></button>
-        <div class="notes-fmt-sep"></div>
-        <button class="notes-fmt-btn" data-cmd="insertUnorderedList" title="Bullet list" onclick="notesFmt('insertUnorderedList')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg></button>
-        <button class="notes-fmt-btn" data-cmd="insertOrderedList" title="Numbered list" onclick="notesFmt('insertOrderedList')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></button>
-        <div class="notes-fmt-sep"></div>
-        <button class="notes-fmt-btn notes-clear-btn" title="Clear notes" onclick="notesClear()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
-        <div class="notes-save-dot" id="notesSaveDot" title="Saved"></div>
-      </div>
-      <div class="notes-editor" id="notesEditor" contenteditable="true" spellcheck="true" data-placeholder="Start writing…"></div>
     </div>
 
     <div id="upList"></div>
@@ -2099,6 +2104,68 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   </div>
   <div class="sscroll" id="converterBody" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 18px 40px;"></div>
 </div>
+
+<!-- NOTES VIEW -->
+<div class="daycounter-view" id="notesView">
+
+  <!-- NOTES LIST VIEW -->
+  <div class="notes-view" id="notesListView">
+    <div class="dc-page-header">
+      <div class="dc-page-header-text">
+        <span class="dc-page-label">Your Space</span>
+        <span class="dc-page-title">📝 Notes</span>
+      </div>
+      <button class="dc-fab-inline" onclick="notesCreate()" title="Add Note">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+    <div id="notesListItems" style="padding:0 14px;"></div>
+    <div class="notes-empty" id="notesEmpty">
+      <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <div class="notes-empty-title">No notes yet</div>
+      <div class="notes-empty-sub">Tap the + button to write down your thoughts, lists, or reminders.</div>
+    </div>
+  </div>
+
+  <!-- NOTE EDITOR VIEW -->
+  <div class="notes-view" id="notesEditorView" style="display:none;">
+    <div class="dc-page-header">
+      <button class="notes-back-btn" onclick="notesBackToList()" aria-label="Back">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <input class="notes-title-input" id="notesTitleInput" placeholder="Untitled note" maxlength="80">
+      <button class="notes-delete-btn" onclick="notesDeleteCurrent()" aria-label="Delete note">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </button>
+    </div>
+    <div class="notes-toolbar">
+      <button class="notes-fmt-btn" data-cmd="bold" title="Bold" onclick="notesFmt('bold')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg></button>
+      <button class="notes-fmt-btn" data-cmd="italic" title="Italic" onclick="notesFmt('italic')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg></button>
+      <button class="notes-fmt-btn" data-cmd="underline" title="Underline" onclick="notesFmt('underline')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg></button>
+      <div class="notes-fmt-sep"></div>
+      <button class="notes-fmt-btn" data-cmd="insertUnorderedList" title="Bullet list" onclick="notesFmt('insertUnorderedList')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg></button>
+      <button class="notes-fmt-btn" data-cmd="insertOrderedList" title="Numbered list" onclick="notesFmt('insertOrderedList')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></button>
+      <div class="notes-fmt-sep"></div>
+      <button class="notes-fmt-btn notes-clear-btn" title="Clear note" onclick="notesClear()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+      <div class="notes-save-dot" id="notesSaveDot" title="Saved"></div>
+    </div>
+    <div class="notes-editor" id="notesEditor" contenteditable="true" spellcheck="true" data-placeholder="Start writing…"></div>
+  </div>
+
+</div>
+
+<!-- NOTES DELETE CONFIRM MODAL -->
+<div class="dc-modal-overlay" id="notesConfirmOverlay" onclick="notesConfirmClose(event)">
+  <div class="dc-modal" style="text-align:center">
+    <div class="dc-modal-title" style="margin-bottom:8px">Delete this note?</div>
+    <div style="font-size:13px;font-weight:600;line-height:1.5;color:var(--hsub);margin-bottom:6px">This can't be undone.</div>
+    <div class="dc-modal-btns">
+      <button class="dc-modal-cancel" style="flex:1" onclick="notesConfirmClose()">Cancel</button>
+      <button class="dc-modal-save" style="background:#d6453f;box-shadow:0 6px 18px rgba(214,69,63,.3)" onclick="notesConfirmYes()">Delete</button>
+    </div>
+  </div>
+</div>
+
 
 <div class="ov" id="ov" onclick="closeAll()"></div>
 
@@ -3190,6 +3257,10 @@ function formatEventRange(ev){
 }
 
 function openSheet(t){
+  if(t==='notes'){
+    switchTab('notes');
+    return;
+  }
   closeAll();
   document.getElementById('ov').classList.add('open');
   const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',echo:'echoSheet',colorMatcher:'colorMatcherSheet',pomodoro:'pomodoroSheet',converter:'converterSheet'};
@@ -6271,7 +6342,8 @@ window.pomoSkip  = pomoSkip;
 // ══ BOTTOM NAV TAB SWITCHING ══
 function switchTab(tab) {
   try { window.localStorage.setItem('vikram_active_tab', tab); } catch(e) {}
-  ['home','cycle','counter'].forEach(t => {
+  if(tab !== 'notes' && typeof window.notesFlushSave === 'function') window.notesFlushSave();
+  ['home','cycle','counter','notes'].forEach(t => {
     const id = 'bnav' + t.charAt(0).toUpperCase() + t.slice(1);
     const btn = document.getElementById(id);
     if(btn) btn.classList.toggle('active', t === tab);
@@ -6284,6 +6356,7 @@ function switchTab(tab) {
   const dcView      = document.getElementById('dayCounterView');
   const cycleView   = document.getElementById('cycleView');
   const dcFab       = document.getElementById('dcFab');
+  const notesView   = document.getElementById('notesView');
 
   if(tab === 'home') {
     if(mainContent) mainContent.style.display = '';
@@ -6292,6 +6365,7 @@ function switchTab(tab) {
     if(hdr)         hdr.style.display         = '';
     if(dcView)      dcView.classList.remove('active');
     if(cycleView)   cycleView.classList.remove('active');
+    if(notesView)   notesView.classList.remove('active');
     if(dcFab)       dcFab.style.display       = 'none';
     const mainFab = document.querySelector('.fab');
     if(mainFab)     mainFab.style.display     = '';
@@ -6303,6 +6377,7 @@ function switchTab(tab) {
     if(hdr)         hdr.style.display         = '';
     if(dcView)      dcView.classList.remove('active');
     if(cycleView)   cycleView.classList.add('active');
+    if(notesView)   notesView.classList.remove('active');
     if(dcFab)       dcFab.style.display       = 'none';
     const mainFab = document.querySelector('.fab');
     if(mainFab)     mainFab.style.display     = 'none';
@@ -6315,12 +6390,26 @@ function switchTab(tab) {
     if(hdr)         hdr.style.display         = '';
     if(cycleView)   cycleView.classList.remove('active');
     if(dcView)      dcView.classList.add('active');
+    if(notesView)   notesView.classList.remove('active');
     if(dcFab)       dcFab.style.display       = 'flex';
     const mainFab = document.querySelector('.fab');
     if(mainFab)     mainFab.style.display     = 'none';
     closeAll();
     if(typeof window.dcRender === 'function') window.dcRender();
     if(typeof window.dcHeatmapRender === 'function') window.dcHeatmapRender();
+  } else if(tab === 'notes') {
+    if(mainContent) mainContent.style.display = 'none';
+    if(upcoming)    upcoming.style.display    = 'none';
+    if(modebar)     modebar.style.display     = 'none';
+    if(hdr)         hdr.style.display         = '';
+    if(dcView)      dcView.classList.remove('active');
+    if(cycleView)   cycleView.classList.remove('active');
+    if(dcFab)       dcFab.style.display       = 'none';
+    const mainFab = document.querySelector('.fab');
+    if(mainFab)     mainFab.style.display     = 'none';
+    closeAll();
+    if(notesView)   notesView.classList.add('active');
+    if(typeof notesLoad === 'function') notesLoad();
   }
 }
 
@@ -6594,6 +6683,10 @@ function switchTab(tab) {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
     Streaks
   </button>
+  <button class="bnav-btn" id="bnavNotes" onclick="switchTab('notes')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    Notes
+  </button>
 </nav>
 
 <div class="daycounter-view" id="dayCounterView">
@@ -6714,34 +6807,204 @@ function switchTab(tab) {
 </script>
 
 <script>
-// ── NOTES PANEL ──
+// ── NOTES (multi-note list + editor) ──
 (function(){
-  const STORAGE_KEY = 'vikram_notes_html';
+  const STORAGE_KEY = 'vikram_notes_v2';
+  const LEGACY_KEY  = 'vikram_notes_html';
   let saveTimer = null;
+  let currentId = null;
 
   function getEditor(){ return document.getElementById('notesEditor'); }
-  function getPanel(){ return document.getElementById('notesPanel'); }
-  function getBtn(){ return document.getElementById('notesTabBtn'); }
+  function getTitleInput(){ return document.getElementById('notesTitleInput'); }
   function getSaveDot(){ return document.getElementById('notesSaveDot'); }
+  function getListView(){ return document.getElementById('notesListView'); }
+  function getEditorView(){ return document.getElementById('notesEditorView'); }
 
-  // Load saved content
-  function notesLoad(){
-    const ed = getEditor();
-    if(!ed) return;
-    try{
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if(saved) ed.innerHTML = saved;
-    }catch(e){}
+  function uid(){
+    return 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
   }
 
-  // Save with debounce
-  function notesSave(){
-    const ed = getEditor();
-    if(!ed) return;
+  // Load all notes from storage (with legacy migration)
+  function loadAll(){
+    let list = [];
     try{
-      localStorage.setItem(STORAGE_KEY, ed.innerHTML);
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) list = JSON.parse(raw) || [];
+    }catch(e){ list = []; }
+
+    // Migrate legacy single-note content if present and v2 store doesn't exist yet
+    try{
+      if(!localStorage.getItem(STORAGE_KEY)){
+        const legacy = localStorage.getItem(LEGACY_KEY);
+        if(legacy && legacy.trim() && legacy.trim() !== '<br>'){
+          list = [{
+            id: uid(),
+            title: '',
+            html: legacy,
+            updated: Date.now()
+          }];
+          saveAll(list);
+        }
+        localStorage.removeItem(LEGACY_KEY);
+      }
     }catch(e){}
-    // Flash green dot
+
+    return list;
+  }
+
+  function saveAll(list){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }catch(e){}
+  }
+
+  function findNote(list, id){
+    for(let i=0;i<list.length;i++){ if(list[i].id === id) return list[i]; }
+    return null;
+  }
+
+  // Strip HTML to plain text for snippet preview
+  function toPlainText(html){
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html || '';
+    return (tmp.textContent || tmp.innerText || '').replace(/\s+/g,' ').trim();
+  }
+
+  function formatRelativeDate(ts){
+    if(!ts) return '';
+    const d = new Date(ts);
+    const now = new Date();
+    const sameDay = d.toDateString() === now.toDateString();
+    if(sameDay){
+      return d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+    }
+    const yest = new Date(now); yest.setDate(now.getDate()-1);
+    if(d.toDateString() === yest.toDateString()) return 'Yesterday';
+    return d.toLocaleDateString([], {month:'short', day:'numeric'});
+  }
+
+  // ── RENDER LIST ──
+  function renderList(){
+    const list = loadAll();
+    const container = document.getElementById('notesListItems');
+    const empty = document.getElementById('notesEmpty');
+    if(!container) return;
+
+    // Sort by most recently updated
+    list.sort((a,b)=>(b.updated||0)-(a.updated||0));
+
+    if(list.length === 0){
+      if(empty) empty.classList.add('show');
+      container.innerHTML = '';
+      return;
+    }
+    if(empty) empty.classList.remove('show');
+
+    container.innerHTML = list.map(function(note){
+      const plain = toPlainText(note.html);
+      const title = (note.title && note.title.trim()) || (plain ? plain.slice(0,40) : 'Untitled note');
+      const snippet = plain ? plain.slice(0,80) : 'No additional text';
+      const meta = formatRelativeDate(note.updated);
+      return '<div class="notes-list-item" onclick="notesOpen(\''+note.id+'\')">'+
+        '<div class="notes-list-item-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>'+
+        '<div class="notes-list-item-body">'+
+          '<div class="notes-list-item-title">'+escapeHtml(title)+'</div>'+
+          '<div class="notes-list-item-snippet">'+escapeHtml(snippet)+'</div>'+
+          '<div class="notes-list-item-meta">'+escapeHtml(meta)+'</div>'+
+        '</div>'+
+        '<div class="notes-list-item-chevron"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>'+
+      '</div>';
+    }).join('');
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, function(c){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+    });
+  }
+
+  // ── VIEW SWITCHING ──
+  function showList(){
+    currentId = null;
+    const lv = getListView(), ev = getEditorView();
+    if(lv) lv.style.display = 'flex';
+    if(ev) ev.style.display = 'none';
+    renderList();
+  }
+
+  function showEditor(){
+    const lv = getListView(), ev = getEditorView();
+    if(lv) lv.style.display = 'none';
+    if(ev) ev.style.display = 'flex';
+  }
+
+  // Entry point when Notes tab opens
+  function notesLoad(){
+    showList();
+  }
+  window.notesLoad = notesLoad;
+
+  // ── CREATE / OPEN / DELETE ──
+  window.notesCreate = function(){
+    const list = loadAll();
+    const note = { id: uid(), title: '', html: '', updated: Date.now() };
+    list.unshift(note);
+    saveAll(list);
+    notesOpen(note.id);
+  };
+
+  window.notesOpen = function(id){
+    const list = loadAll();
+    const note = findNote(list, id);
+    if(!note) return;
+    currentId = id;
+    const ed = getEditor();
+    const ti = getTitleInput();
+    if(ed) ed.innerHTML = note.html || '';
+    if(ti) ti.value = note.title || '';
+    showEditor();
+    updateToolbarState();
+    setTimeout(function(){
+      if(!note.html && ti) ti.focus();
+      else if(ed) ed.focus();
+    }, 320);
+  };
+
+  window.notesBackToList = function(){
+    showList();
+  };
+
+  window.notesDeleteCurrent = function(){
+    if(!currentId) { showList(); return; }
+    document.getElementById('notesConfirmOverlay').classList.add('open');
+  };
+
+  window.notesConfirmYes = function(){
+    document.getElementById('notesConfirmOverlay').classList.remove('open');
+    if(!currentId) return;
+    let list = loadAll();
+    list = list.filter(function(n){ return n.id !== currentId; });
+    saveAll(list);
+    showList();
+  };
+
+  window.notesConfirmClose = function(e){
+    if(e && e.target !== document.getElementById('notesConfirmOverlay')) return;
+    document.getElementById('notesConfirmOverlay').classList.remove('open');
+  };
+
+  // ── SAVE CURRENT NOTE ──
+  function notesSave(){
+    if(!currentId) return;
+    const ed = getEditor();
+    const ti = getTitleInput();
+    if(!ed) return;
+    let list = loadAll();
+    const note = findNote(list, currentId);
+    if(!note) return;
+    note.html = ed.innerHTML;
+    note.title = ti ? ti.value : '';
+    note.updated = Date.now();
+    saveAll(list);
+
     const dot = getSaveDot();
     if(dot){
       dot.classList.add('show');
@@ -6750,28 +7013,10 @@ function switchTab(tab) {
     }
   }
 
-  // Toggle panel open/closed
-  window.toggleNotesPanel = function(){
-    const panel = getPanel();
-    const btn = getBtn();
-    if(!panel || !btn) return;
-    const isOpen = panel.classList.contains('open');
-    if(isOpen){
-      panel.classList.remove('open');
-      btn.classList.remove('active');
-    } else {
-      panel.classList.add('open');
-      btn.classList.add('active');
-      // Re-trigger animation
-      panel.style.animation = 'none';
-      requestAnimationFrame(function(){
-        panel.style.animation = '';
-        panel.classList.remove('open');
-        panel.classList.add('open');
-      });
-      notesLoad();
-      setTimeout(function(){ const ed = getEditor(); if(ed) ed.focus(); }, 80);
-    }
+  // Immediate save (used when navigating away)
+  window.notesFlushSave = function(){
+    clearTimeout(saveTimer);
+    notesSave();
   };
 
   // Format commands
@@ -6781,9 +7026,11 @@ function switchTab(tab) {
     ed.focus();
     document.execCommand(cmd, false, null);
     updateToolbarState();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(notesSave, 400);
   };
 
-  // Clear all notes
+  // Clear current note content
   window.notesClear = function(){
     const ed = getEditor();
     if(!ed) return;
@@ -6808,12 +7055,13 @@ function switchTab(tab) {
     });
   }
 
-  // Wire up editor events after DOM ready
+  // Wire up editor + title events after DOM ready
   function initNotes(){
     const ed = getEditor();
+    const ti = getTitleInput();
     if(!ed) return;
 
-    // Debounced autosave
+    // Debounced autosave for editor content
     ed.addEventListener('input', function(){
       clearTimeout(saveTimer);
       saveTimer = setTimeout(notesSave, 600);
@@ -6830,6 +7078,17 @@ function switchTab(tab) {
         else if(e.key==='u'){ e.preventDefault(); notesFmt('underline'); }
       }
     });
+
+    // Debounced autosave for title
+    if(ti){
+      ti.addEventListener('input', function(){
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(notesSave, 400);
+      });
+      ti.addEventListener('keydown', function(e){
+        if(e.key === 'Enter'){ e.preventDefault(); ed.focus(); }
+      });
+    }
   }
 
   if(document.readyState === 'loading'){
