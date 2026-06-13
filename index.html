@@ -1163,17 +1163,31 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .ph-luteal{color:#3B82F6;} .bg-luteal{background:#3B82F6;}
 
 /* Stat grid */
-.cyc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 18px 14px;}
-.cyc-card{background:var(--tgbg);border-radius:16px;padding:13px 14px;position:relative;overflow:hidden;}
-.cyc-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;}
-.cyc-card.menstrual::before{background:#FF4757;}
-.cyc-card.follicular::before{background:#FF6B9D;}
-.cyc-card.ovulation::before{background:#5a5a68;}
-.cyc-card.luteal::before{background:#3B82F6;}
-.cyc-card.neutral::before{background:var(--tgon);}
-.cyc-card-icon{font-size:20px;margin-bottom:4px;}
-.cyc-card-val{font-size:20px;font-weight:900;color:var(--dtext);line-height:1;}
-.cyc-card-sub{font-size:10.5px;font-weight:700;color:var(--dsub);margin-top:3px;line-height:1.3;}
+.cyc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 18px 16px;}
+.cyc-card{
+  display:flex;align-items:center;gap:11px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:18px;padding:12px 13px;
+  position:relative;overflow:hidden;
+  box-shadow:0 1px 3px rgba(20,20,46,.03);
+}
+.cyc-card.menstrual{--cyc-accent:#FF4757;background:linear-gradient(135deg,rgba(255,71,87,.08),var(--card) 60%);}
+.cyc-card.follicular{--cyc-accent:#FF6B9D;background:linear-gradient(135deg,rgba(255,107,157,.08),var(--card) 60%);}
+.cyc-card.ovulation{--cyc-accent:#5a5a68;background:linear-gradient(135deg,rgba(90,90,104,.08),var(--card) 60%);}
+.cyc-card.luteal{--cyc-accent:#3B82F6;background:linear-gradient(135deg,rgba(59,130,246,.08),var(--card) 60%);}
+.cyc-card.neutral{--cyc-accent:var(--tgon);}
+[data-theme=dark] .cyc-card.menstrual{background:linear-gradient(135deg,rgba(255,71,87,.16),var(--card) 60%);}
+[data-theme=dark] .cyc-card.follicular{background:linear-gradient(135deg,rgba(255,107,157,.16),var(--card) 60%);}
+[data-theme=dark] .cyc-card.ovulation{--cyc-accent:#c4c4d4;background:linear-gradient(135deg,rgba(255,255,255,.06),var(--card) 60%);}
+[data-theme=dark] .cyc-card.luteal{background:linear-gradient(135deg,rgba(59,130,246,.18),var(--card) 60%);}
+.cyc-card-ring{position:relative;flex-shrink:0;width:42px;height:42px;display:flex;align-items:center;justify-content:center;}
+.cyc-card-ring svg{width:42px;height:42px;transition:stroke-dasharray .4s ease;}
+.cyc-card-ring-track{fill:none;stroke:var(--tgbg);}
+.cyc-card-ring-fill{fill:none;stroke:var(--cyc-accent);stroke-linecap:round;}
+.cyc-card-ring-emoji{position:absolute;font-size:15px;line-height:1;}
+.cyc-card-body{flex:1;min-width:0;}
+.cyc-card-val{font-size:17px;font-weight:900;color:var(--dtext);line-height:1.15;letter-spacing:-.2px;}
+.cyc-card-sub{font-size:10.5px;font-weight:700;color:var(--dsub);margin-top:2px;line-height:1.3;}
 
 /* Log buttons */
 .cyc-log-row{display:flex;gap:9px;padding:0 18px 14px;}
@@ -1207,6 +1221,8 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .partner-dot.paired{background:#4CAF50;}
 .partner-status-txt{font-size:13px;font-weight:800;color:var(--dtext);}
 .partner-code{background:var(--sbg);border-radius:10px;padding:10px 14px;font-size:15px;font-weight:900;letter-spacing:3px;color:var(--tgon);text-align:center;margin-bottom:10px;border:1.5px dashed var(--border);}
+.partner-unpair{font-size:11px;font-weight:800;color:#f44336;text-align:center;cursor:pointer;margin:-2px 0 10px;}
+.partner-unpair:hover{opacity:.8;}
 .partner-btn-row{display:flex;gap:8px;}
 .partner-btn{flex:1;padding:10px;border-radius:11px;border:none;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:opacity .2s;}
 .partner-btn:hover{opacity:.85;}
@@ -1619,113 +1635,134 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   font-size:26px;font-weight:900;color:var(--htext);letter-spacing:-.5px;line-height:1.05;
 }
 
-/* Summary stats row */
-.dc-stats-row{
-  display:flex;gap:10px;padding:0 16px 16px;flex-shrink:0;
+/* ── HERO SUMMARY CARD ── */
+.dc-hero{
+  display:flex;align-items:center;gap:16px;
+  margin:0 14px 16px;padding:16px 18px;
+  background:
+    radial-gradient(ellipse 120% 100% at 100% 0%,rgba(34,197,94,.10),transparent 60%),
+    var(--card);
+  border:1px solid var(--border);border-radius:22px;
+  box-shadow:0 4px 18px rgba(80,70,160,.06);
 }
-.dc-stat-pill{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;padding:14px 8px;position:relative;
-  background:var(--card);border:1px solid var(--border);border-radius:16px;
-  box-shadow:0 2px 8px rgba(0,0,0,.04);
-  overflow:hidden;
-}
-[data-theme=dark] .dc-stat-pill{box-shadow:0 2px 10px rgba(0,0,0,.18);}
-.dc-stat-pill::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:var(--stat-accent,var(--tf));
-}
-.dc-stat-pill:nth-child(1){--stat-accent:#1a1a1a;}
-.dc-stat-pill:nth-child(2){--stat-accent:#3a9e6e;}
-.dc-stat-pill:nth-child(3){--stat-accent:#e08c2e;}
-.dc-stat-pill:nth-child(1) .dc-stat-val{color:#1a1a1a;}
-.dc-stat-pill:nth-child(2) .dc-stat-val{color:#3a9e6e;}
-.dc-stat-pill:nth-child(3) .dc-stat-val{color:#e08c2e;}
-[data-theme=dark] .dc-stat-pill:nth-child(1){--stat-accent:#9898c0;}
-[data-theme=dark] .dc-stat-pill:nth-child(1) .dc-stat-val{color:#ece8ff;}
-.dc-stat-val{font-size:24px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;}
-.dc-stat-lbl{font-size:9.5px;font-weight:800;color:var(--dsub);letter-spacing:.6px;text-transform:uppercase;margin-top:1px;}
+[data-theme=dark] .dc-hero{box-shadow:0 4px 18px rgba(0,0,0,.24);}
+.dc-hero-ring{position:relative;width:72px;height:72px;flex-shrink:0;}
+.dc-hero-ring svg{transform:rotate(-90deg);width:100%;height:100%;}
+.dc-hero-ring-bg{stroke:var(--border);stroke-width:7;fill:none;}
+.dc-hero-ring-fg{stroke:#22c55e;stroke-width:7;fill:none;stroke-linecap:round;transition:stroke-dashoffset .6s cubic-bezier(.22,.85,.25,1);}
+.dc-hero-ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.dc-hero-ring-num{font-size:17px;font-weight:900;color:var(--htext);line-height:1;font-variant-numeric:tabular-nums;}
+.dc-hero-ring-sub{font-size:7.5px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+.dc-hero-div{width:1px;align-self:stretch;background:var(--border);flex-shrink:0;}
+.dc-hero-stats{flex:1;min-width:0;display:flex;gap:14px;}
+.dc-hero-stat{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;}
+.dc-hero-stat-top{display:flex;align-items:baseline;gap:5px;}
+.dc-hero-stat-icon{font-size:17px;line-height:1;}
+.dc-hero-stat-num{font-size:23px;font-weight:900;color:var(--htext);line-height:1;letter-spacing:-.5px;font-variant-numeric:tabular-nums;}
+.dc-hero-stat-lbl{font-size:10px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;}
 
 /* Section label */
 .dc-section-lbl{
   font-size:11px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
   color:var(--dsub);padding:0 18px 8px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.dc-section-lbl span.dc-section-count{
+  font-weight:800;color:var(--dsub);background:var(--chip);
+  padding:2px 8px;border-radius:999px;font-size:10px;letter-spacing:.4px;
 }
 
-/* Cards */
+/* ── HABIT CARDS ── */
 .dc-card{
-  display:flex;align-items:stretch;
+  display:flex;align-items:center;gap:13px;
   background:var(--card);
   border-radius:20px;
-  margin:0 14px 12px;
+  margin:0 14px 12px;padding:13px 14px;
   border:1px solid var(--border);
   box-shadow:0 4px 18px rgba(80,70,160,.06);
-  overflow:hidden;
   flex-shrink:0;
   transition:transform .15s,box-shadow .15s;
 }
 .dc-card:active{transform:scale(.99);}
 [data-theme=dark] .dc-card{box-shadow:0 4px 18px rgba(0,0,0,.24);}
-.dc-card-accent{
-  width:6px;flex-shrink:0;
-  background:linear-gradient(180deg,var(--acc,var(--tf)),color-mix(in srgb,var(--acc,var(--tf)) 70%,#000 0%));
-}
-.dc-card-body{
-  flex:1;padding:16px 16px 14px;display:flex;flex-direction:column;gap:12px;min-width:0;
-}
-.dc-card-header{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-}
+
+/* Streak ring */
+.dc-card-ring{position:relative;width:56px;height:56px;flex-shrink:0;}
+.dc-card-ring svg{transform:rotate(-90deg);width:100%;height:100%;}
+.dc-card-ring-bg{stroke:var(--border);stroke-width:5;fill:none;}
+.dc-card-ring-fg{stroke:var(--acc,var(--tf));stroke-width:5;fill:none;stroke-linecap:round;transition:stroke-dashoffset .6s cubic-bezier(.22,.85,.25,1);}
+.dc-card-ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.dc-card-ring-num{font-size:17px;font-weight:900;color:var(--htext);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.5px;}
+.dc-card-ring-unit{font-size:7px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.3px;margin-top:1px;}
+
+/* Main column */
+.dc-card-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px;}
+.dc-card-header{display:flex;align-items:center;gap:8px;}
 .dc-card-name{
-  font-size:15px;font-weight:900;color:var(--htext);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-size:14.5px;font-weight:900;color:var(--htext);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;
 }
 .dc-card-type{
   font-size:9px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;
-  padding:4px 10px;border-radius:999px;white-space:nowrap;flex-shrink:0;
+  padding:3px 9px;border-radius:999px;white-space:nowrap;flex-shrink:0;
 }
 .dc-card-type.build{background:rgba(58,158,110,.12);color:#2f9e63;}
 .dc-card-type.quit{background:rgba(224,62,62,.1);color:#d6453f;}
 [data-theme=dark] .dc-card-type.build{background:rgba(76,209,148,.14);color:#5fe3a3;}
 [data-theme=dark] .dc-card-type.quit{background:rgba(255,100,100,.14);color:#ff8d8d;}
 
-/* Count row */
-.dc-count-row{display:flex;align-items:baseline;gap:7px;}
-.dc-count-num{font-size:40px;font-weight:900;line-height:1;letter-spacing:-1.5px;font-variant-numeric:tabular-nums;}
-.dc-count-unit{font-size:12px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.6px;padding-bottom:6px;}
+.dc-card-sub{font-size:11px;font-weight:700;color:var(--dsub);}
+.dc-card-sub b{color:var(--acc,var(--tf));font-weight:900;}
 
-/* Streak progress bar */
-.dc-streak-bar{height:7px;border-radius:5px;background:var(--border);overflow:hidden;}
-.dc-streak-fill{height:100%;border-radius:5px;transition:width .6s cubic-bezier(.22,.85,.25,1);}
-
-/* Footer */
-.dc-card-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:12px;border-top:1px solid var(--border);}
-.dc-since{font-size:11px;color:var(--dsub);font-weight:700;flex-shrink:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.dc-card-actions{display:flex;gap:6px;align-items:center;flex-shrink:0;}
-.dc-btn{
-  font-size:12px;font-weight:800;padding:9px 14px;border-radius:11px;
-  border:none;cursor:pointer;font-family:'Nunito',system-ui,sans-serif;
-  transition:transform .12s,opacity .12s,background .15s,color .15s;
-  white-space:nowrap;
+/* Week dots */
+.dc-week{display:flex;gap:4px;}
+.dc-week-dot{
+  flex:1;height:18px;border-radius:6px;background:var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:900;color:var(--dsub);
+  transition:background .2s,color .2s;
 }
-.dc-btn:active{transform:scale(.92);opacity:.8;}
-.dc-btn-checkin{
+.dc-week-dot.done{background:var(--acc,var(--tf));color:#fff;}
+.dc-week-dot.today{box-shadow:0 0 0 1.5px var(--acc,var(--tf));}
+.dc-week-dot.today:not(.done){color:var(--acc,var(--tf));}
+
+/* Actions column */
+.dc-card-actions{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;}
+.dc-icon-btn{
+  width:38px;height:38px;border-radius:13px;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .12s,opacity .12s,background .15s,color .15s;
+}
+.dc-icon-btn svg{width:18px;height:18px;}
+.dc-icon-btn:active{transform:scale(.9);opacity:.85;}
+.dc-icon-btn.dc-check{
   background:var(--acc,var(--tf));color:#fff;
   box-shadow:0 4px 12px color-mix(in srgb,var(--acc,var(--tf)) 40%,transparent);
 }
-.dc-btn-checkin.done{
-  background:color-mix(in srgb,var(--acc,var(--tf)) 14%,transparent);color:var(--acc,var(--tf));
+.dc-icon-btn.dc-check.done{
+  background:color-mix(in srgb,var(--acc,var(--tf)) 16%,transparent);color:var(--acc,var(--tf));
   box-shadow:none;
 }
-[data-theme=dark] .dc-btn-checkin.done{background:color-mix(in srgb,var(--acc,var(--tf)) 22%,transparent);}
-.dc-btn-reset{
-  background:var(--chip);color:var(--hsub);padding:9px 12px;
+[data-theme=dark] .dc-icon-btn.dc-check.done{background:color-mix(in srgb,var(--acc,var(--tf)) 26%,transparent);}
+.dc-card-more{position:relative;}
+.dc-icon-btn.dc-more{width:26px;height:26px;border-radius:9px;background:transparent;color:var(--dsub);}
+.dc-icon-btn.dc-more svg{width:15px;height:15px;}
+.dc-icon-btn.dc-more:hover{background:var(--chip);}
+.dc-card-menu{
+  position:absolute;top:30px;right:0;z-index:5;min-width:118px;
+  background:var(--mbg);border:1px solid var(--border);border-radius:13px;
+  box-shadow:0 10px 28px rgba(0,0,0,.16);padding:5px;
+  display:none;flex-direction:column;gap:2px;
 }
-.dc-btn-delete{
-  background:rgba(224,62,62,.09);color:#c0392b;
-  width:34px;padding:9px 0;text-align:center;border-radius:11px;
+[data-theme=dark] .dc-card-menu{box-shadow:0 10px 28px rgba(0,0,0,.45);}
+.dc-card-menu.open{display:flex;}
+.dc-card-menu button{
+  border:none;background:transparent;text-align:left;padding:8px 10px;border-radius:9px;
+  font-size:12.5px;font-weight:800;color:var(--dtext);cursor:pointer;
+  font-family:'Nunito',system-ui,sans-serif;
 }
-[data-theme=dark] .dc-btn-delete{background:rgba(255,100,100,.12);color:#ff8d8d;}
+.dc-card-menu button:hover{background:var(--chip);}
+.dc-card-menu button.danger{color:#d6453f;}
 
 /* Empty state */
 .dc-empty{
@@ -1739,62 +1776,6 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .dc-empty-title{font-size:17px;font-weight:900;color:var(--dtext);}
 .dc-empty-sub{font-size:13px;font-weight:600;line-height:1.5;color:var(--hsub);}
 
-/* Heatmap section */
-.dc-heatmap-section{
-  background:var(--card);border-radius:20px;
-  margin:0 14px 16px;
-  padding:14px 14px 12px;
-  box-shadow:0 2px 12px rgba(0,0,0,.05);
-  border:1px solid var(--border);
-  flex-shrink:0;
-}
-[data-theme=dark] .dc-heatmap-section{box-shadow:0 2px 16px rgba(0,0,0,.2);}
-.dc-heatmap-header{
-  display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;
-}
-.dc-heatmap-title{
-  font-size:12px;font-weight:900;color:var(--htext);
-  display:flex;align-items:center;gap:6px;
-}
-.dc-heatmap-title svg{width:14px;height:14px;stroke:var(--tf);fill:none;stroke-width:2;}
-.dc-heatmap-total{
-  font-size:11px;font-weight:800;color:var(--tf-text);
-  background:rgba(26,26,26,.1);padding:3px 9px;border-radius:20px;
-}
-.dc-heatmap-months{display:flex;gap:0;margin-bottom:4px;padding-left:18px;}
-.dc-heatmap-month-lbl{
-  font-size:9px;font-weight:800;color:var(--dsub);
-  text-transform:uppercase;letter-spacing:.5px;flex:1;text-align:left;
-}
-.dc-heatmap-grid-wrap{display:flex;gap:6px;}
-.dc-heatmap-days-col{
-  display:flex;flex-direction:column;gap:2.5px;justify-content:space-between;padding-top:1px;
-}
-.dc-heatmap-day-lbl{font-size:8px;font-weight:800;color:var(--dsub);height:10px;line-height:10px;}
-.dc-heatmap-grid{
-  display:flex;gap:2.5px;overflow-x:auto;
-  -webkit-overflow-scrolling:touch;scrollbar-width:none;flex:1;
-}
-.dc-heatmap-grid::-webkit-scrollbar{display:none;}
-.dc-heatmap-col{display:flex;flex-direction:column;gap:2.5px;flex-shrink:0;}
-.dc-heatmap-cell{
-  width:10px;height:10px;border-radius:2.5px;
-  background:var(--border);flex-shrink:0;
-}
-.dc-heatmap-cell[data-level="1"]{background:rgba(34,197,94,.25);}
-.dc-heatmap-cell[data-level="2"]{background:rgba(34,197,94,.50);}
-.dc-heatmap-cell[data-level="3"]{background:rgba(34,197,94,.78);}
-.dc-heatmap-cell[data-level="4"]{background:rgba(34,197,94,1);box-shadow:0 0 6px rgba(34,197,94,.5);}
-[data-theme=dark] .dc-heatmap-cell{background:rgba(255,255,255,.07);}
-[data-theme=dark] .dc-heatmap-cell[data-level="1"]{background:rgba(34,197,94,.3);}
-[data-theme=dark] .dc-heatmap-cell[data-level="2"]{background:rgba(34,197,94,.55);}
-[data-theme=dark] .dc-heatmap-cell[data-level="3"]{background:rgba(34,197,94,.8);}
-[data-theme=dark] .dc-heatmap-cell[data-level="4"]{background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.6);}
-.dc-heatmap-cell.today-cell{outline:2px solid #22c55e;outline-offset:1px;}
-.dc-heatmap-legend{display:flex;align-items:center;gap:6px;margin-top:10px;}
-.dc-heatmap-legend-lbl{font-size:9px;font-weight:800;color:var(--dsub);}
-.dc-heatmap-legend-cells{display:flex;gap:3px;align-items:center;}
-.dc-heatmap-legend-cell{width:10px;height:10px;border-radius:2.5px;}
 
 /* FAB */
 .dc-add-btn{display:none;}
@@ -1844,60 +1825,81 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
 /* ── ACTIVITY HEATMAP ── */
 .dc-heatmap-section{
-  background:var(--card);border-radius:18px;
+  position:relative;overflow:hidden;
+  background:
+    radial-gradient(ellipse 140% 100% at 100% 0%,rgba(34,197,94,.10),transparent 60%),
+    var(--card);
+  border-radius:20px;
+  margin:0 14px 16px;
   padding:16px 16px 14px;
-  box-shadow:0 2px 12px rgba(0,0,0,.06);
+  box-shadow:0 4px 18px rgba(80,70,160,.06);
   border:1px solid var(--border);
+  flex-shrink:0;
 }
-[data-theme=dark] .dc-heatmap-section{box-shadow:0 2px 16px rgba(0,0,0,.22);}
+[data-theme=dark] .dc-heatmap-section{
+  background:
+    radial-gradient(ellipse 140% 100% at 100% 0%,rgba(34,197,94,.10),transparent 60%),
+    var(--card);
+  box-shadow:0 4px 18px rgba(0,0,0,.24);
+}
 .dc-heatmap-header{
   display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:12px;
+  margin-bottom:14px;
 }
 .dc-heatmap-title{
   font-size:13px;font-weight:900;color:var(--htext);
-  display:flex;align-items:center;gap:7px;
+  display:flex;align-items:center;gap:9px;letter-spacing:.1px;
 }
-.dc-heatmap-title svg{width:15px;height:15px;stroke:#22c55e;fill:none;stroke-width:2.2;}
+.dc-heatmap-icon{
+  width:28px;height:28px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(34,197,94,.22),rgba(34,197,94,.08));
+}
+.dc-heatmap-title svg{width:15px;height:15px;stroke:#22c55e;fill:none;stroke-width:2.3;}
 .dc-heatmap-total{
-  font-size:11px;font-weight:800;color:#22c55e;
-  background:rgba(34,197,94,.12);padding:3px 9px;border-radius:20px;
+  font-size:11px;font-weight:800;color:#fff;
+  background:linear-gradient(135deg,#3ad48a,#22c55e);
+  padding:5px 12px;border-radius:20px;
+  box-shadow:0 4px 12px rgba(34,197,94,.28);
+  white-space:nowrap;
 }
 .dc-heatmap-months{
-  display:flex;gap:0;margin-bottom:4px;padding-left:18px;
+  display:flex;gap:0;margin-bottom:5px;padding-left:18px;
 }
 .dc-heatmap-month-lbl{
   font-size:9px;font-weight:800;color:var(--hsub);
-  text-transform:uppercase;letter-spacing:.5px;
+  text-transform:uppercase;letter-spacing:.6px;
   flex:1;text-align:left;
 }
 .dc-heatmap-grid-wrap{
   display:flex;gap:6px;
 }
 .dc-heatmap-days-col{
-  display:flex;flex-direction:column;gap:2.5px;justify-content:space-between;
+  display:flex;flex-direction:column;gap:3px;justify-content:space-between;
   padding-top:1px;
 }
 .dc-heatmap-day-lbl{
   font-size:8px;font-weight:800;color:var(--hsub);
-  height:10px;line-height:10px;
+  height:11px;line-height:11px;
 }
 .dc-heatmap-grid{
-  display:flex;gap:2.5px;overflow-x:auto;
+  display:flex;gap:3px;overflow-x:auto;
   -webkit-overflow-scrolling:touch;
   scrollbar-width:none;flex:1;
+  padding-bottom:1px;
 }
 .dc-heatmap-grid::-webkit-scrollbar{display:none;}
 .dc-heatmap-col{
-  display:flex;flex-direction:column;gap:2.5px;flex-shrink:0;
+  display:flex;flex-direction:column;gap:3px;flex-shrink:0;
 }
 .dc-heatmap-cell{
-  width:10px;height:10px;border-radius:2.5px;
+  width:11px;height:11px;border-radius:3px;
   background:var(--border);
-  transition:transform .1s;
+  transition:transform .12s ease,box-shadow .12s ease;
   cursor:default;
   flex-shrink:0;
 }
+.dc-heatmap-cell:hover{transform:scale(1.3);}
 .dc-heatmap-cell[data-level="1"]{background:rgba(34,197,94,.25);}
 .dc-heatmap-cell[data-level="2"]{background:rgba(34,197,94,.50);}
 .dc-heatmap-cell[data-level="3"]{background:rgba(34,197,94,.78);}
@@ -1911,11 +1913,12 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   outline:2px solid #22c55e;outline-offset:1px;
 }
 .dc-heatmap-legend{
-  display:flex;align-items:center;gap:6px;margin-top:10px;
+  display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:12px;
+  padding-top:10px;border-top:1px solid var(--border);
 }
-.dc-heatmap-legend-lbl{font-size:9px;font-weight:800;color:var(--hsub);}
+.dc-heatmap-legend-lbl{font-size:9px;font-weight:800;color:var(--hsub);text-transform:uppercase;letter-spacing:.5px;}
 .dc-heatmap-legend-cells{display:flex;gap:3px;align-items:center;}
-.dc-heatmap-legend-cell{width:10px;height:10px;border-radius:2.5px;}
+.dc-heatmap-legend-cell{width:10px;height:10px;border-radius:3px;}
 
 /* ── SPLASH SCREEN ── */
 #vikramSplash{
@@ -2543,6 +2546,30 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     <div class="dc-page-title">🌸 My Cycle</div>
   </div>
   <div id="cycleBody"><!-- rendered by renderCycleSheet() --></div>
+</div>
+
+<!-- CLEAR CYCLE DATA CONFIRM MODAL -->
+<div class="dc-modal-overlay" id="cyResetConfirmOverlay" onclick="cyResetConfirmClose(event)">
+  <div class="dc-modal" style="text-align:center">
+    <div class="dc-modal-title" style="margin-bottom:8px">Clear all cycle data?</div>
+    <div style="font-size:13px;font-weight:600;line-height:1.5;color:var(--hsub);margin-bottom:6px">This removes your period history, settings, and partner link. This can't be undone.</div>
+    <div class="dc-modal-btns">
+      <button class="dc-modal-cancel" style="flex:1" onclick="cyResetConfirmClose()">Cancel</button>
+      <button class="dc-modal-save" style="background:#d6453f;box-shadow:0 6px 18px rgba(214,69,63,.3)" onclick="cyResetConfirmYes()">Clear data</button>
+    </div>
+  </div>
+</div>
+
+<!-- STOP PAIRING CONFIRM MODAL -->
+<div class="dc-modal-overlay" id="cyUnpairConfirmOverlay" onclick="cyUnpairConfirmClose(event)">
+  <div class="dc-modal" style="text-align:center">
+    <div class="dc-modal-title" style="margin-bottom:8px">Stop pairing with your partner?</div>
+    <div style="font-size:13px;font-weight:600;line-height:1.5;color:var(--hsub);margin-bottom:6px">Your current partner code will stop working. Any links you've already shared won't update anymore. You can pair again anytime with a new code.</div>
+    <div class="dc-modal-btns">
+      <button class="dc-modal-cancel" style="flex:1" onclick="cyUnpairConfirmClose()">Cancel</button>
+      <button class="dc-modal-save" style="background:#d6453f;box-shadow:0 6px 18px rgba(214,69,63,.3)" onclick="cyUnpairConfirmYes()">Stop pairing</button>
+    </div>
+  </div>
 </div>
 
 <!-- PARTNER VIEW MODAL -->
@@ -4529,6 +4556,31 @@ function buildPhaseRing(dayOfCycle){
   </svg>`;
 }
 
+// ── Mini progress-ring stat cards ──────────────────────────────────────────
+function cycRing(pct, emoji){
+  const r = 15.5, C = 2*Math.PI*r;
+  const p = Math.max(0, Math.min(1, pct||0));
+  const dash = (p*C).toFixed(2);
+  return `<div class="cyc-card-ring">
+    <svg viewBox="0 0 36 36">
+      <circle class="cyc-card-ring-track" cx="18" cy="18" r="${r}" stroke-width="3.5"/>
+      ${p>0?`<circle class="cyc-card-ring-fill" cx="18" cy="18" r="${r}" stroke-width="3.5"
+        stroke-dasharray="${dash} ${C.toFixed(2)}" transform="rotate(-90 18 18)"/>`:''}
+    </svg>
+    <div class="cyc-card-ring-emoji">${emoji}</div>
+  </div>`;
+}
+
+function cycCard(cls, pct, emoji, val, sub){
+  return `<div class="cyc-card ${cls}">
+    ${cycRing(pct, emoji)}
+    <div class="cyc-card-body">
+      <div class="cyc-card-val">${val}</div>
+      <div class="cyc-card-sub">${sub}</div>
+    </div>
+  </div>`;
+}
+
 // ── Main render ─────────────────────────────────────────────────────────────
 function renderCycleSheet(){
   const body = document.getElementById('cycleBody');
@@ -4543,6 +4595,13 @@ function renderCycleSheet(){
   const dOvul   = getDaysUntilOvulation();
   const cl      = d.cycleLength, pl = d.periodLength;
   const notSet  = !cycleData.lastPeriodStart;
+
+  // Ring progress for each stat card (0–1)
+  const ovDay      = cl - 14;
+  const periodPct  = notSet ? 0 : (day<=pl ? day/pl : 1);
+  const fertilePct = notSet ? 0 : (dOvul===null ? 1 : Math.min(1, day/ovDay));
+  const nextPct    = notSet ? 0 : Math.max(0, Math.min(1, (cl-dNext)/cl));
+  const cyclePct   = notSet ? 0 : Math.min(1, day/cl);
 
   // Last 3 log entries
   const logs = (cycleData.logs||[]).slice(-5).reverse();
@@ -4560,27 +4619,20 @@ function renderCycleSheet(){
 
   <!-- Stats grid -->
   <div class="cyc-grid">
-    <div class="cyc-card ${pi?.cls||'neutral'}">
-      <div class="cyc-card-icon">🩸</div>
-      <div class="cyc-card-val">${notSet?'–':day<=pl?`Day ${day}`:day>(cl-3)?'Soon':'Done'}</div>
-      <div class="cyc-card-sub">${day&&day<=pl?`of ${pl} days · Period`:`Period · Day ${day||'?'} of cycle`}</div>
-    </div>
-    <div class="cyc-card ${dOvul===null&&!notSet?'ovulation':'neutral'}">
-      <div class="cyc-card-icon">✨</div>
-      <div class="cyc-card-val">${notSet?'–':dOvul===null?'Active':'In '+dOvul}</div>
-      <div class="cyc-card-sub">${notSet?'Ovulation window':dOvul===0?'Ovulating today':dOvul===null?'Fertile window':'days to ovulation'}</div>
-    </div>
-    <div class="cyc-card neutral">
-      <div class="cyc-card-icon">📅</div>
-      <div class="cyc-card-val">${notSet?'–':dNext===0?'Today':`${dNext}d`}</div>
-      <div class="cyc-card-sub">Days until next period</div>
-    </div>
-    <div class="cyc-card neutral">
-      <div class="cyc-card-icon">🔄</div>
-      <div class="cyc-card-val">${notSet?'–':`Day ${day||'?'}`}</div>
-      <div class="cyc-card-sub">of ${cl}-day cycle</div>
-    </div>
+    ${cycCard(pi?.cls||'neutral', periodPct, '🩸',
+      notSet?'–':day<=pl?`Day ${day}`:day>(cl-3)?'Soon':'Done',
+      day&&day<=pl?`of ${pl}-day period`:`Period · Day ${day||'?'} of cycle`)}
+    ${cycCard(dOvul===null&&!notSet?'ovulation':'neutral', fertilePct, '✨',
+      notSet?'–':dOvul===null?'Active':dOvul===0?'Today':`In ${dOvul}d`,
+      notSet?'Ovulation window':dOvul===0?'Ovulating today':dOvul===null?'Fertile window':'Days to ovulation')}
+    ${cycCard('neutral', nextPct, '📅',
+      notSet?'–':dNext===0?'Today':`${dNext}d`,
+      'Until next period')}
+    ${cycCard('neutral', cyclePct, '🔄',
+      notSet?'–':`Day ${day||'?'}`,
+      `of ${cl}-day cycle`)}
   </div>
+
 
   <!-- Log buttons -->
   <div class="cyc-log-row">
@@ -4654,7 +4706,8 @@ function renderCycleSheet(){
         <div class="partner-dot ${cycleData.pairCode?'paired':''}"></div>
         <div class="partner-status-txt">${cycleData.pairCode?'Ready to share':'Share your cycle with a partner'}</div>
       </div>
-      ${cycleData.pairCode?`<div class="partner-code">${cycleData.pairCode}</div>`:''}
+      ${cycleData.pairCode?`<div class="partner-code">${cycleData.pairCode}</div>
+      <div class="partner-unpair" onclick="cyStopPairing()">🔓 Stop pairing &amp; remove code</div>`:''}
       <div class="partner-btn-row">
         <button class="partner-btn share" onclick="cySharePartner()">
           🔗 Share Cycle Update
@@ -4701,7 +4754,14 @@ function cyLogOvulation(){
   saveCycle(); renderCycleSheet();
 }
 function cyReset(){
-  if(!confirm('Clear all cycle data? This cannot be undone.')) return;
+  document.getElementById('cyResetConfirmOverlay').classList.add('open');
+}
+function cyResetConfirmClose(e){
+  if(e && e.target !== document.getElementById('cyResetConfirmOverlay')) return;
+  document.getElementById('cyResetConfirmOverlay').classList.remove('open');
+}
+function cyResetConfirmYes(){
+  document.getElementById('cyResetConfirmOverlay').classList.remove('open');
   cycleData = {};
   localStorage.removeItem('vikram_cycle');
   renderCycleSheet();
@@ -4841,6 +4901,20 @@ function cyPrivToggle(key, btn){
   saveCycle();
 }
 
+function cyStopPairing(){
+  document.getElementById('cyUnpairConfirmOverlay').classList.add('open');
+}
+function cyUnpairConfirmClose(e){
+  if(e && e.target !== document.getElementById('cyUnpairConfirmOverlay')) return;
+  document.getElementById('cyUnpairConfirmOverlay').classList.remove('open');
+}
+function cyUnpairConfirmYes(){
+  document.getElementById('cyUnpairConfirmOverlay').classList.remove('open');
+  cycleData.pairCode = null;
+  saveCycle();
+  renderCycleSheet();
+}
+
 // ── Partner view ─────────────────────────────────────────────────────────────
 function showPartnerView(data){
   const modal = document.getElementById('pvModal');
@@ -4848,6 +4922,10 @@ function showPartnerView(data){
   const pi = data.phase ? PHASE_INFO[data.phase] : null;
   const ago = data.ts ? Math.floor((Date.now()-data.ts)/60000) : null;
   const agoStr = ago===null?'':(ago<2?'just now':ago<60?`${ago}m ago`:ago<1440?`${Math.floor(ago/60)}h ago`:`${Math.floor(ago/1440)}d ago`);
+
+  const cl = data.cl || 28;
+  const pctNext = data.dNext!==undefined ? Math.max(0, Math.min(1, (cl-data.dNext)/cl)) : 0;
+  const pctFert = data.dOvul!==undefined ? (data.dOvul===0 ? 1 : Math.max(0, Math.min(1, 1-(data.dOvul/(cl-14))))) : 0;
 
   body.innerHTML = `
     <div class="pv-phase-big">
@@ -4858,18 +4936,8 @@ function showPartnerView(data){
       ${data.phaseDay?`<div style="font-size:13px;color:var(--dsub);font-weight:700;margin-top:4px;">Day ${data.phaseDay} of ${data.phaseOf}</div>`:''}
     </div>
     <div class="cyc-grid" style="padding:0 0 14px;">
-      ${data.dNext!==undefined?`
-      <div class="cyc-card neutral">
-        <div class="cyc-card-icon">📅</div>
-        <div class="cyc-card-val">${data.dNext}d</div>
-        <div class="cyc-card-sub">Until next period</div>
-      </div>`:''}
-      ${data.dOvul!==undefined?`
-      <div class="cyc-card ovulation">
-        <div class="cyc-card-icon">✨</div>
-        <div class="cyc-card-val">${data.dOvul===0?'Today':`In ${data.dOvul}d`}</div>
-        <div class="cyc-card-sub">Ovulation window</div>
-      </div>`:''}
+      ${data.dNext!==undefined?cycCard('neutral', pctNext, '📅', `${data.dNext}d`, 'Until next period'):''}
+      ${data.dOvul!==undefined?cycCard('ovulation', pctFert, '✨', data.dOvul===0?'Today':`In ${data.dOvul}d`, 'Ovulation window'):''}
     </div>
     <div class="pv-note">
       ${data.code?`Partner code: <b>${data.code}</b> · `:''}Updated ${agoStr}<br>
@@ -6700,28 +6768,47 @@ function switchTab(tab) {
     requestAnimationFrame(function(){ grid.scrollLeft = grid.scrollWidth; });
   };
 
+  const MILESTONES=[7,14,30,60,100,180,365,1000];
+  function nextMilestone(days){
+    for(let i=0;i<MILESTONES.length;i++){ if(days < MILESTONES[i]) return {prev: i===0?0:MILESTONES[i-1], target: MILESTONES[i]}; }
+    return {prev: MILESTONES[MILESTONES.length-1], target: MILESTONES[MILESTONES.length-1]+1000};
+  }
+  function dayKeyFor(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+  const RING_C = 2*Math.PI*24; // r=24
+
   function dcUpdateStats(arr) {
     const totalEl = document.getElementById('dcStatTotal');
-    const checkedEl = document.getElementById('dcStatChecked');
     const bestEl = document.getElementById('dcStatBest');
+    const ringFg = document.getElementById('dcHeroRingFg');
+    const ringNum = document.getElementById('dcHeroRingNum');
     if(!totalEl) return;
     const now = Date.now();
     const tk = todayKey();
     totalEl.textContent = arr.length;
-    checkedEl.textContent = arr.filter(function(c){ return c.lastCheckin === tk; }).length;
     let best = 0;
     arr.forEach(function(c){
       const d = Math.max(0, daysBetween(c.startTs, now));
       if(d > best) best = d;
     });
     bestEl.textContent = best;
+
+    const checkedToday = arr.filter(function(c){ return c.lastCheckin === tk; }).length;
+    if(ringNum) ringNum.textContent = checkedToday + '/' + arr.length;
+    if(ringFg){
+      const frac = arr.length ? checkedToday/arr.length : 0;
+      ringFg.style.strokeDasharray = RING_C;
+      ringFg.style.strokeDashoffset = RING_C * (1-frac);
+    }
   }
 
   window.dcRender = function() {
     const list = document.getElementById('dcList');
+    const lbl  = document.getElementById('dcListLabel');
+    const cnt  = document.getElementById('dcListCount');
     if(!list) return;
     const arr = dcLoad();
     if(arr.length === 0) {
+      if(lbl) lbl.style.display = 'none';
       list.innerHTML = '<div class="dc-empty">'
         + '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/>'
         + '<path d="M8 12h8M12 8v8"/></svg>'
@@ -6730,40 +6817,88 @@ function switchTab(tab) {
       dcUpdateStats(arr);
       return;
     }
+    if(lbl) lbl.style.display = 'flex';
+    if(cnt) cnt.textContent = arr.length;
     const now = Date.now();
+    const today = new Date(); today.setHours(0,0,0,0);
+    const tk = todayKey();
     dcUpdateStats(arr);
     list.innerHTML = arr.map(function(c, idx) {
       const days   = Math.max(0, daysBetween(c.startTs, now));
       const color  = COLORS[idx % COLORS.length];
-      const checked = c.lastCheckin === todayKey();
-      const pct    = Math.min(100, (days / Math.max(days, 30)) * 100);
+      const checked = c.lastCheckin === tk;
       const startStr = new Date(c.startTs).toLocaleDateString(undefined, {month:'short',day:'numeric',year:'numeric'});
       const typeLabel = c.type === 'build' ? 'Build' : 'Quit';
       const emoji     = c.type === 'build' ? '\uD83C\uDF31' : '\uD83D\uDEAB';
-      return '<div class="dc-card" style="margin-bottom:12px;--acc:' + color + '">'
-        + '<div class="dc-card-accent"></div>'
-        + '<div class="dc-card-body">'
-        + '<div class="dc-card-header">'
-        +   '<div class="dc-card-name">' + emoji + ' ' + c.name + '</div>'
-        +   '<div class="dc-card-type ' + c.type + '">' + typeLabel + '</div>'
-        + '</div>'
-        + '<div class="dc-count-row">'
-        +   '<div class="dc-count-num" style="color:' + color + '">' + days + '</div>'
-        +   '<div class="dc-count-unit">day' + (days===1?'':'s') + '</div>'
-        + '</div>'
-        + '<div class="dc-streak-bar"><div class="dc-streak-fill" style="width:' + pct + '%;background:' + color + '"></div></div>'
-        + '<div class="dc-card-footer">'
-        +   '<div class="dc-since">Since ' + startStr + '</div>'
-        +   '<div class="dc-card-actions">'
-        +     '<button class="dc-btn dc-btn-checkin' + (checked?' done':'') + '" onclick="dcCheckin(' + c.id + ')">' + (checked?'\u2713 Done':'Check in') + '</button>'
-        +     '<button class="dc-btn dc-btn-reset" onclick="dcReset(' + c.id + ')">Reset</button>'
-        +     '<button class="dc-btn dc-btn-delete" onclick="dcDelete(' + c.id + ')">\u2715</button>'
+
+      // Ring progress toward next milestone
+      const ms = nextMilestone(days);
+      const frac = ms.target>ms.prev ? (days-ms.prev)/(ms.target-ms.prev) : 0;
+      const dashoff = RING_C * (1-Math.max(0,Math.min(1,frac)));
+
+      // Week dots (oldest -> newest, 7 days incl. today)
+      const history = c.history || [];
+      const dowLabels=['S','M','T','W','T','F','S'];
+      let weekHtml='';
+      for(let i=6;i>=0;i--){
+        const d = new Date(today); d.setDate(today.getDate()-i);
+        const isToday = i===0;
+        const done = history.indexOf(dayKeyFor(d)) !== -1;
+        weekHtml += '<div class="dc-week-dot'+(done?' done':'')+(isToday?' today':'')+'">'+(done?'\u2713':dowLabels[d.getDay()])+'</div>';
+      }
+
+      return '<div class="dc-card" style="--acc:' + color + '">'
+        + '<div class="dc-card-ring">'
+        +   '<svg viewBox="0 0 56 56">'
+        +     '<circle class="dc-card-ring-bg" cx="28" cy="28" r="24"/>'
+        +     '<circle class="dc-card-ring-fg" cx="28" cy="28" r="24" stroke-dasharray="'+RING_C+'" stroke-dashoffset="'+dashoff+'"/>'
+        +   '</svg>'
+        +   '<div class="dc-card-ring-label">'
+        +     '<span class="dc-card-ring-num">' + days + '</span>'
+        +     '<span class="dc-card-ring-unit">day' + (days===1?'':'s') + '</span>'
         +   '</div>'
         + '</div>'
+        + '<div class="dc-card-main">'
+        +   '<div class="dc-card-header">'
+        +     '<div class="dc-card-name">' + emoji + ' ' + c.name + '</div>'
+        +     '<div class="dc-card-type ' + c.type + '">' + typeLabel + '</div>'
+        +   '</div>'
+        +   '<div class="dc-card-sub">' + (days===0?'Started today':'Next milestone: <b>'+ms.target+' days</b>') + ' \u00b7 Since ' + startStr + '</div>'
+        +   '<div class="dc-week">' + weekHtml + '</div>'
+        + '</div>'
+        + '<div class="dc-card-actions">'
+        +   '<button class="dc-icon-btn dc-check' + (checked?' done':'') + '" onclick="dcCheckin(' + c.id + ')" title="' + (checked?'Checked in':'Check in') + '">'
+        +     (checked
+                ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+                : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>')
+        +   '</button>'
+        +   '<div class="dc-card-more">'
+        +     '<button class="dc-icon-btn dc-more" onclick="dcToggleMenu(event,' + c.id + ')" title="More">'
+        +       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.5" fill="currentColor" stroke="none"/></svg>'
+        +     '</button>'
+        +     '<div class="dc-card-menu" id="dcMenu' + c.id + '">'
+        +       '<button onclick="dcReset(' + c.id + ')">\u21bb Reset</button>'
+        +       '<button class="danger" onclick="dcDelete(' + c.id + ')">\u2715 Delete</button>'
+        +     '</div>'
+        +   '</div>'
         + '</div>'
         + '</div>';
     }).join('');
   };
+
+  window.dcToggleMenu = function(e, id){
+    e.stopPropagation();
+    document.querySelectorAll('.dc-card-menu.open').forEach(function(m){
+      if(m.id !== 'dcMenu'+id) m.classList.remove('open');
+    });
+    const m = document.getElementById('dcMenu'+id);
+    if(m) m.classList.toggle('open');
+  };
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.dc-card-more')){
+      document.querySelectorAll('.dc-card-menu.open').forEach(function(m){ m.classList.remove('open'); });
+    }
+  });
 
   window.dcCheckin = function(id) {
     const arr = dcLoad(); const c = arr.find(function(x){return x.id===id;});
@@ -6771,6 +6906,9 @@ function switchTab(tab) {
     const tk = todayKey();
     const wasChecked = c.lastCheckin === tk;
     c.lastCheckin = wasChecked ? null : tk;
+    if(!c.history) c.history = [];
+    if(wasChecked){ c.history = c.history.filter(function(k){return k!==tk;}); }
+    else if(c.history.indexOf(tk)===-1){ c.history.push(tk); }
     logCheckin(tk, wasChecked ? -1 : 1);
     dcSaveAll(arr); dcRender(); dcHeatmapRender();
   };
@@ -6853,19 +6991,34 @@ function switchTab(tab) {
     </button>
   </div>
 
-  <!-- STATS ROW -->
-  <div class="dc-stats-row" id="dcStatsRow">
-    <div class="dc-stat-pill">
-      <span class="dc-stat-val" id="dcStatTotal">0</span>
-      <span class="dc-stat-lbl">Habits</span>
+  <!-- HERO SUMMARY CARD -->
+  <div class="dc-hero" id="dcHero">
+    <div class="dc-hero-ring">
+      <svg viewBox="0 0 80 80">
+        <circle class="dc-hero-ring-bg" cx="40" cy="40" r="33"/>
+        <circle class="dc-hero-ring-fg" id="dcHeroRingFg" cx="40" cy="40" r="33" stroke-dasharray="207.3" stroke-dashoffset="207.3"/>
+      </svg>
+      <div class="dc-hero-ring-label">
+        <span class="dc-hero-ring-num" id="dcHeroRingNum">0/0</span>
+        <span class="dc-hero-ring-sub">Today</span>
+      </div>
     </div>
-    <div class="dc-stat-pill">
-      <span class="dc-stat-val" id="dcStatChecked">0</span>
-      <span class="dc-stat-lbl">Today</span>
-    </div>
-    <div class="dc-stat-pill">
-      <span class="dc-stat-val" id="dcStatBest">0</span>
-      <span class="dc-stat-lbl">Best Days</span>
+    <div class="dc-hero-div"></div>
+    <div class="dc-hero-stats">
+      <div class="dc-hero-stat">
+        <div class="dc-hero-stat-top">
+          <span class="dc-hero-stat-icon">🔥</span>
+          <span class="dc-hero-stat-num" id="dcStatBest">0</span>
+        </div>
+        <span class="dc-hero-stat-lbl">Best Streak</span>
+      </div>
+      <div class="dc-hero-stat">
+        <div class="dc-hero-stat-top">
+          <span class="dc-hero-stat-icon">📋</span>
+          <span class="dc-hero-stat-num" id="dcStatTotal">0</span>
+        </div>
+        <span class="dc-hero-stat-lbl">Habits</span>
+      </div>
     </div>
   </div>
 
@@ -6873,7 +7026,9 @@ function switchTab(tab) {
   <div class="dc-heatmap-section" id="dcHeatmapSection">
     <div class="dc-heatmap-header">
       <div class="dc-heatmap-title">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span class="dc-heatmap-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </span>
         Activity
       </div>
       <div class="dc-heatmap-total" id="dcHeatmapTotal">0 check-ins</div>
@@ -6904,7 +7059,10 @@ function switchTab(tab) {
     </div>
   </div>
 
-  <div class="dc-section-lbl" id="dcListLabel" style="display:none">My Habits</div>
+  <div class="dc-section-lbl" id="dcListLabel" style="display:none">
+    <span>My Habits</span>
+    <span class="dc-section-count" id="dcListCount">0</span>
+  </div>
   <div id="dcList"></div>
 </div>
 
