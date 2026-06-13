@@ -796,6 +796,25 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   box-shadow:0 4px 12px rgba(0,0,0,.3);
 }
 
+/* ── TASKS PILL (next to "Upcoming" title) ── */
+.up-tasks-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:5px 12px;border-radius:13px;border:none;
+  background:var(--chip-bg);color:var(--chip-text);
+  font-size:11.5px;font-weight:800;cursor:pointer;
+  font-family:'Nunito',sans-serif;white-space:nowrap;
+  transition:transform .15s,background .15s;
+}
+.up-tasks-pill:hover{transform:translateY(-1px);}
+.up-tasks-pill:active{transform:scale(.95);}
+.up-tasks-pill svg{width:12px;height:12px;stroke:currentColor;stroke-width:2.6;fill:none;flex-shrink:0;}
+.up-tasks-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:16px;height:16px;padding:0 4px;border-radius:999px;
+  background:linear-gradient(135deg,#3a3a3a,#000);color:#fff;
+  font-size:9.5px;font-weight:900;
+}
+
 /* ── NOTES TOOLBAR BUTTONS (shared) ── */
 .notes-fmt-btn{
   width:38px;height:38px;border:none;border-radius:10px;
@@ -914,6 +933,58 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .notes-editor ul,.notes-editor ol{padding-left:20px;}
 .notes-editor li{margin-bottom:3px;}
 .notes-editor b,.notes-editor strong{font-weight:900;color:var(--htext);}
+
+/* ── TASKS SHEET ── */
+.tasks-view{display:flex;flex-direction:column;flex:1;min-height:0;}
+.task-list-item{
+  display:flex;align-items:center;gap:12px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:18px;padding:14px;margin-bottom:10px;
+  cursor:pointer;box-shadow:0 4px 18px rgba(80,70,160,.06);
+  transition:transform .15s,box-shadow .15s;
+}
+[data-theme=dark] .task-list-item{box-shadow:0 4px 18px rgba(0,0,0,.24);}
+.task-list-item:active{transform:scale(.99);}
+.task-check{
+  width:24px;height:24px;border-radius:50%;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  background:var(--card);transition:all .2s;cursor:pointer;
+}
+.task-check svg{width:13px;height:13px;stroke:#fff;stroke-width:3;fill:none;opacity:0;transition:opacity .2s;}
+.task-list-item.done-task .task-check,.task-done-toggle.on .task-check{
+  background:linear-gradient(135deg,#16a34a,#22c55e);border-color:transparent;
+}
+.task-list-item.done-task .task-check svg,.task-done-toggle.on .task-check svg{opacity:1;}
+.task-list-item-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+.task-list-item-title{
+  font-size:14.5px;font-weight:900;color:var(--htext);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.task-list-item.done-task .task-list-item-title{text-decoration:line-through;color:var(--hsub);}
+.task-list-item-meta{font-size:11.5px;font-weight:700;color:var(--hsub);}
+.task-list-item-meta.overdue{color:var(--hol);}
+.task-list-item-chevron{flex-shrink:0;color:var(--dsub);}
+
+/* Task editor fields */
+.task-field-label{
+  font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--hsub);margin:14px 2px 8px;
+}
+.task-notes-input{
+  width:100%;min-height:120px;padding:14px 16px;border-radius:18px;
+  border:1px solid var(--border);background:var(--card);color:var(--htext);
+  font-family:'Nunito',sans-serif;font-size:14px;font-weight:600;line-height:1.65;
+  outline:none;resize:vertical;box-shadow:0 4px 18px rgba(80,70,160,.06);
+}
+[data-theme=dark] .task-notes-input{box-shadow:0 4px 18px rgba(0,0,0,.24);}
+.task-notes-input::placeholder{color:var(--hsub);opacity:.8;}
+.task-done-toggle{
+  display:flex;align-items:center;gap:12px;margin-top:16px;padding:14px 16px;
+  background:var(--card);border:1px solid var(--border);border-radius:18px;
+  cursor:pointer;box-shadow:0 4px 18px rgba(80,70,160,.06);transition:background .15s;
+}
+[data-theme=dark] .task-done-toggle{box-shadow:0 4px 18px rgba(0,0,0,.24);}
+.task-done-toggle-label{font-size:14px;font-weight:800;color:var(--htext);}
 
 /* Day section */
 .up-day-group{ padding:0 0 6px; }
@@ -2036,7 +2107,14 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     <div class="up-hdr">
       <div class="up-hdr-left">
         <span class="up-hdr-label">Schedule</span>
-        <span class="up-hdr-title" id="upTitle">Upcoming</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="up-hdr-title" id="upTitle">Upcoming</span>
+          <button class="up-tasks-pill" id="upTasksPill" onclick="openSheet('tasks')" title="Tasks">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><polyline points="8 12 11 15 16 9"/></svg>
+            <span>Tasks</span>
+            <span class="up-tasks-badge" id="upTasksBadge" style="display:none;">0</span>
+          </button>
+        </div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span class="up-count" id="upCount">0</span>
@@ -2104,6 +2182,75 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   </div>
   <div class="sscroll" id="converterBody" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:18px 18px 40px;"></div>
 </div>
+
+<!-- TASKS SHEET -->
+<div class="sheet cycle-fullscreen" id="tasksSheet" style="padding-bottom:0;">
+
+  <!-- TASKS LIST VIEW -->
+  <div class="tasks-view" id="tasksListView">
+    <div class="cycle-head" style="background:linear-gradient(135deg,rgba(20,184,166,.18),rgba(13,148,136,.10),rgba(6,95,70,.06));">
+      <button class="cycle-back" onclick="closeAll()" aria-label="Back">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="cycle-title-wrap">
+        <div class="cycle-title">✅ Tasks</div>
+        <div class="cycle-sub" id="tasksCountSub">No tasks yet</div>
+      </div>
+      <button class="dc-fab-inline" onclick="taskCreate()" title="Add Task" style="width:38px;height:38px;border-radius:12px;">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+    <div class="sscroll" style="padding:14px;">
+      <div id="tasksListItems"></div>
+      <div class="notes-empty" id="tasksEmpty">
+        <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><polyline points="8 12 11 15 16 9"/></svg>
+        <div class="notes-empty-title">No tasks yet</div>
+        <div class="notes-empty-sub">Tap the + button to add something you need to get done.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TASK EDITOR VIEW -->
+  <div class="tasks-view" id="tasksEditorView" style="display:none;">
+    <div class="cycle-head" style="background:linear-gradient(135deg,rgba(20,184,166,.18),rgba(13,148,136,.10),rgba(6,95,70,.06));">
+      <button class="cycle-back" onclick="taskBackToList()" aria-label="Back">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="cycle-title-wrap">
+        <div class="cycle-title">Edit Task</div>
+        <div class="cycle-sub" id="taskSavedSub">&nbsp;</div>
+      </div>
+      <button class="notes-delete-btn" onclick="taskDeleteCurrent()" aria-label="Delete task">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </button>
+    </div>
+    <div class="sscroll" style="padding:16px;">
+      <input class="einput" id="taskTitleInput" placeholder="What needs to be done?" maxlength="120" style="font-size:15px;font-weight:800;">
+      <div class="task-field-label">Due date (optional)</div>
+      <input class="einput" type="date" id="taskDueInput">
+      <div class="task-field-label">Notes</div>
+      <textarea class="task-notes-input" id="taskNotesInput" placeholder="Add details…"></textarea>
+      <div class="task-done-toggle" id="taskDoneToggle" onclick="taskToggleDoneInEditor()">
+        <span class="task-check" id="taskDoneCheck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <span class="task-done-toggle-label">Mark as completed</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TASKS DELETE CONFIRM MODAL -->
+<div class="dc-modal-overlay" id="tasksConfirmOverlay" onclick="taskConfirmClose(event)">
+  <div class="dc-modal" style="text-align:center">
+    <div class="dc-modal-title" style="margin-bottom:8px">Delete this task?</div>
+    <div style="font-size:13px;font-weight:600;line-height:1.5;color:var(--hsub);margin-bottom:6px">This can't be undone.</div>
+    <div class="dc-modal-btns">
+      <button class="dc-modal-cancel" style="flex:1" onclick="taskConfirmClose()">Cancel</button>
+      <button class="dc-modal-save" style="background:#d6453f;box-shadow:0 6px 18px rgba(214,69,63,.3)" onclick="taskConfirmYes()">Delete</button>
+    </div>
+  </div>
+</div>
+
 
 <!-- NOTES VIEW -->
 <div class="daycounter-view" id="notesView">
@@ -3105,11 +3252,13 @@ function openDay(bY,bM,bD){
 // ══ SHEETS ══
 function closeAll(){
   document.getElementById('ov').classList.remove('open');
-  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet','tasksSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
   // Stop color matcher game if running
   if(window.cmState && window.cmState.running) window.cmStopGame && window.cmStopGame();
   // Pause pomodoro timer if running (don't stop — just pause so state persists)
   if(window.pomoState && window.pomoState.running) { window.pomoToggle && window.pomoToggle(); }
+  // Flush any pending task edits
+  if(window.tasksFlushSave) window.tasksFlushSave();
   document.querySelector('.phone')?.classList.remove('cycle-dim');
 }
 
@@ -3263,7 +3412,7 @@ function openSheet(t){
   }
   closeAll();
   document.getElementById('ov').classList.add('open');
-  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',echo:'echoSheet',colorMatcher:'colorMatcherSheet',pomodoro:'pomodoroSheet',converter:'converterSheet'};
+  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',echo:'echoSheet',colorMatcher:'colorMatcherSheet',pomodoro:'pomodoroSheet',converter:'converterSheet',tasks:'tasksSheet'};
   const sheet=document.getElementById(ids[t]);
   sheet?.classList.add('open');
   if(t==='echo'){
@@ -3281,6 +3430,10 @@ function openSheet(t){
   if(t==='converter'){
     document.querySelector('.phone')?.classList.add('cycle-dim');
     renderConverterSheet();
+  }
+  if(t==='tasks'){
+    document.querySelector('.phone')?.classList.add('cycle-dim');
+    if(window.tasksShowList) window.tasksShowList();
   }
   if(t==='settings'){ renderGcalCard(); renderWidgetThumb(); renderWidgetSteps(); }
   if(t==='add'){
@@ -7095,6 +7248,286 @@ function switchTab(tab) {
     document.addEventListener('DOMContentLoaded', initNotes);
   } else {
     initNotes();
+  }
+})();
+</script>
+
+<script>
+// ── TASKS (list + editor, opened from "Tasks" pill next to "Upcoming") ──
+(function(){
+  const STORAGE_KEY = 'vikram_tasks_v1';
+  let saveTimer = null;
+  let currentId = null;
+
+  function getListView(){ return document.getElementById('tasksListView'); }
+  function getEditorView(){ return document.getElementById('tasksEditorView'); }
+
+  function uid(){
+    return 't' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+  }
+
+  function loadAll(){
+    let list = [];
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(raw) list = JSON.parse(raw) || [];
+    }catch(e){ list = []; }
+    return list;
+  }
+
+  function saveAll(list){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }catch(e){}
+  }
+
+  function findTask(list, id){
+    for(let i=0;i<list.length;i++){ if(list[i].id === id) return list[i]; }
+    return null;
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, function(c){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+    });
+  }
+
+  // Format a "YYYY-MM-DD" due date relative to today
+  function formatDueLabel(due){
+    const parts = due.split('-').map(Number);
+    const d = new Date(parts[0], parts[1]-1, parts[2]);
+    const today = new Date(); today.setHours(0,0,0,0);
+    const diffDays = Math.round((d - today)/86400000);
+    const dateStr = (typeof ADMEN!=='undefined' ? ADMEN[d.getMonth()].slice(0,3) : d.toLocaleDateString([], {month:'short'})) + ' ' + d.getDate();
+    if(diffDays < 0) return {text:'Overdue · '+dateStr, overdue:true};
+    if(diffDays === 0) return {text:'Due today', overdue:false};
+    if(diffDays === 1) return {text:'Due tomorrow', overdue:false};
+    return {text:'Due '+dateStr, overdue:false};
+  }
+
+  // ── BADGE + SUBTITLE ──
+  function updateBadgeAndSub(list){
+    list = list || loadAll();
+    const incomplete = list.filter(function(t){ return !t.done; }).length;
+    const badge = document.getElementById('upTasksBadge');
+    if(badge){
+      if(incomplete > 0){
+        badge.style.display = 'inline-flex';
+        badge.textContent = incomplete > 99 ? '99+' : String(incomplete);
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+    const sub = document.getElementById('tasksCountSub');
+    if(sub){
+      if(list.length === 0) sub.textContent = 'No tasks yet';
+      else sub.textContent = incomplete === 0 ? 'All done! 🎉' : (incomplete + ' task' + (incomplete===1?'':'s') + ' left');
+    }
+  }
+
+  // ── RENDER LIST ──
+  function renderList(){
+    const list = loadAll();
+    const container = document.getElementById('tasksListItems');
+    const empty = document.getElementById('tasksEmpty');
+    if(!container) return;
+
+    // Incomplete tasks first (soonest due date first), completed tasks last
+    list.sort(function(a,b){
+      if(!!a.done !== !!b.done) return a.done ? 1 : -1;
+      if(!a.done){
+        if(a.due && b.due) return a.due < b.due ? -1 : (a.due > b.due ? 1 : (b.updated||0)-(a.updated||0));
+        if(a.due) return -1;
+        if(b.due) return 1;
+      }
+      return (b.updated||0)-(a.updated||0);
+    });
+
+    if(list.length === 0){
+      if(empty) empty.classList.add('show');
+      container.innerHTML = '';
+    } else {
+      if(empty) empty.classList.remove('show');
+      container.innerHTML = list.map(function(task){
+        const title = (task.title && task.title.trim()) || 'Untitled task';
+        let meta = '';
+        let overdueClass = '';
+        if(task.due){
+          const lbl = formatDueLabel(task.due);
+          meta = lbl.text;
+          if(lbl.overdue && !task.done) overdueClass = ' overdue';
+        } else if(task.notes && task.notes.trim()){
+          meta = task.notes.trim().replace(/\s+/g,' ').slice(0,60);
+        } else {
+          meta = 'No due date';
+        }
+        return '<div class="task-list-item'+(task.done?' done-task':'')+'" onclick="taskOpen(\''+task.id+'\')">'+
+          '<div class="task-check" onclick="event.stopPropagation();taskToggleDone(\''+task.id+'\')"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>'+
+          '<div class="task-list-item-body">'+
+            '<div class="task-list-item-title">'+escapeHtml(title)+'</div>'+
+            '<div class="task-list-item-meta'+overdueClass+'">'+escapeHtml(meta)+'</div>'+
+          '</div>'+
+          '<div class="task-list-item-chevron"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>'+
+        '</div>';
+      }).join('');
+    }
+
+    updateBadgeAndSub(list);
+  }
+
+  // ── VIEW SWITCHING ──
+  function showList(){
+    currentId = null;
+    const lv = getListView(), ev = getEditorView();
+    if(lv) lv.style.display = 'flex';
+    if(ev) ev.style.display = 'none';
+    renderList();
+  }
+
+  function showEditor(){
+    const lv = getListView(), ev = getEditorView();
+    if(lv) lv.style.display = 'none';
+    if(ev) ev.style.display = 'flex';
+  }
+
+  function setDoneUI(done){
+    const toggle = document.getElementById('taskDoneToggle');
+    if(toggle) toggle.classList.toggle('on', !!done);
+  }
+
+  // Entry point when the Tasks sheet opens
+  window.tasksShowList = function(){
+    showList();
+  };
+
+  // ── CREATE / OPEN / DELETE ──
+  window.taskCreate = function(){
+    const list = loadAll();
+    const task = { id: uid(), title: '', notes: '', due: '', done: false, updated: Date.now() };
+    list.unshift(task);
+    saveAll(list);
+    taskOpen(task.id);
+  };
+
+  window.taskOpen = function(id){
+    const list = loadAll();
+    const task = findTask(list, id);
+    if(!task) return;
+    currentId = id;
+    const ti = document.getElementById('taskTitleInput');
+    const di = document.getElementById('taskDueInput');
+    const ni = document.getElementById('taskNotesInput');
+    if(ti) ti.value = task.title || '';
+    if(di) di.value = task.due || '';
+    if(ni) ni.value = task.notes || '';
+    setDoneUI(!!task.done);
+    showEditor();
+    setTimeout(function(){ if(!task.title && ti) ti.focus(); }, 320);
+  };
+
+  window.taskBackToList = function(){
+    clearTimeout(saveTimer);
+    taskSave();
+    showList();
+  };
+
+  window.taskDeleteCurrent = function(){
+    if(!currentId){ showList(); return; }
+    document.getElementById('tasksConfirmOverlay').classList.add('open');
+  };
+
+  window.taskConfirmYes = function(){
+    document.getElementById('tasksConfirmOverlay').classList.remove('open');
+    if(!currentId) return;
+    let list = loadAll();
+    list = list.filter(function(t){ return t.id !== currentId; });
+    saveAll(list);
+    updateBadgeAndSub(list);
+    showList();
+  };
+
+  window.taskConfirmClose = function(e){
+    if(e && e.target !== document.getElementById('tasksConfirmOverlay')) return;
+    document.getElementById('tasksConfirmOverlay').classList.remove('open');
+  };
+
+  // ── SAVE CURRENT TASK ──
+  function taskSave(){
+    if(!currentId) return;
+    let list = loadAll();
+    const task = findTask(list, currentId);
+    if(!task) return;
+    const ti = document.getElementById('taskTitleInput');
+    const di = document.getElementById('taskDueInput');
+    const ni = document.getElementById('taskNotesInput');
+    task.title = ti ? ti.value : '';
+    task.due = di ? di.value : '';
+    task.notes = ni ? ni.value : '';
+    task.updated = Date.now();
+    saveAll(list);
+    updateBadgeAndSub(list);
+  }
+
+  // Immediate save (used when navigating away / closing the sheet)
+  window.tasksFlushSave = function(){
+    clearTimeout(saveTimer);
+    taskSave();
+  };
+
+  // Toggle completion from the list (without opening the editor)
+  window.taskToggleDone = function(id){
+    let list = loadAll();
+    const task = findTask(list, id);
+    if(!task) return;
+    task.done = !task.done;
+    task.updated = Date.now();
+    saveAll(list);
+    renderList();
+    if(currentId === id) setDoneUI(task.done);
+  };
+
+  // Toggle completion from within the editor
+  window.taskToggleDoneInEditor = function(){
+    if(!currentId) return;
+    let list = loadAll();
+    const task = findTask(list, currentId);
+    if(!task) return;
+    task.done = !task.done;
+    task.updated = Date.now();
+    saveAll(list);
+    setDoneUI(task.done);
+  };
+
+  // Wire up editor field events after DOM ready
+  function initTasks(){
+    const ti = document.getElementById('taskTitleInput');
+    const di = document.getElementById('taskDueInput');
+    const ni = document.getElementById('taskNotesInput');
+
+    [ti, ni].forEach(function(el){
+      if(!el) return;
+      el.addEventListener('input', function(){
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(taskSave, 400);
+      });
+    });
+    if(di){
+      di.addEventListener('change', function(){
+        clearTimeout(saveTimer);
+        taskSave();
+      });
+    }
+    if(ti){
+      ti.addEventListener('keydown', function(e){
+        if(e.key === 'Enter'){ e.preventDefault(); if(ni) ni.focus(); }
+      });
+    }
+
+    updateBadgeAndSub();
+  }
+
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', initTasks);
+  } else {
+    initTasks();
   }
 })();
 </script>
