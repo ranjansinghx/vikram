@@ -89,62 +89,197 @@
   --up-count-text:#fff;
 }
 [data-theme="dark"]{
-  --bg:#141428;--card:#1e1e38;--htext:#e8e8ff;--hsub:#6b6d8a;
-  --border:#2a2a48;--dtext:#d0d2ee;--dsub:#4a4c6a;
-  --wknd:#ff7070;--hol:#ff6b6b;--dim:#3a3c58;--dimsub:#2d2f50;
-  --tf:#4a4a55;--tt:#2e2e38;--tf-text:#b8b8c8;--tvt:#fff;--tvs:rgba(255,255,255,.6);
-  --fab:#4a4a55;--icon:#9898c0;--sbg:#1e1e38;--sbdr:#2a2a48;
-  --tgbg:#2a2a48;--tgon:#4a4a55;--mbg:#1e1e38;--ov:rgba(0,0,0,.8);
-  --chip:#2a2a48;--chipt:#9898c0;
-  --app-bg:radial-gradient(circle at top center,rgba(74,74,85,.18),transparent 30%),radial-gradient(circle at 50% 18%,rgba(60,60,70,.16),transparent 22%),linear-gradient(180deg,#15151f 0%,#191923 42%,#14141d 100%);
-  --hdr-grad:linear-gradient(135deg,rgba(70,70,80,.5),rgba(35,35,45,.6));
-  --hdr-icon:rgba(255,255,255,.06);
-  --hdr-icon-text:#d8d2ff;
-  --title-text:#ece8ff;
-  --title-sub:#a7a0bf;
-  --mode-text:#cfc9e9;
-  --mode-bg:rgba(255,255,255,.06);
-  --mode-on:linear-gradient(135deg,#5a5a68,#3a3a45 65%,#2a2a33);
-  --nav-btn:rgba(255,255,255,.06);
-  --nav-text:#ece8ff;
-  --nav-muted:#a7a0bf;
-  --cell-bg:rgba(255,255,255,.02);
-  --cell-special-bg:rgba(48,27,34,.74);
-  --cell-special-hover:rgba(59,34,44,.88);
-  --cell-hover:rgba(255,255,255,.05);
-  --cell-text:#ece8ff;
-  --cell-muted:#8e8aa3;
-  --today-grad:linear-gradient(180deg,rgba(95,95,108,.95),rgba(55,55,66,.95));
+  /* ── Core background & surfaces — softer, warmer dark blues ── */
+  --bg:#0f1117;--card:#181b24;--htext:#e6e8f4;--hsub:#7276a0;
+  --border:#232640;--dtext:#cdd0e8;--dsub:#505572;
+  --wknd:#ff8080;--hol:#ff7878;--dim:#383b58;--dimsub:#282a48;
+
+  /* ── Form & toggle elements ── */
+  --tf:#3a3d56;--tt:#23253a;--tf-text:#b0b4d0;--tvt:#fff;--tvs:rgba(255,255,255,.62);
+  --fab:#5c5f80;--icon:#8a8eb8;--sbg:#181b24;--sbdr:#232640;
+  --tgbg:#252840;--tgon:#5c5f80;--mbg:#181b24;--ov:rgba(0,0,5,.82);
+  --chip:#252840;--chipt:#9a9ec8;
+
+  /* ── App background — richer, softer deep blue-purple ── */
+  --app-bg:
+    radial-gradient(ellipse 70% 42% at 50% 0%,rgba(88,82,140,.14),transparent 68%),
+    radial-gradient(ellipse 55% 35% at 15% 60%,rgba(60,55,100,.10),transparent 65%),
+    radial-gradient(ellipse 60% 40% at 85% 80%,rgba(50,48,100,.10),transparent 65%),
+    linear-gradient(180deg,#0e1016 0%,#111320 45%,#0d0f18 100%);
+
+  /* ── Header — slightly more visible with subtle blue tint ── */
+  --hdr-grad:linear-gradient(135deg,rgba(50,52,76,.72),rgba(28,30,48,.82));
+  --hdr-icon:rgba(160,168,255,.10);
+  --hdr-icon-text:#c8cef5;
+
+  /* ── Title area ── */
+  --title-text:#dce0ff;
+  --title-sub:#9297c0;
+  --mode-text:#b8bcde;
+  --mode-bg:rgba(255,255,255,.055);
+  --mode-on:linear-gradient(135deg,#4e5178,#313456 65%,#232644);
+
+  /* ── Nav arrows ── */
+  --nav-btn:rgba(255,255,255,.07);
+  --nav-text:#d8dcf8;
+  --nav-muted:#9297c0;
+
+  /* ── Calendar cells ── */
+  --cell-bg:rgba(255,255,255,.025);
+  --cell-special-bg:rgba(52,24,32,.78);
+  --cell-special-hover:rgba(64,30,42,.92);
+  --cell-hover:rgba(255,255,255,.06);
+  --cell-text:#dce0ff;
+  --cell-muted:#7e82a8;
+
+  /* ── Today cell — warm indigo instead of grey ── */
+  --today-grad:linear-gradient(180deg,rgba(78,82,132,.96),rgba(48,52,100,.96));
   --today-text:#fff;
-  --today-muted:rgba(255,255,255,.75);
-  --dot-hol:#ef8f95;
-  --dot-evt:#7ab7ff;
-  --panel-bg:linear-gradient(180deg,rgba(31,28,42,.96),rgba(18,17,26,.96));
-  --panel-border:rgba(255,255,255,.05);
-  --panel-shadow:0 10px 32px rgba(0,0,0,.32);
-  --panel-text:#efeaff;
-  --panel-muted:#9e97b7;
-  --chip-bg:#30161a;
-  --chip-text:#ff9090;
-  --chip-hol-bg:#30161a;
-  --chip-hol-text:#ff9090;
-  --chip-evt-bg:#1a2332;
-  --chip-evt-text:#7ab7ff;
-  --sel-bg:linear-gradient(180deg,rgba(29,25,42,.98),rgba(18,17,27,.98));
-  --sel-border:rgba(255,255,255,.05);
-  --sel-text:#efeaff;
-  --sel-muted:#a39bbc;
-  --sel-action:#3a3a3a;
+  --today-muted:rgba(255,255,255,.76);
+
+  /* ── Event dots ── */
+  --dot-hol:#f0959c;
+  --dot-evt:#82c0ff;
+
+  /* ── Panel (upcoming section) ── */
+  --panel-bg:linear-gradient(180deg,rgba(26,28,44,.97),rgba(16,18,30,.97));
+  --panel-border:rgba(255,255,255,.055);
+  --panel-shadow:0 10px 32px rgba(0,0,8,.38);
+  --panel-text:#e0e4ff;
+  --panel-muted:#9298bc;
+
+  /* ── Event/holiday chips ── */
+  --chip-bg:#301520;
+  --chip-text:#ff9898;
+  --chip-hol-bg:#301520;
+  --chip-hol-text:#ff9898;
+  --chip-evt-bg:#142038;
+  --chip-evt-text:#82c0ff;
+
+  /* ── Day selected card ── */
+  --sel-bg:linear-gradient(180deg,rgba(26,24,42,.98),rgba(16,15,28,.98));
+  --sel-border:rgba(255,255,255,.055);
+  --sel-text:#e0e4ff;
+  --sel-muted:#9298bc;
+  --sel-action:#42466a;
   --sel-action-text:#fff;
-  --sheet-bg:linear-gradient(180deg,rgba(24,20,35,.98),rgba(15,14,22,.98));
-  --sheet-border:rgba(255,255,255,.06);
-  --sheet-text:#ece8ff;
-  --sheet-muted:#8f89a7;
-  --up-pill-bg:linear-gradient(180deg,rgba(34,34,38,.98),rgba(22,22,25,.98));
-  --up-pill-border:rgba(255,255,255,.08);
-  --up-pill-text:#f4f4f8;
-  --up-count-bg:linear-gradient(180deg,#2a2a2a,#000000);
+
+  /* ── Bottom sheets ── */
+  --sheet-bg:linear-gradient(180deg,rgba(22,22,36,.99),rgba(14,14,24,.99));
+  --sheet-border:rgba(255,255,255,.065);
+  --sheet-text:#dce0ff;
+  --sheet-muted:#8a8eae;
+
+  /* ── Upcoming pill ── */
+  --up-pill-bg:linear-gradient(180deg,rgba(34,36,56,.99),rgba(22,22,38,.99));
+  --up-pill-border:rgba(255,255,255,.09);
+  --up-pill-text:#e8ecff;
+  --up-count-bg:linear-gradient(180deg,#3a3e60,#22253e);
   --up-count-text:#fff;
+}
+
+/* ── Dark mode: friendlier card & input fills ── */
+[data-theme="dark"] .ccard,
+[data-theme="dark"] .srow,
+[data-theme="dark"] .ssec {
+  --card-lift: rgba(255,255,255,.018);
+}
+[data-theme="dark"] .nbtn {
+  box-shadow: 0 4px 14px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.06);
+}
+[data-theme="dark"] .cell.hol,
+[data-theme="dark"] .cell.wk {
+  box-shadow: 0 2px 7px rgba(0,0,0,.18), inset 0 0 0 1px rgba(255,255,255,.055);
+}
+[data-theme="dark"] .notes-list-item,
+[data-theme="dark"] .task-list-item {
+  background: rgba(255,255,255,.04);
+  border-color: rgba(255,255,255,.06);
+}
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  color-scheme: dark;
+}
+[data-theme="dark"] .einput {
+  background: rgba(255,255,255,.055);
+  border-color: rgba(255,255,255,.10);
+  color: var(--dtext);
+}
+[data-theme="dark"] .einput::placeholder { color: var(--dsub); opacity:1; }
+[data-theme="dark"] .einput:focus { border-color: rgba(140,148,220,.55); }
+[data-theme="dark"] .ebtn {
+  background: linear-gradient(135deg,#42466a,#282b48);
+  box-shadow: 0 8px 20px rgba(0,0,10,.32);
+}
+[data-theme="dark"] .tgl { background: var(--tgbg); }
+[data-theme="dark"] .tgl.on { background: var(--tgon); }
+[data-theme="dark"] .chip {
+  background: rgba(255,255,255,.07);
+  color: var(--nav-muted);
+  border-color: rgba(255,255,255,.09);
+}
+[data-theme="dark"] .chip.on {
+  background: linear-gradient(135deg,#4e5178,#313456);
+  color: #fff;
+  border-color: rgba(255,255,255,.12);
+}
+[data-theme="dark"] .cal-handle-pill {
+  background: rgba(255,255,255,.07);
+  border-color: rgba(255,255,255,.10);
+}
+[data-theme="dark"] .cal-expanded .cal-handle-pill {
+  background: rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.18);
+}
+[data-theme="dark"] .mbignum {
+  background: linear-gradient(135deg,#c0c8f8,#8090d0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+[data-theme="dark"] .maddbtn {
+  background: linear-gradient(135deg,#4a4e78,#282b48);
+  box-shadow: 0 8px 18px rgba(0,0,15,.36);
+}
+[data-theme="dark"] .mode-pill {
+  background: rgba(255,255,255,.05);
+  border-color: rgba(255,255,255,.075);
+}
+[data-theme="dark"] .mode-pill:hover {
+  background: rgba(255,255,255,.09);
+  border-color: rgba(255,255,255,.12);
+}
+[data-theme="dark"] .mode-pill.on {
+  background: linear-gradient(135deg,#4e5178 0%,#313456 55%,#232644 100%);
+  border-color: rgba(255,255,255,.12);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.07), 0 7px 18px rgba(0,0,20,.4);
+}
+[data-theme="dark"] .up-count {
+  background: linear-gradient(135deg,#42466a,#252840);
+  box-shadow: 0 4px 12px rgba(0,0,20,.32);
+}
+[data-theme="dark"] .fab {
+  background: #42466a;
+  box-shadow: 0 6px 22px rgba(0,0,20,.48);
+}
+[data-theme="dark"] .dmodal,
+[data-theme="dark"] .sheet {
+  box-shadow: 0 -4px 40px rgba(0,0,20,.52), 0 0 0 1px rgba(255,255,255,.045);
+}
+[data-theme="dark"] .gcal-block {
+  background: rgba(255,255,255,.04);
+  border-color: rgba(255,255,255,.07);
+}
+[data-theme="dark"] .notes-empty {
+  background: rgba(255,255,255,.03);
+  border-color: rgba(255,255,255,.06);
+}
+/* Smooth theme transition */
+html, body, .phone, .hdr, .hdrbar, .ccard, .cell, .sheet, .dmodal, .fab, .ov {
+  transition-property: background, background-color, border-color, color, box-shadow;
+  transition-duration: 0.28s;
+  transition-timing-function: cubic-bezier(.4,0,.2,1);
 }
 html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;justify-content:center;align-items:flex-start;padding:0 0 72px;transition:background .3s;}
 .phone{
@@ -1213,76 +1348,6 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .cyc-num-input{width:64px;padding:7px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--sbg);color:var(--dtext);font-size:14px;font-weight:800;text-align:center;font-family:'Nunito',sans-serif;outline:none;}
 .cyc-num-input:focus{border-color:#FF6B9D;}
 
-/* Partner pairing card */
-.partner-card{background:linear-gradient(135deg,rgba(255,107,157,.1),rgba(90,90,104,.1));border-radius:16px;padding:16px;border:1.5px solid rgba(255,107,157,.2);}
-[data-theme=dark] .partner-card{background:linear-gradient(135deg,rgba(255,107,157,.08),rgba(90,90,104,.08));border-color:rgba(255,107,157,.15);}
-.partner-status{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-.partner-dot{width:8px;height:8px;border-radius:50%;background:#ccc;flex-shrink:0;}
-.partner-dot.paired{background:#4CAF50;}
-.partner-status-txt{font-size:13px;font-weight:800;color:var(--dtext);}
-.partner-code{background:var(--sbg);border-radius:10px;padding:10px 14px;font-size:15px;font-weight:900;letter-spacing:3px;color:var(--tgon);text-align:center;margin-bottom:10px;border:1.5px dashed var(--border);}
-.partner-unpair{font-size:11px;font-weight:800;color:#f44336;text-align:center;cursor:pointer;margin:-2px 0 10px;}
-.partner-unpair:hover{opacity:.8;}
-.partner-btn-row{display:flex;gap:8px;}
-.partner-btn{flex:1;padding:10px;border-radius:11px;border:none;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:opacity .2s;}
-.partner-btn:hover{opacity:.85;}
-.partner-btn.share{background:linear-gradient(135deg,#FF6B9D,#C44569);color:#fff;}
-.partner-btn.enter{background:var(--tgbg);color:var(--dtext);}
-.partner-priv{margin-top:10px;}
-.partner-priv-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;font-size:12px;font-weight:700;color:var(--dsub);}
-
-/* ── MOOD TRACKER ── */
-.mood-card{background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(239,68,68,.07));border-radius:16px;padding:14px 16px;border:1.5px solid rgba(251,191,36,.25);margin-bottom:4px;}
-[data-theme=dark] .mood-card{background:linear-gradient(135deg,rgba(251,191,36,.07),rgba(239,68,68,.05));border-color:rgba(251,191,36,.15);}
-.mood-grid{
-  display:flex;
-  gap:8px;
-  margin:12px 0 14px;
-  overflow-x:auto;
-  overflow-y:hidden;
-  padding-bottom:4px;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
-}
-.mood-grid::-webkit-scrollbar{display:none;}
-.mood-btn{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:3px;
-  padding:10px 8px;
-  min-width:72px;
-  flex:0 0 auto;
-  border-radius:13px;
-  border:2px solid transparent;
-  background:var(--sbg);
-  cursor:pointer;
-  transition:all .2s;
-  font-family:'Nunito',sans-serif;
-}
-.mood-btn:hover{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.3);}
-.mood-btn.active{background:linear-gradient(135deg,rgba(251,191,36,.2),rgba(239,68,68,.1));border-color:#FBBF24;box-shadow:0 2px 10px rgba(251,191,36,.25);}
-.mood-emoji{font-size:26px;line-height:1;}
-.mood-lbl{font-size:9px;font-weight:800;color:var(--dsub);text-align:center;line-height:1.2;}
-.mood-btn.active .mood-lbl{color:var(--dtext);}
-.mood-share-btn{width:100%;padding:11px;border-radius:12px;background:linear-gradient(135deg,#FBBF24,#F59E0B);border:none;color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:opacity .2s;}
-.mood-share-btn:hover{opacity:.88;}
-.mood-shared-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;background:rgba(251,191,36,.15);color:#B45309;font-size:11px;font-weight:800;margin-top:8px;}
-[data-theme=dark] .mood-shared-badge{background:rgba(251,191,36,.1);color:#FCD34D;}
-
-/* Partner view modal */
-.pv-modal{position:fixed;inset:0;background:var(--ov);z-index:80;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s;}
-.pv-modal.open{opacity:1;pointer-events:all;}
-.pv-card{background:var(--sbg);border-radius:24px 24px 0 0;width:390px;max-width:100vw;padding:0 0 40px;box-shadow:0 -8px 40px rgba(0,0,0,.25);}
-.pv-header{padding:16px 24px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.pv-title{font-size:16px;font-weight:900;color:var(--dtext);}
-.pv-close{width:30px;height:30px;border:none;background:var(--tgbg);border-radius:50%;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
-.pv-body{padding:20px 20px;}
-.pv-phase-big{text-align:center;padding:20px 0;}
-.pv-phase-emoji{font-size:48px;}
-.pv-phase-name{font-size:22px;font-weight:900;margin-top:8px;}
-.pv-note{font-size:12px;color:var(--dsub);font-weight:600;text-align:center;margin-top:16px;line-height:1.6;}
 
 /* ── INSTALL BANNER ── */
 .install-banner{
@@ -1550,9 +1615,9 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   z-index:60;padding-bottom:env(safe-area-inset-bottom,0px);
 }
 [data-theme=dark] .bottom-nav{
-  background:rgba(20,20,40,.97);
-  border:none;
-  box-shadow:none;
+  background:rgba(16,18,28,.97);
+  border-top:1px solid rgba(255,255,255,.07);
+  box-shadow:0 -4px 24px rgba(0,0,16,.38);
 }
 .bnav-btn{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -1562,7 +1627,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   transition:color .18s;-webkit-tap-highlight-color:transparent;
   position:relative;
 }
-[data-theme=dark] .bnav-btn{ color:#5a5d7d; }
+[data-theme=dark] .bnav-btn{ color:#5a607e; }
 .bnav-btn svg{
   width:26px;height:26px;stroke:currentColor;fill:none;
   stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;
@@ -1571,12 +1636,14 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .bnav-btn i{font-size:26px;transition:transform .18s;line-height:1;}
 .bnav-btn.active i{transform:scale(1.1);}
 .bnav-btn.active{ color:var(--tf,#1a1a1a); }
+[data-theme=dark] .bnav-btn.active{ color:#a0a8e0; }
 .bnav-btn.active svg{ transform:scale(1.1); }
 .bnav-btn.active::after{
   content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
   width:36px;height:3px;border-radius:0 0 3px 3px;
   background:var(--tf,#1a1a1a);
 }
+[data-theme=dark] .bnav-btn.active::after{ background:#a0a8e0; }
 
 /* ── STREAKS TAB — redesigned ── */
 .daycounter-view{
@@ -1593,17 +1660,27 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   background:radial-gradient(circle at top center,rgba(34,197,94,.08),transparent 32%),var(--app-bg);
 }
 [data-theme="dark"] .daycounter-view{
-  background:radial-gradient(circle at top center,rgba(34,197,94,.08),transparent 32%),linear-gradient(180deg,#0a0a0d 0%,#101014 45%,#0a0a0c 100%);
-  --bg:#0a0a0d;
-  --card:#15151b;
-  --border:rgba(255,255,255,.07);
-  --htext:#f4f4f8;
-  --dtext:#e7e7f0;
-  --hsub:#9a9ca8;
-  --dsub:#7c7e8c;
-  --chip:#1f1f27;
-  --mbg:#15151b;
-  --ov:rgba(0,0,0,.7);
+  background:
+    radial-gradient(ellipse 80% 30% at 50% 0%, rgba(34,197,94,.07), transparent 60%),
+    linear-gradient(180deg,#0d0f16 0%,#111320 50%,#0d0f16 100%);
+  /* ── Core tokens ── */
+  --bg:#0d0f16;
+  --card:#181b26;
+  --border:rgba(255,255,255,.09);
+  --htext:#e8ecff;
+  --dtext:#cdd2ee;
+  --hsub:#7c80a4;
+  --dsub:#545878;
+  --chip:#202438;
+  --mbg:#181b26;
+  --ov:rgba(0,0,8,.82);
+  /* ── CRITICAL: accent tokens so check-ins & rings are visible ── */
+  --tf:#3a4a7a;
+  --tt:#232840;
+  --tf-text:#b0b8e0;
+  --tgbg:#232840;
+  --tgon:#4a5a9a;
+  --icon:#8890c0;
 }
 .daycounter-view.active{ display:flex; }
 
@@ -1644,12 +1721,20 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     var(--card);
   border:1px solid var(--border);border-radius:22px;
   box-shadow:0 4px 18px rgba(80,70,160,.06);
+  transition:background .28s, border-color .28s;
 }
-[data-theme=dark] .dc-hero{box-shadow:0 4px 18px rgba(0,0,0,.24);}
+[data-theme=dark] .dc-hero{
+  background:
+    radial-gradient(ellipse 120% 100% at 100% 0%,rgba(34,197,94,.10),transparent 60%),
+    rgba(255,255,255,.04);
+  border-color:rgba(255,255,255,.09);
+  box-shadow:0 4px 18px rgba(0,0,0,.28);
+}
 .dc-hero-ring{position:relative;width:72px;height:72px;flex-shrink:0;}
 .dc-hero-ring svg{transform:rotate(-90deg);width:100%;height:100%;}
 .dc-hero-ring-bg{stroke:var(--border);stroke-width:7;fill:none;}
 .dc-hero-ring-fg{stroke:#22c55e;stroke-width:7;fill:none;stroke-linecap:round;transition:stroke-dashoffset .6s cubic-bezier(.22,.85,.25,1);}
+[data-theme=dark] .dc-hero-ring-bg{stroke:rgba(255,255,255,.10);}
 .dc-hero-ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .dc-hero-ring-num{font-size:17px;font-weight:900;color:var(--htext);line-height:1;font-variant-numeric:tabular-nums;}
 .dc-hero-ring-sub{font-size:7.5px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
@@ -1681,10 +1766,14 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   border:1px solid var(--border);
   box-shadow:0 4px 18px rgba(80,70,160,.06);
   flex-shrink:0;
-  transition:transform .15s,box-shadow .15s;
+  transition:transform .15s,box-shadow .15s,background .28s,border-color .28s;
 }
 .dc-card:active{transform:scale(.99);}
-[data-theme=dark] .dc-card{box-shadow:0 4px 18px rgba(0,0,0,.24);}
+[data-theme=dark] .dc-card{
+  background:rgba(255,255,255,.04);
+  border-color:rgba(255,255,255,.09);
+  box-shadow:0 4px 18px rgba(0,0,0,.28);
+}
 
 /* Streak ring */
 .dc-card-ring{position:relative;width:56px;height:56px;flex-shrink:0;}
@@ -1694,6 +1783,9 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .dc-card-ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
 .dc-card-ring-num{font-size:17px;font-weight:900;color:var(--htext);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.5px;}
 .dc-card-ring-unit{font-size:7px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.3px;margin-top:1px;}
+[data-theme=dark] .dc-card-ring-bg{stroke:rgba(255,255,255,.10);}
+[data-theme=dark] .dc-card-ring-num{color:#e8ecff;}
+[data-theme=dark] .dc-card-ring-unit{color:#7c80a4;}
 
 /* Main column */
 .dc-card-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px;}
@@ -1702,17 +1794,20 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   font-size:14.5px;font-weight:900;color:var(--htext);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0;
 }
+[data-theme=dark] .dc-card-name{color:#e8ecff;}
 .dc-card-type{
   font-size:9px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;
   padding:3px 9px;border-radius:999px;white-space:nowrap;flex-shrink:0;
 }
 .dc-card-type.build{background:rgba(58,158,110,.12);color:#2f9e63;}
 .dc-card-type.quit{background:rgba(224,62,62,.1);color:#d6453f;}
-[data-theme=dark] .dc-card-type.build{background:rgba(76,209,148,.14);color:#5fe3a3;}
-[data-theme=dark] .dc-card-type.quit{background:rgba(255,100,100,.14);color:#ff8d8d;}
+[data-theme=dark] .dc-card-type.build{background:rgba(76,209,148,.16);color:#5fe3a3;}
+[data-theme=dark] .dc-card-type.quit{background:rgba(255,100,100,.16);color:#ff9090;}
 
 .dc-card-sub{font-size:11px;font-weight:700;color:var(--dsub);}
 .dc-card-sub b{color:var(--acc,var(--tf));font-weight:900;}
+[data-theme=dark] .dc-card-sub{color:#7c80a4;}
+[data-theme=dark] .dc-card-sub b{color:#82a0ff;}
 
 /* Week dots */
 .dc-week{display:flex;gap:4px;}
@@ -1720,11 +1815,30 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   flex:1;height:18px;border-radius:6px;background:var(--border);
   display:flex;align-items:center;justify-content:center;
   font-size:8px;font-weight:900;color:var(--dsub);
-  transition:background .2s,color .2s;
+  transition:background .2s,color .2s,box-shadow .2s;
 }
-.dc-week-dot.done{background:var(--acc,var(--tf));color:#fff;}
+.dc-week-dot.done{
+  background:var(--acc,#22c55e);
+  color:#fff;
+  box-shadow:0 2px 8px color-mix(in srgb,var(--acc,#22c55e) 40%,transparent);
+}
 .dc-week-dot.today{box-shadow:0 0 0 1.5px var(--acc,var(--tf));}
 .dc-week-dot.today:not(.done){color:var(--acc,var(--tf));}
+/* dark mode: week dots need stronger contrast */
+[data-theme=dark] .dc-week-dot{
+  background:rgba(255,255,255,.08);
+  color:rgba(255,255,255,.35);
+}
+[data-theme=dark] .dc-week-dot.done{
+  background:var(--acc,#22c55e);
+  color:#fff;
+  box-shadow:0 2px 10px rgba(34,197,94,.45);
+}
+[data-theme=dark] .dc-week-dot.today:not(.done){
+  background:rgba(255,255,255,.12);
+  color:rgba(255,255,255,.7);
+  box-shadow:0 0 0 1.5px rgba(255,255,255,.3);
+}
 
 /* Actions column */
 .dc-card-actions{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;}
@@ -1735,26 +1849,46 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 }
 .dc-icon-btn svg{width:18px;height:18px;}
 .dc-icon-btn:active{transform:scale(.9);opacity:.85;}
+/* Not yet checked in — show the + icon prominently */
 .dc-icon-btn.dc-check{
-  background:var(--acc,var(--tf));color:#fff;
-  box-shadow:0 4px 12px color-mix(in srgb,var(--acc,var(--tf)) 40%,transparent);
+  background:var(--acc,#22c55e);
+  color:#fff;
+  box-shadow:0 4px 12px color-mix(in srgb,var(--acc,#22c55e) 40%,transparent);
 }
+/* Already checked in today — softer tinted state */
 .dc-icon-btn.dc-check.done{
-  background:color-mix(in srgb,var(--acc,var(--tf)) 16%,transparent);color:var(--acc,var(--tf));
-  box-shadow:none;
+  background:rgba(34,197,94,.16);
+  color:#22c55e;
+  box-shadow:0 0 0 1.5px rgba(34,197,94,.35);
 }
-[data-theme=dark] .dc-icon-btn.dc-check.done{background:color-mix(in srgb,var(--acc,var(--tf)) 26%,transparent);}
+/* Dark mode overrides for check button */
+[data-theme=dark] .dc-icon-btn.dc-check{
+  background:var(--acc,#22c55e);
+  color:#fff;
+  box-shadow:0 4px 14px rgba(34,197,94,.35);
+}
+[data-theme=dark] .dc-icon-btn.dc-check.done{
+  background:rgba(34,197,94,.22);
+  color:#4ade80;
+  box-shadow:0 0 0 1.5px rgba(34,197,94,.45);
+}
 .dc-card-more{position:relative;}
 .dc-icon-btn.dc-more{width:26px;height:26px;border-radius:9px;background:transparent;color:var(--dsub);}
 .dc-icon-btn.dc-more svg{width:15px;height:15px;}
 .dc-icon-btn.dc-more:hover{background:var(--chip);}
+[data-theme=dark] .dc-icon-btn.dc-more{color:rgba(255,255,255,.35);}
+[data-theme=dark] .dc-icon-btn.dc-more:hover{background:rgba(255,255,255,.10);}
 .dc-card-menu{
   position:absolute;top:30px;right:0;z-index:5;min-width:118px;
   background:var(--mbg);border:1px solid var(--border);border-radius:13px;
   box-shadow:0 10px 28px rgba(0,0,0,.16);padding:5px;
   display:none;flex-direction:column;gap:2px;
 }
-[data-theme=dark] .dc-card-menu{box-shadow:0 10px 28px rgba(0,0,0,.45);}
+[data-theme=dark] .dc-card-menu{
+  background:#1e2232;
+  border-color:rgba(255,255,255,.12);
+  box-shadow:0 10px 28px rgba(0,0,0,.55);
+}
 .dc-card-menu.open{display:flex;}
 .dc-card-menu button{
   border:none;background:transparent;text-align:left;padding:8px 10px;border-radius:9px;
@@ -1762,7 +1896,10 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   font-family:'Nunito',system-ui,sans-serif;
 }
 .dc-card-menu button:hover{background:var(--chip);}
+[data-theme=dark] .dc-card-menu button{color:#cdd2ee;}
+[data-theme=dark] .dc-card-menu button:hover{background:rgba(255,255,255,.08);}
 .dc-card-menu button.danger{color:#d6453f;}
+[data-theme=dark] .dc-card-menu button.danger{color:#ff8080;}
 
 /* Empty state */
 .dc-empty{
@@ -1770,9 +1907,15 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   gap:12px;padding:64px 32px;color:var(--hsub);text-align:center;
   margin:0 14px 12px;background:var(--card);border:1px solid var(--border);
   border-radius:20px;box-shadow:0 4px 18px rgba(80,70,160,.06);
+  transition:background .28s,border-color .28s;
 }
-[data-theme=dark] .dc-empty{box-shadow:0 4px 18px rgba(0,0,0,.24);}
+[data-theme=dark] .dc-empty{
+  background:rgba(255,255,255,.03);
+  border-color:rgba(255,255,255,.08);
+  box-shadow:0 4px 18px rgba(0,0,0,.28);
+}
 .dc-empty svg{width:44px;height:44px;stroke:var(--tf);fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;opacity:.8;}
+[data-theme=dark] .dc-empty svg{stroke:#5a6090;opacity:.9;}
 .dc-empty-title{font-size:17px;font-weight:900;color:var(--dtext);}
 .dc-empty-sub{font-size:13px;font-weight:600;line-height:1.5;color:var(--hsub);}
 
@@ -1790,6 +1933,12 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   width:390px;max-width:100vw;background:var(--mbg);
   border-radius:24px 24px 0 0;padding:20px 20px 44px;
   transform:translateY(40px);transition:transform .22s cubic-bezier(.22,.85,.25,1);
+  border-top:1px solid var(--border);
+}
+[data-theme=dark] .dc-modal{
+  background:#181b26;
+  border-color:rgba(255,255,255,.10);
+  box-shadow:0 -8px 40px rgba(0,0,20,.5);
 }
 .dc-modal-overlay.open .dc-modal{transform:translateY(0);}
 .dc-modal-title{font-size:18px;font-weight:900;color:var(--htext);margin-bottom:18px;}
@@ -1803,6 +1952,13 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   transition:border-color .15s;
 }
 .dc-input:focus{border-color:var(--tf);}
+[data-theme=dark] .dc-input{
+  background:rgba(255,255,255,.06);
+  border-color:rgba(255,255,255,.12);
+  color:#e8ecff;
+}
+[data-theme=dark] .dc-input:focus{border-color:rgba(140,160,255,.55);}
+[data-theme=dark] .dc-input::placeholder{color:rgba(255,255,255,.3);}
 .dc-type-row{display:flex;gap:8px;}
 .dc-type-opt{
   flex:1;padding:11px 8px;border-radius:12px;border:2px solid var(--border);
@@ -1811,16 +1967,34 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   color:var(--hsub);transition:all .15s;
 }
 .dc-type-opt.selected{border-color:var(--tf);background:rgba(26,26,26,.1);color:var(--tf-text);}
+[data-theme=dark] .dc-type-opt{
+  background:rgba(255,255,255,.05);
+  border-color:rgba(255,255,255,.10);
+  color:rgba(255,255,255,.45);
+}
+[data-theme=dark] .dc-type-opt.selected{
+  background:rgba(100,120,220,.18);
+  border-color:rgba(100,120,220,.5);
+  color:#c0c8f0;
+}
 .dc-modal-btns{display:flex;gap:10px;margin-top:22px;}
 .dc-modal-save{
   flex:1;padding:14px;border-radius:14px;border:none;cursor:pointer;
   background:var(--tf);color:#fff;font-family:'Nunito',system-ui,sans-serif;
   font-size:15px;font-weight:900;box-shadow:0 6px 18px rgba(60,60,70,.3);
 }
+[data-theme=dark] .dc-modal-save{
+  background:linear-gradient(135deg,#4a5a9a,#2e3870);
+  box-shadow:0 6px 18px rgba(0,0,30,.4);
+}
 .dc-modal-cancel{
   padding:14px 18px;border-radius:14px;border:none;cursor:pointer;
   background:var(--chip);color:var(--hsub);font-family:'Nunito',system-ui,sans-serif;
   font-size:15px;font-weight:800;
+}
+[data-theme=dark] .dc-modal-cancel{
+  background:rgba(255,255,255,.07);
+  color:rgba(255,255,255,.5);
 }
 
 /* ── ACTIVITY HEATMAP ── */
@@ -1835,12 +2009,14 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   box-shadow:0 4px 18px rgba(80,70,160,.06);
   border:1px solid var(--border);
   flex-shrink:0;
+  transition:background .28s,border-color .28s;
 }
 [data-theme=dark] .dc-heatmap-section{
   background:
-    radial-gradient(ellipse 140% 100% at 100% 0%,rgba(34,197,94,.10),transparent 60%),
-    var(--card);
-  box-shadow:0 4px 18px rgba(0,0,0,.24);
+    radial-gradient(ellipse 140% 100% at 100% 0%,rgba(34,197,94,.09),transparent 60%),
+    rgba(255,255,255,.04);
+  border-color:rgba(255,255,255,.09);
+  box-shadow:0 4px 18px rgba(0,0,0,.28);
 }
 .dc-heatmap-header{
   display:flex;align-items:center;justify-content:space-between;
@@ -2067,6 +2243,9 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   <div class="hdr">
     <div class="hdrbar">
       <div class="head-title ne">Vikram Calendar</div>
+      <button class="gear-btn" id="darkModeBtn" onclick="toggleDark()" title="Toggle dark/light mode" style="margin-right:2px;">
+        <svg id="darkModeBtnIcon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
       <button class="gear-btn" id="settingsBtn" onclick="openSheet('settings')" title="Settings">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
@@ -2358,11 +2537,14 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
       <div class="ssect">Appearance & Language</div>
       <!-- Dark / Light mode -->
       <div class="srow">
-        <div>
-          <div class="slbl" id="sAppearLbl">Dark Mode</div>
-          <div class="ssub" id="sAppearSub">Switch to dark theme</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div id="sAppearIcon" style="width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(80,90,180,.13);transition:background .28s;">🌙</div>
+          <div>
+            <div class="slbl" id="sAppearLbl">Dark Mode</div>
+            <div class="ssub" id="sAppearSub">Currently using dark theme</div>
+          </div>
         </div>
-        <button class="tgl" id="tgDark" onclick="toggleDark()"></button>
+        <button class="tgl on" id="tgDark" onclick="toggleDark()"></button>
       </div>
       <!-- Language -->
       <div class="srow">
@@ -2552,7 +2734,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 <div class="dc-modal-overlay" id="cyResetConfirmOverlay" onclick="cyResetConfirmClose(event)">
   <div class="dc-modal" style="text-align:center">
     <div class="dc-modal-title" style="margin-bottom:8px">Clear all cycle data?</div>
-    <div style="font-size:13px;font-weight:600;line-height:1.5;color:var(--hsub);margin-bottom:6px">This removes your period history, settings, and partner link. This can't be undone.</div>
+    <div style="font-size:13px;font-weight:600;line-height:1.5;color:var(--hsub);margin-bottom:6px">This removes your period history and settings. This can't be undone.</div>
     <div class="dc-modal-btns">
       <button class="dc-modal-cancel" style="flex:1" onclick="cyResetConfirmClose()">Cancel</button>
       <button class="dc-modal-save" style="background:#d6453f;box-shadow:0 6px 18px rgba(214,69,63,.3)" onclick="cyResetConfirmYes()">Clear data</button>
@@ -2560,28 +2742,6 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   </div>
 </div>
 
-<!-- STOP PAIRING CONFIRM MODAL -->
-<div class="dc-modal-overlay" id="cyUnpairConfirmOverlay" onclick="cyUnpairConfirmClose(event)">
-  <div class="dc-modal" style="text-align:center">
-    <div class="dc-modal-title" style="margin-bottom:8px">Stop pairing with your partner?</div>
-    <div style="font-size:13px;font-weight:600;line-height:1.5;color:var(--hsub);margin-bottom:6px">Your current partner code will stop working. Any links you've already shared won't update anymore. You can pair again anytime with a new code.</div>
-    <div class="dc-modal-btns">
-      <button class="dc-modal-cancel" style="flex:1" onclick="cyUnpairConfirmClose()">Cancel</button>
-      <button class="dc-modal-save" style="background:#d6453f;box-shadow:0 6px 18px rgba(214,69,63,.3)" onclick="cyUnpairConfirmYes()">Stop pairing</button>
-    </div>
-  </div>
-</div>
-
-<!-- PARTNER VIEW MODAL -->
-<div class="pv-modal" id="pvModal">
-  <div class="pv-card">
-    <div class="pv-header">
-      <div class="pv-title">💞 Partner's Cycle</div>
-      <button class="pv-close" onclick="closePV()">✕</button>
-    </div>
-    <div class="pv-body" id="pvBody"><!-- rendered dynamically --></div>
-  </div>
-</div>
 
 <script>
 // ══ SAFE LOCALSTORAGE (falls back to in-memory if blocked, e.g. sandboxed previews) ══
@@ -3300,14 +3460,23 @@ function applyTheme(){
   root.setAttribute('data-theme',dark?'dark':'light');
   root.style.colorScheme=dark?'dark':'light';
   const meta=document.querySelector('meta[name="theme-color"]');
-  if(meta) meta.setAttribute('content',dark?'#11111b':'#ECEEF8');
+  if(meta) meta.setAttribute('content',dark?'#0e1016':'#ECEEF8');
   // Settings toggle
   const tg=document.getElementById('tgDark');
   if(tg) tg.classList.toggle('on',dark);
   const lbl=document.getElementById('sAppearLbl');
   const sub=document.getElementById('sAppearSub');
+  const icon=document.getElementById('sAppearIcon');
   if(lbl) lbl.textContent=dark?'Dark Mode':'Light Mode';
   if(sub) sub.textContent=dark?'Currently using dark theme':'Currently using light theme';
+  if(icon){ icon.textContent=dark?'🌙':'☀️'; icon.style.background=dark?'rgba(80,90,180,.15)':'rgba(240,180,40,.15)'; }
+  // Header dark-mode button icon
+  const hdrBtn=document.getElementById('darkModeBtnIcon');
+  if(hdrBtn){
+    hdrBtn.innerHTML=dark
+      ?'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+      :'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+  }
   render();
   renderUpcoming();
   renderSelectedDay();
@@ -4461,7 +4630,9 @@ let cycleData = (()=>{
   catch(e){ return {}; }
 })();
 
-function saveCycle(){ localStorage.setItem('vikram_cycle', JSON.stringify(cycleData)); }
+function saveCycle(){
+  localStorage.setItem('vikram_cycle', JSON.stringify(cycleData));
+}
 
 function cycleDefaults(){
   return {
@@ -4470,7 +4641,6 @@ function cycleDefaults(){
     lastPeriodStart: cycleData.lastPeriodStart || null,
     logs: cycleData.logs || [],
     privacy: cycleData.privacy || { phase:true, fertility:true, periodDay:true },
-    pairCode: cycleData.pairCode || null,
   };
 }
 
@@ -4669,70 +4839,6 @@ function renderCycleSheet(){
     <div class="cyc-set-row" style="border-bottom:none;">
       <div class="slbl" style="color:#f44336;cursor:pointer;" onclick="cyReset()">🗑️ Clear all cycle data</div>
     </div>
-  </div>
-
-  <!-- Share Mood with Partner -->
-  <div class="ssec">
-    <div class="ssect">💛 Share Mood with Partner</div>
-    <div class="mood-card">
-      <div style="font-size:12px;font-weight:700;color:var(--dsub);margin-bottom:2px;">How are you feeling today?</div>
-      <div class="mood-grid" id="moodGrid">
-        ${[
-          ['😊','Happy'],['😍','Loving'],['🥰','Romantic'],['💪','Energetic'],
-          ['😌','Calm'],['😴','Tired'],['😢','Sad'],['😤','Irritable'],
-          ['😰','Anxious'],['🔥','Passionate'],['😭','Emotional'],['🤒','Unwell'],
-        ].map(([emoji,label])=>`
-          <button class="mood-btn${(cycleData.mood||'')===label?' active':''}"
-            onclick="cySetMood('${label}','${emoji}')">
-            <span class="mood-emoji">${emoji}</span>
-            <span class="mood-lbl">${label}</span>
-          </button>`).join('')}
-      </div>
-      ${cycleData.mood ? `
-      <button class="mood-share-btn" onclick="cyShareMood()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-        Share "${cycleData.mood}" mood with partner
-      </button>
-      ${cycleData.moodSharedAt ? `<div class="mood-shared-badge">✓ Shared ${cyMoodAgo(cycleData.moodSharedAt)}</div>` : ''}
-      ` : `<div style="font-size:11px;color:var(--dsub);font-weight:600;text-align:center;padding:4px 0;">Select a mood above to share with your partner 💌</div>`}
-    </div>
-  </div>
-
-  <!-- Pair with Partner -->
-  <div class="ssec" style="padding-bottom:32px;">
-    <div class="ssect">💞 Pair with Partner</div>
-    <div class="partner-card">
-      <div class="partner-status">
-        <div class="partner-dot ${cycleData.pairCode?'paired':''}"></div>
-        <div class="partner-status-txt">${cycleData.pairCode?'Ready to share':'Share your cycle with a partner'}</div>
-      </div>
-      ${cycleData.pairCode?`<div class="partner-code">${cycleData.pairCode}</div>
-      <div class="partner-unpair" onclick="cyStopPairing()">🔓 Stop pairing &amp; remove code</div>`:''}
-      <div class="partner-btn-row">
-        <button class="partner-btn share" onclick="cySharePartner()">
-          🔗 Share Cycle Update
-        </button>
-        <button class="partner-btn enter" onclick="cyEnterPartnerCode()">
-          👁️ View Partner
-        </button>
-      </div>
-      <div class="partner-priv">
-        <div class="ssect" style="margin-bottom:6px;">Privacy Controls</div>
-        ${[
-          ['phase',    'Share current phase'],
-          ['fertility','Share fertility window'],
-          ['periodDay','Share period day count'],
-        ].map(([k,lbl])=>`
-          <div class="partner-priv-row">
-            <span>${lbl}</span>
-            <button class="tgl ${(cycleData.privacy||{})[k]!==false?'on':''}"
-              onclick="cyPrivToggle('${k}',this)"></button>
-          </div>`).join('')}
-      </div>
-    </div>
-    <div style="font-size:10.5px;color:var(--dsub);margin-top:10px;line-height:1.6;text-align:center;">
-      🔒 All data stays on your device. Partner link is a privacy-respecting snapshot — no account needed.
-    </div>
   </div>`;
 }
 
@@ -4767,133 +4873,6 @@ function cyResetConfirmYes(){
   renderCycleSheet();
 }
 
-// ── Mood tracking ─────────────────────────────────────────────────────────────
-const MOOD_EMOJIS = {
-  Happy:'😊', Loving:'😍', Romantic:'🥰', Energetic:'💪',
-  Calm:'😌',  Tired:'😴',  Sad:'😢',      Irritable:'😤',
-  Anxious:'😰', Passionate:'🔥', Emotional:'😭', Unwell:'🤒',
-};
-
-function cySetMood(label, emoji){
-  cycleData.mood = label;
-  cycleData.moodEmoji = emoji;
-  cycleData.moodDate = Date.now();
-  delete cycleData.moodSharedAt;   // reset share badge when mood changes
-  saveCycle(); renderCycleSheet();
-}
-
-function cyMoodAgo(ts){
-  const mins = Math.round((Date.now()-ts)/60000);
-  if(mins < 2)   return 'just now';
-  if(mins < 60)  return `${mins}m ago`;
-  const hrs = Math.round(mins/60);
-  if(hrs < 24)   return `${hrs}h ago`;
-  return `${Math.round(hrs/24)}d ago`;
-}
-
-function cyShareMood(){
-  if(!cycleData.mood){ alert('Select a mood first.'); return; }
-  const info = getCycleInfo();
-  const emoji = cycleData.moodEmoji || MOOD_EMOJIS[cycleData.mood] || '💛';
-  const phase = info ? info.phase : 'Unknown';
-  const daysToNext = info ? info.daysUntilNextPeriod : '?';
-
-  const payload = {
-    type: 'mood',
-    mood: cycleData.mood,
-    emoji,
-    phase,
-    daysToNextPeriod: daysToNext,
-    sharedAt: new Date().toISOString(),
-    priv: cycleData.privacy || {},
-  };
-  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-  const url = `${location.origin}${location.pathname}?vikram_mood=${encoded}`;
-  const text = `${emoji} Feeling ${cycleData.mood} today · ${phase} phase · Vikram`;
-
-  if(navigator.share){
-    navigator.share({ title:'My Mood — Vikram', text, url })
-      .then(()=>{ cycleData.moodSharedAt=Date.now(); saveCycle(); renderCycleSheet(); })
-      .catch(()=>{});
-  } else {
-    navigator.clipboard.writeText(url).then(()=>{
-      cycleData.moodSharedAt = Date.now();
-      saveCycle(); renderCycleSheet();
-      alert(`Mood link copied!\n\nPartner opens it to see:\n${emoji} ${cycleData.mood} · ${phase} phase`);
-    }).catch(()=> alert('Could not copy. Long-press the URL bar to share manually.'));
-  }
-}
-
-// ── Partner sharing (snapshot link) ─────────────────────────────────────────
-function cyGenPairCode(){
-  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let c='';for(let i=0;i<8;i++){if(i===4)c+='-';c+=chars[Math.floor(Math.random()*chars.length)];}
-  return c;
-}
-
-function cySharePartner(){
-  if(!cycleData.lastPeriodStart){
-    alert('Log your period start date first before sharing.');
-    return;
-  }
-  if(!cycleData.pairCode){
-    cycleData.pairCode = cyGenPairCode();
-    saveCycle();
-  }
-
-  const priv = cycleData.privacy||{};
-  const phase = getPhase();
-  const pi = phase ? PHASE_INFO[phase.name] : null;
-  const dNext = getDaysUntilNextPeriod();
-  const dOvul = getDaysUntilOvulation();
-  const cl = cycleData.cycleLength||28;
-  const pl = cycleData.periodLength||5;
-
-  const snapshot = {
-    code: cycleData.pairCode,
-    ts: Date.now(),
-    cl, pl,
-    ...(priv.phase    !==false && phase   ? {phase: phase.name, phaseDay: phase.dayIn, phaseOf: phase.of} : {}),
-    ...(priv.periodDay!==false && dNext   ? {dNext} : {}),
-    ...(priv.fertility!==false && dOvul!==null ? {dOvul} : {}),
-  };
-
-  const b64 = btoa(JSON.stringify(snapshot));
-  const url = `${location.href.split('#')[0]}#partner=${b64}`;
-
-  if(navigator.share){
-    navigator.share({
-      title:`${cycleData.pairCode} — Cycle Update`,
-      text:`Your partner shared a cycle update via Vikram. Code: ${cycleData.pairCode}`,
-      url
-    }).catch(()=>copyToClipboard(url));
-  } else {
-    copyToClipboard(url);
-  }
-  renderCycleSheet();
-}
-
-function copyToClipboard(text){
-  navigator.clipboard?.writeText(text)
-    .then(()=>alert('✅ Partner link copied to clipboard!\n\nSend it to your partner. They tap it to view your cycle update.'))
-    .catch(()=>prompt('Copy this link and send to your partner:',text));
-}
-
-function cyEnterPartnerCode(){
-  const input = prompt('Paste the partner link or code:','');
-  if(!input) return;
-  try{
-    let b64 = input;
-    if(input.includes('#partner=')){
-      b64 = input.split('#partner=')[1];
-    }
-    const data = JSON.parse(atob(b64));
-    showPartnerView(data);
-  } catch(e){
-    alert('Invalid partner link. Ask your partner to share a fresh link.');
-  }
-}
-
 function cyPrivToggle(key, btn){
   cycleData.privacy = cycleData.privacy||{};
   cycleData.privacy[key] = !(cycleData.privacy[key]!==false);
@@ -4901,66 +4880,6 @@ function cyPrivToggle(key, btn){
   saveCycle();
 }
 
-function cyStopPairing(){
-  document.getElementById('cyUnpairConfirmOverlay').classList.add('open');
-}
-function cyUnpairConfirmClose(e){
-  if(e && e.target !== document.getElementById('cyUnpairConfirmOverlay')) return;
-  document.getElementById('cyUnpairConfirmOverlay').classList.remove('open');
-}
-function cyUnpairConfirmYes(){
-  document.getElementById('cyUnpairConfirmOverlay').classList.remove('open');
-  cycleData.pairCode = null;
-  saveCycle();
-  renderCycleSheet();
-}
-
-// ── Partner view ─────────────────────────────────────────────────────────────
-function showPartnerView(data){
-  const modal = document.getElementById('pvModal');
-  const body  = document.getElementById('pvBody');
-  const pi = data.phase ? PHASE_INFO[data.phase] : null;
-  const ago = data.ts ? Math.floor((Date.now()-data.ts)/60000) : null;
-  const agoStr = ago===null?'':(ago<2?'just now':ago<60?`${ago}m ago`:ago<1440?`${Math.floor(ago/60)}h ago`:`${Math.floor(ago/1440)}d ago`);
-
-  const cl = data.cl || 28;
-  const pctNext = data.dNext!==undefined ? Math.max(0, Math.min(1, (cl-data.dNext)/cl)) : 0;
-  const pctFert = data.dOvul!==undefined ? (data.dOvul===0 ? 1 : Math.max(0, Math.min(1, 1-(data.dOvul/(cl-14))))) : 0;
-
-  body.innerHTML = `
-    <div class="pv-phase-big">
-      <div class="pv-phase-emoji">${pi?pi.emoji:'🌸'}</div>
-      <div class="pv-phase-name" style="color:${pi?pi.color:'var(--tgon)'};">
-        ${data.phase||'—'} Phase
-      </div>
-      ${data.phaseDay?`<div style="font-size:13px;color:var(--dsub);font-weight:700;margin-top:4px;">Day ${data.phaseDay} of ${data.phaseOf}</div>`:''}
-    </div>
-    <div class="cyc-grid" style="padding:0 0 14px;">
-      ${data.dNext!==undefined?cycCard('neutral', pctNext, '📅', `${data.dNext}d`, 'Until next period'):''}
-      ${data.dOvul!==undefined?cycCard('ovulation', pctFert, '✨', data.dOvul===0?'Today':`In ${data.dOvul}d`, 'Ovulation window'):''}
-    </div>
-    <div class="pv-note">
-      ${data.code?`Partner code: <b>${data.code}</b> · `:''}Updated ${agoStr}<br>
-      Ask your partner to reshare for the latest update.
-    </div>`;
-
-  modal.classList.add('open');
-}
-
-function closePV(){
-  document.getElementById('pvModal').classList.remove('open');
-}
-
-// Check URL for partner snapshot on load
-function checkPartnerURL(){
-  if(!location.hash.startsWith('#partner=')) return;
-  try{
-    const b64 = location.hash.slice(9);
-    const data = JSON.parse(atob(b64));
-    setTimeout(()=>showPartnerView(data), 800);
-  }catch(e){}
-  history.replaceState(null,'',location.pathname);
-}
 
 // ══ HOME SCREEN WIDGET ══════════════════════════════════════════════════════
 let widgetTab='ios';
@@ -5181,32 +5100,7 @@ applyTheme();
 const savedLang=localStorage.getItem('vikram_lang');
 if(savedLang==='ne') setLang('ne');
 
-// Handle partner mood share link
-(function detectMoodShare(){
-  const p=new URLSearchParams(location.search).get('vikram_mood');
-  if(!p) return;
-  try{
-    const d=JSON.parse(decodeURIComponent(escape(atob(p))));
-    if(d.type!=='mood') return;
-    setTimeout(()=>{
-      const box=document.createElement('div');
-      box.style.cssText='position:fixed;inset:0;background:var(--ov);z-index:300;display:flex;align-items:center;justify-content:center;';
-      box.innerHTML=`<div style="background:var(--mbg);border-radius:24px;padding:28px 24px;max-width:320px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);">
-        <div style="font-size:64px;line-height:1;">${d.emoji}</div>
-        <div style="font-size:20px;font-weight:900;color:var(--htext);margin:10px 0 4px;">Feeling ${d.mood}</div>
-        <div style="font-size:13px;color:var(--hsub);font-weight:600;margin-bottom:16px;">${d.phase} Phase · ${d.daysToNextPeriod} days to next period</div>
-        <div style="font-size:11px;color:var(--dsub);font-weight:600;margin-bottom:18px;">Shared via Vikram</div>
-        <button onclick="this.closest('div[style]').remove();history.replaceState(null,'',location.pathname);"
-          style="padding:12px 28px;border-radius:12px;background:linear-gradient(135deg,#FBBF24,#F59E0B);border:none;color:#fff;font-size:14px;font-weight:900;cursor:pointer;font-family:Nunito,sans-serif;">
-          Got it 💛
-        </button>
-      </div>`;
-      document.body.appendChild(box);
-    },800);
-  }catch(e){}
-})();
 
-vY=TODAYBS.y;vM=TODAYBS.m;
 render();
 updateDayOpts();
 const _ric=window.requestIdleCallback||((cb)=>setTimeout(cb,50));
@@ -5216,7 +5110,6 @@ _ric(()=>{
   updateNotifCard();
 });;
 setTimeout(checkEventReminders, 2500);
-checkPartnerURL();
 
 // ══ PWA — INSTALL BANNER ══
 (function(){
