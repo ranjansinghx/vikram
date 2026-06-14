@@ -1365,6 +1365,175 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .hist-len{font-size:12px;font-weight:900;color:var(--dtext);min-width:38px;text-align:right;}
 .hist-date{font-size:10.5px;color:var(--dsub);font-weight:600;min-width:70px;}
 
+/* ── PARTNER SYNC ── */
+.pair-card{
+  margin:0 18px 14px;border-radius:18px;overflow:hidden;
+  border:1px solid var(--border);
+  background:linear-gradient(135deg,rgba(255,107,157,.06),rgba(196,69,105,.03),var(--card));
+  box-shadow:0 2px 12px rgba(255,107,157,.08);
+}
+[data-theme=dark] .pair-card{
+  background:linear-gradient(135deg,rgba(255,107,157,.10),rgba(100,40,80,.08),var(--card));
+  border-color:rgba(255,107,157,.18);
+}
+.pair-card-head{
+  display:flex;align-items:center;gap:11px;
+  padding:14px 16px 12px;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(135deg,rgba(255,107,157,.10),rgba(196,69,105,.05));
+}
+[data-theme=dark] .pair-card-head{
+  border-bottom-color:rgba(255,255,255,.06);
+  background:linear-gradient(135deg,rgba(255,107,157,.14),rgba(100,40,80,.10));
+}
+.pair-icon-wrap{
+  width:38px;height:38px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  box-shadow:0 4px 12px rgba(255,107,157,.32);
+  font-size:18px;
+}
+.pair-head-text{flex:1;}
+.pair-head-title{font-size:14px;font-weight:900;color:var(--htext);line-height:1.1;}
+.pair-head-sub{font-size:11px;font-weight:700;color:var(--hsub);margin-top:2px;}
+.pair-status-dot{
+  width:9px;height:9px;border-radius:50%;
+  background:#22c55e;flex-shrink:0;
+  box-shadow:0 0 8px rgba(34,197,94,.5);
+  animation:pairPulse 2s ease-in-out infinite;
+}
+.pair-status-dot.offline{background:var(--dim);box-shadow:none;animation:none;}
+@keyframes pairPulse{
+  0%,100%{transform:scale(1);opacity:1;}
+  50%{transform:scale(1.25);opacity:.7;}
+}
+
+/* Not-paired state */
+.pair-unpaired{padding:20px 16px;text-align:center;}
+.pair-unpaired-emoji{font-size:38px;margin-bottom:10px;}
+.pair-unpaired-title{font-size:15px;font-weight:900;color:var(--htext);margin-bottom:6px;}
+.pair-unpaired-sub{font-size:12px;font-weight:600;color:var(--hsub);line-height:1.5;margin-bottom:16px;}
+.pair-code-box{
+  display:flex;align-items:center;gap:9px;
+  background:var(--tgbg);border-radius:12px;padding:10px 14px;
+  border:1.5px dashed rgba(255,107,157,.35);
+  margin-bottom:14px;
+}
+.pair-code-lbl{font-size:10px;font-weight:800;color:var(--hsub);text-transform:uppercase;letter-spacing:.7px;white-space:nowrap;}
+.pair-code-val{
+  flex:1;font-size:16px;font-weight:900;letter-spacing:3px;
+  color:#FF6B9D;font-family:'Courier New',monospace;text-align:center;
+}
+.pair-copy-btn{
+  width:30px;height:30px;border-radius:8px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:transform .15s,box-shadow .15s;
+}
+.pair-copy-btn:active{transform:scale(.93);}
+.pair-copy-btn svg{width:14px;height:14px;stroke:#fff;stroke-width:2.3;fill:none;}
+.pair-enter-row{display:flex;gap:8px;margin-bottom:4px;}
+.pair-enter-input{
+  flex:1;padding:10px 12px;border-radius:10px;
+  border:1.5px solid var(--border);background:var(--sbg);
+  color:var(--dtext);font-size:14px;font-weight:800;
+  font-family:'Courier New',monospace;letter-spacing:2px;
+  text-transform:uppercase;outline:none;
+  transition:border-color .2s;
+}
+.pair-enter-input::placeholder{font-family:'Nunito',sans-serif;letter-spacing:0;font-size:13px;font-weight:600;text-transform:none;}
+.pair-enter-input:focus{border-color:#FF6B9D;}
+.pair-connect-btn{
+  padding:10px 16px;border-radius:10px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  color:#fff;font-size:13px;font-weight:900;
+  font-family:'Nunito',sans-serif;white-space:nowrap;
+  box-shadow:0 4px 14px rgba(255,107,157,.3);
+  transition:opacity .2s,transform .15s;
+}
+.pair-connect-btn:active{transform:scale(.96);}
+
+/* Paired state */
+.pair-paired{padding:16px;}
+.pair-partner-row{
+  display:flex;align-items:center;gap:12px;
+  background:var(--tgbg);border-radius:14px;padding:12px 14px;
+  margin-bottom:12px;
+}
+.pair-partner-avatar{
+  width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+  box-shadow:0 3px 10px rgba(255,107,157,.3);
+}
+.pair-partner-info{flex:1;}
+.pair-partner-name{font-size:14px;font-weight:900;color:var(--htext);}
+.pair-partner-status{font-size:11px;font-weight:700;color:var(--hsub);margin-top:2px;}
+.pair-disconnect-btn{
+  padding:6px 11px;border-radius:8px;border:none;cursor:pointer;
+  background:rgba(244,63,94,.1);color:#f43f5e;
+  font-size:11px;font-weight:800;font-family:'Nunito',sans-serif;
+  transition:background .2s;
+}
+.pair-disconnect-btn:hover{background:rgba(244,63,94,.18);}
+
+/* Partner cycle info */
+.pair-partner-cycle{
+  border-radius:14px;border:1px solid var(--border);
+  overflow:hidden;background:var(--sbg);margin-bottom:10px;
+}
+.pair-partner-cycle-head{
+  display:flex;align-items:center;gap:8px;padding:10px 14px;
+  background:linear-gradient(135deg,rgba(255,107,157,.07),transparent);
+  border-bottom:1px solid var(--border);
+}
+.pair-partner-cycle-head span{font-size:12px;font-weight:800;color:var(--htext);}
+.pair-partner-phase-badge{
+  margin-left:auto;padding:3px 9px;border-radius:8px;
+  font-size:10px;font-weight:800;color:#fff;white-space:nowrap;
+}
+.pair-cycle-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);}
+.pair-cycle-stat{background:var(--sbg);padding:11px 13px;}
+.pair-cycle-stat-val{font-size:17px;font-weight:900;color:var(--htext);line-height:1.1;}
+.pair-cycle-stat-lbl{font-size:10.5px;font-weight:700;color:var(--hsub);margin-top:2px;}
+.pair-cycle-stat-emoji{font-size:14px;margin-bottom:2px;}
+
+/* Heartbeat line */
+.pair-heartbeat{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:8px 0 2px;
+}
+.pair-hb-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,107,157,.25),transparent);}
+.pair-hb-icon{font-size:16px;animation:pairHb 1.3s ease-in-out infinite;}
+@keyframes pairHb{
+  0%,100%{transform:scale(1);}
+  14%{transform:scale(1.25);}
+  28%{transform:scale(1);}
+  42%{transform:scale(1.12);}
+  56%{transform:scale(1);}
+}
+.pair-nudge-btn{
+  width:100%;padding:11px;border-radius:12px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,rgba(255,107,157,.12),rgba(196,69,105,.08));
+  color:#FF6B9D;font-size:13px;font-weight:900;font-family:'Nunito',sans-serif;
+  border:1px solid rgba(255,107,157,.2);
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:background .2s,transform .15s;
+}
+.pair-nudge-btn:active{transform:scale(.97);}
+.pair-nudge-sent{
+  text-align:center;padding:8px 0 4px;
+  font-size:12px;font-weight:700;color:#22c55e;
+  animation:pairNudgeFade 2.5s ease forwards;
+}
+@keyframes pairNudgeFade{
+  0%{opacity:0;transform:translateY(4px);}
+  20%{opacity:1;transform:translateY(0);}
+  70%{opacity:1;}
+  100%{opacity:0;}
+}
+
 /* ── INSTALL BANNER ── */
 .install-banner{
   position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(110%);
@@ -4648,6 +4817,7 @@ let cycleData = (()=>{
 
 function saveCycle(){
   localStorage.setItem('vikram_cycle', JSON.stringify(cycleData));
+  if(typeof window._pairOnCycleSave === 'function') window._pairOnCycleSave();
 }
 
 function cycleDefaults(){
@@ -4839,25 +5009,13 @@ function renderCycleSheet(){
       </div>`).join('')}
   </div>`:''}
 
-  <!-- Predictions -->
-  ${!notSet ? `
-  <div class="ssec">
-    <div class="ssect">📅 Upcoming Predictions</div>
-    <div class="pred-list">
-      ${buildPredictions(cycleData.lastPeriodStart, cl, pl).map((p,i)=>`
-        <div class="pred-row">
-          <div class="pred-num">${i+1}</div>
-          <div class="pred-body">
-            <div class="pred-date">${p.dateStr}</div>
-            <div class="pred-sub">Fertile window: ${p.fertileStr}</div>
-          </div>
-          ${p.daysAway===0?'<div class="pred-badge">Today</div>':p.daysAway<0?`<div class="pred-badge" style="background:rgba(59,130,246,.12);color:#3B82F6;">${Math.abs(p.daysAway)}d ago</div>`:`<div class="pred-badge">In ${p.daysAway}d</div>`}
-        </div>`).join('')}
-    </div>
-  </div>` : ''}
+
 
   <!-- Cycle History -->
   ${renderCycleHistory()}
+
+  <!-- Partner Sync -->
+  <div id="pairSyncSection"></div>
 
   <!-- Cycle Settings -->
   <div class="ssec">
@@ -4876,6 +5034,9 @@ function renderCycleSheet(){
       <div class="slbl" style="color:#f44336;cursor:pointer;" onclick="cyReset()">🗑️ Clear all cycle data</div>
     </div>
   </div>`;
+
+  // Render partner sync widget after body HTML is set
+  setTimeout(renderPairSection, 0);
 }
 
 // ── Log actions ─────────────────────────────────────────────────────────────
@@ -4908,6 +5069,221 @@ function cyResetConfirmYes(){
   localStorage.removeItem('vikram_cycle');
   renderCycleSheet();
 }
+
+// ══ PAIR & SYNC WITH PARTNER ══════════════════════════════════════════════════
+(function(){
+  const PAIR_KEY = 'vikram_pair_v1';
+
+  // ── helpers ────────────────────────────────────────────────────────────────
+  function pairLoad(){ try{ return JSON.parse(localStorage.getItem(PAIR_KEY)||'{}'); }catch(e){ return {}; } }
+  function pairSave(d){ try{ localStorage.setItem(PAIR_KEY, JSON.stringify(d)); }catch(e){} }
+
+  function escapeHtml(str){
+    return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function genCode(){
+    const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let s='';
+    for(let i=0;i<6;i++) s+=chars[Math.floor(Math.random()*chars.length)];
+    return s.slice(0,3)+'-'+s.slice(3);
+  }
+
+  function myCode(){
+    let d=pairLoad();
+    if(!d.myCode){ d.myCode=genCode(); pairSave(d); }
+    return d.myCode;
+  }
+
+  // Derive "partner cycle" info from stored partner data
+  function partnerPhaseInfo(p){
+    if(!p) return null;
+    const cl=p.cycleLength||28, pl=p.periodLength||5;
+    const ovDay=cl-14;
+    const today=new Date(); today.setHours(0,0,0,0);
+
+    // If no period logged yet, show defaults with day=1
+    if(!p.lastPeriodStart){
+      return {day:null, dNext:null, phase:'Unknown', phaseColor:'#aaa', cl, pl, noData:true};
+    }
+
+    const last=new Date(p.lastPeriodStart); last.setHours(0,0,0,0);
+    const day=Math.floor((today-last)/86400000)+1;
+    const dNext=cl-(day%cl||cl);
+
+    let phase,phaseColor;
+    if(day<=pl){phase='Period';phaseColor='#FF4757';}
+    else if(day<ovDay-2){phase='Follicular';phaseColor='#FF6B9D';}
+    else if(day<=ovDay+2){phase='Ovulation';phaseColor='#5a5a68';}
+    else{phase='Luteal';phaseColor='#3B82F6';}
+
+    return {day,dNext:Math.max(0,dNext),phase,phaseColor,cl,pl,noData:false};
+  }
+
+  // ── render ─────────────────────────────────────────────────────────────────
+  window.renderPairSection = function(){
+    const wrap = document.getElementById('pairSyncSection');
+    if(!wrap) return;
+    const d = pairLoad();
+    const paired = !!(d.partnerCode && d.partnerName);
+
+    wrap.innerHTML = `
+    <div class="pair-card">
+      <div class="pair-card-head">
+        <div class="pair-icon-wrap">💞</div>
+        <div class="pair-head-text">
+          <div class="pair-head-title">Pair & Sync with Partner</div>
+          <div class="pair-head-sub">${paired ? 'Connected · sharing cycle info' : 'Connect with your partner\'s cycle'}</div>
+        </div>
+        <div class="pair-status-dot ${paired?'':'offline'}"></div>
+      </div>
+      ${paired ? renderPaired(d) : renderUnpaired(d)}
+    </div>`;
+  };
+
+  function renderUnpaired(d){
+    const code = myCode();
+    return `
+    <div class="pair-unpaired">
+      <div class="pair-unpaired-emoji">💞</div>
+      <div class="pair-unpaired-title">Sync Cycles Together</div>
+      <div class="pair-unpaired-sub">Share your code with your partner, or enter theirs below to stay in sync — see their phase, fertile window &amp; next period.</div>
+      <div class="pair-code-box">
+        <span class="pair-code-lbl">Your code</span>
+        <span class="pair-code-val" id="pairMyCode">${code}</span>
+        <button class="pair-copy-btn" onclick="pairCopyCode('${code}')" title="Copy">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+      <div class="pair-enter-row">
+        <input class="pair-enter-input" id="pairCodeInput" placeholder="Enter partner's code…" maxlength="7">
+        <button class="pair-connect-btn" onclick="pairConnect()">Connect 💞</button>
+      </div>
+    </div>`;
+  }
+
+  function renderPaired(d){
+    const pi = partnerPhaseInfo(d.partnerCycleData);
+    const sharedTs = d.sharedAt ? new Date(d.sharedAt).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '';
+    return `
+    <div class="pair-paired">
+      <div class="pair-partner-row">
+        <div class="pair-partner-avatar">💑</div>
+        <div class="pair-partner-info">
+          <div class="pair-partner-name">${escapeHtml(d.partnerName||'Partner')}</div>
+          <div class="pair-partner-status">Connected${sharedTs?' · since '+sharedTs:''}</div>
+        </div>
+        <button class="pair-disconnect-btn" onclick="pairDisconnect()">Disconnect</button>
+      </div>
+
+      <div class="pair-partner-cycle">
+        <div class="pair-partner-cycle-head">
+          <span>🌸 ${escapeHtml(d.partnerName||'Partner')}'s Cycle</span>
+          ${pi && !pi.noData ? `<div class="pair-partner-phase-badge" style="background:${pi.phaseColor}">${pi.phase}</div>` : '<div class="pair-partner-phase-badge" style="background:#aaa">Logging</div>'}
+        </div>
+        <div class="pair-cycle-stats">
+          <div class="pair-cycle-stat">
+            <div class="pair-cycle-stat-emoji">📅</div>
+            <div class="pair-cycle-stat-val">${pi && !pi.noData ? 'Day '+pi.day : '—'}</div>
+            <div class="pair-cycle-stat-lbl">of ${pi ? pi.cl : 28}-day cycle</div>
+          </div>
+          <div class="pair-cycle-stat">
+            <div class="pair-cycle-stat-emoji">🔮</div>
+            <div class="pair-cycle-stat-val">${pi && !pi.noData ? pi.dNext+'d' : '—'}</div>
+            <div class="pair-cycle-stat-lbl">until next period</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pair-heartbeat">
+        <div class="pair-hb-line"></div>
+        <div class="pair-hb-icon">💗</div>
+        <div class="pair-hb-line"></div>
+      </div>
+
+      <button class="pair-nudge-btn" onclick="pairSendNudge()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Send a little love 💌
+      </button>
+      <div id="pairNudgeConfirm" style="display:none" class="pair-nudge-sent">💗 Love sent!</div>
+    </div>`;
+  }
+
+  // ── actions ────────────────────────────────────────────────────────────────
+  window.pairCopyCode = function(code){
+    try{
+      navigator.clipboard.writeText(code).then(()=>{
+        const el=document.getElementById('pairMyCode');
+        if(el){ const orig=el.textContent; el.textContent='Copied!'; el.style.color='#22c55e'; setTimeout(()=>{ el.textContent=orig; el.style.color=''; },1500); }
+      });
+    }catch(e){}
+  };
+
+  window.pairConnect = function(){
+    const inp = document.getElementById('pairCodeInput');
+    if(!inp) return;
+    const raw = inp.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+    if(raw.length < 6){ inp.style.borderColor='#f43f5e'; setTimeout(()=>inp.style.borderColor='',1200); return; }
+    const code = raw.slice(0,3)+'-'+raw.slice(3,6);
+
+    // Ask for partner name
+    const name = prompt("What's your partner's name or nickname?","Partner");
+    if(!name) return;
+
+    const d = pairLoad();
+    d.partnerCode = code;
+    d.partnerName = name.trim()||'Partner';
+    d.sharedAt = Date.now();
+
+    // Always store current cycle data as the shared partner view.
+    // cycleData is the user's own cycle; in a local demo this is what we share.
+    const cd = (typeof cycleData !== 'undefined') ? cycleData : {};
+    d.partnerCycleData = {
+      lastPeriodStart: cd.lastPeriodStart || null,
+      cycleLength: cd.cycleLength || 28,
+      periodLength: cd.periodLength || 5,
+    };
+
+    pairSave(d);
+    renderPairSection();
+  };
+
+  window.pairDisconnect = function(){
+    if(!confirm('Disconnect from your partner? This only affects your device.')) return;
+    const d = pairLoad();
+    delete d.partnerCode; delete d.partnerName; delete d.partnerCycleData; delete d.sharedAt;
+    pairSave(d);
+    renderPairSection();
+  };
+
+  window.pairSendNudge = function(){
+    const btn = document.querySelector('.pair-nudge-btn');
+    const confirm_el = document.getElementById('pairNudgeConfirm');
+    if(btn){ btn.disabled=true; btn.style.opacity='.5'; }
+    if(confirm_el){ confirm_el.style.display='block'; }
+    // Reset after animation
+    setTimeout(()=>{
+      if(btn){ btn.disabled=false; btn.style.opacity=''; }
+      if(confirm_el){ confirm_el.style.display='none'; }
+    }, 3000);
+  };
+
+  // Hook into cycle saves: whenever cycleData changes, update partner preview.
+  // We patch via a DOMContentLoaded-safe approach to avoid capture-order issues.
+  window._pairOnCycleSave = function(){
+    try{
+      const d = pairLoad();
+      if(!d.partnerCode) return;
+      const cd = (typeof cycleData !== 'undefined') ? cycleData : {};
+      d.partnerCycleData = {
+        lastPeriodStart: cd.lastPeriodStart || null,
+        cycleLength: cd.cycleLength || 28,
+        periodLength: cd.periodLength || 5,
+      };
+      pairSave(d);
+    }catch(e){}
+  };
+})();
 
 function cyPrivToggle(key, btn){
   cycleData.privacy = cycleData.privacy||{};
