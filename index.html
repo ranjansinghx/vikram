@@ -1348,25 +1348,6 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .cyc-num-input{width:64px;padding:7px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--sbg);color:var(--dtext);font-size:14px;font-weight:800;text-align:center;font-family:'Nunito',sans-serif;outline:none;}
 .cyc-num-input:focus{border-color:#FF6B9D;}
 
-/* ── Symptom / Mood logger ── */
-.sym-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:8px;}
-.sym-chip{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:12px;border:1.5px solid var(--border);background:var(--sbg);cursor:pointer;transition:all .18s;font-size:10px;font-weight:800;color:var(--dsub);line-height:1.2;text-align:center;}
-.sym-chip span:first-child{font-size:20px;line-height:1;}
-.sym-chip.on{border-color:currentColor;background:var(--tgbg);}
-.sym-chip.on.red{color:#FF4757;border-color:#FF4757;background:rgba(255,71,87,.08);}
-.sym-chip.on.pink{color:#FF6B9D;border-color:#FF6B9D;background:rgba(255,107,157,.08);}
-.sym-chip.on.blue{color:#3B82F6;border-color:#3B82F6;background:rgba(59,130,246,.08);}
-.sym-chip.on.amber{color:#F59E0B;border-color:#F59E0B;background:rgba(245,158,11,.08);}
-.sym-chip.on.purple{color:#8B5CF6;border-color:#8B5CF6;background:rgba(139,92,246,.08);}
-.sym-chip.on.green{color:#10B981;border-color:#10B981;background:rgba(16,185,129,.08);}
-.sym-chip.on.slate{color:#5a5a68;border-color:#5a5a68;background:rgba(90,90,104,.08);}
-.flow-row{display:flex;gap:7px;margin-top:8px;}
-.flow-btn{flex:1;padding:8px 4px;border-radius:10px;border:1.5px solid var(--border);background:var(--sbg);font-size:11px;font-weight:800;color:var(--dsub);cursor:pointer;transition:all .18s;text-align:center;}
-.flow-btn.on{color:#FF4757;border-color:#FF4757;background:rgba(255,71,87,.08);}
-.sym-save-row{margin-top:10px;display:flex;gap:8px;align-items:center;}
-.sym-save-btn{flex:1;padding:9px;border-radius:10px;border:none;background:linear-gradient(135deg,#FF6B9D,#C44569);color:#fff;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;}
-.sym-date-lbl{font-size:11px;color:var(--dsub);font-weight:700;}
-
 /* ── Predictions ── */
 .pred-list{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
 .pred-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:var(--sbg);border:1px solid var(--border);}
@@ -1383,13 +1364,6 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .hist-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,#FF6B9D,#C44569);}
 .hist-len{font-size:12px;font-weight:900;color:var(--dtext);min-width:38px;text-align:right;}
 .hist-date{font-size:10.5px;color:var(--dsub);font-weight:600;min-width:70px;}
-
-/* ── Sym log entries ── */
-.sym-entry{display:flex;flex-direction:column;gap:3px;padding:8px 0;border-bottom:1px solid var(--border);}
-.sym-entry:last-child{border-bottom:none;}
-.sym-entry-date{font-size:11px;font-weight:700;color:var(--dsub);}
-.sym-entry-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;}
-.sym-tag{font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:6px;background:var(--tgbg);color:var(--dtext);}
 
 /* ── INSTALL BANNER ── */
 .install-banner{
@@ -4865,15 +4839,6 @@ function renderCycleSheet(){
       </div>`).join('')}
   </div>`:''}
 
-  <!-- Symptom & Mood Log -->
-  <div class="ssec">
-    <div class="ssect">🌸 Today's Symptoms & Mood</div>
-    ${renderSymptomLogger()}
-  </div>
-
-  <!-- Recent Symptom Logs -->
-  ${renderSymptomHistory()}
-
   <!-- Predictions -->
   ${!notSet ? `
   <div class="ssec">
@@ -4951,142 +4916,9 @@ function cyPrivToggle(key, btn){
   saveCycle();
 }
 
-// ── Symptom & Mood Logger ─────────────────────────────────────────────────────
-const SYMPTOMS = [
-  {key:'cramps',   emoji:'😣', label:'Cramps',    color:'red'},
-  {key:'headache', emoji:'🤕', label:'Headache',  color:'red'},
-  {key:'bloating', emoji:'🫧', label:'Bloating',  color:'amber'},
-  {key:'nausea',   emoji:'🤢', label:'Nausea',    color:'green'},
-  {key:'fatigue',  emoji:'😴', label:'Fatigue',   color:'slate'},
-  {key:'spotting', emoji:'🩸', label:'Spotting',  color:'red'},
-  {key:'backache', emoji:'🦴', label:'Backache',  color:'amber'},
-  {key:'acne',     emoji:'😤', label:'Acne',      color:'pink'},
-];
-const MOODS = [
-  {key:'happy',    emoji:'😊', label:'Happy',     color:'amber'},
-  {key:'sad',      emoji:'😢', label:'Sad',       color:'blue'},
-  {key:'anxious',  emoji:'😰', label:'Anxious',   color:'purple'},
-  {key:'irritable',emoji:'😠', label:'Irritable', color:'red'},
-  {key:'calm',     emoji:'😌', label:'Calm',      color:'green'},
-  {key:'energetic',emoji:'⚡', label:'Energetic', color:'amber'},
-  {key:'sensitive',emoji:'🥺', label:'Sensitive', color:'pink'},
-  {key:'focused',  emoji:'🎯', label:'Focused',   color:'blue'},
-];
-const FLOW_LEVELS = ['Light','Medium','Heavy','Very Heavy'];
-
-let _symState = { symptoms:[], moods:[], flow:'' };
-
-function renderSymptomLogger(){
-  const todayKey = todayDateKey();
-  const existing = (cycleData.symptomLogs||{})[todayKey] || {};
-  _symState = {
-    symptoms: existing.symptoms ? [...existing.symptoms] : [],
-    moods:    existing.moods    ? [...existing.moods]    : [],
-    flow:     existing.flow     || '',
-  };
-  const hasSaved = !!existing.symptoms;
-  return `
-    <div style="font-size:11px;font-weight:700;color:var(--dsub);margin-bottom:4px;">Physical Symptoms</div>
-    <div class="sym-grid" id="symGrid">
-      ${SYMPTOMS.map(s=>`
-        <div class="sym-chip${_symState.symptoms.includes(s.key)?' on '+s.color:''}"
-          id="sc_${s.key}" onclick="cySymToggle('${s.key}')">
-          <span>${s.emoji}</span>${s.label}
-        </div>`).join('')}
-    </div>
-    <div style="font-size:11px;font-weight:700;color:var(--dsub);margin:10px 0 4px;">Mood</div>
-    <div class="sym-grid" id="moodGrid">
-      ${MOODS.map(m=>`
-        <div class="sym-chip${_symState.moods.includes(m.key)?' on '+m.color:''}"
-          id="mc_${m.key}" onclick="cyMoodToggle('${m.key}')">
-          <span>${m.emoji}</span>${m.label}
-        </div>`).join('')}
-    </div>
-    <div style="font-size:11px;font-weight:700;color:var(--dsub);margin:10px 0 4px;">Flow</div>
-    <div class="flow-row" id="flowRow">
-      ${FLOW_LEVELS.map(f=>`
-        <button class="flow-btn${_symState.flow===f?' on':''}"
-          id="fl_${f}" onclick="cyFlowSet('${f}',this)">${f}</button>`).join('')}
-    </div>
-    <div class="sym-save-row">
-      <span class="sym-date-lbl">${new Date().toLocaleDateString('en-NP',{weekday:'short',month:'short',day:'numeric'})}</span>
-      <button class="sym-save-btn" onclick="cySaveSymptoms()">${hasSaved?'✅ Update Log':'💾 Save Log'}</button>
-    </div>`;
-}
-
 function todayDateKey(){
   const t = TODAY;
   return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
-}
-
-function cySymToggle(key){
-  const i = _symState.symptoms.indexOf(key);
-  if(i>=0) _symState.symptoms.splice(i,1); else _symState.symptoms.push(key);
-  const s = SYMPTOMS.find(x=>x.key===key);
-  const el = document.getElementById('sc_'+key);
-  if(el && s){
-    const on = _symState.symptoms.includes(key);
-    el.className = 'sym-chip'+(on?' on '+s.color:'');
-  }
-}
-
-function cyMoodToggle(key){
-  const i = _symState.moods.indexOf(key);
-  if(i>=0) _symState.moods.splice(i,1); else _symState.moods.push(key);
-  const m = MOODS.find(x=>x.key===key);
-  const el = document.getElementById('mc_'+key);
-  if(el && m){
-    const on = _symState.moods.includes(key);
-    el.className = 'sym-chip'+(on?' on '+m.color:'');
-  }
-}
-
-function cyFlowSet(val, btn){
-  _symState.flow = _symState.flow === val ? '' : val;
-  document.querySelectorAll('.flow-btn').forEach(b=>b.classList.remove('on'));
-  if(_symState.flow) btn.classList.add('on');
-}
-
-function cySaveSymptoms(){
-  if(!_symState.symptoms.length && !_symState.moods.length && !_symState.flow){
-    // Clear today's entry if nothing selected
-    if(cycleData.symptomLogs) delete cycleData.symptomLogs[todayDateKey()];
-  } else {
-    cycleData.symptomLogs = cycleData.symptomLogs || {};
-    cycleData.symptomLogs[todayDateKey()] = {
-      symptoms: [..._symState.symptoms],
-      moods:    [..._symState.moods],
-      flow:     _symState.flow,
-    };
-  }
-  saveCycle();
-  renderCycleSheet();
-}
-
-function renderSymptomHistory(){
-  const logs = cycleData.symptomLogs || {};
-  const keys = Object.keys(logs).sort().reverse().slice(0,7);
-  if(!keys.length) return '';
-  const symMap = Object.fromEntries(SYMPTOMS.map(s=>[s.key,s.emoji+' '+s.label]));
-  const moodMap = Object.fromEntries(MOODS.map(m=>[m.key,m.emoji+' '+m.label]));
-  return `
-  <div class="ssec" style="padding-top:0;">
-    <div class="ssect">📋 Recent Symptom Logs</div>
-    ${keys.map(k=>{
-      const e = logs[k];
-      const tags = [
-        ...(e.flow?['🩸 '+e.flow]:[]),
-        ...(e.symptoms||[]).map(s=>symMap[s]||s),
-        ...(e.moods||[]).map(m=>moodMap[m]||m),
-      ];
-      const d = new Date(k+'T00:00:00');
-      const dateStr = d.toLocaleDateString('en-NP',{weekday:'short',month:'short',day:'numeric'});
-      return `<div class="sym-entry">
-        <div class="sym-entry-date">${dateStr}</div>
-        <div class="sym-entry-tags">${tags.map(t=>`<span class="sym-tag">${t}</span>`).join('')}</div>
-      </div>`;
-    }).join('')}
-  </div>`;
 }
 
 // ── Predictions ──────────────────────────────────────────────────────────────
