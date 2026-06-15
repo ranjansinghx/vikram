@@ -3064,7 +3064,7 @@ const TPAKSHA=['Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','S
 const REF=new Date(Date.UTC(2026,3,14,12,0,0)); // Baishakh 1, 2083 = Apr 14, 2026
 let cfg={greg:true,hol:true,holn:true,fd:1};
 let lang='en',dark=true;
-let vY=2083,vM=2;
+let vY=2083,vM=1; // will be overwritten with today's BS month below
 
 // Nepal Standard Time = UTC+5:45.
 // Use the Intl API to read the *calendar date* in Kathmandu right now,
@@ -3089,6 +3089,8 @@ function getKathmanduToday(){
 }
 const TODAY=getKathmanduToday();
 const TODAYBS=adToBs(TODAY);
+// Initialise view to today's BS month/year (not a hardcoded value)
+vY=TODAYBS.y; vM=TODAYBS.m;
 let selectedDay={y:TODAYBS.y,m:TODAYBS.m,d:TODAYBS.d};
 
 // ══ DATE UTILS ══
