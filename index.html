@@ -757,7 +757,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
 
 /* ── CELLS ── */
-.cell{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 0 5px;min-height:58px;cursor:pointer;border-radius:17px;position:relative;transition:transform .15s,background .15s,box-shadow .15s;}
+.cell{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:5px 2px 4px;min-height:58px;cursor:pointer;border-radius:17px;position:relative;transition:transform .15s,background .15s,box-shadow .15s;overflow:hidden;}
 .cell.active{background:transparent;box-shadow:none;}
 .cell.active:hover{background:transparent;transform:translateY(-1px);}
 .cell.hol,.cell.wk{background:var(--cell-special-bg);box-shadow:0 2px 7px rgba(114,90,200,.03),inset 0 0 0 1px rgba(255,255,255,.76);}
@@ -766,15 +766,33 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .cell.sel:hover{transform:translateY(-1px);}
 .ndate{font-size:18px;font-weight:800;color:var(--cell-text);line-height:1.02;letter-spacing:.1px;}
 .gdate{font-size:10px;font-weight:700;color:var(--cell-muted);margin-top:1px;}
-.cell-dots{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;align-items:center;margin-top:2px;min-height:7px;max-width:50px;}
-.hdot{width:5px;height:5px;border-radius:50%;background:var(--dot-hol);opacity:0;transition:opacity .2s;}
-.evt-dot{width:5px;height:5px;border-radius:50%;background:var(--dot-evt);flex-shrink:0;box-shadow:0 0 10px rgba(122,183,255,.25);}
-.cell.hol .hdot{opacity:1;}
+.cell-dots{display:none;}
+.hdot{display:none;}
+.evt-dot{display:none;}
+.cell.hol .hdot{display:none;}
+/* Main calendar inline chips */
+.cell-chips{
+  display:flex;flex-direction:column;gap:2px;
+  width:100%;margin-top:2px;
+}
+.cell-chip{
+  font-size:8.5px;font-weight:800;
+  padding:2px 4px;border-radius:4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  line-height:1.3;width:100%;box-sizing:border-box;
+  letter-spacing:-.1px;
+}
+.cell-chip-hol{background:var(--chip-hol-bg);color:var(--chip-hol-text);}
+.cell-chip-evt{background:var(--chip-evt-bg);color:var(--chip-evt-text);}
+.cell-chip-cyc{background:rgba(255,107,157,.12);color:#c44569;}
+[data-theme=dark] .cell-chip-cyc{background:rgba(255,107,157,.18);color:#ff8fb3;}
+.cell-chip-more{background:var(--chip-bg);color:var(--dsub);font-size:8px;}
 .cell.hol .ndate{color:#d95b68;}
 .cell.wk .ndate{color:#c75e6f;}
 .cell.sel .ndate,.cell.sel .gdate,.cell.sel .tlbl{color:#fff;}
 .cell.sel .gdate{opacity:.78;}
 .cell.sel .evt-dot,.cell.sel .hdot{background:rgba(255,255,255,.92);box-shadow:none;opacity:1;}
+.cell.today .cell-chip,.cell.sel .cell-chip{background:rgba(255,255,255,.18);color:rgba(255,255,255,.92);}
 .cell.dim{cursor:default;background:transparent;box-shadow:none;}
 .cell.dim .ndate{color:var(--cell-muted);font-weight:700;}
 .cell.dim .gdate{color:var(--cell-muted);}
@@ -782,7 +800,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .cell.dim:hover{background:transparent !important;transform:none;}
 .cell.today{background:var(--today-grad);border-radius:17px;box-shadow:0 0 0 1px rgba(255,255,255,.14),inset 0 1px 0 rgba(255,255,255,.24);}
 .cell.today .ndate{color:var(--today-text);font-size:18px;font-weight:900;}
-.cell.today .tlbl{font-size:7px;font-weight:900;color:rgba(255,255,255,.94);letter-spacing:.8px;opacity:.95;text-transform:uppercase;margin-top:1px;}
+.cell.today .tlbl{display:none;}
 .cell.today .gdate{color:var(--today-muted);}
 .cell.today .hdot{background:rgba(255,255,255,.92);opacity:1;}
 .cell.today .evt-dot{background:rgba(255,255,255,.9);box-shadow:none;}
@@ -1227,6 +1245,174 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 }
 .up-remove:hover{ color:#FF4757; }
 .up-empty{text-align:center;padding:36px 0 24px;color:var(--sheet-muted);}
+
+/* ── Up view toggle (List / Month) ── */
+.up-view-toggle{
+  display:inline-flex;align-items:center;
+  background:var(--tgbg);border-radius:10px;padding:3px;gap:2px;
+}
+.up-vtbtn{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:4px 9px;border:none;border-radius:7px;
+  font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;
+  color:var(--dsub);background:transparent;cursor:pointer;
+  transition:background .18s,color .18s,box-shadow .18s;
+  white-space:nowrap;
+}
+.up-vtbtn.on{
+  background:var(--card);color:var(--htext);
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+[data-theme=dark] .up-vtbtn.on{
+  background:rgba(255,255,255,.1);
+  box-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+[data-theme=dark] .mv-chip-hol{
+  background:var(--chip-hol-bg);color:var(--chip-hol-text);
+}
+[data-theme=dark] .mv-chip-evt{
+  background:var(--chip-evt-bg);color:var(--chip-evt-text);
+}
+[data-theme=dark] .mv-chip-cyc{
+  background:rgba(156,163,175,.12);color:var(--dsub);
+}
+[data-theme=dark] .mv-chip-more{
+  background:rgba(255,255,255,.07);color:var(--dsub);
+}
+
+/* ── Month view grid ── */
+.mv-wrap{ padding:0 10px 10px; }
+.mv-cal{
+  background:var(--panel-bg);
+  border:1px solid var(--panel-border);
+  border-radius:18px;
+  overflow:hidden;
+  margin-bottom:12px;
+  box-shadow:var(--panel-shadow);
+}
+.mv-cal-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 10px 10px;gap:4px;
+}
+.mv-nav-btn{
+  width:32px;height:32px;border-radius:10px;border:none;
+  background:var(--tgbg);cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--dtext);transition:background .15s,transform .1s;
+}
+.mv-nav-btn:active{ background:var(--chip); transform:scale(.9); }
+.mv-cal-title{
+  font-size:14px;font-weight:900;color:var(--panel-text);letter-spacing:-.2px;
+}
+.mv-cal-sub{
+  font-size:11px;font-weight:700;color:var(--panel-muted);margin-top:1px;
+}
+.mv-dhdrs{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  padding:0 8px 4px;
+  border-bottom:1px solid var(--panel-border);
+}
+.mv-dhdr{
+  text-align:center;font-size:9.5px;font-weight:800;
+  color:var(--dsub);letter-spacing:.4px;text-transform:uppercase;
+  padding:0 0 6px;
+}
+.mv-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);
+  padding:6px 6px 10px;gap:3px 2px;
+}
+.mv-cell{
+  display:flex;flex-direction:column;align-items:flex-start;
+  padding:4px 3px 5px;cursor:pointer;border-radius:8px;
+  transition:background .12s;position:relative;
+  min-height:52px;overflow:hidden;
+}
+.mv-cell:active{ background:rgba(0,0,0,.06); }
+[data-theme=dark] .mv-cell:active{ background:rgba(255,255,255,.06); }
+.mv-cell.dim .mv-dnum{ color:var(--dsub);opacity:.4; }
+.mv-dnum{
+  font-size:12px;font-weight:900;color:var(--dtext);line-height:1;
+  margin-bottom:3px;padding-left:1px;
+}
+.mv-cell.today-cell .mv-dnum{
+  background:linear-gradient(135deg,#5a5a68,#2e2e38);
+  color:#fff;width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;margin-bottom:3px;padding-left:0;
+}
+.mv-cell.selected-cell .mv-dnum{
+  background:linear-gradient(135deg,#3b82f6,#2563eb);
+  color:#fff;width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;margin-bottom:3px;padding-left:0;
+}
+.mv-chips{
+  display:flex;flex-direction:column;gap:2px;width:100%;margin-top:2px;
+}
+.mv-chip{
+  font-size:9px;font-weight:800;
+  padding:2px 4px;border-radius:4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  line-height:1.3;width:100%;box-sizing:border-box;
+  letter-spacing:-.1px;
+}
+.mv-chip-hol{
+  background:var(--chip-hol-bg);color:var(--chip-hol-text);
+}
+.mv-chip-evt{
+  background:var(--chip-evt-bg);color:var(--chip-evt-text);
+}
+.mv-chip-cyc{
+  background:rgba(156,163,175,.15);color:var(--dsub);
+}
+.mv-chip-more{
+  background:var(--chip-bg);color:var(--dsub);
+  font-size:8.5px;
+}
+
+/* Month view event list */
+.mv-list-hdr{
+  font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;
+  color:var(--dsub);padding:4px 6px 8px;
+}
+.mv-day-group{ margin-bottom:6px; }
+.mv-day-label{
+  font-size:11px;font-weight:900;color:var(--dsub);
+  letter-spacing:.3px;text-transform:uppercase;
+  padding:6px 4px 4px;
+}
+.mv-empty{
+  text-align:center;padding:28px 0 18px;color:var(--sheet-muted);
+  font-size:13px;font-weight:600;
+}
+
+/* ── Notes/Tasks segment toggle ── */
+.nt-seg-toggle{
+  display:inline-flex;align-items:center;
+  background:var(--tgbg);border-radius:12px;padding:3px;gap:2px;
+}
+.nt-seg-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 14px;border:none;border-radius:9px;
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;
+  color:var(--dsub);background:transparent;cursor:pointer;
+  transition:background .18s,color .18s,box-shadow .18s;
+  white-space:nowrap;
+}
+.nt-seg-btn.on{
+  background:var(--card);color:var(--htext);
+  box-shadow:0 2px 10px rgba(0,0,0,.13);
+}
+[data-theme=dark] .nt-seg-btn.on{
+  background:rgba(255,255,255,.1);
+  box-shadow:0 2px 10px rgba(0,0,0,.35);
+}
+.nt-task-count{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:#ff4757;color:#fff;
+  font-size:10px;font-weight:900;line-height:1;
+  min-width:16px;height:16px;border-radius:8px;padding:0 4px;
+}
 .up-empty-ico{font-size:34px;display:block;margin-bottom:8px;}
 .up-empty-txt{font-size:13px;font-weight:600;line-height:1.5;}
 
@@ -1533,6 +1719,82 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   70%{opacity:1;}
   100%{opacity:0;}
 }
+
+/* ── MOMENT MESSAGES ── */
+.pair-moment-wrap{
+  margin-top:10px;
+  border:1px solid rgba(255,107,157,.18);
+  border-radius:16px;
+  overflow:hidden;
+  background:linear-gradient(135deg,rgba(255,107,157,.04),transparent);
+}
+.pair-moment-head{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 14px 8px;
+  border-bottom:1px solid rgba(255,107,157,.12);
+}
+.pair-moment-head-icon{font-size:15px;}
+.pair-moment-head-title{
+  font-size:12px;font-weight:900;color:var(--htext);flex:1;
+}
+.pair-moment-head-count{
+  font-size:10px;font-weight:800;color:var(--hsub);
+  background:var(--tgbg);padding:2px 7px;border-radius:8px;
+}
+.pair-moment-msgs{
+  max-height:200px;overflow-y:auto;padding:10px 12px;
+  display:flex;flex-direction:column;gap:7px;
+}
+.pair-moment-msgs:empty::after{
+  content:'No messages yet — say something sweet 💌';
+  font-size:11.5px;font-weight:600;color:var(--hsub);
+  text-align:center;padding:10px 0;display:block;
+}
+.pair-msg-bubble{
+  display:flex;flex-direction:column;
+  max-width:88%;
+}
+.pair-msg-bubble.mine{ align-self:flex-end;align-items:flex-end; }
+.pair-msg-bubble.theirs{ align-self:flex-start;align-items:flex-start; }
+.pair-msg-text{
+  padding:8px 12px;border-radius:14px;
+  font-size:13px;font-weight:700;line-height:1.45;
+  word-break:break-word;
+}
+.pair-msg-bubble.mine .pair-msg-text{
+  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  color:#fff;border-bottom-right-radius:4px;
+}
+.pair-msg-bubble.theirs .pair-msg-text{
+  background:var(--tgbg);color:var(--htext);
+  border-bottom-left-radius:4px;
+}
+.pair-msg-meta{
+  font-size:9.5px;font-weight:700;color:var(--hsub);
+  margin-top:3px;padding:0 2px;
+}
+.pair-moment-compose{
+  border-top:1px solid rgba(255,107,157,.12);
+  padding:10px 12px;
+  display:flex;align-items:flex-end;gap:8px;
+}
+.pair-moment-input{
+  flex:1;resize:none;border:none;outline:none;
+  background:var(--tgbg);border-radius:12px;
+  padding:9px 12px;min-height:38px;max-height:100px;
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;
+  color:var(--htext);line-height:1.4;overflow-y:auto;
+}
+.pair-moment-input::placeholder{color:var(--hsub);}
+.pair-moment-send{
+  width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 3px 10px rgba(255,107,157,.35);
+  transition:transform .15s,opacity .15s;
+}
+.pair-moment-send:active{transform:scale(.9);}
+.pair-moment-send svg{width:16px;height:16px;stroke:#fff;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;}
 
 /* ── INSTALL BANNER ── */
 .install-banner{
@@ -2428,9 +2690,6 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   <div class="hdr">
     <div class="hdrbar">
       <div class="head-title ne">Vikram Calendar</div>
-      <button class="gear-btn" id="darkModeBtn" onclick="toggleDark()" title="Toggle dark/light mode" style="margin-right:2px;">
-        <svg id="darkModeBtnIcon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
       <button class="gear-btn" id="settingsBtn" onclick="openSheet('settings')" title="Settings">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
@@ -2476,19 +2735,26 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
         <span class="up-hdr-label">Schedule</span>
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="up-hdr-title" id="upTitle">Upcoming</span>
-          <button class="up-tasks-pill" id="upTasksPill" onclick="openSheet('tasks')" title="Tasks">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><polyline points="8 12 11 15 16 9"/></svg>
-            <span>Tasks</span>
-            <span class="up-tasks-badge" id="upTasksBadge" style="display:none;">0</span>
-          </button>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
+        <!-- View toggle: Upcoming / Month -->
+        <div class="up-view-toggle" id="upViewToggle">
+          <button class="up-vtbtn on" id="upVtUpcoming" onclick="setUpView('upcoming')">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="3" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="3" cy="18" r="1" fill="currentColor" stroke="none"/></svg>
+            List
+          </button>
+          <button class="up-vtbtn" id="upVtMonth" onclick="switchTab('notes');ntSwitchSeg('tasks');">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="6" height="6" rx="1"/><rect x="3" y="13" width="6" height="6" rx="1"/><line x1="13" y1="8" x2="21" y2="8"/><line x1="13" y1="16" x2="21" y2="16"/></svg>
+            Tasks
+          </button>
+        </div>
         <span class="up-count" id="upCount">0</span>
       </div>
     </div>
 
     <div id="upList"></div>
+    <div id="upMonthView" style="display:none;"></div>
   </div>
 </div>
 
@@ -2551,61 +2817,6 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 </div>
 
 <!-- TASKS SHEET -->
-<div class="sheet cycle-fullscreen" id="tasksSheet" style="padding-bottom:0;">
-
-  <!-- TASKS LIST VIEW -->
-  <div class="tasks-view" id="tasksListView">
-    <div class="cycle-head" style="background:linear-gradient(135deg,rgba(20,184,166,.18),rgba(13,148,136,.10),rgba(6,95,70,.06));">
-      <button class="cycle-back" onclick="closeAll()" aria-label="Back">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <div class="cycle-title-wrap">
-        <div class="cycle-title">✅ Tasks</div>
-        <div class="cycle-sub" id="tasksCountSub">No tasks yet</div>
-      </div>
-      <button class="dc-fab-inline" onclick="taskCreate()" title="Add Task" style="width:38px;height:38px;border-radius:12px;">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      </button>
-    </div>
-    <div class="sscroll" style="padding:14px;">
-      <div id="tasksListItems"></div>
-      <div class="notes-empty" id="tasksEmpty">
-        <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><polyline points="8 12 11 15 16 9"/></svg>
-        <div class="notes-empty-title">No tasks yet</div>
-        <div class="notes-empty-sub">Tap the + button to add something you need to get done.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TASK EDITOR VIEW -->
-  <div class="tasks-view" id="tasksEditorView" style="display:none;">
-    <div class="cycle-head" style="background:linear-gradient(135deg,rgba(20,184,166,.18),rgba(13,148,136,.10),rgba(6,95,70,.06));">
-      <button class="cycle-back" onclick="taskBackToList()" aria-label="Back">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <div class="cycle-title-wrap">
-        <div class="cycle-title">Edit Task</div>
-        <div class="cycle-sub" id="taskSavedSub">&nbsp;</div>
-      </div>
-      <button class="notes-delete-btn" onclick="taskDeleteCurrent()" aria-label="Delete task">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-      </button>
-    </div>
-    <div class="sscroll" style="padding:16px;">
-      <input class="einput" id="taskTitleInput" placeholder="What needs to be done?" maxlength="120" style="font-size:15px;font-weight:800;">
-      <div class="task-field-label">Due date (optional)</div>
-      <input class="einput" type="date" id="taskDueInput">
-      <div class="task-field-label">Notes</div>
-      <textarea class="task-notes-input" id="taskNotesInput" placeholder="Add details…"></textarea>
-      <div class="task-done-toggle" id="taskDoneToggle" onclick="taskToggleDoneInEditor()">
-        <span class="task-check" id="taskDoneCheck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-        <span class="task-done-toggle-label">Mark as completed</span>
-      </div>
-    </div>
-  </div>
-
-</div>
-
 <!-- TASKS DELETE CONFIRM MODAL -->
 <div class="dc-modal-overlay" id="tasksConfirmOverlay" onclick="taskConfirmClose(event)">
   <div class="dc-modal" style="text-align:center">
@@ -2619,51 +2830,104 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 </div>
 
 
-<!-- NOTES VIEW -->
+<!-- NOTES + TASKS COMBINED VIEW -->
 <div class="daycounter-view" id="notesView">
 
-  <!-- NOTES LIST VIEW -->
-  <div class="notes-view" id="notesListView">
-    <div class="dc-page-header">
-      <div class="dc-page-header-text">
-        <span class="dc-page-label">Your Space</span>
-        <span class="dc-page-title">📝 Notes</span>
+  <!-- ── Segment header (shown in list views only) ── -->
+  <div id="ntSegmentHeader" class="dc-page-header" style="gap:10px;">
+    <div class="dc-page-header-text" style="flex:1;min-width:0;">
+      <span class="dc-page-label">Your Space</span>
+      <div class="nt-seg-toggle" style="margin-top:6px;">
+        <button class="nt-seg-btn on" id="ntSegNotes" onclick="ntSwitchSeg('notes')">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Notes
+        </button>
+        <button class="nt-seg-btn" id="ntSegTasks" onclick="ntSwitchSeg('tasks')">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><polyline points="8 12 11 15 16 9"/></svg>
+          Tasks
+          <span class="nt-task-count" id="ntTaskCount" style="display:none;"></span>
+        </button>
       </div>
-      <button class="dc-fab-inline" onclick="notesCreate()" title="Add Note">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      </button>
     </div>
-    <div id="notesListItems" style="padding:0 14px;"></div>
-    <div class="notes-empty" id="notesEmpty">
-      <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-      <div class="notes-empty-title">No notes yet</div>
-      <div class="notes-empty-sub">Tap the + button to write down your thoughts, lists, or reminders.</div>
+    <!-- FAB changes based on active segment -->
+    <button class="dc-fab-inline" id="ntAddBtn" onclick="ntAddCurrent()" title="Add">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+  </div>
+
+  <!-- ══ NOTES PANEL ══ -->
+  <div id="ntNotesPanel">
+    <!-- Notes list -->
+    <div class="notes-view" id="notesListView">
+      <div id="notesListItems" style="padding:0 14px;"></div>
+      <div class="notes-empty" id="notesEmpty">
+        <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <div class="notes-empty-title">No notes yet</div>
+        <div class="notes-empty-sub">Tap + to write down your thoughts, lists, or reminders.</div>
+      </div>
+    </div>
+    <!-- Note editor -->
+    <div class="notes-view" id="notesEditorView" style="display:none;">
+      <div class="dc-page-header">
+        <button class="notes-back-btn" onclick="notesBackToList()" aria-label="Back">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <input class="notes-title-input" id="notesTitleInput" placeholder="Untitled note" maxlength="80">
+        <button class="notes-delete-btn" onclick="notesDeleteCurrent()" aria-label="Delete note">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+      <div class="notes-toolbar">
+        <button class="notes-fmt-btn" data-cmd="bold" title="Bold" onclick="notesFmt('bold')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg></button>
+        <button class="notes-fmt-btn" data-cmd="italic" title="Italic" onclick="notesFmt('italic')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="notes-fmt-btn" data-cmd="underline" title="Underline" onclick="notesFmt('underline')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg></button>
+        <div class="notes-fmt-sep"></div>
+        <button class="notes-fmt-btn" data-cmd="insertUnorderedList" title="Bullet list" onclick="notesFmt('insertUnorderedList')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg></button>
+        <button class="notes-fmt-btn" data-cmd="insertOrderedList" title="Numbered list" onclick="notesFmt('insertOrderedList')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></button>
+        <div class="notes-fmt-sep"></div>
+        <button class="notes-fmt-btn notes-clear-btn" title="Clear note" onclick="notesClear()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+        <div class="notes-save-dot" id="notesSaveDot" title="Saved"></div>
+      </div>
+      <div class="notes-editor" id="notesEditor" contenteditable="true" spellcheck="true" data-placeholder="Start writing…"></div>
     </div>
   </div>
 
-  <!-- NOTE EDITOR VIEW -->
-  <div class="notes-view" id="notesEditorView" style="display:none;">
-    <div class="dc-page-header">
-      <button class="notes-back-btn" onclick="notesBackToList()" aria-label="Back">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <input class="notes-title-input" id="notesTitleInput" placeholder="Untitled note" maxlength="80">
-      <button class="notes-delete-btn" onclick="notesDeleteCurrent()" aria-label="Delete note">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-      </button>
+  <!-- ══ TASKS PANEL ══ -->
+  <div id="ntTasksPanel" style="display:none;">
+    <!-- Tasks list -->
+    <div class="tasks-view" id="tasksListView">
+      <div class="sscroll" style="padding:14px;">
+        <div id="tasksListItems"></div>
+        <div class="notes-empty" id="tasksEmpty">
+          <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><polyline points="8 12 11 15 16 9"/></svg>
+          <div class="notes-empty-title">No tasks yet</div>
+          <div class="notes-empty-sub">Tap + to add something you need to get done.</div>
+        </div>
+      </div>
     </div>
-    <div class="notes-toolbar">
-      <button class="notes-fmt-btn" data-cmd="bold" title="Bold" onclick="notesFmt('bold')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg></button>
-      <button class="notes-fmt-btn" data-cmd="italic" title="Italic" onclick="notesFmt('italic')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg></button>
-      <button class="notes-fmt-btn" data-cmd="underline" title="Underline" onclick="notesFmt('underline')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg></button>
-      <div class="notes-fmt-sep"></div>
-      <button class="notes-fmt-btn" data-cmd="insertUnorderedList" title="Bullet list" onclick="notesFmt('insertUnorderedList')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg></button>
-      <button class="notes-fmt-btn" data-cmd="insertOrderedList" title="Numbered list" onclick="notesFmt('insertOrderedList')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></button>
-      <div class="notes-fmt-sep"></div>
-      <button class="notes-fmt-btn notes-clear-btn" title="Clear note" onclick="notesClear()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
-      <div class="notes-save-dot" id="notesSaveDot" title="Saved"></div>
+    <!-- Task editor -->
+    <div class="tasks-view" id="tasksEditorView" style="display:none;">
+      <div class="dc-page-header">
+        <button class="notes-back-btn" onclick="taskBackToList()" aria-label="Back">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div style="flex:1;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;color:var(--dtext);">Edit Task</div>
+        <button class="notes-delete-btn" onclick="taskDeleteCurrent()" aria-label="Delete task">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+      <div class="sscroll" style="padding:16px;">
+        <input class="einput" id="taskTitleInput" placeholder="What needs to be done?" maxlength="120" style="font-size:15px;font-weight:800;">
+        <div class="task-field-label">Due date (optional)</div>
+        <input class="einput" type="date" id="taskDueInput">
+        <div class="task-field-label">Notes</div>
+        <textarea class="task-notes-input" id="taskNotesInput" placeholder="Add details…"></textarea>
+        <div class="task-done-toggle" id="taskDoneToggle" onclick="taskToggleDoneInEditor()">
+          <span class="task-check" id="taskDoneCheck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+          <span class="task-done-toggle-label">Mark as completed</span>
+        </div>
+      </div>
     </div>
-    <div class="notes-editor" id="notesEditor" contenteditable="true" spellcheck="true" data-placeholder="Start writing…"></div>
   </div>
 
 </div>
@@ -3187,17 +3451,45 @@ function render(){
         <div class="hdot"></div></div>`;
     } else {
       const nd=i-sDow+1,ad=new Date(sAD);ad.setDate(ad.getDate()+nd-1);
+      const adMid=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
       const isT=vY===TODAYBS.y&&vM===TODAYBS.m&&nd===TODAYBS.d;
       const isSel=selectedDay.y===vY&&selectedDay.m===vM&&selectedDay.d===nd;
       const h=getH(vY,vM,nd),isH=!!h;
       let cls='cell active';
       if(isT)cls+=' today';else if(isH)cls+=' hol';else if(wk)cls+=' wk';
-      const evtCount=userEvents.filter(ev=>eventMatchesDate(ev,vY,vM,nd)).length;
+
+      // Build inline chips: holiday, events, cycle
+      const chipArr=[];
+      if(h && cfg.holn){
+        const hn=lang==='ne'?h.np:h.en;
+        chipArr.push(`<div class="cell-chip cell-chip-hol">${hn}</div>`);
+      }
+      userEvents.forEach(ev=>{
+        if(eventMatchesDate(ev,vY,vM,nd))
+          chipArr.push(`<div class="cell-chip cell-chip-evt">${ev.title||'Event'}</div>`);
+      });
+      if(cycleData.lastPeriodStart){
+        const cl2=cycleData.cycleLength||28,pl2=cycleData.periodLength||5;
+        const ovD2=cl2-14,fertD2=Math.max(1,ovD2-5);
+        const baseD=new Date(cycleData.lastPeriodStart);baseD.setHours(0,0,0,0);
+        const dayN=Math.floor((adMid-baseD)/86400000);
+        const dayInCyc=((dayN%cl2)+cl2)%cl2+1;
+        if(dayInCyc===1)             chipArr.push('<div class="cell-chip cell-chip-cyc">🩸 Period</div>');
+        else if(dayInCyc===pl2)      chipArr.push('<div class="cell-chip cell-chip-cyc">Period end</div>');
+        else if(dayInCyc===fertD2)   chipArr.push('<div class="cell-chip cell-chip-cyc">🌸 Fertile</div>');
+        else if(dayInCyc===ovD2)     chipArr.push('<div class="cell-chip cell-chip-cyc">✨ Ovulation</div>');
+      }
+      const MAX=2;
+      const visChips=chipArr.slice(0,MAX);
+      const extraChips=chipArr.length-MAX;
+      let chipsHtml=visChips.join('');
+      if(extraChips>0) chipsHtml+=`<div class="cell-chip cell-chip-more">+${extraChips}</div>`;
+
       html+=`<div class="${cls}" onclick="openDay(${vY},${vM},${nd})">
         <div class="ndate ne">${ns(nd)}</div>
-        ${isT?`<div class="tlbl ne">${lang==='ne'?'आज':'TODAY'}</div>`:''}
         ${cfg.greg?`<div class="gdate">${ad.getDate()}</div>`:''}
-        <div class="cell-dots"><div class="hdot"></div>${evtCount?Array.from({length:evtCount},()=>'<div class="evt-dot"></div>').join(''):''}</div></div>`;
+        ${chipsHtml?`<div class="cell-chips">${chipsHtml}</div>`:''}
+      </div>`;
     }
   }
   document.getElementById('cgrid').innerHTML=html;
@@ -3230,20 +3522,42 @@ function getTotalWeekRows(){
   return Math.floor(tot / 7);
 }
 function getRowHeightPx(){
+  // Return height of the CURRENT week row (not just cells[0]) so variable-height rows work
   const grid = document.getElementById('cgrid');
-  if(!grid) return 67;
+  if(!grid) return 58;
   const cells = grid.querySelectorAll('.cell');
-  if(!cells.length) return 67;
+  if(!cells.length) return 58;
   const style = getComputedStyle(grid);
   const rowGap = parseFloat(style.rowGap) || 9;
-  return cells[0].offsetHeight + rowGap;
+  const currentRow = getCurrentWeekRow();
+  // The first cell of the current row
+  const idx = currentRow * 7;
+  const cell = cells[idx] || cells[0];
+  return cell.offsetHeight + rowGap;
 }
 function getCalHeights(){
-  const rowH = getRowHeightPx();
+  const grid = document.getElementById('cgrid');
   const totalRows = getTotalWeekRows();
+  const style = grid ? getComputedStyle(grid) : null;
+  const rowGap = style ? (parseFloat(style.rowGap) || 9) : 9;
+
+  // Collapsed: height of only the current week row
+  const rowH = getRowHeightPx();
   const collapsedH = rowH;
-  const expandedH  = rowH * totalRows + 4;
-  const collapsedOffset = -(getCurrentWeekRow() * rowH);
+
+  // Expanded: actual rendered grid height (accounts for variable row heights)
+  const expandedH = grid ? grid.scrollHeight + 2 : rowH * totalRows + 4;
+
+  // Collapsed offset: sum of heights of all rows ABOVE current row
+  const cells = grid ? grid.querySelectorAll('.cell') : [];
+  const currentRow = getCurrentWeekRow();
+  let collapsedOffset = 0;
+  for(let r = 0; r < currentRow; r++){
+    const cell = cells[r * 7];
+    if(cell) collapsedOffset += cell.offsetHeight + rowGap;
+  }
+  collapsedOffset = -collapsedOffset;
+
   return { rowH, totalRows, collapsedH, expandedH, collapsedOffset };
 }
 
@@ -3626,7 +3940,7 @@ function openDay(bY,bM,bD){
 // ══ SHEETS ══
 function closeAll(){
   document.getElementById('ov').classList.remove('open');
-  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet','tasksSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
   // Stop color matcher game if running
   if(window.cmState && window.cmState.running) window.cmStopGame && window.cmStopGame();
   // Pause pomodoro timer if running (don't stop — just pause so state persists)
@@ -3795,7 +4109,7 @@ function openSheet(t){
   }
   closeAll();
   document.getElementById('ov').classList.add('open');
-  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',echo:'echoSheet',colorMatcher:'colorMatcherSheet',pomodoro:'pomodoroSheet',converter:'converterSheet',tasks:'tasksSheet'};
+  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',echo:'echoSheet',colorMatcher:'colorMatcherSheet',pomodoro:'pomodoroSheet',converter:'converterSheet'};
   const sheet=document.getElementById(ids[t]);
   sheet?.classList.add('open');
   if(t==='echo'){
@@ -4074,7 +4388,250 @@ function upItemMeta(type, subtype){
   return {...m, iconCls:'cyc'};
 }
 
+/* ── Month View state ── */
+let upView = 'upcoming'; // 'upcoming' | 'month'
+let mvSelectedDay = null; // {y,m,d} BS — highlighted cell in month view
+
+function setUpView(v){
+  upView = v;
+  const btnL = document.getElementById('upVtUpcoming');
+  const btnM = document.getElementById('upVtMonth');
+  if(btnL) btnL.classList.toggle('on', v==='upcoming');
+  if(btnM) btnM.classList.toggle('on', v==='month');
+  renderUpcoming();
+}
+
+function mvNavMonth(dir){
+  mvSelectedDay = null;
+  vM += dir;
+  if(vM < 1){ vM = 12; vY--; }
+  if(vM > 12){ vM = 1; vY++; }
+  // Clamp to available BS data
+  if(!BS[vY]){ vM = dir > 0 ? 1 : 12; vY -= dir; }
+  render();           // update main calendar + month bar
+  renderUpcoming();   // re-render month view
+}
+
+function renderMonthView(){
+  const wrap = document.getElementById('upMonthView');
+  const list = document.getElementById('upList');
+  if(!wrap) return;
+  list.style.display = 'none';
+  wrap.style.display = 'block';
+
+  const y = vY, m = vM;
+  const dims = BS[y]?.[m-1] ?? 30;
+  const mArr = lang==='ne' ? MNE : MEN;
+  const monthName = mArr[m-1];
+  const todayBS = TODAYBS;
+
+  // Build event map: day → {hols:[], evts:[], cycs:[]}
+  const dayMap = {};
+  for(let d=1;d<=dims;d++) dayMap[d]={hols:[],evts:[],cycs:[]};
+
+  for(const key of Object.keys(HOL)){
+    const[ky,km,kd]=key.split('-').map(Number);
+    if(ky===y&&km===m&&dayMap[kd]) dayMap[kd].hols.push(HOL[key]);
+  }
+
+  const monthStart = bsToAd(y,m,1);
+  const monthEnd   = bsToAd(y,m,dims);
+  const mStartMid  = new Date(monthStart.getFullYear(),monthStart.getMonth(),monthStart.getDate());
+  const mEndMid    = new Date(monthEnd.getFullYear(),monthEnd.getMonth(),monthEnd.getDate());
+
+  userEvents.forEach(ev=>{
+    const{startMid,endMid}=getEventRangeMid(ev);
+    if(endMid<mStartMid||startMid>mEndMid) return;
+    for(let d=1;d<=dims;d++){
+      const adD=bsToAd(y,m,d);
+      const adMid=new Date(adD.getFullYear(),adD.getMonth(),adD.getDate());
+      if(adMid>=startMid&&adMid<=endMid) dayMap[d].evts.push(ev);
+    }
+  });
+
+  const cycItems = buildCycleUpcomingItems(mStartMid, mEndMid);
+  cycItems.forEach(ci=>{
+    if(ci.ky===y&&ci.km===m&&dayMap[ci.kd]) dayMap[ci.kd].cycs.push(ci);
+  });
+
+  // First weekday of month
+  const firstAD = bsToAd(y,m,1);
+  const startDow = firstAD.getDay();
+
+  // ── Mini calendar grid with inline chips ──
+  const WDLABELS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  let cal = `<div class="mv-cal">
+    <div class="mv-cal-hdr">
+      <button class="mv-nav-btn" onclick="mvNavMonth(-1)" aria-label="Previous month">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div style="text-align:center;flex:1;">
+        <div class="mv-cal-title">${monthName} ${ns(y)}</div>
+        <div class="mv-cal-sub">${lang==='ne'?'बि.सं.':''}</div>
+      </div>
+      <button class="mv-nav-btn" onclick="mvNavMonth(1)" aria-label="Next month">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <div class="mv-dhdrs">${WDLABELS.map(w=>`<div class="mv-dhdr">${w}</div>`).join('')}</div>
+    <div class="mv-grid">`;
+
+  // Empty leading cells
+  for(let i=0;i<startDow;i++) cal+=`<div class="mv-cell dim"><span class="mv-dnum"></span></div>`;
+
+  for(let d=1;d<=dims;d++){
+    const isToday = todayBS.y===y&&todayBS.m===m&&todayBS.d===d;
+    const isSel   = mvSelectedDay&&mvSelectedDay.y===y&&mvSelectedDay.m===m&&mvSelectedDay.d===d;
+    const dm = dayMap[d];
+    const hasEvents = dm.hols.length||dm.evts.length||dm.cycs.length;
+    const cls = ['mv-cell', isToday?'today-cell':'', isSel&&!isToday?'selected-cell':''].filter(Boolean).join(' ');
+
+    // Build inline chips (max 2 visible to avoid overflow)
+    let chips = '';
+    const allChips = [
+      ...dm.hols.map(h=>({type:'hol', label: lang==='ne'?h.np:h.en})),
+      ...dm.evts.map(e=>({type:'evt', label: e.title})),
+      ...dm.cycs.map(c=>({type:'cyc', label: c.title})),
+    ];
+    const MAX_CHIPS = 2;
+    const visible = allChips.slice(0, MAX_CHIPS);
+    const extra = allChips.length - MAX_CHIPS;
+    visible.forEach(ch=>{
+      const truncated = ch.label.length > 9 ? ch.label.slice(0,8)+'…' : ch.label;
+      chips += `<div class="mv-chip mv-chip-${ch.type}">${truncated}</div>`;
+    });
+    if(extra > 0) chips += `<div class="mv-chip mv-chip-more">+${extra}</div>`;
+
+    cal+=`<div class="${cls}" onclick="mvSelectDay(${y},${m},${d})">
+      <span class="mv-dnum">${ns(d)}</span>
+      ${chips ? `<div class="mv-chips">${chips}</div>` : ''}
+    </div>`;
+  }
+
+  cal+=`</div></div>`;
+
+  // ── Event list below ──
+  let listHtml = '';
+  if(mvSelectedDay&&mvSelectedDay.y===y&&mvSelectedDay.m===m){
+    const sd = mvSelectedDay.d;
+    const dm = dayMap[sd];
+    const adD = bsToAd(y,m,sd);
+    const WDEN_FULL=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const dayLabel = `${WDEN_FULL[adD.getDay()]}, ${mArr[m-1]} ${ns(sd)}`;
+    const allItems = [
+      ...dm.hols.map(h=>({type:'hol',h,d:sd})),
+      ...dm.evts.map(e=>({type:'evt',e,d:sd})),
+      ...dm.cycs.map(c=>({type:'cyc',c,d:sd})),
+    ];
+    listHtml += `<div class="mv-list-hdr">${dayLabel}</div>`;
+    if(allItems.length===0){
+      listHtml+=`<div class="mv-empty">No events on this day</div>`;
+    } else {
+      allItems.forEach(it=>{ listHtml+=mvItemHtml(it,y,m); });
+    }
+  } else {
+    let hasAny = false;
+    for(let d=1;d<=dims;d++){
+      const dm = dayMap[d];
+      if(!dm.hols.length&&!dm.evts.length&&!dm.cycs.length) continue;
+      hasAny=true;
+      const adD=bsToAd(y,m,d);
+      const WDEN_S=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      const isToday=todayBS.y===y&&todayBS.m===m&&todayBS.d===d;
+      listHtml+=`<div class="mv-day-group">
+        <div class="mv-day-label">${WDEN_S[adD.getDay()]} · ${ns(d)}${isToday?' <span style="color:#3b82f6">· Today</span>':''}</div>`;
+      [
+        ...dm.hols.map(h=>({type:'hol',h,d})),
+        ...dm.evts.map(e=>({type:'evt',e,d})),
+        ...dm.cycs.map(c=>({type:'cyc',c,d})),
+      ].forEach(it=>{ listHtml+=mvItemHtml(it,y,m); });
+      listHtml+=`</div>`;
+    }
+    if(!hasAny) listHtml=`<div class="mv-empty">No events this month</div>`;
+  }
+
+  wrap.innerHTML=`<div class="mv-wrap">${cal}${listHtml}</div>`;
+}
+
+
+function mvItemHtml(it,y,m){
+  if(it.type==='hol'){
+    const name=lang==='ne'?it.h.np:it.h.en;
+    return `<div class="up-item" onclick="openDay(${y},${m},${it.d})">
+      <div class="up-item-accent hol"></div>
+      <div class="up-item-inner">
+        <div class="up-icon hol">🎉</div>
+        <div class="up-info">
+          <div class="up-name ne">${name}</div>
+          <div class="up-tag-row"><span class="up-tag hol">Holiday</span></div>
+        </div>
+        <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div></div>`;
+  }
+  if(it.type==='evt'){
+    const ev=it.e;
+    const {startMid,endMid}=getEventRangeMid(ev);
+    const rangeStr=startMid.getTime()===endMid.getTime()
+      ?`${ADMEN[startMid.getMonth()]} ${startMid.getDate()}, ${startMid.getFullYear()}`
+      :`${ADMEN[startMid.getMonth()]} ${startMid.getDate()} – ${ADMEN[endMid.getMonth()]} ${endMid.getDate()}`;
+    const realIdx=userEvents.indexOf(ev);
+    return `<div class="up-item" onclick="openDay(${y},${m},${it.d})">
+      <div class="up-item-accent evt"></div>
+      <div class="up-item-inner">
+        <div class="up-icon evt">📌</div>
+        <div class="up-info">
+          <div class="up-name">${ev.title}</div>
+          <div class="up-tag-row"><span class="up-tag evt">Event</span><span class="up-sub-pill">${rangeStr}</span></div>
+          ${ev.note?`<div style="font-size:11px;color:var(--sheet-muted);font-weight:600;margin-top:3px;">${ev.note}</div>`:''}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+          <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <span class="up-remove" onclick="event.stopPropagation();removeEv(${realIdx})">✕</span>
+        </div>
+      </div></div>`;
+  }
+  if(it.type==='cyc'){
+    const ci=it.c;
+    return `<div class="up-item" onclick="openDay(${y},${m},${it.d})">
+      <div class="up-item-accent cyc"></div>
+      <div class="up-item-inner">
+        <div class="up-icon cyc">🌸</div>
+        <div class="up-info">
+          <div class="up-name">${ci.title}</div>
+          <div class="up-tag-row"><span class="up-tag cyc">Cycle</span>${ci.sub?`<span class="up-sub-pill">${ci.sub}</span>`:''}</div>
+        </div>
+        <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div></div>`;
+  }
+  return '';
+}
+
+function mvSelectDay(y,m,d){
+  if(mvSelectedDay&&mvSelectedDay.y===y&&mvSelectedDay.m===m&&mvSelectedDay.d===d){
+    mvSelectedDay=null; // deselect on second tap
+  } else {
+    mvSelectedDay={y,m,d};
+  }
+  renderMonthView();
+}
+
 function renderUpcoming(){
+  // Route to month view if toggled
+  const mvWrap = document.getElementById('upMonthView');
+  const listEl = document.getElementById('upList');
+  if(upView === 'month'){
+    if(listEl) listEl.style.display = 'none';
+    if(mvWrap) mvWrap.style.display = 'block';
+    document.getElementById('upTitle').textContent = lang==='ne' ? 'मासिक दृश्य' : 'Month View';
+    const countEl = document.getElementById('upCount');
+    if(countEl) countEl.textContent = '';
+    renderMonthView();
+    return;
+  }
+  // Upcoming list mode — ensure containers correct
+  if(listEl) listEl.style.display = '';
+  if(mvWrap) mvWrap.style.display = 'none';
+
   const todayMid=new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
   const windowEnd=new Date(todayMid.getTime()+WINDOW*86400000);
   const mArr=lang==='ne'?MNE:MEN;
@@ -4605,6 +5162,7 @@ function mpNextYear(){
 }
 function pickMonth(m){
   vY=mpYear; vM=m;
+  mvSelectedDay=null; // reset month-view day selection
   closeAll();
   render();
   renderUpcoming();
@@ -5038,7 +5596,11 @@ function renderCycleSheet(){
   </div>`;
 
   // Render partner sync widget after body HTML is set
-  setTimeout(renderPairSection, 0);
+  setTimeout(function(){
+    renderPairSection();
+    // Load moments after paired view is rendered
+    if(typeof window.renderPairMoments === 'function') window.renderPairMoments();
+  }, 0);
 }
 
 // ── Log actions ─────────────────────────────────────────────────────────────
@@ -5141,6 +5703,11 @@ function cyResetConfirmYes(){
       </div>
       ${paired ? renderPaired(d) : renderUnpaired(d)}
     </div>`;
+
+    // Populate moment messages after DOM is ready
+    if(paired && typeof window.renderPairMoments === 'function'){
+      setTimeout(window.renderPairMoments, 0);
+    }
   };
 
   function renderUnpaired(d){
@@ -5203,11 +5770,26 @@ function cyResetConfirmYes(){
         <div class="pair-hb-line"></div>
       </div>
 
-      <button class="pair-nudge-btn" onclick="pairSendNudge()">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        Send a little love 💌
-      </button>
-      <div id="pairNudgeConfirm" style="display:none" class="pair-nudge-sent">💗 Love sent!</div>
+      <!-- Moment Messages -->
+      <div class="pair-moment-wrap">
+        <div class="pair-moment-head">
+          <span class="pair-moment-head-icon">💌</span>
+          <span class="pair-moment-head-title">Moments</span>
+          <span class="pair-moment-head-count" id="pairMomentCount"></span>
+        </div>
+        <div class="pair-moment-msgs" id="pairMomentMsgs"></div>
+        <div class="pair-moment-compose">
+          <textarea class="pair-moment-input" id="pairMomentInput"
+            placeholder="Type a moment for ${escapeHtml(d.partnerName||'your partner')}…"
+            rows="1"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();pairSendMoment();}"
+            oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';"
+          ></textarea>
+          <button class="pair-moment-send" onclick="pairSendMoment()" title="Send">
+            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </div>
     </div>`;
   }
 
@@ -5258,16 +5840,90 @@ function cyResetConfirmYes(){
     renderPairSection();
   };
 
-  window.pairSendNudge = function(){
-    const btn = document.querySelector('.pair-nudge-btn');
-    const confirm_el = document.getElementById('pairNudgeConfirm');
-    if(btn){ btn.disabled=true; btn.style.opacity='.5'; }
-    if(confirm_el){ confirm_el.style.display='block'; }
-    // Reset after animation
+  const MSG_KEY = 'vikram_pair_moments';
+
+  function msgsLoad(){ try{ return JSON.parse(localStorage.getItem(MSG_KEY)||'[]'); }catch(e){ return []; } }
+  function msgsSave(arr){ try{ localStorage.setItem(MSG_KEY, JSON.stringify(arr)); }catch(e){} }
+
+  function renderMoments(){
+    const container = document.getElementById('pairMomentMsgs');
+    const countEl   = document.getElementById('pairMomentCount');
+    if(!container) return;
+    const msgs = msgsLoad();
+    const d    = pairLoad();
+    const myName = 'You';
+    const theirName = escapeHtml(d.partnerName||'Partner');
+
+    countEl && (countEl.textContent = msgs.length ? msgs.length + ' msg' + (msgs.length===1?'':'s') : '');
+
+    if(!msgs.length){
+      container.innerHTML = '';
+      return;
+    }
+
+    container.innerHTML = msgs.map(m => {
+      const mine = m.from === 'me';
+      const time = new Date(m.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) +
+                   ', ' + new Date(m.ts).toLocaleDateString([], {month:'short', day:'numeric'});
+      return `<div class="pair-msg-bubble ${mine ? 'mine' : 'theirs'}">
+        <div class="pair-msg-text">${escapeHtml(m.text)}</div>
+        <div class="pair-msg-meta">${mine ? myName : theirName} · ${time}</div>
+      </div>`;
+    }).join('');
+
+    // Scroll to bottom
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // Expose so renderPairSection can call it after DOM is set
+  window.renderPairMoments = renderMoments;
+
+  window.pairSendMoment = function(){
+    const inp = document.getElementById('pairMomentInput');
+    if(!inp) return;
+    const text = inp.value.trim();
+    if(!text) return;
+
+    const msgs = msgsLoad();
+    msgs.push({ from:'me', text, ts: Date.now() });
+    msgsSave(msgs);
+
+    inp.value = '';
+    inp.style.height = 'auto';
+
+    renderMoments();
+
+    // Visual feedback
+    const sendBtn = document.querySelector('.pair-moment-send');
+    if(sendBtn){
+      sendBtn.style.transform = 'scale(.85)';
+      sendBtn.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
+      setTimeout(()=>{
+        sendBtn.style.transform = '';
+        sendBtn.style.background = '';
+      }, 600);
+    }
+  };
+
+  // Simulate partner reply (for demo — fires once after first message)
+  let _demoReplied = false;
+  window._pairSimulateReply = function(partnerName){
+    if(_demoReplied) return;
+    _demoReplied = true;
+    const replies = [
+      'Thinking of you 💗',
+      'Love you! 🌸',
+      'Thanks for letting me know ✨',
+      'You okay? 💌',
+      'Sending you all my love 💕',
+    ];
+    const text = replies[Math.floor(Math.random()*replies.length)];
     setTimeout(()=>{
-      if(btn){ btn.disabled=false; btn.style.opacity=''; }
-      if(confirm_el){ confirm_el.style.display='none'; }
-    }, 3000);
+      const msgs = msgsLoad();
+      msgs.push({ from:'partner', text, ts: Date.now() });
+      msgsSave(msgs);
+      renderMoments();
+    }, 1800);
   };
 
   // Hook into cycle saves: whenever cycleData changes, update partner preview.
@@ -6984,6 +7640,7 @@ window.pomoSkip  = pomoSkip;
 function switchTab(tab) {
   try { window.localStorage.setItem('vikram_active_tab', tab); } catch(e) {}
   if(tab !== 'notes' && typeof window.notesFlushSave === 'function') window.notesFlushSave();
+  if(tab !== 'notes' && typeof window.tasksFlushSave === 'function') window.tasksFlushSave();
   ['home','cycle','counter','notes'].forEach(t => {
     const id = 'bnav' + t.charAt(0).toUpperCase() + t.slice(1);
     const btn = document.getElementById(id);
@@ -7050,7 +7707,8 @@ function switchTab(tab) {
     if(mainFab)     mainFab.style.display     = 'none';
     closeAll();
     if(notesView)   notesView.classList.add('active');
-    if(typeof notesLoad === 'function') notesLoad();
+    // Restore whichever segment was active; default to notes
+    ntSwitchSeg(window._ntActiveSeg || 'notes', true);
   }
 }
 
@@ -7658,6 +8316,8 @@ function switchTab(tab) {
     const lv = getListView(), ev = getEditorView();
     if(lv) lv.style.display = 'flex';
     if(ev) ev.style.display = 'none';
+    const sh = document.getElementById('ntSegmentHeader');
+    if(sh) sh.style.display = '';
     renderList();
   }
 
@@ -7665,6 +8325,9 @@ function switchTab(tab) {
     const lv = getListView(), ev = getEditorView();
     if(lv) lv.style.display = 'none';
     if(ev) ev.style.display = 'flex';
+    // Hide shared segment header inside note editor
+    const sh = document.getElementById('ntSegmentHeader');
+    if(sh) sh.style.display = 'none';
   }
 
   // Entry point when Notes tab opens
@@ -7885,6 +8548,8 @@ function switchTab(tab) {
   function updateBadgeAndSub(list){
     list = list || loadAll();
     const incomplete = list.filter(function(t){ return !t.done; }).length;
+    // Seg button count badge
+    if(typeof window.ntUpdateTaskCount === 'function') window.ntUpdateTaskCount(incomplete);
     const badge = document.getElementById('upTasksBadge');
     if(badge){
       if(incomplete > 0){
@@ -7957,6 +8622,8 @@ function switchTab(tab) {
     const lv = getListView(), ev = getEditorView();
     if(lv) lv.style.display = 'flex';
     if(ev) ev.style.display = 'none';
+    const sh = document.getElementById('ntSegmentHeader');
+    if(sh) sh.style.display = '';
     renderList();
   }
 
@@ -7964,6 +8631,9 @@ function switchTab(tab) {
     const lv = getListView(), ev = getEditorView();
     if(lv) lv.style.display = 'none';
     if(ev) ev.style.display = 'flex';
+    // Hide shared segment header inside task editor
+    const sh = document.getElementById('ntSegmentHeader');
+    if(sh) sh.style.display = 'none';
   }
 
   function setDoneUI(done){
@@ -8108,6 +8778,48 @@ function switchTab(tab) {
     initTasks();
   }
 })();
+/* ── Notes/Tasks segment controller ── */
+window._ntActiveSeg = 'notes';
+
+window.ntSwitchSeg = function(seg, skipLoad){
+  window._ntActiveSeg = seg;
+
+  const notesPanel = document.getElementById('ntNotesPanel');
+  const tasksPanel = document.getElementById('ntTasksPanel');
+  const btnN = document.getElementById('ntSegNotes');
+  const btnT = document.getElementById('ntSegTasks');
+
+  if(notesPanel) notesPanel.style.display = seg === 'notes' ? '' : 'none';
+  if(tasksPanel) tasksPanel.style.display = seg === 'tasks' ? '' : 'none';
+  if(btnN){ btnN.classList.toggle('on', seg === 'notes'); }
+  if(btnT){ btnT.classList.toggle('on', seg === 'tasks'); }
+
+  // Always reload list views so empty states render correctly
+  if(seg === 'notes' && typeof window.notesLoad === 'function') window.notesLoad();
+  if(seg === 'tasks' && typeof window.tasksShowList === 'function') window.tasksShowList();
+};
+
+window.ntAddCurrent = function(){
+  if(window._ntActiveSeg === 'tasks'){
+    if(typeof window.taskCreate === 'function') window.taskCreate();
+  } else {
+    if(typeof window.notesCreate === 'function') window.notesCreate();
+  }
+};
+
+/* Keep the task count badge on the Tasks seg button updated */
+window.ntUpdateTaskCount = function(pending){
+  const el = document.getElementById('ntTaskCount');
+  if(!el) return;
+  if(pending > 0){
+    el.textContent = pending;
+    el.style.display = '';
+  } else {
+    el.style.display = 'none';
+  }
+};
+
+
 </script>
 
 <!-- ── PWA Install Prompt ── -->
