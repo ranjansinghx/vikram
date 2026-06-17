@@ -819,6 +819,9 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .dmodal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);width:340px;max-width:88vw;background:var(--sheet-bg);border-radius:24px;z-index:60;opacity:0;pointer-events:none;transition:opacity .26s cubic-bezier(.22,.85,.25,1),transform .26s cubic-bezier(.22,.85,.25,1);box-shadow:0 24px 60px rgba(0,0,0,.45);max-height:80vh;overflow:hidden;border:1px solid var(--sheet-border);}
 .dmodal.open{opacity:1;pointer-events:all;transform:translate(-50%,-50%) scale(1);}
 .mcls{position:absolute;top:14px;right:14px;width:32px;height:32px;border:none;background:rgba(255,255,255,.08);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2;}
+.mhdr-btns{position:absolute;top:14px;right:14px;display:flex;align-items:center;gap:8px;z-index:2;}
+.mhdr-btns button{width:32px;height:32px;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.08);}
+.mhdr-btns button svg{width:13px;height:13px;stroke:var(--nav-text);stroke-width:2.5;fill:none;}
 .mcls svg{width:13px;height:13px;stroke:var(--nav-text);stroke-width:2.8;fill:none;}
 .mhdr{padding:28px 22px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,.06);background:linear-gradient(180deg,rgba(26,26,26,.18),transparent);}
 .mbignum{font-size:58px;font-weight:900;background:linear-gradient(135deg,#888,#000);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
@@ -2614,9 +2617,350 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   50%{opacity:1;transform:scale(1.4);}
 }
 
+
+/* ══ EVENT COLOR CATEGORIES ══ */
+.ev-cat-btn {
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 13px;border-radius:20px;
+  border:1.5px solid rgba(0,0,0,.09);
+  background:transparent;color:var(--dtext);
+  font-size:12.5px;font-weight:700;
+  cursor:pointer;font-family:'Nunito',sans-serif;
+  transition:all .18s;
+}
+[data-theme=dark] .ev-cat-btn { border-color:rgba(255,255,255,.10); color:var(--dtext); }
+.ev-cat-dot {
+  width:9px;height:9px;border-radius:50%;
+  background:var(--cat);flex-shrink:0;
+}
+.ev-cat-btn.on {
+  background:var(--cat);color:#fff;border-color:transparent;
+  box-shadow:0 3px 12px color-mix(in srgb,var(--cat) 40%,transparent);
+}
+
+/* ══ OFFLINE INDICATOR ══ */
+#offlineToast {
+  position:fixed;top:16px;left:50%;
+  transform:translateX(-50%) translateY(-80px);
+  z-index:9999;
+  display:flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:999px;
+  background:#1a1a2e;color:#fff;
+  font-size:12.5px;font-weight:800;
+  font-family:'Nunito',sans-serif;
+  box-shadow:0 8px 24px rgba(0,0,0,.35);
+  transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap;pointer-events:none;
+}
+#offlineToast.show { transform:translateX(-50%) translateY(0); }
+#offlineToast.online { background:linear-gradient(135deg,#16a34a,#15803d); }
+#offlineToast svg { width:14px;height:14px;stroke:#fff;stroke-width:2.5;fill:none;flex-shrink:0; }
+
+/* ══ SEARCH MODAL ══ */
+.search-modal {
+  position:fixed;inset:0;z-index:200;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding-top:60px;
+  opacity:0;pointer-events:none;
+  transition:opacity .2s;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(6px);
+}
+.search-modal.open { opacity:1;pointer-events:all; }
+.search-box {
+  width:340px;max-width:92vw;
+  background:var(--sheet-bg);border-radius:20px;
+  padding:18px 18px 14px;
+  box-shadow:0 24px 60px rgba(0,0,0,.45);
+  border:1px solid var(--sheet-border);
+  transform:scale(.92) translateY(-8px);
+  transition:transform .26s cubic-bezier(.22,.85,.25,1);
+}
+.search-modal.open .search-box { transform:scale(1) translateY(0); }
+.search-input-wrap {
+  display:flex;align-items:center;gap:10px;
+  background:var(--tgbg);border-radius:13px;
+  padding:10px 14px;margin-bottom:14px;
+  border:1.5px solid var(--border);
+  transition:border-color .2s;
+}
+.search-input-wrap:focus-within { border-color:var(--tgon); }
+.search-input-wrap svg { width:16px;height:16px;stroke:var(--dsub);stroke-width:2.3;fill:none;flex-shrink:0; }
+#searchInput {
+  flex:1;background:none;border:none;outline:none;
+  font-size:15px;font-weight:700;font-family:'Nunito',sans-serif;
+  color:var(--dtext);
+}
+#searchInput::placeholder { color:var(--dsub); }
+.search-results { max-height:300px;overflow-y:auto;-webkit-overflow-scrolling:touch; }
+.search-result-item {
+  display:flex;align-items:center;gap:10px;
+  padding:10px 4px;border-bottom:1px solid var(--sbdr);
+  cursor:pointer;border-radius:8px;
+  transition:background .15s;
+}
+.search-result-item:last-child { border-bottom:none; }
+.search-result-item:hover { background:var(--tgbg); }
+.search-result-item:active { background:var(--cell-hover); }
+.sri-dot {
+  width:10px;height:10px;border-radius:50%;
+  background:var(--tgon);flex-shrink:0;
+}
+.sri-dot.hol { background:#d95b68; }
+.sri-dot.evt { background:#3B82F6; }
+.sri-main { flex:1;min-width:0; }
+.sri-name { font-size:13.5px;font-weight:700;color:var(--dtext);white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.sri-sub  { font-size:11px;font-weight:600;color:var(--dsub);margin-top:1px; }
+.sri-badge { font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:8px;white-space:nowrap;flex-shrink:0; }
+.sri-badge.hol { background:#fff0f0;color:#c0392b; }
+[data-theme=dark] .sri-badge.hol { background:#3a1a1a;color:#ff8080; }
+.sri-badge.evt { background:rgba(59,130,246,.12);color:#3B82F6; }
+.search-empty { text-align:center;padding:24px 0;color:var(--dsub);font-size:13px;font-weight:700; }
+.search-btn {
+  width:32px;height:32px;border-radius:50%;border:none;
+  background:rgba(255,255,255,.13);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .18s,transform .18s;flex-shrink:0;
+}
+.search-btn:hover { background:rgba(255,255,255,.22); transform:scale(1.07); }
+.search-btn svg { width:16px;height:16px;stroke:#fff;stroke-width:2.3;fill:none; }
+
+/* ══ SHARE CARD (Day Share) ══ */
+.share-modal {
+  position:fixed;inset:0;z-index:250;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 18px;
+  background:rgba(0,0,0,.65);backdrop-filter:blur(8px);
+  opacity:0;pointer-events:none;transition:opacity .22s;
+}
+.share-modal.open { opacity:1;pointer-events:all; }
+.share-card {
+  width:100%;max-width:340px;
+  background:var(--sc-bg);
+  border-radius:24px;padding:28px 26px 22px;
+  box-shadow:var(--sc-shadow);
+  border:1px solid var(--sc-border);
+  transform:scale(.88) translateY(20px);
+  transition:transform .3s cubic-bezier(.22,.85,.25,1);
+  position:relative;overflow:hidden;
+}
+:root {
+  --sc-bg:#ffffff;
+  --sc-shadow:0 32px 80px rgba(0,0,0,.12);
+  --sc-border:rgba(0,0,0,.08);
+  --sc-date:#111111;
+  --sc-month:rgba(0,0,0,.5);
+  --sc-bs-bg:rgba(0,0,0,.05);
+  --sc-bs-text:rgba(0,0,0,.75);
+  --sc-tithi:rgba(0,0,0,.4);
+  --sc-event-bg:rgba(0,0,0,.04);
+  --sc-event-text:rgba(0,0,0,.75);
+  --sc-logo:rgba(0,0,0,.25);
+  --sc-url:rgba(0,0,0,.3);
+  --sc-glow:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(120,80,255,.10),transparent 65%);
+}
+[data-theme="dark"] {
+  --sc-bg:linear-gradient(135deg,#1a1a2e 0%,#0f0f1a 100%);
+  --sc-shadow:0 32px 80px rgba(0,0,0,.6);
+  --sc-border:rgba(255,255,255,.09);
+  --sc-date:#ffffff;
+  --sc-month:rgba(255,255,255,.6);
+  --sc-bs-bg:rgba(255,255,255,.07);
+  --sc-bs-text:rgba(255,255,255,.85);
+  --sc-tithi:rgba(255,255,255,.5);
+  --sc-event-bg:rgba(255,255,255,.06);
+  --sc-event-text:rgba(255,255,255,.85);
+  --sc-logo:rgba(255,255,255,.3);
+  --sc-url:rgba(255,255,255,.3);
+  --sc-glow:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(120,80,255,.25),transparent 65%);
+}
+.share-modal.open .share-card { transform:scale(1) translateY(0); }
+.share-card-glow {
+  position:absolute;inset:0;pointer-events:none;
+  background:var(--sc-glow);
+}
+.share-card-date-big {
+  font-size:64px;font-weight:900;color:var(--sc-date);line-height:1;
+  letter-spacing:-2px;
+}
+.share-card-month {
+  font-size:17px;font-weight:800;color:var(--sc-month);
+  margin-top:2px;letter-spacing:-.2px;
+}
+.share-card-bs {
+  margin-top:14px;padding:10px 14px;
+  background:var(--sc-bs-bg);border-radius:12px;
+  font-size:13px;font-weight:700;color:var(--sc-bs-text);
+  display:flex;align-items:center;gap:8px;
+}
+.share-card-bs::before {
+  content:'🇳🇵';font-size:15px;
+}
+.share-card-tithi {
+  margin-top:8px;
+  font-size:12px;font-weight:700;color:var(--sc-tithi);
+}
+.share-card-events {
+  margin-top:12px;display:flex;flex-direction:column;gap:6px;
+}
+.share-card-event {
+  display:flex;align-items:center;gap:8px;padding:8px 12px;
+  background:var(--sc-event-bg);border-radius:10px;
+  font-size:12.5px;font-weight:700;color:var(--sc-event-text);
+}
+.share-card-footer {
+  margin-top:18px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.share-card-logo {
+  font-size:12px;font-weight:900;color:var(--sc-logo);
+  letter-spacing:.5px;
+}
+.share-actions {
+  display:flex;gap:8px;margin-top:16px;
+}
+.share-action-btn {
+  flex:1;padding:11px;border-radius:13px;border:none;
+  font-size:13px;font-weight:800;cursor:pointer;
+  font-family:'Nunito',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:opacity .18s,transform .15s;
+}
+.share-action-btn:active { transform:scale(.96); }
+.share-action-btn.primary {
+  background:linear-gradient(135deg,#6c63ff,#4a3fcf);color:#fff;
+}
+.share-action-btn.secondary {
+  background:rgba(255,255,255,.09);color:var(--sheet-text);
+}
+
+/* ══ NOTES RICH TEXT TOOLBAR ══ */
+.notes-toolbar {
+  display:flex;align-items:center;gap:2px;
+  padding:6px 8px;
+  border-bottom:1px solid var(--sbdr);
+  background:var(--sbg);
+  flex-shrink:0;
+  overflow-x:auto;scrollbar-width:none;
+}
+.notes-toolbar::-webkit-scrollbar { display:none; }
+.ntb-btn {
+  width:32px;height:32px;
+  display:flex;align-items:center;justify-content:center;
+  border:none;border-radius:8px;background:transparent;
+  color:var(--dtext);cursor:pointer;font-family:'Nunito',sans-serif;
+  font-size:14px;font-weight:800;
+  transition:background .15s,color .15s;
+  flex-shrink:0;
+}
+.ntb-btn:hover { background:var(--tgbg);color:var(--htext); }
+.ntb-btn.active { background:var(--tgon);color:#fff; }
+.ntb-btn svg { width:15px;height:15px;stroke:currentColor;stroke-width:2.3;fill:none; }
+.ntb-sep { width:1px;height:20px;background:var(--sbdr);flex-shrink:0;margin:0 2px; }
+
+/* ══ GLOBAL TOAST NOTIFICATION ══ */
+#vikramGlobalToast {
+  position:fixed;bottom:80px;left:50%;
+  transform:translateX(-50%) translateY(30px);
+  z-index:9000;opacity:0;
+  background:rgba(20,20,30,.95);color:#fff;
+  padding:10px 20px;border-radius:50px;
+  font-size:12.5px;font-weight:800;
+  font-family:'Nunito',sans-serif;
+  pointer-events:none;
+  transition:opacity .3s,transform .3s cubic-bezier(.34,1.56,.64,1);
+  white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.3);
+}
+#vikramGlobalToast.show {
+  opacity:1;transform:translateX(-50%) translateY(0);
+}
+
+/* ══ JUMP-TO-DATE INPUT ══ */
+.search-jump-wrap {
+  border-top:1px solid var(--sbdr);
+  padding-top:12px;margin-top:6px;
+}
+.search-jump-label {
+  font-size:10.5px;font-weight:800;
+  color:var(--dsub);letter-spacing:.5px;
+  text-transform:uppercase;margin-bottom:8px;
+}
+.search-jump-row {
+  display:flex;gap:6px;
+}
+.search-jump-row select, .search-jump-row input {
+  flex:1;padding:8px 10px;
+  border-radius:10px;
+  border:1.5px solid var(--border);
+  background:var(--tgbg);color:var(--dtext);
+  font-size:13px;font-weight:700;
+  font-family:'Nunito',sans-serif;outline:none;
+  transition:border-color .2s;
+}
+.search-jump-row select:focus, .search-jump-row input:focus {
+  border-color:var(--tgon);
+}
+.search-jump-btn {
+  padding:8px 14px;border-radius:10px;border:none;
+  background:var(--tgon);color:#fff;
+  font-size:13px;font-weight:800;
+  font-family:'Nunito',sans-serif;cursor:pointer;
+  white-space:nowrap;transition:opacity .18s;
+  flex-shrink:0;
+}
+.search-jump-btn:hover { opacity:.87; }
 </style>
 </head>
 <body>
+
+<!-- OFFLINE INDICATOR TOAST -->
+<div id="offlineToast">
+  <svg viewBox="0 0 24 24"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.56 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+  <span id="offlineToastMsg">You're offline</span>
+</div>
+
+<!-- GLOBAL TOAST -->
+<div id="vikramGlobalToast"></div>
+
+<!-- SEARCH MODAL -->
+<div class="search-modal" id="searchModal" onclick="closeSearch(event)">
+  <div class="search-box" role="dialog" aria-modal="true" aria-label="Search">
+    <div class="search-input-wrap">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="searchInput" placeholder="Search holidays & events…" oninput="searchRun()" autofocus autocomplete="off">
+    </div>
+    <div id="searchResults" class="search-results"></div>
+    <div class="search-jump-wrap">
+      <div class="search-jump-label">Jump to BS Date</div>
+      <div class="search-jump-row">
+        <input type="number" id="jumpY" placeholder="Year" min="2055" max="2086" style="max-width:76px;">
+        <select id="jumpM">
+          <option value="1">Baishakh</option><option value="2">Jestha</option>
+          <option value="3">Ashadh</option><option value="4">Shrawan</option>
+          <option value="5">Bhadra</option><option value="6">Ashwin</option>
+          <option value="7">Kartik</option><option value="8">Mangsir</option>
+          <option value="9">Poush</option><option value="10">Magh</option>
+          <option value="11">Falgun</option><option value="12">Chaitra</option>
+        </select>
+        <button class="search-jump-btn" onclick="jumpToDate()">Go</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SHARE CARD MODAL -->
+<div class="share-modal" id="shareModal" onclick="closeShareModal(event)">
+  <div class="share-card" id="shareCardInner">
+    <div class="share-card-glow"></div>
+    <div id="shareCardContent"></div>
+    <div class="share-actions">
+      <button class="share-action-btn primary" onclick="doShare()">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Share Day
+      </button>
+      <button class="share-action-btn secondary" onclick="closeShareModal()">Close</button>
+    </div>
+  </div>
+</div>
 
 <!-- SPLASH SCREEN -->
 <div id="vikramSplash" role="status" aria-label="Loading Vikram">
@@ -2693,7 +3037,10 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
       <button class="gear-btn" id="settingsBtn" onclick="openSheet('settings')" title="Settings">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
-      <button class="today-pill" onclick="goToday()" title="Today">
+      <button class="search-btn" onclick="openSearch()" title="Search & Jump to date" aria-label="Search events and jump to date">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button class="today-pill" onclick="goToday()" title="Today" aria-label="Go to today">
         <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>
         Today
       </button>
@@ -2881,6 +3228,10 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
         <button class="notes-fmt-btn" data-cmd="bold" title="Bold" onclick="notesFmt('bold')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg></button>
         <button class="notes-fmt-btn" data-cmd="italic" title="Italic" onclick="notesFmt('italic')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg></button>
         <button class="notes-fmt-btn" data-cmd="underline" title="Underline" onclick="notesFmt('underline')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg></button>
+        <button class="notes-fmt-btn" data-cmd="strikeThrough" title="Strikethrough" onclick="notesFmt('strikeThrough')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><path d="M16 6c0-1.6-1.8-3-4-3s-4 1.4-4 3c0 2 2 2.5 4 3"/><path d="M8 18c0 1.6 1.8 3 4 3s4-1.4 4-3"/></svg></button>
+        <button class="notes-fmt-btn" data-cmd="hiliteColor" title="Highlight" onclick="notesHighlight()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7L4 19h3l1.5-4h7L17 19h3L15 7z"/><line x1="6.5" y1="13" x2="17.5" y2="13"/></svg></button>
+        <div class="notes-fmt-sep"></div>
+        <button class="notes-fmt-btn" data-cmd="formatBlock-h3" title="Heading" onclick="notesFmt('formatBlock','H3')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="M4 5v14"/><path d="M12 5v14"/></svg></button>
         <div class="notes-fmt-sep"></div>
         <button class="notes-fmt-btn" data-cmd="insertUnorderedList" title="Bullet list" onclick="notesFmt('insertUnorderedList')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg></button>
         <button class="notes-fmt-btn" data-cmd="insertOrderedList" title="Numbered list" onclick="notesFmt('insertOrderedList')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></button>
@@ -2949,7 +3300,14 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
 <!-- DAY MODAL -->
 <div class="dmodal" id="dmodal">
-  <button class="mcls" onclick="closeAll()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <div class="mhdr-btns">
+    <button onclick="openShareModal()" title="Share this day">
+      <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+    </button>
+    <button onclick="closeAll()">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
   <div class="mhdr">
     <div class="mbignum ne" id="mnum"></div>
     <div class="mmonth ne" id="mmon"></div>
@@ -3164,6 +3522,21 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
       <select class="einput" id="evEndBsD" style="flex:0.8;"></select>
     </div>
     <div style="font-size:11px;color:var(--dsub);font-weight:700;margin:-4px 0 8px;">Leave the end date the same for a one-day event.</div>
+    <div class="ssect" style="margin-top:4px;">Category</div>
+    <div id="evColorPicker" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+      <button type="button" class="ev-cat-btn on" data-color="personal" onclick="selectEvCat(this)" style="--cat:#3B82F6;">
+        <span class="ev-cat-dot"></span>Personal
+      </button>
+      <button type="button" class="ev-cat-btn" data-color="work" onclick="selectEvCat(this)" style="--cat:#10b981;">
+        <span class="ev-cat-dot"></span>Work
+      </button>
+      <button type="button" class="ev-cat-btn" data-color="cultural" onclick="selectEvCat(this)" style="--cat:#f59e0b;">
+        <span class="ev-cat-dot"></span>Cultural
+      </button>
+      <button type="button" class="ev-cat-btn" data-color="health" onclick="selectEvCat(this)" style="--cat:#ef4444;">
+        <span class="ev-cat-dot"></span>Health
+      </button>
+    </div>
     <div class="ssect" style="margin-top:4px;">Note (optional)</div>
     <input class="einput" id="evN" placeholder="Add a note…" type="text">
     <button class="ebtn" onclick="saveEv()">Save Event</button>
@@ -3466,7 +3839,7 @@ function render(){
       }
       userEvents.forEach(ev=>{
         if(eventMatchesDate(ev,vY,vM,nd))
-          chipArr.push(`<div class="cell-chip cell-chip-evt">${ev.title||'Event'}</div>`);
+          chipArr.push(`<div class="cell-chip cell-chip-evt" style="color:${({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'})[ev.color]||'#3B82F6'};">${ev.title||'Event'}</div>`);
       });
       if(cycleData.lastPeriodStart){
         const cl2=cycleData.cycleLength||28,pl2=cycleData.periodLength||5;
@@ -3920,15 +4293,19 @@ function openDay(bY,bM,bD){
   const evtList=document.getElementById('mEvtList');
   if(dayEvts.length>0){
     evtRow.style.display='flex';
-    evtList.innerHTML=dayEvts.map(ev=>`
-      <div style="padding:10px 11px;background:rgba(255,255,255,.04);border-radius:14px;border-left:3px solid #7ab7ff;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);">
+    evtList.innerHTML=dayEvts.map(ev=>{
+      const c=({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'})[ev.color]||'#3B82F6';
+      return `
+      <div style="padding:10px 11px;background:rgba(255,255,255,.04);border-radius:14px;border-left:3px solid ${c};box-shadow:inset 0 1px 0 rgba(255,255,255,.04);">
         <div style="display:flex;gap:8px;align-items:center;">
-          <span style="font-size:8px;background:#7ab7ff;width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0;box-shadow:0 0 12px rgba(122,183,255,.28);"></span>
+          <span style="background:${c};width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0;box-shadow:0 0 12px ${c}55;"></span>
           <span style="font-size:13px;font-weight:800;color:#f0ecff;">${ev.title}</span>
+          <span style="margin-left:auto;font-size:9px;font-weight:800;text-transform:uppercase;color:${c};background:${c}22;padding:2px 7px;border-radius:6px;">${ev.color||'personal'}</span>
         </div>
         <div style="font-size:11px;color:#a39bbc;margin-top:4px;padding-left:15px;">${formatEventRange(ev)}</div>
         ${ev.note?`<div style="font-size:11px;color:#a39bbc;margin-top:4px;padding-left:15px;">${ev.note}</div>`:''}
-      </div>`).join('');
+      </div>`;
+    }).join('');
   } else {
     evtRow.style.display='none';
   }
@@ -4268,7 +4645,8 @@ async function saveEv(){
     endBsY,endBsM,endBsD,
     adMs:startMid.getTime(),
     endAdMs:endMid.getTime(),
-    note
+    note,
+    color: (document.querySelector('#evColorPicker .ev-cat-btn.on') || {}).dataset?.color || 'personal'
   });
   userEvents.sort((a,b)=>a.adMs-b.adMs);
   saveEvents();
@@ -4575,13 +4953,14 @@ function mvItemHtml(it,y,m){
       ?`${ADMEN[startMid.getMonth()]} ${startMid.getDate()}, ${startMid.getFullYear()}`
       :`${ADMEN[startMid.getMonth()]} ${startMid.getDate()} – ${ADMEN[endMid.getMonth()]} ${endMid.getDate()}`;
     const realIdx=userEvents.indexOf(ev);
+    const c=({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'})[ev.color]||'#3B82F6';
     return `<div class="up-item" onclick="openDay(${y},${m},${it.d})">
-      <div class="up-item-accent evt"></div>
+      <div class="up-item-accent evt" style="background:${c};"></div>
       <div class="up-item-inner">
-        <div class="up-icon evt">📌</div>
+        <div class="up-icon evt" style="color:${c};">📌</div>
         <div class="up-info">
           <div class="up-name">${ev.title}</div>
-          <div class="up-tag-row"><span class="up-tag evt">Event</span><span class="up-sub-pill">${rangeStr}</span></div>
+          <div class="up-tag-row"><span class="up-tag evt" style="background:${c}22;color:${c};">${ev.color||'personal'}</span><span class="up-sub-pill">${rangeStr}</span></div>
           ${ev.note?`<div style="font-size:11px;color:var(--sheet-muted);font-weight:600;margin-top:3px;">${ev.note}</div>`:''}
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
@@ -4772,15 +5151,15 @@ function renderUpcoming(){
       } else {
         const ev=it.ev;
         const realIdx=userEvents.indexOf(ev);
-        const meta=upItemMeta('evt');
+        const c=({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'})[ev.color]||'#3B82F6';
         html+=`<div class="up-item" onclick="openDay(${it.ky},${it.km},${it.kd})">
-          <div class="up-item-accent evt"></div>
+          <div class="up-item-accent evt" style="background:${c};"></div>
           <div class="up-item-inner">
-            <div class="up-icon evt">${meta.icon}</div>
+            <div class="up-icon evt" style="color:${c};">📌</div>
             <div class="up-info">
               <div class="up-name">${ev.title}</div>
               <div class="up-tag-row">
-                <span class="up-tag evt">${meta.tagLabel}</span>
+                <span class="up-tag evt" style="background:${c}22;color:${c};">${ev.color||'personal'}</span>
                 <span class="up-sub-pill">${it.rangeText||''}</span>
               </div>
               ${ev.note?`<div style="font-size:11px;color:var(--sheet-muted);font-weight:600;margin-top:3px;">${ev.note}</div>`:''}
@@ -5023,7 +5402,7 @@ function renderSelectedDay(){
     <div class="sel-list">
       ${!h&&!dayEvts.length?`<div class="sel-empty">No holidays or events on this day</div>`:''}
       ${h&&cfg.holn?`<div class="sel-row"><span class="sel-dot" style="background:var(--hol);"></span><span>${lang==='ne'?'सार्वजनिक बिदा':'Public holiday'} · ${lang==='ne'?h.np:h.en}</span></div>`:''}
-      ${dayEvts.map(ev=>`<div class="sel-row"><span class="sel-dot"></span><span>${ev.title}${ev.note?' · '+ev.note:''}<span style="display:block;font-size:11px;color:var(--sel-muted);font-weight:700;margin-top:2px;">${formatEventRange(ev)}</span></span></div>`).join('')}
+      ${dayEvts.map(ev=>{const c=({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'})[ev.color]||'#3B82F6';return`<div class="sel-row"><span class="sel-dot" style="background:${c};"></span><span>${ev.title}${ev.note?' · '+ev.note:''}<span style="display:block;font-size:11px;color:var(--sel-muted);font-weight:700;margin-top:2px;">${formatEventRange(ev)}</span></span></div>`;}).join('')}
     </div>
   </div>`;
 }
@@ -8943,6 +9322,309 @@ window.ntUpdateTaskCount = function(pending){
     setTimeout(openCard, 1800);
   }
 })();
+</script>
+
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  VIKRAM ENHANCED FEATURES v2
+// ══════════════════════════════════════════════════════════════
+
+// ── 1. EVENT COLOR CATEGORIES ──────────────────────────────────
+window.selectEvCat = function(btn) {
+  document.querySelectorAll('#evColorPicker .ev-cat-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+};
+
+// Map category names to dot colors on calendar
+const EV_CAT_COLORS = {
+  personal: '#3B82F6',
+  work:     '#10b981',
+  cultural: '#f59e0b',
+  health:   '#ef4444'
+};
+
+// Override event dot rendering to use per-event colors
+// Patch renderSelectedDay to show color dots
+const _origRenderSelectedDay = window.renderSelectedDay;
+window.renderSelectedDay = function() {
+  if (typeof _origRenderSelectedDay === 'function') _origRenderSelectedDay();
+  // Color the event items in day modal
+  const list = document.getElementById('mEvtList');
+  if (!list) return;
+  list.querySelectorAll('[data-evcolor]').forEach(el => {
+    const color = el.getAttribute('data-evcolor');
+    const dot = el.querySelector('.mev-dot');
+    if (dot && color) dot.style.background = color;
+  });
+};
+
+// ── 2. OFFLINE INDICATOR ───────────────────────────────────────
+(function() {
+  function showOffline(online) {
+    const toast = document.getElementById('offlineToast');
+    const msg   = document.getElementById('offlineToastMsg');
+    if (!toast) return;
+    toast.className = online ? 'online' : '';
+    msg.textContent = online ? "You're back online" : "You're offline";
+    toast.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => toast.classList.remove('show'), online ? 2500 : 4000);
+  }
+  window.addEventListener('online',  () => showOffline(true));
+  window.addEventListener('offline', () => showOffline(false));
+  // Show once immediately if already offline
+  if (!navigator.onLine) {
+    setTimeout(() => showOffline(false), 1200);
+  }
+})();
+
+// ── 3. GLOBAL TOAST HELPER ────────────────────────────────────
+window.vikramToast = function(msg, duration) {
+  const el = document.getElementById('vikramGlobalToast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), duration || 2200);
+};
+
+// ── 4. HAPTIC FEEDBACK ────────────────────────────────────────
+window.haptic = function(type) {
+  if (!navigator.vibrate) return;
+  if (type === 'light')    navigator.vibrate(8);
+  else if (type === 'medium') navigator.vibrate(18);
+  else if (type === 'success') navigator.vibrate([10, 40, 10]);
+  else navigator.vibrate(12);
+};
+
+// Patch calendar cells — add haptic on open
+document.addEventListener('click', function(e) {
+  const cell = e.target.closest('.cell:not(.empty):not(.other)');
+  if (cell) haptic('light');
+  const btn = e.target.closest('.nbtn, .today-pill, .mode-pill');
+  if (btn) haptic('light');
+  const saveBtn = e.target.closest('.ebtn');
+  if (saveBtn) haptic('success');
+});
+
+// ── 5. SEARCH & JUMP TO DATE ──────────────────────────────────
+window.openSearch = function() {
+  haptic('light');
+  const modal = document.getElementById('searchModal');
+  if (!modal) return;
+  modal.classList.add('open');
+  // Pre-fill jump year with current BS year
+  const jumpY = document.getElementById('jumpY');
+  if (jumpY && typeof vY !== 'undefined') jumpY.value = vY;
+  const jumpM = document.getElementById('jumpM');
+  if (jumpM && typeof vM !== 'undefined') jumpM.value = vM;
+  setTimeout(() => {
+    const inp = document.getElementById('searchInput');
+    if (inp) { inp.value = ''; inp.focus(); searchRun(); }
+  }, 200);
+};
+
+window.closeSearch = function(e) {
+  if (e && e.target !== document.getElementById('searchModal')) return;
+  document.getElementById('searchModal')?.classList.remove('open');
+};
+
+window.searchRun = function() {
+  const q = (document.getElementById('searchInput')?.value || '').toLowerCase().trim();
+  const results = document.getElementById('searchResults');
+  if (!results) return;
+
+  if (!q) { results.innerHTML = ''; return; }
+
+  const hits = [];
+
+  // Search holidays
+  if (typeof HOL !== 'undefined') {
+    for (const [key, val] of Object.entries(HOL)) {
+      const name = (val.en || '') + ' ' + (val.np || '');
+      if (name.toLowerCase().includes(q)) {
+        const [ky, km, kd] = key.split('-').map(Number);
+        hits.push({ type: 'hol', name: val.en, sub: `${(typeof MEN !== 'undefined' ? MEN[km-1] : '')} ${kd}, ${ky} BS`, ky, km, kd });
+        if (hits.length >= 8) break;
+      }
+    }
+  }
+
+  // Search user events
+  if (typeof userEvents !== 'undefined') {
+    userEvents.forEach(ev => {
+      if (ev.title.toLowerCase().includes(q) || (ev.note || '').toLowerCase().includes(q)) {
+        hits.push({ type: 'evt', name: ev.title, sub: `${(typeof MEN !== 'undefined' ? MEN[ev.bsM-1] : '')} ${ev.bsD}, ${ev.bsY} BS`, ky: ev.bsY, km: ev.bsM, kd: ev.bsD });
+      }
+    });
+  }
+
+  if (hits.length === 0) {
+    results.innerHTML = '<div class="search-empty">No results found</div>';
+    return;
+  }
+
+  results.innerHTML = hits.map(h => `
+    <div class="search-result-item" onclick="searchGoTo(${h.ky},${h.km},${h.kd})">
+      <div class="sri-dot ${h.type}"></div>
+      <div class="sri-main">
+        <div class="sri-name">${h.name}</div>
+        <div class="sri-sub">${h.sub}</div>
+      </div>
+      <span class="sri-badge ${h.type}">${h.type === 'hol' ? 'HOLIDAY' : 'EVENT'}</span>
+    </div>
+  `).join('');
+};
+
+window.searchGoTo = function(y, m, d) {
+  document.getElementById('searchModal')?.classList.remove('open');
+  if (typeof vY !== 'undefined') { vY = y; vM = m; }
+  if (typeof render === 'function') render();
+  if (typeof openDay === 'function') setTimeout(() => openDay(y, m, d), 120);
+  haptic('medium');
+};
+
+window.jumpToDate = function() {
+  const y = parseInt(document.getElementById('jumpY')?.value);
+  const m = parseInt(document.getElementById('jumpM')?.value);
+  if (!y || !m || y < 2055 || y > 2086) {
+    vikramToast('⚠️ Enter a valid BS year (2055–2086)');
+    return;
+  }
+  document.getElementById('searchModal')?.classList.remove('open');
+  if (typeof vY !== 'undefined') { vY = y; vM = m; }
+  if (typeof render === 'function') render();
+  haptic('medium');
+  vikramToast(`📅 Jumped to ${(typeof MEN !== 'undefined' ? MEN[m-1] : '')} ${y}`);
+};
+
+// Close search on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.getElementById('searchModal')?.classList.remove('open');
+    document.getElementById('shareModal')?.classList.remove('open');
+  }
+});
+
+// ── 6. SHARE DAY CARD ─────────────────────────────────────────
+window.openShareModal = function() {
+  haptic('light');
+  const modal = document.getElementById('shareModal');
+  const content = document.getElementById('shareCardContent');
+  if (!modal || !content) return;
+
+  // Gather day info from current selectedDay
+  const sd = typeof selectedDay !== 'undefined' ? selectedDay : (typeof TODAYBS !== 'undefined' ? TODAYBS : null);
+  if (!sd) return;
+
+  const bsY = sd.y, bsM = sd.m, bsD = sd.d;
+  const monthName = typeof MEN !== 'undefined' ? MEN[bsM - 1] : '';
+  const adDate = typeof bsToAd === 'function' ? bsToAd(bsY, bsM, bsD) : new Date();
+  const adStr = adDate.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const tithi = typeof getTithi === 'function' ? getTithi(adDate) : '';
+
+  // Collect events and holidays for this day
+  const items = [];
+  if (typeof HOL !== 'undefined') {
+    const hkey = `${bsY}-${bsM}-${bsD}`;
+    if (HOL[hkey]) items.push({ icon: '🇳🇵', name: HOL[hkey].en });
+  }
+  if (typeof userEvents !== 'undefined') {
+    userEvents.filter(ev => typeof eventMatchesDate === 'function' && eventMatchesDate(ev, bsY, bsM, bsD))
+      .forEach(ev => items.push({ icon: '📌', name: ev.title }));
+  }
+
+  content.innerHTML = `
+    <div class="share-card-date-big">${bsD}</div>
+    <div class="share-card-month">${monthName} ${bsY} · Bikram Sambat</div>
+    <div class="share-card-bs">
+      ${adStr}
+    </div>
+    ${tithi ? `<div class="share-card-tithi">🌙 ${tithi}</div>` : ''}
+    ${items.length ? `<div class="share-card-events">${items.map(it => `<div class="share-card-event">${it.icon} ${it.name}</div>`).join('')}</div>` : ''}
+    <div class="share-card-footer">
+      <span class="share-card-logo">VIKRAM CALENDAR</span>
+      <span style="font-size:11px;color:var(--sc-url);font-weight:700;">vikram.app</span>
+    </div>
+  `;
+
+  modal.classList.add('open');
+};
+
+window.closeShareModal = function(e) {
+  if (e && e.target !== document.getElementById('shareModal')) return;
+  document.getElementById('shareModal')?.classList.remove('open');
+};
+
+window.doShare = function() {
+  haptic('medium');
+  const sd = typeof selectedDay !== 'undefined' ? selectedDay : (typeof TODAYBS !== 'undefined' ? TODAYBS : {});
+  const bsM = sd.m || 1;
+  const monthName = typeof MEN !== 'undefined' ? MEN[bsM - 1] : '';
+  const text = `📅 ${sd.d} ${monthName} ${sd.y} BS\n\nShared from Vikram Calendar`;
+
+  if (navigator.share) {
+    navigator.share({ title: 'Vikram Calendar', text }).catch(() => {});
+  } else {
+    navigator.clipboard?.writeText(text).then(() => {
+      vikramToast('📋 Copied to clipboard!');
+    }).catch(() => vikramToast('Share not supported on this device'));
+  }
+  document.getElementById('shareModal')?.classList.remove('open');
+};
+
+// ── 7. NOTES — HIGHLIGHT + HEADING ────────────────────────────
+// Extend the existing notesFmt to handle heading blocks
+const _origNotesFmt = window.notesFmt;
+window.notesFmt = function(cmd, val) {
+  if (cmd === 'formatBlock') {
+    document.execCommand('formatBlock', false, val || 'P');
+    const ed = document.getElementById('notesEditor');
+    if (ed) ed.focus();
+    if (typeof updateToolbarState === 'function') updateToolbarState();
+    return;
+  }
+  if (typeof _origNotesFmt === 'function') _origNotesFmt(cmd, val);
+};
+
+window.notesHighlight = function() {
+  // Toggle yellow highlight on selection
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed) return;
+  const range = sel.getRangeAt(0);
+  const parent = range.commonAncestorContainer;
+  const mark = parent.nodeType === 1 ? parent.closest('mark') : (parent.parentElement ? parent.parentElement.closest('mark') : null);
+  if (mark) {
+    // Remove highlight
+    const frag = document.createDocumentFragment();
+    while (mark.firstChild) frag.appendChild(mark.firstChild);
+    mark.parentNode.replaceChild(frag, mark);
+  } else {
+    document.execCommand('hiliteColor', false, '#FDE68A');
+  }
+  const ed = document.getElementById('notesEditor');
+  if (ed) ed.focus();
+  if (typeof updateToolbarState === 'function') updateToolbarState();
+};
+
+// ── 8. ACCESSIBILITY — aria-labels on icon buttons ────────────
+(function addAriaLabels() {
+  const map = [
+    ['[onclick="prevMonth()"]', 'Previous month'],
+    ['[onclick="nextMonth()"]', 'Next month'],
+    ['[onclick="closeAll()"].mcls', 'Close'],
+    ['[onclick="toggleDark()"]', 'Toggle dark mode'],
+  ];
+  document.addEventListener('DOMContentLoaded', function() {
+    map.forEach(([sel, label]) => {
+      document.querySelectorAll(sel).forEach(el => {
+        if (!el.getAttribute('aria-label')) el.setAttribute('aria-label', label);
+      });
+    });
+  });
+})();
+
 </script>
 
 </body>
