@@ -8,8 +8,15 @@
 <script>
 (function(){
   try{
-    const theme=localStorage.getItem('vikram_theme');
-    const dark=theme==='dark';
+    const stored=localStorage.getItem('vikram_theme');
+    // If user has a stored preference, use it; otherwise check system preference
+    let dark;
+    if(stored==='dark'||stored==='light'){
+      dark=stored==='dark';
+    } else {
+      // Default to dark mode (original default), but respect system preference if possible
+      dark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches!==false?true:true;
+    }
     document.documentElement.setAttribute('data-theme',dark?'dark':'light');
     document.documentElement.style.colorScheme=dark?'dark':'light';
     const meta=document.querySelector('meta[name="theme-color"]');
@@ -519,8 +526,11 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   color:#e8d5b0;margin:0;line-height:1;
   font-family:'Cormorant Garamond','Palatino Linotype',Georgia,serif;
 }
+[data-theme="light"] .echo-h1{color:#7a5c30;}
 .echo-sub{font-size:.72rem;letter-spacing:.35em;color:#7a6848;margin:.5rem 0 0;text-transform:uppercase;font-family:Georgia,serif;}
+[data-theme="light"] .echo-sub{color:#a07840;}
 .echo-desc{font-size:.95rem;color:#9a8060;line-height:1.85;max-width:320px;margin:1.5rem auto 0;font-style:italic;font-family:Georgia,serif;}
+[data-theme="light"] .echo-desc{color:#8a6040;}
 .echo-btn{
   background:none;border:1px solid rgba(200,146,58,.35);color:#c8923a;
   font-family:Georgia,serif;font-size:.84rem;letter-spacing:.25em;
@@ -529,6 +539,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 }
 .echo-btn:hover{background:rgba(200,146,58,.08);border-color:#c8923a;}
 .echo-btn-note{font-family:Georgia,serif;font-size:.68rem;color:#4a3f2f;letter-spacing:.1em;margin-top:.8rem;text-transform:uppercase;}
+[data-theme="light"] .echo-btn-note{color:#8a7040;}
 /* Question phase */
 .echo-qlabel{font-family:Georgia,serif;font-size:.68rem;letter-spacing:.3em;color:#5a4f3f;text-transform:uppercase;margin:0 0 1rem;align-self:flex-start;}
 .echo-question{
@@ -1957,14 +1968,15 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 }
 
 /* Mode tabs */
-.pomo-tabs{display:flex;gap:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:4px;margin-bottom:22px;width:100%;}
+.pomo-tabs{display:flex;gap:6px;background:var(--tgbg);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:22px;width:100%;}
 .pomo-tab{flex:1;padding:8px 4px;border:none;border-radius:9px;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;background:transparent;color:var(--sheet-muted);transition:all .2s;}
 .pomo-tab.on{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 3px 10px rgba(22,163,74,.3);}
 
 /* Timer ring */
 .pomo-ring-wrap{position:relative;width:220px;height:220px;margin-bottom:16px;flex-shrink:0;}
 .pomo-ring-svg{width:220px;height:220px;}
-.pomo-ring-bg{stroke:rgba(255,255,255,.07);stroke-width:12;fill:none;}
+.pomo-ring-bg{stroke:var(--border);stroke-width:12;fill:none;}
+[data-theme="dark"] .pomo-ring-bg{stroke:rgba(255,255,255,.07);}
 .pomo-ring-progress{stroke-linecap:round;stroke-width:12;fill:none;transition:stroke-dashoffset .5s cubic-bezier(.4,0,.2,1),stroke .4s;}
 .pomo-ring-center{
   position:absolute;inset:0;display:flex;flex-direction:column;
@@ -1985,29 +1997,30 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .pomo-ctrl-btn.primary{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;box-shadow:0 6px 20px rgba(22,163,74,.35);}
 .pomo-ctrl-btn.primary:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(22,163,74,.4);}
 .pomo-ctrl-btn.primary:active{transform:scale(.97);}
-.pomo-ctrl-btn.secondary{background:rgba(255,255,255,.07);color:var(--sheet-muted);border:1px solid rgba(255,255,255,.1);}
-.pomo-ctrl-btn.secondary:hover{background:rgba(255,255,255,.12);}
+.pomo-ctrl-btn.secondary{background:var(--tgbg);color:var(--sheet-muted);border:1px solid var(--border);}
+.pomo-ctrl-btn.secondary:hover{background:var(--chip);}
 .pomo-ctrl-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5;}
 .pomo-ctrl-btn.primary svg{stroke:#fff;}
 
 /* Settings row */
 .pomo-settings-row{display:flex;gap:8px;margin-bottom:20px;width:100%;}
-.pomo-set-card{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.pomo-set-card{flex:1;background:var(--tgbg);border:1px solid var(--border);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;align-items:center;gap:4px;}
 .pomo-set-label{font-size:9px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--sheet-muted);}
 .pomo-set-val{display:flex;align-items:center;gap:6px;}
 .pomo-set-num{font-size:20px;font-weight:900;color:var(--sheet-text);min-width:28px;text-align:center;}
-.pomo-adj-btn{width:24px;height:24px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--sheet-muted);transition:all .2s;font-family:'Nunito',sans-serif;}
-.pomo-adj-btn:hover{background:rgba(255,255,255,.14);color:var(--sheet-text);}
+.pomo-adj-btn{width:24px;height:24px;border:1px solid var(--border);background:var(--chip);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--sheet-muted);transition:all .2s;font-family:'Nunito',sans-serif;}
+.pomo-adj-btn:hover{background:var(--tgbg);color:var(--sheet-text);}
 
 /* Dashboard */
-.pomo-dash{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px;margin-bottom:18px;}
+.pomo-dash{width:100%;background:var(--tgbg);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:18px;}
 .pomo-dash-title{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--sheet-muted);margin-bottom:10px;}
 .pomo-dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
 .pomo-dash-item{display:flex;flex-direction:column;align-items:center;gap:3px;}
 .pomo-dash-val{font-size:22px;font-weight:900;color:var(--sheet-text);line-height:1;}
 .pomo-dash-sub{font-size:9px;font-weight:700;color:var(--sheet-muted);text-align:center;line-height:1.3;}
 .pomo-session-dots{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;justify-content:center;}
-.pomo-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.12);transition:background .3s;}
+.pomo-dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:background .3s;}
+[data-theme="dark"] .pomo-dot{background:rgba(255,255,255,.12);}
 .pomo-dot.done{background:linear-gradient(135deg,#16a34a,#22c55e);box-shadow:0 0 8px rgba(34,197,94,.4);}
 .pomo-dot.break{background:linear-gradient(135deg,#3b82f6,#60a5fa);box-shadow:0 0 8px rgba(59,130,246,.35);}
 
@@ -2018,7 +2031,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .pomo-todo-clear{font-size:10px;font-weight:700;color:var(--sheet-muted);cursor:pointer;background:none;border:none;padding:0;font-family:'Nunito',sans-serif;transition:color .2s;}
 .pomo-todo-clear:hover{color:#ef4444;}
 .pomo-todo-input-row{display:flex;gap:7px;margin-bottom:10px;}
-.pomo-todo-input{flex:1;padding:10px 13px;border-radius:11px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:var(--sheet-text);font-size:13px;font-family:'Nunito',sans-serif;font-weight:600;outline:none;transition:border .2s;}
+.pomo-todo-input{flex:1;padding:10px 13px;border-radius:11px;border:1.5px solid var(--border);background:var(--tgbg);color:var(--sheet-text);font-size:13px;font-family:'Nunito',sans-serif;font-weight:600;outline:none;transition:border .2s;}
 .pomo-todo-input:focus{border-color:rgba(34,197,94,.5);}
 .pomo-todo-input::placeholder{color:var(--sheet-muted);}
 .pomo-todo-add-btn{width:38px;height:38px;border-radius:11px;border:none;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .2s;}
@@ -2026,15 +2039,17 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .pomo-todo-list{display:flex;flex-direction:column;gap:6px;}
 .pomo-todo-item{
   display:flex;align-items:center;gap:10px;
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  background:var(--card);border:1px solid var(--border);
   border-radius:12px;padding:10px 12px;cursor:pointer;transition:all .2s;
 }
-.pomo-todo-item:hover{background:rgba(255,255,255,.08);}
+.pomo-todo-item:hover{background:var(--cell-hover);}
+[data-theme="dark"] .pomo-todo-item:hover{background:rgba(255,255,255,.08);}
 .pomo-todo-item.done-task{opacity:.55;}
 .pomo-todo-check{
-  width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.2);
+  width:20px;height:20px;border-radius:50%;border:2px solid var(--border);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;background:transparent;
 }
+[data-theme="dark"] .pomo-todo-check{border-color:rgba(255,255,255,.2);}
 .pomo-todo-item.done-task .pomo-todo-check{background:linear-gradient(135deg,#16a34a,#22c55e);border-color:transparent;}
 .pomo-todo-check svg{width:10px;height:10px;stroke:#fff;stroke-width:3;fill:none;opacity:0;transition:opacity .2s;}
 .pomo-todo-item.done-task .pomo-todo-check svg{opacity:1;}
@@ -3700,7 +3715,16 @@ const TPAKSHA=['Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','S
 // UTC noon – safe anchor: .getDate() gives the same calendar day in every timezone (UTC-12 to UTC+14)
 const REF=new Date(Date.UTC(2026,3,14,12,0,0)); // Baishakh 1, 2083 = Apr 14, 2026
 let cfg={greg:true,hol:true,holn:true,fd:1};
-let lang='en',dark=true;
+// Sync with the theme already applied by the early inline script
+let lang='en',dark=(function(){
+  try{
+    const stored=localStorage.getItem('vikram_theme');
+    if(stored==='dark') return true;
+    if(stored==='light') return false;
+    // No stored preference — default to dark
+    return true;
+  }catch(e){ return true; }
+})();
 let vY=2083,vM=1; // will be overwritten with today's BS month below
 
 // Nepal Standard Time = UTC+5:45.
@@ -4296,14 +4320,14 @@ function openDay(bY,bM,bD){
     evtList.innerHTML=dayEvts.map(ev=>{
       const c=({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'})[ev.color]||'#3B82F6';
       return `
-      <div style="padding:10px 11px;background:rgba(255,255,255,.04);border-radius:14px;border-left:3px solid ${c};box-shadow:inset 0 1px 0 rgba(255,255,255,.04);">
+      <div style="padding:10px 11px;background:var(--cell-bg);border-radius:14px;border-left:3px solid ${c};border:1px solid var(--panel-border);border-left:3px solid ${c};">
         <div style="display:flex;gap:8px;align-items:center;">
           <span style="background:${c};width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0;box-shadow:0 0 12px ${c}55;"></span>
-          <span style="font-size:13px;font-weight:800;color:#f0ecff;">${ev.title}</span>
+          <span style="font-size:13px;font-weight:800;color:var(--panel-text);">${ev.title}</span>
           <span style="margin-left:auto;font-size:9px;font-weight:800;text-transform:uppercase;color:${c};background:${c}22;padding:2px 7px;border-radius:6px;">${ev.color||'personal'}</span>
         </div>
-        <div style="font-size:11px;color:#a39bbc;margin-top:4px;padding-left:15px;">${formatEventRange(ev)}</div>
-        ${ev.note?`<div style="font-size:11px;color:#a39bbc;margin-top:4px;padding-left:15px;">${ev.note}</div>`:''}
+        <div style="font-size:11px;color:var(--panel-muted);margin-top:4px;padding-left:15px;">${formatEventRange(ev)}</div>
+        ${ev.note?`<div style="font-size:11px;color:var(--panel-muted);margin-top:4px;padding-left:15px;">${ev.note}</div>`:''}
       </div>`;
     }).join('');
   } else {
@@ -4348,7 +4372,7 @@ function applyTheme(){
   if(lbl) lbl.textContent=dark?'Dark Mode':'Light Mode';
   if(sub) sub.textContent=dark?'Currently using dark theme':'Currently using light theme';
   if(icon){ icon.textContent=dark?'🌙':'☀️'; icon.style.background=dark?'rgba(80,90,180,.15)':'rgba(240,180,40,.15)'; }
-  // Header dark-mode button icon
+  // Header dark-mode button icon (in settings sheet)
   const hdrBtn=document.getElementById('darkModeBtnIcon');
   if(hdrBtn){
     hdrBtn.innerHTML=dark
@@ -6659,7 +6683,7 @@ setTimeout(checkEventReminders, 2500);
   // 2. Register service worker via blob — full offline support
   if('serviceWorker' in navigator){
     const sw=`
-const CACHE='vikram-v3';
+const CACHE='vikram-v4';
 const PAGE_URL=self.location.href.split('?')[0];
 
 // Install: pre-cache the app page
@@ -6718,8 +6742,14 @@ self.addEventListener('fetch',e=>{
             .then(r=>{ if(r&&r.ok)caches.open(CACHE).then(c=>c.put(req,r.clone())); return r; })
             .catch(()=>caches.match(req).then(r=>r||new Response('',{status:503})))
     );
+  } else {
+    // Same-origin non-navigation: network-first, cache fallback for offline
+    e.respondWith(
+      fetch(req)
+        .then(r=>{ if(r&&r.ok)caches.open(CACHE).then(c=>c.put(req,r.clone())); return r; })
+        .catch(()=>caches.match(req).then(r=>r||new Response('',{status:503})))
+    );
   }
-  // Same-origin requests: let browser handle normally
 });
 
 // Push notifications
@@ -6731,7 +6761,26 @@ self.addEventListener('message',e=>{
 });`;
     const swBlob=new Blob([sw],{type:'application/javascript'});
     const swURL=URL.createObjectURL(swBlob);
-    navigator.serviceWorker.register(swURL,{scope:'./'}).catch(()=>{});
+    navigator.serviceWorker.register(swURL,{scope:'./'})
+      .then(reg=>{
+        // After SW activates, prime the cache with the current page
+        const primeCache=()=>{
+          caches.open('vikram-v4').then(c=>{
+            // Cache the page itself
+            c.add(window.location.href).catch(()=>{});
+            // Cache Google Fonts stylesheet
+            ['https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap']
+              .forEach(url=>fetch(url).then(r=>{if(r&&r.ok)c.put(url,r);}).catch(()=>{}));
+          });
+        };
+        if(reg.active) primeCache();
+        else if(reg.installing||reg.waiting){
+          const w=reg.installing||reg.waiting;
+          w.addEventListener('statechange',function(){if(this.state==='activated')primeCache();});
+        }
+        navigator.serviceWorker.addEventListener('controllerchange',primeCache);
+      })
+      .catch(()=>{});
   }
 
   // 3. Detect environment
@@ -9545,7 +9594,6 @@ window.openShareModal = function() {
     ${items.length ? `<div class="share-card-events">${items.map(it => `<div class="share-card-event">${it.icon} ${it.name}</div>`).join('')}</div>` : ''}
     <div class="share-card-footer">
       <span class="share-card-logo">VIKRAM CALENDAR</span>
-      <span style="font-size:11px;color:var(--sc-url);font-weight:700;">vikram.app</span>
     </div>
   `;
 
