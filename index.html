@@ -704,6 +704,13 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   width:5px;
   box-shadow:0 0 8px rgba(26,26,26,.4);
 }
+[data-theme="dark"] .cal-week-dot{
+  background:rgba(255,255,255,.22);
+}
+[data-theme="dark"] .cal-week-dot.active{
+  background:rgba(255,255,255,.88);
+  box-shadow:0 0 8px rgba(200,210,255,.35);
+}
 
 /* Ripple canvas layer */
 #calRippleCanvas{
@@ -1421,6 +1428,61 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   background:rgba(255,255,255,.1);
   box-shadow:0 2px 10px rgba(0,0,0,.35);
 }
+/* ── NEW NOTES HEADER ── */
+.nt-header-new{
+  margin:14px 14px 8px;
+  padding:16px 18px;
+  border-radius:20px;
+  background:var(--card);
+  border:1px solid var(--border);
+  box-shadow:0 2px 12px rgba(0,0,0,.06);
+}
+[data-theme=dark] .nt-header-new{
+  background:linear-gradient(135deg,rgba(78,82,132,.18),rgba(48,52,100,.10));
+  border-color:rgba(255,255,255,.07);
+  box-shadow:0 4px 20px rgba(0,0,0,.25);
+}
+.nt-header-top{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.nt-header-left{
+  display:flex;align-items:center;gap:13px;
+}
+.nt-header-icon{
+  width:42px;height:42px;border-radius:13px;
+  background:linear-gradient(135deg,#4e5178,#313456);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;color:#fff;
+  box-shadow:0 4px 12px rgba(78,82,132,.4);
+}
+[data-theme=light] .nt-header-icon{
+  background:linear-gradient(135deg,#3a3a3a,#111);
+  box-shadow:0 4px 12px rgba(0,0,0,.22);
+}
+.nt-header-title{
+  font-size:18px;font-weight:900;letter-spacing:-.3px;
+  color:var(--htext);line-height:1.1;
+}
+.nt-header-sub{
+  font-size:12px;font-weight:600;color:var(--dsub);margin-top:2px;
+}
+.nt-header-add{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 16px;border:none;border-radius:12px;cursor:pointer;
+  background:linear-gradient(135deg,#4e5178,#313456);
+  color:#fff;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;
+  box-shadow:0 4px 14px rgba(78,82,132,.38);
+  transition:transform .18s,box-shadow .18s;
+  flex-shrink:0;
+}
+[data-theme=light] .nt-header-add{
+  background:linear-gradient(135deg,#3a3a3a,#111);
+  box-shadow:0 4px 14px rgba(0,0,0,.22);
+}
+.nt-header-add:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(78,82,132,.5);}
+.nt-header-add:active{transform:scale(.95);}
+.nt-header-add svg{flex-shrink:0;}
+
 .nt-task-count{
   display:inline-flex;align-items:center;justify-content:center;
   background:#ff4757;color:#fff;
@@ -3106,8 +3168,8 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
             <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="3" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="3" cy="18" r="1" fill="currentColor" stroke="none"/></svg>
             List
           </button>
-          <button class="up-vtbtn" id="upVtMonth" onclick="switchTab('notes');ntSwitchSeg('tasks');">
-            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="6" height="6" rx="1"/><rect x="3" y="13" width="6" height="6" rx="1"/><line x1="13" y1="8" x2="21" y2="8"/><line x1="13" y1="16" x2="21" y2="16"/></svg>
+          <button class="up-vtbtn" id="upVtTasks" onclick="setUpView('tasks')">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><polyline points="8 12 11 15 16 9"/></svg>
             Tasks
           </button>
         </div>
@@ -3117,6 +3179,49 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
     <div id="upList"></div>
     <div id="upMonthView" style="display:none;"></div>
+    <!-- Tasks inline view -->
+    <div id="upTasksView" style="display:none;">
+      <div id="ntTasksPanel">
+        <div class="tasks-view" id="tasksListView">
+          <div class="sscroll" style="padding:14px;">
+            <div id="tasksListItems"></div>
+            <div class="notes-empty" id="tasksEmpty">
+              <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><polyline points="8 12 11 15 16 9"/></svg>
+              <div class="notes-empty-title">No tasks yet</div>
+              <div class="notes-empty-sub">Tap + to add something you need to get done.</div>
+            </div>
+          </div>
+        </div>
+        <div class="tasks-view" id="tasksEditorView" style="display:none;">
+          <div class="dc-page-header">
+            <button class="notes-back-btn" onclick="taskBackToList()" aria-label="Back">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div style="flex:1;font-family:Nunito,sans-serif;font-size:15px;font-weight:900;color:var(--dtext);">Edit Task</div>
+            <button class="notes-delete-btn" onclick="taskDeleteCurrent()" aria-label="Delete task">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            </button>
+          </div>
+          <div class="sscroll" style="padding:16px;">
+            <input class="einput" id="taskTitleInput" placeholder="What needs to be done?" maxlength="120" style="font-size:15px;font-weight:800;">
+            <div class="task-field-label">Due date (optional)</div>
+            <input class="einput" type="date" id="taskDueInput">
+            <div class="task-field-label">Notes</div>
+            <textarea class="task-notes-input" id="taskNotesInput" placeholder="Add details…"></textarea>
+            <div class="task-done-toggle" id="taskDoneToggle" onclick="taskToggleDoneInEditor()">
+              <span class="task-check" id="taskDoneCheck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span class="task-done-toggle-label">Mark as completed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:0 14px 14px;display:flex;justify-content:flex-end;">
+        <button class="nt-header-add" onclick="taskCreate()" style="margin-top:4px;">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>New Task</span>
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -3196,25 +3301,22 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 <div class="daycounter-view" id="notesView">
 
   <!-- ── Segment header (shown in list views only) ── -->
-  <div id="ntSegmentHeader" class="dc-page-header" style="gap:10px;">
-    <div class="dc-page-header-text" style="flex:1;min-width:0;">
-      <span class="dc-page-label">Your Space</span>
-      <div class="nt-seg-toggle" style="margin-top:6px;">
-        <button class="nt-seg-btn on" id="ntSegNotes" onclick="ntSwitchSeg('notes')">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          Notes
-        </button>
-        <button class="nt-seg-btn" id="ntSegTasks" onclick="ntSwitchSeg('tasks')">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><polyline points="8 12 11 15 16 9"/></svg>
-          Tasks
-          <span class="nt-task-count" id="ntTaskCount" style="display:none;"></span>
-        </button>
+  <div id="ntSegmentHeader" class="nt-header-new">
+    <div class="nt-header-top">
+      <div class="nt-header-left">
+        <div class="nt-header-icon">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div>
+          <div class="nt-header-title">Notes</div>
+          <div class="nt-header-sub">Your personal space</div>
+        </div>
       </div>
+      <button class="nt-header-add" id="ntAddBtn" onclick="ntAddCurrent()" title="New note">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>New</span>
+      </button>
     </div>
-    <!-- FAB changes based on active segment -->
-    <button class="dc-fab-inline" id="ntAddBtn" onclick="ntAddCurrent()" title="Add">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    </button>
   </div>
 
   <!-- ══ NOTES PANEL ══ -->
@@ -3259,42 +3361,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   </div>
 
   <!-- ══ TASKS PANEL ══ -->
-  <div id="ntTasksPanel" style="display:none;">
-    <!-- Tasks list -->
-    <div class="tasks-view" id="tasksListView">
-      <div class="sscroll" style="padding:14px;">
-        <div id="tasksListItems"></div>
-        <div class="notes-empty" id="tasksEmpty">
-          <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><polyline points="8 12 11 15 16 9"/></svg>
-          <div class="notes-empty-title">No tasks yet</div>
-          <div class="notes-empty-sub">Tap + to add something you need to get done.</div>
-        </div>
-      </div>
-    </div>
-    <!-- Task editor -->
-    <div class="tasks-view" id="tasksEditorView" style="display:none;">
-      <div class="dc-page-header">
-        <button class="notes-back-btn" onclick="taskBackToList()" aria-label="Back">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-        <div style="flex:1;font-family:'Nunito',sans-serif;font-size:15px;font-weight:900;color:var(--dtext);">Edit Task</div>
-        <button class="notes-delete-btn" onclick="taskDeleteCurrent()" aria-label="Delete task">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-        </button>
-      </div>
-      <div class="sscroll" style="padding:16px;">
-        <input class="einput" id="taskTitleInput" placeholder="What needs to be done?" maxlength="120" style="font-size:15px;font-weight:800;">
-        <div class="task-field-label">Due date (optional)</div>
-        <input class="einput" type="date" id="taskDueInput">
-        <div class="task-field-label">Notes</div>
-        <textarea class="task-notes-input" id="taskNotesInput" placeholder="Add details…"></textarea>
-        <div class="task-done-toggle" id="taskDoneToggle" onclick="taskToggleDoneInEditor()">
-          <span class="task-check" id="taskDoneCheck"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-          <span class="task-done-toggle-label">Mark as completed</span>
-        </div>
-      </div>
-    </div>
-  </div>
+
 
 </div>
 
@@ -3445,8 +3512,8 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
       </div>
       <div class="srow" style="cursor:pointer;" onclick="window.open('https://x.com/ranjansinghx','_blank')">
         <div>
-          <div class="slbl">𝕏 Connect with us</div>
-          <div class="ssub">Follow us on X · @ranjansinghx</div>
+          <div class="slbl">Connect with us</div>
+          <div class="ssub">@ranjansinghx</div>
         </div>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
       </div>
@@ -4798,9 +4865,21 @@ function setUpView(v){
   upView = v;
   const btnL = document.getElementById('upVtUpcoming');
   const btnM = document.getElementById('upVtMonth');
+  const btnT = document.getElementById('upVtTasks');
   if(btnL) btnL.classList.toggle('on', v==='upcoming');
   if(btnM) btnM.classList.toggle('on', v==='month');
-  renderUpcoming();
+  if(btnT) btnT.classList.toggle('on', v==='tasks');
+  const tasksView = document.getElementById('upTasksView');
+  if(tasksView) tasksView.style.display = v==='tasks' ? '' : 'none';
+  if(v==='tasks'){
+    const upList = document.getElementById('upList');
+    const upMonthView = document.getElementById('upMonthView');
+    if(upList) upList.style.display = 'none';
+    if(upMonthView) upMonthView.style.display = 'none';
+    if(typeof window.tasksShowList === 'function') window.tasksShowList();
+  } else {
+    renderUpcoming();
+  }
 }
 
 function mvNavMonth(dir){
@@ -5022,6 +5101,14 @@ function renderUpcoming(){
   // Route to month view if toggled
   const mvWrap = document.getElementById('upMonthView');
   const listEl = document.getElementById('upList');
+  const tasksView = document.getElementById('upTasksView');
+  if(upView === 'tasks'){
+    if(listEl) listEl.style.display = 'none';
+    if(mvWrap) mvWrap.style.display = 'none';
+    if(tasksView) tasksView.style.display = '';
+    return;
+  }
+  if(tasksView) tasksView.style.display = 'none';
   if(upView === 'month'){
     if(listEl) listEl.style.display = 'none';
     if(mvWrap) mvWrap.style.display = 'block';
