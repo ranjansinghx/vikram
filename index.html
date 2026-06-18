@@ -4374,9 +4374,9 @@ function render(){
   document.getElementById('cgrid').innerHTML=html;
 }
 
-function prevMonth(){vM--;if(vM<1){vM=12;vY--;}render();}
-function nextMonth(){vM++;if(vM>12){vM=1;vY++;}render();}
-function goToday(){vY=TODAYBS.y;vM=TODAYBS.m;selectedDay={y:TODAYBS.y,m:TODAYBS.m,d:TODAYBS.d};render();renderSelectedDay();}
+function prevMonth(){haptic('light');vM--;if(vM<1){vM=12;vY--;}render();}
+function nextMonth(){haptic('light');vM++;if(vM>12){vM=1;vY++;}render();}
+function goToday(){haptic('medium');vY=TODAYBS.y;vM=TODAYBS.m;selectedDay={y:TODAYBS.y,m:TODAYBS.m,d:TODAYBS.d};render();renderSelectedDay();}
 
 // ══ COLLAPSIBLE CALENDAR ══
 let calExpanded = false;
@@ -4538,6 +4538,7 @@ function applyCalHeight(animate, velocity){
 
 // ── Toggle (tap handle) ──
 function toggleCalExpand(){
+  haptic('light');
   calExpanded = !calExpanded;
   applyCalHeight(true, 0);
   // ripple from handle centre
@@ -4717,11 +4718,13 @@ render = function(){
     const isFlickUp   = velocity < -FLICK_VEL;
 
     // Decide to commit or revert
+    const prevExpanded = calExpanded;
     if(!calExpanded){
       if(frac > COMMIT_FRAC || isFlickDown) calExpanded = true;
     } else {
       if(frac < 1-COMMIT_FRAC || isFlickUp) calExpanded = false;
     }
+    if(calExpanded !== prevExpanded) haptic('light');
 
     // Reset progress bar
     const prog = getProgress();
@@ -4754,6 +4757,7 @@ render = function(){
 
 // ══ DAY MODAL ══
 function openDay(bY,bM,bD){
+  haptic('light');
   selectedDay={y:bY,m:bM,d:bD};
   renderSelectedDay();
   render();
@@ -4820,6 +4824,7 @@ function openDay(bY,bM,bD){
 
 // ══ SHEETS ══
 function closeAll(){
+  haptic('light');
   document.getElementById('ov').classList.remove('open');
   ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
   // Stop color matcher game if running
@@ -4833,6 +4838,7 @@ function closeAll(){
 
 // ══ DARK MODE ══
 function toggleDark(){
+  haptic('light');
   dark=!dark;
   applyTheme();
   localStorage.setItem('vikram_theme',dark?'dark':'light');
@@ -4872,6 +4878,7 @@ function toggleLang(){
   setLang(lang==='en'?'ne':'en');
 }
 function setLang(l){
+  haptic('light');
   lang=l;
   document.documentElement.setAttribute('data-lang',l);
   // Settings language chips
@@ -4889,8 +4896,9 @@ function setLang(l){
 }
 
 // ══ SETTINGS ══
-function togSetting(k,btn){cfg[k]=!cfg[k];btn.classList.toggle('on',cfg[k]);render();}
+function togSetting(k,btn){haptic('light');cfg[k]=!cfg[k];btn.classList.toggle('on',cfg[k]);render();}
 function setFD(v,btn){
+  haptic('light');
   cfg.fd=v;
   document.querySelectorAll('#settingsSheet .chip').forEach(c=>c.classList.remove('on'));
   btn.classList.add('on');render();
@@ -5000,6 +5008,7 @@ function formatEventRange(ev){
 }
 
 function openSheet(t){
+  haptic('light');
   if(t==='notes'){
     switchTab('notes');
     return;
@@ -5040,6 +5049,7 @@ function openSheet(t){
 
 // Called from day modal to pre-fill date
 function openAddForDay(bsY,bsM,bsD){
+  haptic('light');
   selectedDay={y:bsY,m:bsM,d:bsD};
   renderSelectedDay();
   openSheet('add');
@@ -5145,6 +5155,7 @@ async function checkEventReminders(){
 async function saveEv(){
   const t=document.getElementById('evT').value.trim();
   if(!t){alert('Please enter an event title.');return;}
+  haptic('success');
   const bsY=+document.getElementById('evBsY').value;
   const bsM=+document.getElementById('evBsM').value;
   const bsD=+document.getElementById('evBsD').value;
@@ -5293,6 +5304,7 @@ let upView = 'upcoming'; // 'upcoming' | 'month'
 let mvSelectedDay = null; // {y,m,d} BS — highlighted cell in month view
 
 function setUpView(v){
+  haptic('light');
   upView = v;
   const btnL = document.getElementById('upVtUpcoming');
   const btnM = document.getElementById('upVtMonth');
@@ -5322,6 +5334,7 @@ function setUpView(v){
 }
 
 function mvNavMonth(dir){
+  haptic('light');
   mvSelectedDay = null;
   vM += dir;
   if(vM < 1){ vM = 12; vY--; }
@@ -6077,6 +6090,7 @@ function renderPrevious(){
 let mpYear = vY;
 
 function openMonthPicker(){
+  haptic('light');
   mpYear = vY;
   closeAll();
   document.getElementById('ov').classList.add('open');
@@ -6101,14 +6115,17 @@ function renderMpGrid(){
 }
 
 function mpPrevYear(){
+  haptic('light');
   const minY=Object.keys(BS).map(Number).sort((a,b)=>a-b)[0];
   if(mpYear>minY){ mpYear--; renderMpGrid(); }
 }
 function mpNextYear(){
+  haptic('light');
   const maxY=Object.keys(BS).map(Number).sort((a,b)=>b-a)[0];
   if(mpYear<maxY){ mpYear++; renderMpGrid(); }
 }
 function pickMonth(m){
+  haptic('medium');
   vY=mpYear; vM=m;
   mvSelectedDay=null; // reset month-view day selection
   closeAll();
@@ -8132,6 +8149,7 @@ function pomoPhaseComplete(){
   const s = window.pomoState;
   clearInterval(s.interval);
   s.running = false;
+  haptic('success');
 
   const stats = pomoLoadStats();
 
@@ -8165,6 +8183,7 @@ function pomoPhaseComplete(){
 
 // ── Toggle start/pause ─────────────────────────────────────────────────────
 window.pomoToggle = function(){
+  haptic('medium');
   const s = window.pomoState;
   if(s.running){
     clearInterval(s.interval);
@@ -8611,6 +8630,7 @@ window.pomoSkip  = pomoSkip;
 
 // ══ BOTTOM NAV TAB SWITCHING ══
 function switchTab(tab) {
+  if(!window._vikramRestoring) haptic('light');
   try { window.localStorage.setItem('vikram_active_tab', tab); } catch(e) {}
   if(tab !== 'notes' && typeof window.notesFlushSave === 'function') window.notesFlushSave();
   if(tab !== 'notes' && typeof window.tasksFlushSave === 'function') window.tasksFlushSave();
@@ -8731,6 +8751,7 @@ function switchTab(tab) {
   window.dcSave = function() {
     const name = document.getElementById('dcNameInput').value.trim();
     if(!name){ document.getElementById('dcNameInput').focus(); return; }
+    haptic('success');
     const dateVal = document.getElementById('dcDateInput').value;
     const startTs = dateVal ? new Date(dateVal).getTime() : Date.now();
     const arr = dcLoad();
@@ -8956,6 +8977,7 @@ function switchTab(tab) {
     if(!c) return;
     const tk = todayKey();
     const wasChecked = c.lastCheckin === tk;
+    haptic(wasChecked ? 'light' : 'success');
     c.lastCheckin = wasChecked ? null : tk;
     if(!c.history) c.history = [];
     if(wasChecked){ c.history = c.history.filter(function(k){return k!==tk;}); }
@@ -8965,6 +8987,7 @@ function switchTab(tab) {
   };
   window.dcReset = function(id) {
     dcShowConfirm('Reset this counter to today? Your current streak will start over.', 'Reset', 'var(--tf)', function(){
+      haptic('medium');
       const arr = dcLoad(); const c = arr.find(function(x){return x.id===id;});
       if(!c) return;
       // if was checked in today, unlog it
@@ -8976,6 +8999,7 @@ function switchTab(tab) {
   };
   window.dcDelete = function(id) {
     dcShowConfirm('Delete this counter? This cannot be undone.', 'Delete', '#e0507a', function(){
+      haptic('medium');
       const arr = dcLoad();
       const c = arr.find(function(x){return x.id===id;});
       // if was checked in today, unlog
@@ -9311,6 +9335,7 @@ function switchTab(tab) {
 
   // ── CREATE / OPEN / DELETE ──
   window.notesCreate = function(){
+    haptic('light');
     const list = loadAll();
     const note = { id: uid(), title: '', html: '', updated: Date.now() };
     list.unshift(note);
@@ -9345,6 +9370,7 @@ function switchTab(tab) {
   };
 
   window.notesConfirmYes = function(){
+    haptic('medium');
     document.getElementById('notesConfirmOverlay').classList.remove('open');
     if(!currentId) return;
     let list = loadAll();
@@ -9621,6 +9647,7 @@ function switchTab(tab) {
 
   // ── CREATE / OPEN / DELETE ──
   window.taskCreate = function(){
+    haptic('light');
     const list = loadAll();
     const task = { id: uid(), title: '', notes: '', due: '', done: false, updated: Date.now() };
     list.unshift(task);
@@ -9656,6 +9683,7 @@ function switchTab(tab) {
   };
 
   window.taskConfirmYes = function(){
+    haptic('medium');
     document.getElementById('tasksConfirmOverlay').classList.remove('open');
     if(!currentId) return;
     let list = loadAll();
@@ -9699,6 +9727,7 @@ function switchTab(tab) {
     const task = findTask(list, id);
     if(!task) return;
     task.done = !task.done;
+    haptic(task.done ? 'success' : 'light');
     task.updated = Date.now();
     saveAll(list);
     renderList();
@@ -9712,6 +9741,7 @@ function switchTab(tab) {
     const task = findTask(list, currentId);
     if(!task) return;
     task.done = !task.done;
+    haptic(task.done ? 'success' : 'light');
     task.updated = Date.now();
     saveAll(list);
     setDoneUI(task.done);
@@ -9755,6 +9785,7 @@ function switchTab(tab) {
 window._ntActiveSeg = 'notes';
 
 window.ntSwitchSeg = function(seg, skipLoad){
+  if(!skipLoad) haptic('light');
   window._ntActiveSeg = seg;
 
   const notesPanel = document.getElementById('ntNotesPanel');
