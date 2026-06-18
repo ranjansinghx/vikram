@@ -952,22 +952,33 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 /* Header row */
 .up-hdr{
   display:flex;align-items:center;justify-content:space-between;
-  padding:6px 16px 12px;
+  padding:6px 16px 14px;
 }
 .up-hdr-left{display:flex;flex-direction:column;gap:2px;}
 .up-hdr-label{
-  font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+  font-size:10px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;
   color:var(--dsub);
 }
 .up-hdr-title{
-  font-size:20px;font-weight:900;color:var(--htext);letter-spacing:-.3px;line-height:1.1;
+  font-size:22px;font-weight:900;color:var(--htext);letter-spacing:-.4px;line-height:1.1;
 }
 .up-count{
   display:inline-flex;align-items:center;justify-content:center;
-  min-width:28px;height:28px;padding:0 9px;border-radius:999px;
-  background:linear-gradient(135deg,#3a3a3a,#000);
-  color:#fff;font-size:12px;font-weight:900;
-  box-shadow:0 4px 12px rgba(0,0,0,.3);
+  min-width:26px;height:26px;padding:0 8px;border-radius:999px;
+  background:var(--tgbg);
+  color:var(--dsub);font-size:11px;font-weight:900;
+  border:1.5px solid var(--border);
+  transition:background .2s,color .2s,border-color .2s;
+}
+.up-count.tasks-mode{
+  background:rgba(99,102,241,.15);
+  color:#6366f1;
+  border-color:rgba(99,102,241,.3);
+}
+[data-theme=dark] .up-count.tasks-mode{
+  background:rgba(99,102,241,.2);
+  color:#a5b4fc;
+  border-color:rgba(99,102,241,.35);
 }
 
 /* ── TASKS PILL (next to "Upcoming" title) ── */
@@ -1161,110 +1172,138 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .task-done-toggle-label{font-size:14px;font-weight:800;color:var(--htext);}
 
 /* Day section */
-.up-day-group{ padding:0 0 6px; }
-.up-day-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 16px 6px;
+/* ── Timeline layout ── */
+.up-day-group{
+  display:flex;
+  padding:0 14px;
+  margin-bottom:4px;
 }
-.up-day-left{display:flex;align-items:center;gap:10px;}
+.up-timeline-left{
+  display:flex;flex-direction:column;align-items:center;
+  width:46px;flex-shrink:0;padding-top:2px;
+}
 .up-day-bubble{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  width:40px;height:44px;border-radius:12px;
-  background:var(--tgbg);border:1px solid var(--border);
+  width:40px;height:46px;border-radius:12px;
+  background:var(--tgbg);border:1.5px solid var(--border);
   flex-shrink:0;
 }
 .up-day-bubble.today-bubble{
-  background:linear-gradient(135deg,#5a5a68,#2e2e38);
+  background:var(--tgon);
   border-color:transparent;
-  box-shadow:0 4px 14px rgba(0,0,0,.25);
+  box-shadow:0 4px 14px rgba(0,0,0,.22);
 }
 .up-day-bubble-num{
-  font-size:17px;font-weight:900;color:var(--htext);line-height:1;
+  font-size:17px;font-weight:900;color:var(--dtext);line-height:1;
 }
 .up-day-bubble.today-bubble .up-day-bubble-num{ color:#fff; }
 .up-day-bubble-dow{
   font-size:8px;font-weight:800;color:var(--dsub);letter-spacing:.5px;text-transform:uppercase;margin-top:1px;
 }
-.up-day-bubble.today-bubble .up-day-bubble-dow{ color:rgba(255,255,255,.75); }
-.up-day-meta{display:flex;flex-direction:column;gap:1px;}
-.up-day-name{ font-size:13px;font-weight:900;color:var(--dtext); }
-.up-day-bs{ font-size:11px;font-weight:700;color:var(--dsub); }
+.up-day-bubble.today-bubble .up-day-bubble-dow{ color:rgba(255,255,255,.7); }
+.up-timeline-line{
+  width:2px;flex:1;min-height:8px;
+  background:var(--border);
+  border-radius:1px;
+  margin-top:4px;
+}
+.up-timeline-right{
+  flex:1;min-width:0;
+  padding-bottom:10px;
+}
+.up-day-meta-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 0 7px 10px;
+}
+.up-day-name{
+  font-size:12px;font-weight:900;color:var(--dtext);
+}
+.up-day-bs{
+  font-size:10.5px;font-weight:700;color:var(--dsub);
+  margin-top:1px;
+}
 .up-day-badge{
-  font-size:10px;font-weight:900;padding:3px 10px;border-radius:999px;white-space:nowrap;
+  font-size:9.5px;font-weight:900;padding:3px 9px;border-radius:999px;white-space:nowrap;
 }
-.up-day-badge.today{ background:linear-gradient(135deg,#5a5a68,#2e2e38);color:#fff; }
-.up-day-badge.tomorrow{ background:rgba(26,26,26,.13);color:#1a1a1a; }
-[data-theme=dark] .up-day-badge.tomorrow{ background:rgba(58,58,58,.2);color:#cccccc; }
+.up-day-badge.today{ background:var(--tgon);color:#fff; }
+.up-day-badge.tomorrow{ background:var(--tgbg);color:var(--dsub);border:1px solid var(--border); }
 
-/* Cards */
+/* Cards — slim rows */
 .up-item{
-  display:flex;align-items:center;gap:0;
-  background:var(--panel-bg);
-  border-radius:16px;
-  margin:0 10px 7px;
-  box-shadow:var(--panel-shadow);
-  cursor:pointer;
-  transition:transform .14s,box-shadow .14s;
-  border:1px solid var(--panel-border);
+  display:flex;align-items:center;
+  background:var(--tgbg);
+  border-radius:12px;
+  margin:0 0 5px 10px;
+  transition:opacity .13s;
+  border:1px solid var(--border);
   overflow:hidden;
+  padding:8px 8px 8px 11px;
+  gap:6px;
 }
-.up-item:active{ transform:scale(.98); }
-.up-item:hover{ transform:translateY(-1px);box-shadow:0 8px 24px rgba(80,70,170,.13); }
-.up-item-accent{
-  width:4px;align-self:stretch;flex-shrink:0;border-radius:0;
-}
-.up-item-accent.hol{ background:linear-gradient(180deg,#ff6b6b,#ff4757); }
-.up-item-accent.evt{ background:linear-gradient(180deg,#60a5fa,#3b82f6); }
-.up-item-accent.cyc{ background:linear-gradient(180deg,#7a7a8a,#5a5a68); }
-.up-item-inner{
-  display:flex;align-items:center;gap:11px;padding:12px 12px 12px 13px;flex:1;min-width:0;
-}
+.up-item-accent{ display:none; }
+.up-item-inner{ display:contents; }
 .up-icon{
-  width:38px;height:38px;border-radius:12px;
+  width:32px;height:32px;border-radius:9px;
   display:flex;align-items:center;justify-content:center;
-  font-size:18px;flex-shrink:0;
+  font-size:15px;flex-shrink:0;
 }
-.up-icon.hol{ background:rgba(255,71,87,.12); }
-.up-icon.evt{ background:rgba(59,130,246,.12); }
-.up-icon.cyc{ background:rgba(90,90,104,.12); }
-[data-theme=dark] .up-icon.hol{ background:rgba(255,71,87,.2); }
-[data-theme=dark] .up-icon.evt{ background:rgba(59,130,246,.2); }
-[data-theme=dark] .up-icon.cyc{ background:rgba(90,90,104,.2); }
+.up-icon.hol{ background:rgba(255,71,87,.13);color:#FF4757; }
+.up-icon.evt{ background:rgba(99,102,241,.13);color:#6366f1; }
+.up-icon.cyc{ background:rgba(236,72,153,.13);color:#ec4899; }
+[data-theme=dark] .up-icon.hol{ background:rgba(255,71,87,.18); }
+[data-theme=dark] .up-icon.evt{ background:rgba(99,102,241,.18); }
+[data-theme=dark] .up-icon.cyc{ background:rgba(236,72,153,.18); }
 .up-info{ flex:1;min-width:0; }
 .up-name{
-  font-size:13.5px;font-weight:900;color:var(--sheet-text);
-  line-height:1.2;margin-bottom:4px;
+  font-size:13px;font-weight:800;color:var(--dtext);
+  line-height:1.25;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.up-tag-row{ display:flex;align-items:center;gap:5px;flex-wrap:wrap; }
+.up-tag-row{ display:flex;align-items:center;gap:5px;margin-top:2px; }
 .up-tag{
-  font-size:9.5px;font-weight:900;padding:2px 8px;border-radius:999px;
+  font-size:9px;font-weight:900;padding:2px 7px;border-radius:999px;
   white-space:nowrap;letter-spacing:.3px;text-transform:uppercase;
 }
 .up-tag.hol{ background:rgba(255,71,87,.1);color:#FF4757; }
-.up-tag.evt{ background:rgba(59,130,246,.1);color:#3b82f6; }
-.up-tag.cyc{ background:rgba(90,90,104,.1);color:#5a5a68; }
-.up-tag.neu{ background:rgba(26,26,26,.1);color:#1a1a1a; }
+.up-tag.evt{ background:rgba(99,102,241,.1);color:#6366f1; }
+.up-tag.cyc{ background:rgba(236,72,153,.1);color:#ec4899; }
 [data-theme=dark] .up-tag.hol{ background:rgba(255,71,87,.2);color:#ff7880; }
-[data-theme=dark] .up-tag.evt{ background:rgba(59,130,246,.2);color:#7ab7ff; }
-[data-theme=dark] .up-tag.cyc{ background:rgba(90,90,104,.2);color:#cccccc; }
-[data-theme=dark] .up-tag.neu{ background:rgba(58,58,58,.18);color:#cccccc; }
+[data-theme=dark] .up-tag.evt{ background:rgba(99,102,241,.2);color:#a5b4fc; }
+[data-theme=dark] .up-tag.cyc{ background:rgba(236,72,153,.2);color:#f9a8d4; }
 .up-sub-pill{
-  font-size:10px;font-weight:700;color:var(--sheet-muted);
+  font-size:10.5px;font-weight:700;color:var(--dsub);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .up-chev{
-  width:20px;height:20px;border-radius:50%;
-  background:rgba(128,128,160,.08);
   display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;
+  flex-shrink:0;color:var(--dsub);opacity:.5;
 }
-.up-chev svg{ width:11px;height:11px;stroke:var(--sheet-muted);stroke-width:2.5;fill:none; }
+.up-chev svg{ width:13px;height:13px;stroke:currentColor;stroke-width:2.5;fill:none; }
 .up-remove{
-  font-size:10px;color:var(--dsub);cursor:pointer;font-weight:700;
-  padding:2px 0;white-space:nowrap;
+  font-size:11px;color:var(--dsub);cursor:pointer;font-weight:700;
+  padding:4px 2px;opacity:.5;
+  transition:opacity .15s,color .15s;
 }
-.up-remove:hover{ color:#FF4757; }
+.up-remove:hover{ color:#FF4757;opacity:1; }
+.up-item-body{
+  display:flex;align-items:center;gap:10px;
+  flex:1;min-width:0;cursor:pointer;
+}
+.up-remove-btn{
+  flex-shrink:0;
+  width:22px;height:22px;
+  border-radius:50%;
+  border:none;
+  background:rgba(239,68,68,.1);
+  color:#ef4444;
+  font-size:10px;font-weight:900;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s,transform .12s;
+  font-family:'Nunito',sans-serif;
+  line-height:1;
+}
+.up-remove-btn:active{ background:rgba(239,68,68,.25);transform:scale(.9); }
 .up-empty{text-align:center;padding:36px 0 24px;color:var(--sheet-muted);}
 
 /* ── Up view toggle (List / Month) ── */
@@ -1429,59 +1468,126 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   box-shadow:0 2px 10px rgba(0,0,0,.35);
 }
 /* ── NEW NOTES HEADER ── */
-.nt-header-new{
-  margin:14px 14px 8px;
-  padding:16px 18px;
+/* ── Tasks hero header ── */
+.nt-tasks-hero{
+  margin:12px 14px 10px;
   border-radius:20px;
-  background:var(--card);
-  border:1px solid var(--border);
-  box-shadow:0 2px 12px rgba(0,0,0,.06);
+  overflow:hidden;
+  position:relative;
+  background:linear-gradient(145deg,rgba(16,185,129,.15),rgba(5,150,105,.1));
+  border:1.5px solid rgba(16,185,129,.22);
 }
-[data-theme=dark] .nt-header-new{
-  background:linear-gradient(135deg,rgba(78,82,132,.18),rgba(48,52,100,.10));
-  border-color:rgba(255,255,255,.07);
-  box-shadow:0 4px 20px rgba(0,0,0,.25);
+[data-theme=light] .nt-tasks-hero{
+  background:linear-gradient(145deg,rgba(16,185,129,.09),rgba(5,150,105,.06));
+  border-color:rgba(16,185,129,.16);
 }
-.nt-header-top{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
+.nt-tasks-hero-orb{
+  position:absolute;border-radius:50%;pointer-events:none;filter:blur(28px);
 }
-.nt-header-left{
-  display:flex;align-items:center;gap:13px;
+.nt-tasks-hero-orb.o1{
+  width:80px;height:80px;
+  background:rgba(16,185,129,.3);
+  top:-25px;right:-15px;
 }
-.nt-header-icon{
-  width:42px;height:42px;border-radius:13px;
-  background:linear-gradient(135deg,#4e5178,#313456);
+.nt-tasks-hero-orb.o2{
+  width:50px;height:50px;
+  background:rgba(6,182,212,.2);
+  bottom:-15px;left:25px;
+}
+.nt-tasks-hero-inner{
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:12px;
+  padding:15px 14px 15px 16px;
+}
+.nt-tasks-hero-icon{
+  width:40px;height:40px;border-radius:12px;
+  background:linear-gradient(135deg,#10b981,#059669);
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;color:#fff;
-  box-shadow:0 4px 12px rgba(78,82,132,.4);
+  box-shadow:0 4px 14px rgba(16,185,129,.4);
 }
-[data-theme=light] .nt-header-icon{
-  background:linear-gradient(135deg,#3a3a3a,#111);
-  box-shadow:0 4px 12px rgba(0,0,0,.22);
-}
-.nt-header-title{
-  font-size:18px;font-weight:900;letter-spacing:-.3px;
+.nt-tasks-hero-text{ flex:1;min-width:0; }
+.nt-tasks-hero-title{
+  font-size:18px;font-weight:900;letter-spacing:-.35px;
   color:var(--htext);line-height:1.1;
 }
-.nt-header-sub{
-  font-size:12px;font-weight:600;color:var(--dsub);margin-top:2px;
+.nt-tasks-hero-sub{
+  font-size:11px;font-weight:700;color:var(--dsub);margin-top:2px;
 }
-.nt-header-add{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:9px 16px;border:none;border-radius:12px;cursor:pointer;
-  background:linear-gradient(135deg,#4e5178,#313456);
-  color:#fff;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;
-  box-shadow:0 4px 14px rgba(78,82,132,.38);
-  transition:transform .18s,box-shadow .18s;
-  flex-shrink:0;
+.nt-tasks-hero-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:9px 15px;border:none;border-radius:10px;
+  background:linear-gradient(135deg,#10b981,#059669);
+  color:#fff;font-family:'Nunito',sans-serif;
+  font-size:12.5px;font-weight:800;
+  cursor:pointer;flex-shrink:0;
+  box-shadow:0 3px 12px rgba(16,185,129,.38);
+  transition:transform .13s,box-shadow .13s;
 }
-[data-theme=light] .nt-header-add{
-  background:linear-gradient(135deg,#3a3a3a,#111);
-  box-shadow:0 4px 14px rgba(0,0,0,.22);
+.nt-tasks-hero-btn:active{transform:scale(.94);box-shadow:0 1px 6px rgba(16,185,129,.28);}
+
+/* ── Notes hero header — glassmorphism ── */
+.nt-hero{
+  margin:12px 14px 10px;
+  border-radius:20px;
+  overflow:hidden;
+  position:relative;
+  background:linear-gradient(145deg,rgba(99,102,241,.18),rgba(139,92,246,.12));
+  border:1.5px solid rgba(99,102,241,.25);
+  backdrop-filter:blur(20px);
 }
-.nt-header-add:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(78,82,132,.5);}
-.nt-header-add:active{transform:scale(.95);}
-.nt-header-add svg{flex-shrink:0;}
+[data-theme=light] .nt-hero{
+  background:linear-gradient(145deg,rgba(99,102,241,.1),rgba(139,92,246,.07));
+  border-color:rgba(99,102,241,.18);
+}
+.nt-hero-orb{
+  position:absolute;border-radius:50%;pointer-events:none;
+  filter:blur(28px);
+}
+.nt-orb1{
+  width:90px;height:90px;
+  background:rgba(99,102,241,.35);
+  top:-30px;right:-20px;
+}
+.nt-orb2{
+  width:60px;height:60px;
+  background:rgba(236,72,153,.2);
+  bottom:-20px;left:20px;
+}
+.nt-hero-inner{
+  position:relative;z-index:1;
+  display:flex;align-items:center;
+  gap:12px;
+  padding:15px 14px 15px 16px;
+}
+.nt-hero-icon-wrap{
+  width:40px;height:40px;border-radius:12px;
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;color:#fff;
+  box-shadow:0 4px 14px rgba(99,102,241,.4);
+}
+.nt-hero-text{ flex:1;min-width:0; }
+.nt-hero-title{
+  font-size:18px;font-weight:900;letter-spacing:-.35px;
+  color:var(--htext);line-height:1.1;
+}
+.nt-hero-sub{
+  font-size:11px;font-weight:700;
+  color:var(--dsub);margin-top:2px;
+}
+.nt-hero-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:9px 15px;
+  border:none;border-radius:10px;
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);
+  color:#fff;
+  font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:800;
+  cursor:pointer;flex-shrink:0;
+  box-shadow:0 3px 12px rgba(99,102,241,.4);
+  transition:transform .13s,box-shadow .13s;
+}
+.nt-hero-btn:active{transform:scale(.94);box-shadow:0 1px 6px rgba(99,102,241,.3);}
 
 .nt-task-count{
   display:inline-flex;align-items:center;justify-content:center;
@@ -2715,6 +2821,227 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   box-shadow:0 3px 12px color-mix(in srgb,var(--cat) 40%,transparent);
 }
 
+
+/* ══ ADD EVENT SHEET — REDESIGN ══ */
+.ae-wrap {
+  display:flex;flex-direction:column;height:100%;
+  max-height:92dvh;overflow:hidden;
+}
+.ae-header {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 20px 14px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.ae-header-left {
+  display:flex;align-items:center;gap:11px;
+}
+.ae-header-icon {
+  width:36px;height:36px;border-radius:10px;
+  background:var(--tgon);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.ae-title {
+  font-size:17px;font-weight:900;color:var(--dtext);
+  letter-spacing:-.3px;line-height:1.1;
+}
+.ae-subtitle {
+  font-size:11px;font-weight:700;color:var(--dsub);
+  margin-top:1px;letter-spacing:.2px;
+}
+.ae-close {
+  width:32px;height:32px;border-radius:50%;
+  background:var(--tgbg);border:none;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--dsub);
+  transition:background .18s,color .18s;
+  flex-shrink:0;
+}
+.ae-close:hover { background:var(--border);color:var(--dtext); }
+
+.ae-body {
+  flex:1;overflow-y:auto;
+  padding:18px 20px 4px;
+  display:flex;flex-direction:column;gap:16px;
+}
+.ae-field-group { display:flex;flex-direction:column;gap:7px; }
+.ae-label {
+  font-size:10.5px;font-weight:800;color:var(--dsub);
+  text-transform:uppercase;letter-spacing:.9px;
+  display:flex;align-items:center;gap:5px;
+}
+.ae-label-tag {
+  font-size:9px;font-weight:800;letter-spacing:.5px;
+  padding:1px 5px;border-radius:4px;
+  background:var(--tgbg);color:var(--dsub);
+  text-transform:uppercase;
+}
+.ae-label-optional {
+  font-size:9px;font-weight:700;letter-spacing:.3px;
+  color:var(--dsub);opacity:.7;text-transform:none;
+}
+.ae-input-wrap {
+  position:relative;display:flex;align-items:center;
+}
+.ae-input-icon {
+  position:absolute;left:12px;
+  color:var(--dsub);pointer-events:none;flex-shrink:0;
+}
+.ae-input {
+  width:100%;padding:11px 13px 11px 35px;
+  border-radius:12px;
+  border:1.5px solid var(--border);
+  background:var(--tgbg);
+  color:var(--dtext);
+  font-size:13.5px;font-family:'Nunito',sans-serif;font-weight:700;
+  outline:none;
+  transition:border-color .18s,box-shadow .18s;
+}
+.ae-input:focus {
+  border-color:var(--tgon);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--tgon) 12%,transparent);
+}
+.ae-input::placeholder { color:var(--dsub);opacity:.7; }
+
+/* Date block */
+.ae-date-block {
+  display:flex;align-items:flex-end;gap:8px;
+  background:var(--tgbg);
+  border:1.5px solid var(--border);
+  border-radius:14px;
+  padding:13px 14px;
+}
+.ae-date-col { flex:1;display:flex;flex-direction:column;gap:6px; }
+.ae-date-arrow {
+  flex-shrink:0;color:var(--dsub);margin-bottom:6px;
+  opacity:.6;
+}
+.ae-date-row { display:flex;gap:5px; }
+.ae-select {
+  flex:1;padding:7px 6px;
+  border-radius:8px;
+  border:1.5px solid var(--border);
+  background:var(--sbg);
+  color:var(--dtext);
+  font-size:11.5px;font-family:'Nunito',sans-serif;font-weight:800;
+  outline:none;cursor:pointer;
+  transition:border-color .18s;
+  appearance:none;-webkit-appearance:none;
+  text-align:center;
+}
+.ae-select:focus { border-color:var(--tgon); }
+.ae-select-month { flex:2; }
+.ae-select-day { flex:.8; }
+
+/* Category pills */
+.ae-cat-row { display:flex;gap:7px;flex-wrap:wrap; }
+.ae-cat-pill {
+  display:inline-flex;align-items:center;gap:5px;
+  padding:7px 13px;border-radius:20px;
+  border:1.5px solid var(--border);
+  background:var(--tgbg);color:var(--dtext);
+  font-size:12.5px;font-weight:800;
+  cursor:pointer;font-family:'Nunito',sans-serif;
+  transition:all .18s;
+}
+[data-theme=dark] .ae-cat-pill { border-color:rgba(255,255,255,.08); }
+.ae-cat-pip {
+  width:8px;height:8px;border-radius:50%;
+  background:var(--cat);flex-shrink:0;
+}
+.ae-cat-pill.on {
+  background:var(--cat);color:#fff;border-color:transparent;
+  box-shadow:0 3px 12px color-mix(in srgb,var(--cat) 35%,transparent);
+}
+.ae-cat-pill.on .ae-cat-pip { background:rgba(255,255,255,.7); }
+
+/* Toggle cards */
+.ae-toggles { display:flex;flex-direction:column;gap:8px; }
+.ae-toggle-card {
+  display:flex;align-items:center;gap:12px;
+  background:var(--tgbg);
+  border:1.5px solid var(--border);
+  border-radius:13px;
+  padding:11px 13px;
+  transition:border-color .2s;
+}
+.ae-toggle-card.granted { border-color:#4CAF50;background:rgba(76,175,80,.07); }
+.ae-toggle-card.denied  { border-color:#f44336;background:rgba(244,67,54,.07); }
+[data-theme=dark] .ae-toggle-card.granted { background:rgba(76,175,80,.12); }
+[data-theme=dark] .ae-toggle-card.denied  { background:rgba(244,67,54,.12); }
+.ae-toggle-icon { font-size:20px;flex-shrink:0; }
+.ae-toggle-info { flex:1;min-width:0; }
+.ae-toggle-label { font-size:13px;font-weight:800;color:var(--dtext);line-height:1.2; }
+.ae-toggle-sub { font-size:11px;color:var(--dsub);margin-top:2px;font-weight:600;line-height:1.4; }
+
+/* Footer / save */
+.ae-footer {
+  padding:14px 20px 20px;flex-shrink:0;
+  border-top:1px solid var(--border);
+}
+.ae-save-btn {
+  width:100%;padding:14px;
+  border-radius:13px;
+  background:var(--tgon);
+  border:none;color:#fff;
+  font-size:15px;font-weight:900;
+  cursor:pointer;font-family:'Nunito',sans-serif;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:opacity .18s,transform .12s;
+  letter-spacing:.1px;
+}
+.ae-save-btn:active { opacity:.85;transform:scale(.99); }
+
+/* Scrollbar for ae-body */
+.ae-body::-webkit-scrollbar { width:3px; }
+.ae-body::-webkit-scrollbar-thumb { background:var(--dim);border-radius:2px; }
+/* ══ END ADD EVENT REDESIGN ══ */
+
+/* ══ CATEGORY SEGMENTED SELECTOR ══ */
+.ae-seg-wrap {
+  position:relative;
+  display:flex;
+  background:var(--tgbg);
+  border:1.5px solid var(--border);
+  border-radius:12px;
+  padding:3px;
+  gap:0;
+}
+.ae-seg-track {
+  position:absolute;
+  top:3px;bottom:3px;
+  border-radius:9px;
+  background:var(--ae-seg-color, #3B82F6);
+  box-shadow:0 2px 10px color-mix(in srgb,var(--ae-seg-color,#3B82F6) 35%,transparent);
+  transition:left .22s cubic-bezier(.4,0,.2,1),
+             width .22s cubic-bezier(.4,0,.2,1),
+             background .18s;
+  pointer-events:none;
+  z-index:0;
+}
+.ae-seg-btn {
+  position:relative;z-index:1;
+  flex:1;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  padding:8px 4px;
+  border:none;background:none;
+  border-radius:9px;
+  cursor:pointer;
+  font-family:'Nunito',sans-serif;
+  font-size:11.5px;font-weight:800;
+  color:var(--dsub);
+  transition:color .18s;
+  white-space:nowrap;
+}
+.ae-seg-btn svg { flex-shrink:0;transition:stroke .18s; }
+.ae-seg-btn:active { opacity:.8; }
+.ae-seg-btn.on { color:#fff; }
+.ae-seg-btn.on svg { stroke:#fff; }
+[data-theme=dark] .ae-seg-wrap { border-color:rgba(255,255,255,.07); }
+/* ══ END CATEGORY SEGMENTED SELECTOR ══ */
+
+
 /* ══ OFFLINE INDICATOR ══ */
 #offlineToast {
   position:fixed;top:16px;left:50%;
@@ -3181,6 +3508,13 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     <div id="upMonthView" style="display:none;"></div>
     <!-- Tasks inline view -->
     <div id="upTasksView" style="display:none;">
+      <!-- Tasks add button -->
+      <div style="padding:12px 14px 4px;display:flex;justify-content:flex-end;">
+        <button onclick="taskCreate()" style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border:none;border-radius:11px;background:var(--tgon);color:#fff;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:opacity .15s,transform .12s;" onmousedown="this.style.opacity='.8';this.style.transform='scale(.96)'" onmouseup="this.style.opacity='1';this.style.transform=''" ontouchend="this.style.opacity='1';this.style.transform=''">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Task
+        </button>
+      </div>
       <div id="ntTasksPanel">
         <div class="tasks-view" id="tasksListView">
           <div class="sscroll" style="padding:14px;">
@@ -3215,12 +3549,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
           </div>
         </div>
       </div>
-      <div style="padding:0 14px 14px;display:flex;justify-content:flex-end;">
-        <button class="nt-header-add" onclick="taskCreate()" style="margin-top:4px;">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          <span>New Task</span>
-        </button>
-      </div>
+
     </div>
   </div>
 </div>
@@ -3300,20 +3629,20 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 <!-- NOTES + TASKS COMBINED VIEW -->
 <div class="daycounter-view" id="notesView">
 
-  <!-- ── Segment header (shown in list views only) ── -->
-  <div id="ntSegmentHeader" class="nt-header-new">
-    <div class="nt-header-top">
-      <div class="nt-header-left">
-        <div class="nt-header-icon">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        </div>
-        <div>
-          <div class="nt-header-title">Notes</div>
-          <div class="nt-header-sub">Your personal space</div>
-        </div>
+  <!-- ── Notes header ── -->
+  <div id="ntSegmentHeader" class="nt-hero">
+    <div class="nt-hero-orb nt-orb1"></div>
+    <div class="nt-hero-orb nt-orb2"></div>
+    <div class="nt-hero-inner">
+      <div class="nt-hero-icon-wrap">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
       </div>
-      <button class="nt-header-add" id="ntAddBtn" onclick="ntAddCurrent()" title="New note">
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <div class="nt-hero-text">
+        <div class="nt-hero-title">Notes</div>
+        <div class="nt-hero-sub">Your personal space</div>
+      </div>
+      <button class="nt-hero-btn" id="ntAddBtn" onclick="ntAddCurrent()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span>New</span>
       </button>
     </div>
@@ -3553,75 +3882,121 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
 <!-- ADD EVENT SHEET -->
 <div class="sheet" id="addSheet">
-  <div class="shandle"></div>
-  <div class="stitle" id="addTitle">📌 Add Event</div>
-  <div class="ssec">
-    <!-- Notification permission card -->
-    <div class="notif-card" id="notifCard">
-      <div class="notif-bell" id="notifBell">🔔</div>
-      <div class="notif-info">
-        <div class="notif-lbl" id="notifLbl">Event Reminders</div>
-        <div class="notif-sub" id="notifSub">Notified at 6 AM on event day</div>
+  <div class="ae-wrap">
+    <!-- Header -->
+    <div class="ae-header">
+      <div class="ae-header-left">
+        <div class="ae-header-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div>
+          <div class="ae-title" id="addTitle">New Event</div>
+          <div class="ae-subtitle">Vikram Calendar</div>
+        </div>
       </div>
-      <button class="tgl" id="notifTgl" onclick="handleNotifToggle()"></button>
-    </div>
-    <div class="ssect">Event Title</div>
-    <input class="einput" id="evT" placeholder="e.g. Doctor appointment…" type="text">
-    <div class="ssect" style="margin-top:4px;">Nepali Date (BS)</div>
-    <div style="display:flex;gap:7px;margin-bottom:9px;">
-      <select class="einput" id="evBsY" style="flex:1.2;" onchange="updateDayOpts('evBs')">
-        <option value="2083">2083</option>
-        <option value="2084">2084</option>
-        <option value="2085">2085</option>
-        <option value="2086">2086</option>
-      </select>
-      <select class="einput" id="evBsM" style="flex:1.4;" onchange="updateDayOpts()">
-        <option value="1">Baishakh</option><option value="2">Jestha</option>
-        <option value="3">Ashadh</option><option value="4">Shrawan</option>
-        <option value="5">Bhadra</option><option value="6">Ashwin</option>
-        <option value="7">Kartik</option><option value="8">Mangsir</option>
-        <option value="9">Poush</option><option value="10">Magh</option>
-        <option value="11">Falgun</option><option value="12">Chaitra</option>
-      </select>
-      <select class="einput" id="evBsD" style="flex:0.8;"></select>
-    </div>
-    <div class="ssect" style="margin-top:4px;">End Date (optional)</div>
-    <div style="display:flex;gap:7px;margin-bottom:9px;">
-      <select class="einput" id="evEndBsY" style="flex:1.2;" onchange="updateDayOpts('evEndBs')">
-        <option value="2083">2083</option>
-        <option value="2084">2084</option>
-        <option value="2085">2085</option>
-        <option value="2086">2086</option>
-      </select>
-      <select class="einput" id="evEndBsM" style="flex:1.4;" onchange="updateDayOpts('evEndBs')">
-        <option value="1">Baishakh</option><option value="2">Jestha</option>
-        <option value="3">Ashadh</option><option value="4">Shrawan</option>
-        <option value="5">Bhadra</option><option value="6">Ashwin</option>
-        <option value="7">Kartik</option><option value="8">Mangsir</option>
-        <option value="9">Poush</option><option value="10">Magh</option>
-        <option value="11">Falgun</option><option value="12">Chaitra</option>
-      </select>
-      <select class="einput" id="evEndBsD" style="flex:0.8;"></select>
-    </div>
-    <div style="font-size:11px;color:var(--dsub);font-weight:700;margin:-4px 0 8px;">Leave the end date the same for a one-day event.</div>
-    <div class="ssect" style="margin-top:4px;">Category</div>
-    <div id="evColorPicker" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
-      <button type="button" class="ev-cat-btn on" data-color="personal" onclick="selectEvCat(this)" style="--cat:#3B82F6;">
-        <span class="ev-cat-dot"></span>Personal
-      </button>
-      <button type="button" class="ev-cat-btn" data-color="work" onclick="selectEvCat(this)" style="--cat:#10b981;">
-        <span class="ev-cat-dot"></span>Work
-      </button>
-      <button type="button" class="ev-cat-btn" data-color="cultural" onclick="selectEvCat(this)" style="--cat:#f59e0b;">
-        <span class="ev-cat-dot"></span>Cultural
-      </button>
-      <button type="button" class="ev-cat-btn" data-color="health" onclick="selectEvCat(this)" style="--cat:#ef4444;">
-        <span class="ev-cat-dot"></span>Health
+      <button class="ae-close" onclick="closeAll()" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-    <div class="ssect" style="margin-top:4px;">Note (optional)</div>
-    <input class="einput" id="evN" placeholder="Add a note…" type="text">
-    <button class="ebtn" onclick="saveEv()">Save Event</button>
+
+    <div class="ae-body">
+      <!-- Title input -->
+      <div class="ae-field-group">
+        <label class="ae-label">What's the event?</label>
+        <div class="ae-input-wrap">
+          <svg class="ae-input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          <input class="ae-input" id="evT" placeholder="e.g. Doctor appointment…" type="text" autocomplete="off">
+        </div>
+      </div>
+
+      <!-- Date section -->
+      <div class="ae-date-block">
+        <div class="ae-date-col">
+          <div class="ae-label">Start <span class="ae-label-tag">BS</span></div>
+          <div class="ae-date-row">
+            <select class="ae-select" id="evBsY" onchange="updateDayOpts('evBs')">
+              <option value="2083">2083</option>
+              <option value="2084">2084</option>
+              <option value="2085">2085</option>
+              <option value="2086">2086</option>
+            </select>
+            <select class="ae-select ae-select-month" id="evBsM" onchange="updateDayOpts()">
+              <option value="1">Baishakh</option><option value="2">Jestha</option>
+              <option value="3">Ashadh</option><option value="4">Shrawan</option>
+              <option value="5">Bhadra</option><option value="6">Ashwin</option>
+              <option value="7">Kartik</option><option value="8">Mangsir</option>
+              <option value="9">Poush</option><option value="10">Magh</option>
+              <option value="11">Falgun</option><option value="12">Chaitra</option>
+            </select>
+            <select class="ae-select ae-select-day" id="evBsD"></select>
+          </div>
+        </div>
+        <div class="ae-date-arrow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </div>
+        <div class="ae-date-col">
+          <div class="ae-label">End <span class="ae-label-tag ae-label-optional">optional</span></div>
+          <div class="ae-date-row">
+            <select class="ae-select" id="evEndBsY" onchange="updateDayOpts('evEndBs')">
+              <option value="2083">2083</option>
+              <option value="2084">2084</option>
+              <option value="2085">2085</option>
+              <option value="2086">2086</option>
+            </select>
+            <select class="ae-select ae-select-month" id="evEndBsM" onchange="updateDayOpts('evEndBs')">
+              <option value="1">Baishakh</option><option value="2">Jestha</option>
+              <option value="3">Ashadh</option><option value="4">Shrawan</option>
+              <option value="5">Bhadra</option><option value="6">Ashwin</option>
+              <option value="7">Kartik</option><option value="8">Mangsir</option>
+              <option value="9">Poush</option><option value="10">Magh</option>
+              <option value="11">Falgun</option><option value="12">Chaitra</option>
+            </select>
+            <select class="ae-select ae-select-day" id="evEndBsD"></select>
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- Note -->
+      <div class="ae-field-group">
+        <label class="ae-label">Note <span class="ae-label-optional">optional</span></label>
+        <div class="ae-input-wrap">
+          <svg class="ae-input-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <input class="ae-input" id="evN" placeholder="Add a note…" type="text" autocomplete="off">
+        </div>
+      </div>
+
+      <!-- Toggles row -->
+      <div class="ae-toggles">
+        <!-- Notification -->
+        <div class="ae-toggle-card" id="notifCard">
+          <div class="ae-toggle-icon" id="notifBell">🔔</div>
+          <div class="ae-toggle-info">
+            <div class="ae-toggle-label" id="notifLbl">Reminders</div>
+            <div class="ae-toggle-sub" id="notifSub">6 AM on event day</div>
+          </div>
+          <button class="tgl" id="notifTgl" onclick="handleNotifToggle()"></button>
+        </div>
+        <!-- Repeat yearly -->
+        <div class="ae-toggle-card">
+          <div class="ae-toggle-icon">🔁</div>
+          <div class="ae-toggle-info">
+            <div class="ae-toggle-label">Repeat yearly</div>
+            <div class="ae-toggle-sub">Same BS date each year</div>
+          </div>
+          <button class="tgl" id="evRepeatYearly" onclick="this.classList.toggle('on')"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save button -->
+    <div class="ae-footer">
+      <button class="ae-save-btn" onclick="saveEv()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Save Event
+      </button>
+    </div>
   </div>
 </div>
 
@@ -4385,16 +4760,14 @@ function openDay(bY,bM,bD){
   if(dayEvts.length>0){
     evtRow.style.display='flex';
     evtList.innerHTML=dayEvts.map(ev=>{
-      const c=({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'})[ev.color]||'#3B82F6';
       return `
-      <div style="padding:10px 11px;background:var(--cell-bg);border-radius:14px;border-left:3px solid ${c};border:1px solid var(--panel-border);border-left:3px solid ${c};">
+      <div style="padding:10px 11px;background:var(--cell-bg);border-radius:14px;border:1px solid var(--panel-border);border-left:3px solid var(--tgon);">
         <div style="display:flex;gap:8px;align-items:center;">
-          <span style="background:${c};width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0;box-shadow:0 0 12px ${c}55;"></span>
           <span style="font-size:13px;font-weight:800;color:var(--panel-text);">${ev.title}</span>
-          <span style="margin-left:auto;font-size:9px;font-weight:800;text-transform:uppercase;color:${c};background:${c}22;padding:2px 7px;border-radius:6px;">${ev.color||'personal'}</span>
         </div>
-        <div style="font-size:11px;color:var(--panel-muted);margin-top:4px;padding-left:15px;">${formatEventRange(ev)}</div>
-        ${ev.note?`<div style="font-size:11px;color:var(--panel-muted);margin-top:4px;padding-left:15px;">${ev.note}</div>`:''}
+        <div style="font-size:11px;color:var(--panel-muted);margin-top:4px;">${formatEventRange(ev)}</div>
+        ${ev.note?`<div style="font-size:11px;color:var(--panel-muted);margin-top:3px;">${ev.note}</div>`:''}
+        ${ev.repeatYearly?`<div style="margin-top:4px;"><span style="font-size:10px;background:rgba(99,102,241,.15);color:#6366f1;border-radius:6px;padding:1px 5px;font-weight:800;">🔁 Yearly</span></div>`:''}
       </div>`;
     }).join('');
   } else {
@@ -4555,6 +4928,22 @@ function getEventRangeMid(ev){
 }
 
 function eventMatchesDate(ev, y, m, d){
+  // Yearly repeat: match same BS month+day (and end range offset) in any year >= event year
+  if(ev.repeatYearly){
+    if(y < ev.bsY) return false;
+    // For single-day events: match same BS month and day in any year
+    const spanDays = Math.round(((ev.endAdMs??ev.adMs) - ev.adMs) / 86400000);
+    if(spanDays <= 0){
+      return m === ev.bsM && d === ev.bsD;
+    }
+    // Multi-day: build a virtual start in year y and check range
+    const virtualStart = bsToAd(y, ev.bsM, ev.bsD);
+    const virtualStartMid = new Date(virtualStart.getFullYear(), virtualStart.getMonth(), virtualStart.getDate());
+    const virtualEndMid = new Date(virtualStartMid.getTime() + spanDays * 86400000);
+    const day = bsToAd(y, m, d);
+    const dayMid = new Date(day.getFullYear(), day.getMonth(), day.getDate());
+    return dayMid >= virtualStartMid && dayMid <= virtualEndMid;
+  }
   const day = bsToAd(y,m,d);
   const dayMid = new Date(day.getFullYear(), day.getMonth(), day.getDate());
   const {startMid, endMid} = getEventRangeMid(ev);
@@ -4604,7 +4993,8 @@ function openSheet(t){
   if(t==='add'){
     // Default date = today BS
     setEventRange(TODAYBS.y, TODAYBS.m, TODAYBS.d);
-    setTimeout(()=>document.getElementById('evT').focus(),360);
+    document.getElementById('evRepeatYearly')?.classList.remove('on');
+    setTimeout(()=>{ initSegTrack(); document.getElementById('evT').focus(); },360);
   }
 }
 
@@ -4737,7 +5127,8 @@ async function saveEv(){
     adMs:startMid.getTime(),
     endAdMs:endMid.getTime(),
     note,
-    color: (document.querySelector('#evColorPicker .ev-cat-btn.on') || {}).dataset?.color || 'personal'
+    color: (document.querySelector('#evColorPicker .ae-cat-card.on, #evColorPicker .ae-cat-pill.on, #evColorPicker .ev-cat-btn.on') || {}).dataset?.color || 'personal',
+    repeatYearly: document.getElementById('evRepeatYearly')?.classList.contains('on') || false
   });
   userEvents.sort((a,b)=>a.adMs-b.adMs);
   saveEvents();
@@ -4877,6 +5268,14 @@ function setUpView(v){
     if(upList) upList.style.display = 'none';
     if(upMonthView) upMonthView.style.display = 'none';
     if(typeof window.tasksShowList === 'function') window.tasksShowList();
+    // Show tasks count in badge
+    try{
+      const raw = localStorage.getItem('vikram_tasks_v1');
+      const list = raw ? JSON.parse(raw) : [];
+      const incomplete = list.filter(t=>!t.done).length;
+      const countEl = document.getElementById('upCount');
+      if(countEl){ countEl.textContent = String(incomplete); countEl.title = incomplete + ' tasks left'; countEl.classList.add('tasks-mode'); }
+    }catch(e){}
   } else {
     renderUpcoming();
   }
@@ -5063,12 +5462,12 @@ function mvItemHtml(it,y,m){
         <div class="up-icon evt" style="color:${c};">📌</div>
         <div class="up-info">
           <div class="up-name">${ev.title}</div>
-          <div class="up-tag-row"><span class="up-tag evt" style="background:${c}22;color:${c};">${ev.color||'personal'}</span><span class="up-sub-pill">${rangeStr}</span></div>
+          <div class="up-tag-row"><span class="up-sub-pill">${rangeStr}</span></div>
           ${ev.note?`<div style="font-size:11px;color:var(--sheet-muted);font-weight:600;margin-top:3px;">${ev.note}</div>`:''}
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
           <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
-          <span class="up-remove" onclick="event.stopPropagation();removeEv(${realIdx})">✕</span>
+          <span class="up-remove" data-remove-idx="${realIdx}" data-remove-adms="${ev.adMs}" data-remove-title="${ev.title}" onclick="(function(e){e.stopPropagation();upRemoveEv(e.currentTarget);})(event)">✕</span>
         </div>
       </div></div>`;
   }
@@ -5143,6 +5542,26 @@ function renderUpcoming(){
 
   // — User events within window —
   userEvents.forEach(ev=>{
+    if(ev.repeatYearly){
+      // For yearly repeats, project into the current/next year within the window
+      const spanDays=Math.round(((ev.endAdMs??ev.adMs)-ev.adMs)/86400000);
+      // Check occurrences for the years that overlap the window
+      const windowYears=new Set([todayMid.getFullYear(), windowEnd.getFullYear()]);
+      windowYears.forEach(yr=>{
+        const virtualStart=bsToAd(adToBs(new Date(yr,0,1)).y, ev.bsM, ev.bsD);
+        const vStartMid=new Date(virtualStart.getFullYear(),virtualStart.getMonth(),virtualStart.getDate());
+        const vEndMid=new Date(vStartMid.getTime()+spanDays*86400000);
+        if(vEndMid<todayMid||vStartMid>windowEnd) return;
+        const displayMid=vStartMid>todayMid ? vStartMid : todayMid;
+        const diff=Math.round((displayMid-todayMid)/86400000);
+        const startStr=`${ADMEN[vStartMid.getMonth()]} ${vStartMid.getDate()}, ${vStartMid.getFullYear()}`;
+        const endStr=`${ADMEN[vEndMid.getMonth()]} ${vEndMid.getDate()}, ${vEndMid.getFullYear()}`;
+        const rangeText=spanDays===0 ? startStr : `${startStr} to ${endStr}`;
+        const bs=adToBs(displayMid);
+        items.push({type:'evt',ky:bs.y,km:bs.m,kd:bs.d,ad:new Date(vStartMid),adMid:displayMid,diff,ev,rangeText,range:{startMid:vStartMid,endMid:vEndMid},bsDisp:bs});
+      });
+      return;
+    }
     const {startMid,endMid}=getEventRangeMid(ev);
     if(endMid<todayMid||startMid>windowEnd) return;
     const displayMid=startMid>todayMid ? startMid : todayMid;
@@ -5171,7 +5590,7 @@ function renderUpcoming(){
 
   const list=document.getElementById('upList');
   const countEl=document.getElementById('upCount');
-  if(countEl) countEl.textContent=String(items.length);
+  if(countEl){ countEl.textContent=String(items.length); countEl.classList.remove('tasks-mode'); countEl.title=''; }
 
   if(items.length===0){
     list.innerHTML=`<div class="up-empty">
@@ -5197,11 +5616,14 @@ function renderUpcoming(){
   const WDEN_SHORT=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
   let html='';
-  groups.forEach(g=>{
+  const groupArr = [...groups.values()];
+  groups.forEach((g, dk, map)=>{
+    const keys = [...map.keys()];
+    const isLast = keys[keys.length-1] === dk;
     const {diff, adMid, bs} = g;
     const dow = WDEN_SHORT[adMid.getDay()];
     const monthStr = ADMEN[adMid.getMonth()];
-    const bsLabel  = `${ns(bs.d)} ${lang==='ne'?MNE[bs.m-1]:MEN[bs.m-1]} ${bs.y}`;
+    const bsLabel  = `${ns(bs.d)} ${lang==='ne'?MNE[bs.m-1]:MEN[bs.m-1]}`;
     const isToday = diff === 0;
     const isTomorrow = diff === 1;
     const badgeHtml = isToday
@@ -5211,80 +5633,66 @@ function renderUpcoming(){
         : '';
 
     html += `<div class="up-day-group">
-      <div class="up-day-row">
-        <div class="up-day-left">
-          <div class="up-day-bubble${isToday?' today-bubble':''}">
-            <span class="up-day-bubble-num">${adMid.getDate()}</span>
-            <span class="up-day-bubble-dow">${dow}</span>
-          </div>
-          <div class="up-day-meta">
-            <span class="up-day-name">${monthStr} ${adMid.getFullYear()}</span>
-            <span class="up-day-bs ne">${bsLabel} BS</span>
-          </div>
+      <div class="up-timeline-left">
+        <div class="up-day-bubble${isToday?' today-bubble':''}">
+          <span class="up-day-bubble-num">${adMid.getDate()}</span>
+          <span class="up-day-bubble-dow">${dow}</span>
         </div>
-        ${badgeHtml}
-      </div>`;
+        ${isLast?'':'<div class="up-timeline-line"></div>'}
+      </div>
+      <div class="up-timeline-right">
+        <div class="up-day-meta-row">
+          <div>
+            <div class="up-day-name">${monthStr} ${adMid.getFullYear()}</div>
+            <div class="up-day-bs ne">${bsLabel} BS</div>
+          </div>
+          ${badgeHtml}
+        </div>`;
 
     g.items.forEach(it=>{
       if(it.type==='hol'){
         const holName=lang==='ne'?it.hol.np:it.hol.en;
         const meta=upItemMeta('hol');
         html+=`<div class="up-item" onclick="openDay(${it.ky},${it.km},${it.kd})">
-          <div class="up-item-accent hol"></div>
-          <div class="up-item-inner">
-            <div class="up-icon hol">${meta.icon}</div>
-            <div class="up-info">
-              <div class="up-name ne">${holName}</div>
-              <div class="up-tag-row">
-                <span class="up-tag hol">${meta.tagLabel}</span>
-                <span class="up-sub-pill">${MEN[it.km-1]} ${it.kd}, ${it.ky} BS</span>
-              </div>
-            </div>
-            <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="up-icon hol">${meta.icon}</div>
+          <div class="up-info">
+            <div class="up-name ne">${holName}</div>
+            <div class="up-tag-row"><span class="up-tag hol">${meta.tagLabel}</span></div>
           </div>
+          <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>`;
       } else if(it.type==='cyc'){
         const meta=upItemMeta('cyc', it.title);
         html+=`<div class="up-item" onclick="openDay(${it.ky},${it.km},${it.kd})">
-          <div class="up-item-accent cyc"></div>
-          <div class="up-item-inner">
-            <div class="up-icon cyc">${meta.icon}</div>
-            <div class="up-info">
-              <div class="up-name">${it.title}</div>
-              <div class="up-tag-row">
-                <span class="up-tag cyc">${meta.tagLabel}</span>
-                <span class="up-sub-pill">${it.sub||'Cycle Tracker'}</span>
-              </div>
-            </div>
-            <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <div class="up-icon cyc">${meta.icon}</div>
+          <div class="up-info">
+            <div class="up-name">${it.title}</div>
+            <div class="up-tag-row"><span class="up-tag cyc">${meta.tagLabel}</span></div>
           </div>
+          <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>`;
       } else {
         const ev=it.ev;
         const realIdx=userEvents.indexOf(ev);
-        const c=({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'})[ev.color]||'#3B82F6';
-        html+=`<div class="up-item" onclick="openDay(${it.ky},${it.km},${it.kd})">
-          <div class="up-item-accent evt" style="background:${c};"></div>
-          <div class="up-item-inner">
-            <div class="up-icon evt" style="color:${c};">📌</div>
+        html+=`<div class="up-item">
+          <div class="up-item-body" onclick="openDay(${it.ky},${it.km},${it.kd})">
+            <div class="up-icon evt">📌</div>
             <div class="up-info">
               <div class="up-name">${ev.title}</div>
               <div class="up-tag-row">
-                <span class="up-tag evt" style="background:${c}22;color:${c};">${ev.color||'personal'}</span>
                 <span class="up-sub-pill">${it.rangeText||''}</span>
+                ${ev.repeatYearly?'<span style="font-size:9px;background:rgba(99,102,241,.13);color:#6366f1;border-radius:5px;padding:1px 5px;font-weight:800;">🔁</span>':''}
               </div>
-              ${ev.note?`<div style="font-size:11px;color:var(--sheet-muted);font-weight:600;margin-top:3px;">${ev.note}</div>`:''}
+              ${ev.note?`<div style="font-size:11px;color:var(--dsub);margin-top:2px;">${ev.note}</div>`:''}
             </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
-              <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
-              <span class="up-remove" onclick="event.stopPropagation();removeEv(${realIdx})">✕</span>
-            </div>
+            <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
           </div>
+          <button class="up-remove-btn" data-remove-idx="${realIdx}" data-remove-adms="${ev.adMs}" data-remove-title="${ev.title}" onclick="upRemoveEv(this)">✕</button>
         </div>`;
       }
     });
 
-    html += `</div>`;
+    html += `</div></div>`;
   });
 
   list.innerHTML = html;
@@ -5513,19 +5921,29 @@ function renderSelectedDay(){
     <div class="sel-list">
       ${!h&&!dayEvts.length?`<div class="sel-empty">No holidays or events on this day</div>`:''}
       ${h&&cfg.holn?`<div class="sel-row"><span class="sel-dot" style="background:var(--hol);"></span><span>${lang==='ne'?'सार्वजनिक बिदा':'Public holiday'} · ${lang==='ne'?h.np:h.en}</span></div>`:''}
-      ${dayEvts.map(ev=>{const c=({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'})[ev.color]||'#3B82F6';return`<div class="sel-row"><span class="sel-dot" style="background:${c};"></span><span>${ev.title}${ev.note?' · '+ev.note:''}<span style="display:block;font-size:11px;color:var(--sel-muted);font-weight:700;margin-top:2px;">${formatEventRange(ev)}</span></span></div>`;}).join('')}
+      ${dayEvts.map(ev=>{const c=({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'})[ev.color]||'#3B82F6';return`<div class="sel-row"><span class="sel-dot" style="background:${c};"></span><span>${ev.title}${ev.note?' · '+ev.note:''}${ev.repeatYearly?' <span style="font-size:10px;background:rgba(99,102,241,.15);color:#6366f1;border-radius:6px;padding:1px 5px;font-weight:800;">🔁 Yearly</span>':''}<span style="display:block;font-size:11px;color:var(--sel-muted);font-weight:700;margin-top:2px;">${formatEventRange(ev)}</span></span></div>`;}).join('')}
     </div>
   </div>`;
 }
 
-function removeEv(i){
-  if(confirm(`Remove "${userEvents[i].title}"?`)){
-    userEvents.splice(i,1);
-    saveEvents();
-    render();
-    renderUpcoming();
-    renderSelectedDay();
+function upRemoveEv(el){
+  let i = parseInt(el.getAttribute('data-remove-idx'), 10);
+  if(isNaN(i) || i < 0 || i >= userEvents.length){
+    const adMs = parseInt(el.getAttribute('data-remove-adms'), 10);
+    const title = el.getAttribute('data-remove-title') || '';
+    i = userEvents.findIndex(e => e.adMs === adMs && e.title === title);
   }
+  if(i < 0 || i >= userEvents.length) return;
+  removeEv(i);
+}
+
+function removeEv(i){
+  if(i < 0 || i >= userEvents.length) return;
+  userEvents.splice(i,1);
+  saveEvents();
+  render();
+  renderUpcoming();
+  renderSelectedDay();
 }
 
 // ══ PREVIOUS 29 DAYS ══
@@ -5608,7 +6026,7 @@ function renderPrevious(){
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;">
           <span class="up-badge" style="background:var(--tgbg);color:var(--dsub);">${agoLabel}</span>
-          <span style="font-size:10px;color:var(--dsub);cursor:pointer;font-weight:700;" onclick="event.stopPropagation();removeEv(${realIdx})">✕ Remove</span>
+          <span style="font-size:10px;color:var(--dsub);cursor:pointer;font-weight:700;" data-remove-idx="${realIdx}" data-remove-adms="${ev.adMs}" data-remove-title="${ev.title}" onclick="(function(e){e.stopPropagation();upRemoveEv(e.currentTarget);})(event)">✕ Remove</span>
         </div>
       </div>`;
     }
@@ -9468,9 +9886,33 @@ window.ntUpdateTaskCount = function(pending){
 
 // ── 1. EVENT COLOR CATEGORIES ──────────────────────────────────
 window.selectEvCat = function(btn) {
-  document.querySelectorAll('#evColorPicker .ev-cat-btn').forEach(b => b.classList.remove('on'));
+  const picker = document.getElementById('evColorPicker');
+  picker.querySelectorAll('.ev-cat-btn, .ae-cat-pill, .ae-cat-card, .ae-seg-btn').forEach(b => b.classList.remove('on'));
   btn.classList.add('on');
+  moveSegTrack(btn);
 };
+
+function moveSegTrack(btn) {
+  const track = document.getElementById('aeCatTrack');
+  const picker = document.getElementById('evColorPicker');
+  if(!track || !picker) return;
+  // Use offsetLeft relative to the wrapper — works even when off-screen
+  track.style.left = btn.offsetLeft + 'px';
+  track.style.width = btn.offsetWidth + 'px';
+  const cat = btn.style.getPropertyValue('--cat').trim();
+  picker.style.setProperty('--ae-seg-color', cat);
+}
+
+function initSegTrack() {
+  const active = document.querySelector('#evColorPicker .ae-seg-btn.on');
+  if(!active) return;
+  const track = document.getElementById('aeCatTrack');
+  if(track) track.style.transition = 'none';
+  moveSegTrack(active);
+  requestAnimationFrame(() => {
+    if(track) track.style.transition = '';
+  });
+}
 
 // Map category names to dot colors on calendar
 const EV_CAT_COLORS = {
