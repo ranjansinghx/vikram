@@ -638,7 +638,48 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .dhdr.wk{color:#bb6c7a;}
 .cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:9px 7px;padding:2px 1px 0;}
 
-/* ── COLLAPSIBLE CALENDAR ── */
+/* ── MULTI-MONTH (QUARTERLY) VIEW ── */
+@keyframes mmFadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.mm-nav{display:flex;align-items:center;justify-content:space-between;padding:2px 2px 10px;gap:10px;}
+.mm-nav-label{flex:1;text-align:center;font-size:14px;font-weight:900;color:var(--nav-text);letter-spacing:-.3px;}
+.mm-block{margin-bottom:18px;}
+.mm-month-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2px 7px;
+}
+.mm-month-title{font-size:15px;font-weight:900;color:var(--cell-text);letter-spacing:-.3px;}
+.mm-month-sub{font-size:11px;font-weight:700;color:var(--cell-muted);}
+.mm-month-title.is-today-month{color:var(--nav-text);}
+.mm-dhdrs{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:5px;padding:0 1px;}
+.mm-dhdr{text-align:center;font-size:9px;font-weight:800;letter-spacing:.1px;padding:1px 0;color:#9a98a8;text-transform:uppercase;}
+.mm-dhdr.wk{color:#bb6c7a;}
+.mm-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px 3px;padding:0 1px 0;}
+.mm-cell{
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:3px 1px 2px;min-height:34px;cursor:pointer;border-radius:9px;
+  position:relative;transition:background .12s,transform .12s;overflow:hidden;
+}
+.mm-cell.active:hover{background:var(--cell-hover);transform:translateY(-1px);}
+.mm-cell.hol,.mm-cell.wk{background:var(--cell-special-bg);}
+.mm-cell.hol:hover,.mm-cell.wk:hover{background:var(--cell-special-hover);}
+.mm-cell.dim{cursor:default;background:transparent;}
+.mm-cell.dim .mm-ndate{color:var(--cell-muted);opacity:.45;}
+.mm-cell.dim:hover{background:transparent;transform:none;}
+.mm-cell.today{background:var(--today-grad);border-radius:9px;box-shadow:0 0 0 1px rgba(255,255,255,.14);}
+.mm-cell.today .mm-ndate{color:#fff;font-weight:900;}
+.mm-cell.sel{background:rgba(26,26,26,.18);border-radius:9px;}
+[data-theme=dark] .mm-cell.sel{background:rgba(255,255,255,.12);}
+.mm-ndate{font-size:12px;font-weight:800;color:var(--cell-text);line-height:1;letter-spacing:.05px;}
+.mm-cell.hol .mm-ndate{color:#d95b68;}
+.mm-cell.wk .mm-ndate{color:#c75e6f;}
+.mm-dots{display:flex;gap:2px;margin-top:2px;justify-content:center;flex-wrap:wrap;max-width:100%;}
+.mm-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;}
+.mm-dot.hol{background:var(--dot-hol);}
+.mm-dot.evt{background:var(--dot-evt);}
+.mm-dot.cyc{background:#ff9ab8;}
+.mm-cell.today .mm-dot{background:rgba(255,255,255,.85);}
+.mm-sep{height:1px;background:var(--border);margin:2px 0 16px;border-radius:1px;opacity:.6;}
+
 .cal-clip{
   overflow:hidden;
   will-change:height;
@@ -3553,6 +3594,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   </div>
   <div class="modebar" id="modebar">
     <button class="mode-pill on" id="tabAll"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="13" width="7" height="7" rx="1.5"/><rect x="14" y="13" width="7" height="7" rx="1.5"/></svg>All</button>
+    <button class="mode-pill" id="tab3M" onclick="toggle3MView()" title="3-month quarterly view"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="5.5" height="16" rx="1.2"/><rect x="9.2" y="4" width="5.5" height="16" rx="1.2"/><rect x="16.5" y="4" width="5.5" height="16" rx="1.2"/></svg>Quarter</button>
     <button class="mode-pill" id="echoBtn" draggable="true" data-pill="echo" onclick="openSheet('echo')" title="Echo"><svg viewBox="0 0 24 24"><path d="M12 3 C7 3 3 7 3 12 C3 14.5 4 16.8 5.7 18.4 L4 21 L8.2 19.8 C9.4 20.6 10.7 21 12 21 C17 21 21 17 21 12 C21 7 17 3 12 3Z"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="14" x2="13" y2="14"/></svg>Echo</button>
     <button class="mode-pill" id="colorMatcherBtn" draggable="true" data-pill="colorMatcher" onclick="openSheet('colorMatcher')" title="Color Matcher"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="3.5" fill="#FF6B6B" stroke="none"/><circle cx="16" cy="8" r="3.5" fill="#3A86FF" stroke="none"/><circle cx="8" cy="16" r="3.5" fill="#70E000" stroke="none"/><circle cx="16" cy="16" r="3.5" fill="#FFB703" stroke="none"/></svg>Colors</button>
     <button class="mode-pill" id="pomodoroBtn" draggable="true" data-pill="pomodoro" onclick="openSheet('pomodoro')" title="Focus Timer"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 12"/></svg>Focus</button>
@@ -3581,6 +3623,17 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     <div class="cal-shimmer-bar"></div>
     <div class="cal-swipe-progress" id="calSwipeProgress"></div>
   </div>
+
+  <!-- ══ MULTI-MONTH (QUARTERLY) VIEW ══ -->
+  <div id="mmView" style="display:none;margin:0 8px 10px;animation:mmFadeIn .22s cubic-bezier(.22,.85,.25,1);">
+    <div class="mm-nav">
+      <button class="nbtn" onclick="mmPrev()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div class="mm-nav-label" id="mmNavLabel"></div>
+      <button class="nbtn" onclick="mmNext()"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+    <div id="mmGrid"></div>
+  </div>
+
   <div class="upcoming">
     <div class="up-hdr">
       <div class="up-hdr-left">
@@ -4538,9 +4591,191 @@ function render(){
   document.getElementById('cgrid').innerHTML=html;
 }
 
-function prevMonth(){haptic('light');vM--;if(vM<1){vM=12;vY--;}render();}
-function nextMonth(){haptic('light');vM++;if(vM>12){vM=1;vY++;}render();}
-function goToday(){haptic('medium');vY=TODAYBS.y;vM=TODAYBS.m;selectedDay={y:TODAYBS.y,m:TODAYBS.m,d:TODAYBS.d};render();renderSelectedDay();}
+function prevMonth(){haptic('light');vM--;if(vM<1){vM=12;vY--;}render();if(mm3Active)render3M();}
+function nextMonth(){haptic('light');vM++;if(vM>12){vM=1;vY++;}render();if(mm3Active)render3M();}
+function goToday(){haptic('medium');vY=TODAYBS.y;vM=TODAYBS.m;selectedDay={y:TODAYBS.y,m:TODAYBS.m,d:TODAYBS.d};render();renderSelectedDay();if(mm3Active)render3M();}
+
+// ══ MULTI-MONTH (QUARTERLY) VIEW ══
+let mm3Active = false;
+
+function toggle3MView(){
+  haptic('light');
+  mm3Active = !mm3Active;
+  const btn = document.getElementById('tab3M');
+  const ccard = document.querySelector('.ccard');
+  const mmView = document.getElementById('mmView');
+  const upcoming = document.querySelector('.upcoming');
+
+  if(mm3Active){
+    btn.classList.add('on');
+    // Hide single-month card, show multi-month
+    if(ccard) ccard.style.display = 'none';
+    if(mmView){ mmView.style.display = 'block'; render3M(); }
+    // Collapse upcoming to save space
+    if(upcoming) upcoming.style.marginTop = '0';
+  } else {
+    btn.classList.remove('on');
+    if(ccard) ccard.style.display = '';
+    if(mmView) mmView.style.display = 'none';
+    if(upcoming) upcoming.style.marginTop = '';
+    render();
+  }
+}
+
+function mmOffsetMonth(y, m, delta){
+  m += delta;
+  while(m > 12){ m -= 12; y++; }
+  while(m < 1) { m += 12; y--; }
+  return {y, m};
+}
+
+function render3M(){
+  const grid = document.getElementById('mmGrid');
+  const label = document.getElementById('mmNavLabel');
+  if(!grid) return;
+
+  // Centre month is vY/vM; show prev, current, next
+  const months = [
+    mmOffsetMonth(vY, vM, -1),
+    {y: vY, m: vM},
+    mmOffsetMonth(vY, vM, +1),
+  ];
+
+  // Nav label shows the quarter span
+  const first = months[0], last = months[2];
+  label.textContent = `${MEN[first.m-1]} ${first.y} – ${MEN[last.m-1]} ${last.y}`;
+
+  let html = '';
+  months.forEach(({y, m}, idx) => {
+    const isCurrentView = (y === vY && m === vM);
+    const isTodayMonth = (y === TODAYBS.y && m === TODAYBS.m);
+    const dims = BS[y]?.[m-1] ?? 30;
+    const sAD = bsStart(y, m);
+    const sDow = (sAD.getDay() - cfg.fd + 7) % 7;
+    const pM = m===1?12:m-1, pY = m===1?y-1:y;
+    const pDims = BS[pY]?.[pM-1] ?? 30;
+    const nM = m===12?1:m+1, nY = m===12?y+1:y;
+
+    let tot = sDow + dims;
+    if(tot % 7 !== 0) tot += 7 - tot % 7;
+
+    // Day header row
+    const dn = lang==='ne' ? DNE : DEN;
+    const ord = [];
+    for(let i=0;i<7;i++) ord.push((cfg.fd+i)%7);
+    const dHdr = ord.map(i=>`<div class="mm-dhdr${i===0||i===6?' wk':''}">${dn[i][0]}</div>`).join('');
+
+    // Month header
+    const mnName = lang==='ne' ? MNE[m-1] : MEN[m-1];
+    const adStart = bsToAd(y, m, 1);
+    const adEnd   = bsToAd(y, m, dims);
+    const adLabel = `${ADMEN[adStart.getMonth()]} – ${ADMEN[adEnd.getMonth()]} ${adEnd.getFullYear()}`;
+
+    html += `<div class="mm-block">
+      <div class="mm-month-hdr">
+        <div>
+          <div class="mm-month-title${isTodayMonth?' is-today-month':''}">${mnName} ${ns(y)}</div>
+          <div class="mm-month-sub">${adLabel}</div>
+        </div>
+        ${isTodayMonth ? '<div style="font-size:10px;font-weight:800;padding:3px 8px;border-radius:8px;background:var(--today-grad);color:#fff;">This Month</div>' : ''}
+      </div>
+      <div class="mm-dhdrs">${dHdr}</div>
+      <div class="mm-grid">`;
+
+    for(let i=0;i<tot;i++){
+      const col = (cfg.fd + (i%7)) % 7;
+      const isWk = col===0||col===6;
+
+      if(i < sDow){
+        // Prev month overflow
+        const nd = pDims - sDow + i + 1;
+        html += `<div class="mm-cell dim" onclick="mmJumpTo(${pY},${pM},${nd})"><div class="mm-ndate">${ns(nd)}</div></div>`;
+      } else if(i >= sDow + dims){
+        // Next month overflow
+        const nd = i - sDow - dims + 1;
+        html += `<div class="mm-cell dim" onclick="mmJumpTo(${nY},${nM},${nd})"><div class="mm-ndate">${ns(nd)}</div></div>`;
+      } else {
+        const nd = i - sDow + 1;
+        const adD = new Date(sAD); adD.setDate(adD.getDate() + nd - 1);
+        const adMid = new Date(adD.getFullYear(), adD.getMonth(), adD.getDate());
+        const isToday = (y===TODAYBS.y && m===TODAYBS.m && nd===TODAYBS.d);
+        const isSel   = (selectedDay.y===y && selectedDay.m===m && selectedDay.d===nd);
+        const h = getH(y, m, nd);
+
+        let cls = 'mm-cell active';
+        if(isToday)    cls += ' today';
+        else if(h)     cls += ' hol';
+        else if(isWk)  cls += ' wk';
+        if(isSel && !isToday) cls += ' sel';
+
+        // Dots: holiday, events, cycle
+        const dots = [];
+        if(h) dots.push('<div class="mm-dot hol"></div>');
+
+        userEvents.forEach(ev => {
+          if(eventMatchesDate(ev, y, m, nd)) dots.push('<div class="mm-dot evt"></div>');
+        });
+
+        if(cycleData.lastPeriodStart){
+          const cl2 = cycleData.cycleLength||28, pl2 = cycleData.periodLength||5;
+          const ovD2 = cl2-14, fertD2 = Math.max(1,ovD2-5);
+          const baseD = new Date(cycleData.lastPeriodStart); baseD.setHours(0,0,0,0);
+          const dayN = Math.floor((adMid-baseD)/86400000);
+          const dayInCyc = ((dayN%cl2)+cl2)%cl2+1;
+          if(dayInCyc>=1 && dayInCyc<=pl2) dots.push('<div class="mm-dot cyc"></div>');
+          else if(dayInCyc>=fertD2 && dayInCyc<=ovD2) dots.push('<div class="mm-dot cyc"></div>');
+        }
+
+        const dotsHtml = dots.length ? `<div class="mm-dots">${dots.slice(0,3).join('')}</div>` : '';
+
+        html += `<div class="${cls}" onclick="mmOpenDay(${y},${m},${nd})">
+          <div class="mm-ndate ne">${ns(nd)}</div>
+          ${dotsHtml}
+        </div>`;
+      }
+    }
+
+    html += `</div></div>`;
+    if(idx < 2) html += '<div class="mm-sep"></div>';
+  });
+
+  grid.innerHTML = html;
+}
+
+function mmPrev(){
+  haptic('light');
+  vM -= 3; while(vM < 1){ vM += 12; vY--; }
+  render(); render3M();
+}
+
+function mmNext(){
+  haptic('light');
+  vM += 3; while(vM > 12){ vM -= 12; vY++; }
+  render(); render3M();
+}
+
+function mmJumpTo(y, m, d){
+  // Exit 3M view, jump to that month
+  toggle3MView();
+  vY = y; vM = m;
+  selectedDay = {y, m, d};
+  render(); renderSelectedDay();
+}
+
+function mmOpenDay(y, m, d){
+  haptic('light');
+  selectedDay = {y, m, d};
+  // Update vY/vM so single-month view stays in sync
+  vY = y; vM = m;
+  render3M(); // refresh sel highlight
+  openDay(y, m, d);
+}
+
+window.toggle3MView = toggle3MView;
+window.mmPrev = mmPrev;
+window.mmNext = mmNext;
+window.mmJumpTo = mmJumpTo;
+window.mmOpenDay = mmOpenDay;
 
 // ══ COLLAPSIBLE CALENDAR ══
 let calExpanded = false;
@@ -9254,7 +9489,14 @@ function switchTab(tab) {
   const notesView   = document.getElementById('notesView');
 
   if(tab === 'home') {
-    if(mainContent) mainContent.style.display = '';
+    // In home, show ccard unless 3M view is active
+    if(mm3Active){
+      if(mainContent) mainContent.style.display = 'none';
+      const mmView = document.getElementById('mmView');
+      if(mmView) mmView.style.display = 'block';
+    } else {
+      if(mainContent) mainContent.style.display = '';
+    }
     if(upcoming)    upcoming.style.display    = '';
     if(modebar)     modebar.style.display     = '';
     if(hdr)         hdr.style.display         = '';
@@ -9267,6 +9509,8 @@ function switchTab(tab) {
     closeAll();
   } else if(tab === 'cycle') {
     if(mainContent) mainContent.style.display = 'none';
+    const mmView2 = document.getElementById('mmView');
+    if(mmView2) mmView2.style.display = 'none';
     if(upcoming)    upcoming.style.display    = 'none';
     if(modebar)     modebar.style.display     = 'none';
     if(hdr)         hdr.style.display         = '';
@@ -9280,6 +9524,8 @@ function switchTab(tab) {
     renderCycleSheet();
   } else if(tab === 'counter') {
     if(mainContent) mainContent.style.display = 'none';
+    const mmView3 = document.getElementById('mmView');
+    if(mmView3) mmView3.style.display = 'none';
     if(upcoming)    upcoming.style.display    = 'none';
     if(modebar)     modebar.style.display     = 'none';
     if(hdr)         hdr.style.display         = '';
@@ -9294,6 +9540,8 @@ function switchTab(tab) {
     if(typeof window.dcHeatmapRender === 'function') window.dcHeatmapRender();
   } else if(tab === 'notes') {
     if(mainContent) mainContent.style.display = 'none';
+    const mmView4 = document.getElementById('mmView');
+    if(mmView4) mmView4.style.display = 'none';
     if(upcoming)    upcoming.style.display    = 'none';
     if(modebar)     modebar.style.display     = 'none';
     if(hdr)         hdr.style.display         = '';
