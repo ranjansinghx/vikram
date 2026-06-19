@@ -3906,6 +3906,26 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
         </div>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
+      <!-- Age Calculator -->
+      <div class="srow" style="flex-direction:column;align-items:stretch;gap:12px;padding:12px 0;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(130,80,200,.13);flex-shrink:0;">🎂</div>
+          <div>
+            <div class="slbl">Age Calculator</div>
+            <div class="ssub">Enter your BS birthdate to see your age</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <select id="ageBirthY" onchange="calcBsAge()" style="flex:1.4;height:36px;border-radius:10px;border:1px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:13px;font-weight:700;padding:0 8px;outline:none;"></select>
+          <select id="ageBirthM" onchange="calcBsAge()" style="flex:1.6;height:36px;border-radius:10px;border:1px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:13px;font-weight:700;padding:0 8px;outline:none;"></select>
+          <select id="ageBirthD" onchange="calcBsAge()" style="flex:1;height:36px;border-radius:10px;border:1px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:13px;font-weight:700;padding:0 8px;outline:none;"></select>
+        </div>
+        <div id="ageResult" style="display:none;border-radius:14px;background:rgba(130,80,200,.09);border:1px solid rgba(130,80,200,.18);padding:12px 14px;">
+          <div id="ageMainLine" style="font-size:22px;font-weight:900;color:var(--htext);letter-spacing:-.3px;line-height:1.2;"></div>
+          <div id="ageSubLine" style="font-size:12px;font-weight:600;color:var(--dsub);margin-top:3px;"></div>
+          <div id="ageNextBday" style="font-size:12px;font-weight:700;color:rgba(130,80,200,.9);margin-top:5px;"></div>
+        </div>
+      </div>
     </div>
     <div class="ssec">
       <div class="ssect">🗓️ Google Calendar Sync</div>
@@ -5258,7 +5278,7 @@ function openSheet(t){
     document.querySelector('.phone')?.classList.add('cycle-dim');
     if(window.tasksShowList) window.tasksShowList();
   }
-  if(t==='settings'){ renderGcalCard(); renderWidgetThumb(); renderWidgetSteps(); }
+  if(t==='settings'){ renderGcalCard(); renderWidgetThumb(); renderWidgetSteps(); if(typeof window.calcBsAge==='function') { /* already initialised via DOM ready */ } }
   if(t==='add'){
     // Default date = today BS
     setEventRange(TODAYBS.y, TODAYBS.m, TODAYBS.d);
@@ -9091,6 +9111,126 @@ window.pomoSkip  = pomoSkip;
   };
 })();
 
+
+// ══ BS AGE CALCULATOR ══
+(function() {
+  function initAgeCalc() {
+    const yEl = document.getElementById('ageBirthY');
+    const mEl = document.getElementById('ageBirthM');
+    const dEl = document.getElementById('ageBirthD');
+    if (!yEl || !mEl || !dEl) return;
+
+    // Populate years: full BS range
+    const minY = 1990, maxY = TODAYBS.y;
+    yEl.innerHTML = '';
+    for (let y = maxY; y >= minY; y--) {
+      const o = document.createElement('option');
+      o.value = y; o.textContent = y + ' BS';
+      yEl.appendChild(o);
+    }
+    // Default to a typical birth year (~25 years ago)
+    const defaultY = Math.max(minY, TODAYBS.y - 25);
+    yEl.value = defaultY;
+
+    // Populate months
+    mEl.innerHTML = MEN.map((m, i) => `<option value="${i+1}">${m}</option>`).join('');
+    mEl.value = 1;
+
+    // Populate days
+    function refreshDays() {
+      const y = parseInt(yEl.value), m = parseInt(mEl.value);
+      const max = (typeof BS !== 'undefined' && BS[y] && BS[y][m-1]) ? BS[y][m-1] : 30;
+      const cur = parseInt(dEl.value) || 1;
+      dEl.innerHTML = '';
+      for (let d = 1; d <= max; d++) {
+        const o = document.createElement('option');
+        o.value = d; o.textContent = d;
+        dEl.appendChild(o);
+      }
+      dEl.value = Math.min(cur, max);
+    }
+    refreshDays();
+
+    yEl.addEventListener('change', () => { refreshDays(); calcBsAge(); });
+    mEl.addEventListener('change', () => { refreshDays(); calcBsAge(); });
+  }
+
+  window.calcBsAge = function() {
+    const yEl = document.getElementById('ageBirthY');
+    const mEl = document.getElementById('ageBirthM');
+    const dEl = document.getElementById('ageBirthD');
+    const res = document.getElementById('ageResult');
+    const mainLine = document.getElementById('ageMainLine');
+    const subLine  = document.getElementById('ageSubLine');
+    const nextBday = document.getElementById('ageNextBday');
+    if (!yEl || !res) return;
+
+    const bY = parseInt(yEl.value), bM = parseInt(mEl.value), bD = parseInt(dEl.value);
+    if (!bY || !bM || !bD) return;
+
+    const tY = TODAYBS.y, tM = TODAYBS.m, tD = TODAYBS.d;
+
+    // Age in BS years/months/days
+    let ageY = tY - bY;
+    let ageM = tM - bM;
+    let ageD = tD - bD;
+
+    if (ageD < 0) {
+      ageM--;
+      // Days in prev BS month relative to today
+      let prevM = tM - 1, prevY = tY;
+      if (prevM < 1) { prevM = 12; prevY--; }
+      const daysInPrev = (typeof BS !== 'undefined' && BS[prevY] && BS[prevY][prevM-1]) ? BS[prevY][prevM-1] : 30;
+      ageD += daysInPrev;
+    }
+    if (ageM < 0) { ageY--; ageM += 12; }
+
+    // Future date
+    if (ageY < 0 || (ageY === 0 && ageM === 0 && ageD <= 0)) {
+      res.style.display = 'block';
+      mainLine.textContent = '🤔 Date is in the future';
+      subLine.textContent = 'Please enter a past birthdate.';
+      nextBday.textContent = '';
+      return;
+    }
+
+    // Next birthday in BS
+    let nbY = tY, nbM = bM, nbD = bD;
+    // Clamp day to valid range in that month/year
+    const maxNbD = (typeof BS !== 'undefined' && BS[nbY] && BS[nbY][nbM-1]) ? BS[nbY][nbM-1] : 30;
+    nbD = Math.min(bD, maxNbD);
+    if (nbM < tM || (nbM === tM && nbD <= tD)) nbY++;
+    const maxNbD2 = (typeof BS !== 'undefined' && BS[nbY] && BS[nbY][nbM-1]) ? BS[nbY][nbM-1] : 30;
+    nbD = Math.min(bD, maxNbD2);
+
+    // Days until next birthday
+    const todayAD  = bsToAd(tY, tM, tD);
+    const nextBdAD = bsToAd(nbY, nbM, nbD);
+    const daysUntil = Math.round((nextBdAD - todayAD) / 86400000);
+
+    const mName = MEN[bM - 1];
+    const parts = [];
+    if (ageY > 0) parts.push(ageY + (ageY === 1 ? ' year' : ' years'));
+    if (ageM > 0) parts.push(ageM + (ageM === 1 ? ' month' : ' months'));
+    if (ageD > 0 || parts.length === 0) parts.push(ageD + (ageD === 1 ? ' day' : ' days'));
+
+    res.style.display = 'block';
+    mainLine.textContent = parts.join(', ');
+    subLine.textContent  = `Born ${mName} ${bD}, ${bY} BS`;
+    if (daysUntil === 0) {
+      nextBday.textContent = '🎉 Happy Birthday today!';
+    } else {
+      nextBday.textContent = `🎂 Next birthday in ${daysUntil} day${daysUntil === 1 ? '' : 's'} · ${MEN[nbM-1]} ${nbD}, ${nbY} BS`;
+    }
+  };
+
+  // Init after DOM ready (settings sheet content is static)
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAgeCalc);
+  } else {
+    initAgeCalc();
+  }
+})();
 
 // ══ BOTTOM NAV TAB SWITCHING ══
 function switchTab(tab) {
