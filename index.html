@@ -3278,6 +3278,67 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .ntb-btn svg { width:15px;height:15px;stroke:currentColor;stroke-width:2.3;fill:none; }
 .ntb-sep { width:1px;height:20px;background:var(--sbdr);flex-shrink:0;margin:0 2px; }
 
+/* ══ RECURRENCE BUILDER ══ */
+.recur-section{padding:10px 0 2px;}
+.recur-label{font-size:9.5px;font-weight:900;letter-spacing:.9px;text-transform:uppercase;color:var(--dsub);margin-bottom:7px;}
+.recur-freq-row{display:flex;gap:5px;flex-wrap:wrap;}
+.recur-freq-btn{
+  flex:1;min-width:60px;height:30px;border:1.5px solid var(--border);
+  border-radius:10px;background:var(--tgbg);color:var(--dtext);
+  font-size:11.5px;font-weight:800;font-family:'Nunito',sans-serif;
+  cursor:pointer;transition:background .18s,border-color .18s,color .18s,transform .12s;
+}
+.recur-freq-btn:active{transform:scale(.95);}
+.recur-freq-btn.on{background:var(--tgon);color:#fff;border-color:transparent;box-shadow:0 4px 10px rgba(0,0,0,.18);}
+.recur-interval-row{display:flex;align-items:center;gap:12px;}
+.recur-interval-wrap{display:flex;align-items:center;gap:8px;}
+.recur-step-btn{
+  width:30px;height:30px;border-radius:50%;border:1.5px solid var(--border);
+  background:var(--tgbg);color:var(--dtext);font-size:18px;line-height:1;
+  font-family:'Nunito',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .15s,transform .12s;font-weight:700;
+}
+.recur-step-btn:active{transform:scale(.88);}
+.recur-interval-val{
+  min-width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  background:var(--chip);border-radius:9px;font-size:16px;font-weight:900;color:var(--htext);
+}
+.recur-interval-unit{font-size:12px;font-weight:700;color:var(--dsub);}
+.recur-weekday-row{display:flex;gap:4px;}
+.recur-wd-btn{
+  flex:1;height:30px;border-radius:9px;border:1.5px solid var(--border);
+  background:var(--tgbg);color:var(--dtext);font-size:10.5px;font-weight:800;
+  font-family:'Nunito',sans-serif;cursor:pointer;
+  transition:background .15s,border-color .15s,color .15s,transform .12s;
+}
+.recur-wd-btn:active{transform:scale(.88);}
+.recur-wd-btn.on{background:var(--tgon);color:#fff;border-color:transparent;}
+.recur-end-row{display:flex;gap:5px;flex-wrap:wrap;}
+.recur-end-btn{
+  flex:1;min-width:80px;height:30px;border:1.5px solid var(--border);
+  border-radius:10px;background:var(--tgbg);color:var(--dtext);
+  font-size:11px;font-weight:800;font-family:'Nunito',sans-serif;
+  cursor:pointer;white-space:nowrap;
+  transition:background .18s,border-color .18s,color .18s,transform .12s;
+}
+.recur-end-btn:active{transform:scale(.95);}
+.recur-end-btn.on{background:var(--tgon);color:#fff;border-color:transparent;box-shadow:0 4px 10px rgba(0,0,0,.18);}
+.recur-summary{
+  margin-top:10px;padding:8px 12px;
+  background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(59,130,246,.08));
+  border:1.5px solid rgba(99,102,241,.22);border-radius:11px;
+  font-size:11.5px;font-weight:800;color:#6366f1;
+  display:flex;align-items:center;gap:7px;
+}
+.recur-summary::before{content:'🔁';font-size:13px;}
+[data-theme="dark"] .recur-summary{
+  background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(59,130,246,.10));
+  border-color:rgba(99,102,241,.28);color:#a5b4fc;
+}
+#recurPanel{
+  padding:4px 0 6px;border-top:1px solid var(--border);margin-top:6px;
+}
+
 /* ══ GLOBAL TOAST NOTIFICATION ══ */
 #vikramGlobalToast {
   position:fixed;bottom:80px;left:50%;
@@ -4018,15 +4079,98 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
           </div>
           <button class="tgl" id="notifTgl" onclick="handleNotifToggle()"></button>
         </div>
-        <!-- Repeat yearly -->
-        <div class="ae-toggle-card">
+        <!-- Recurrence -->
+        <div class="ae-toggle-card" id="recurToggleCard">
           <div class="ae-toggle-icon">🔁</div>
           <div class="ae-toggle-info">
-            <div class="ae-toggle-label">Repeat yearly</div>
-            <div class="ae-toggle-sub">Same BS date each year</div>
+            <div class="ae-toggle-label">Repeat event</div>
+            <div class="ae-toggle-sub" id="recurToggleSub">Never</div>
           </div>
-          <button class="tgl" id="evRepeatYearly" onclick="this.classList.toggle('on')"></button>
+          <button class="tgl" id="evRepeatYearly" onclick="toggleRecurPanel()"></button>
         </div>
+      </div>
+
+      <!-- Recurrence Builder Panel -->
+      <div id="recurPanel" style="display:none;">
+        <!-- Frequency chips -->
+        <div class="recur-section">
+          <div class="recur-label">FREQUENCY</div>
+          <div class="recur-freq-row">
+            <button class="recur-freq-btn on" data-freq="daily"   onclick="setRecurFreq('daily')">Daily</button>
+            <button class="recur-freq-btn"    data-freq="weekly"  onclick="setRecurFreq('weekly')">Weekly</button>
+            <button class="recur-freq-btn"    data-freq="monthly" onclick="setRecurFreq('monthly')">Monthly</button>
+            <button class="recur-freq-btn"    data-freq="yearly"  onclick="setRecurFreq('yearly')">Yearly</button>
+          </div>
+        </div>
+
+        <!-- Interval -->
+        <div class="recur-section recur-interval-row">
+          <div class="recur-label">EVERY</div>
+          <div class="recur-interval-wrap">
+            <button class="recur-step-btn" onclick="stepRecurInterval(-1)">−</button>
+            <div class="recur-interval-val" id="recurIntervalVal">1</div>
+            <button class="recur-step-btn" onclick="stepRecurInterval(1)">+</button>
+            <span class="recur-interval-unit" id="recurIntervalUnit">day(s)</span>
+          </div>
+        </div>
+
+        <!-- Weekday selector (only shown for weekly) -->
+        <div class="recur-section" id="recurWeekdaySection" style="display:none;">
+          <div class="recur-label">ON DAYS</div>
+          <div class="recur-weekday-row">
+            <button class="recur-wd-btn" data-wd="0" onclick="toggleRecurWd(0)">Su</button>
+            <button class="recur-wd-btn" data-wd="1" onclick="toggleRecurWd(1)">Mo</button>
+            <button class="recur-wd-btn" data-wd="2" onclick="toggleRecurWd(2)">Tu</button>
+            <button class="recur-wd-btn" data-wd="3" onclick="toggleRecurWd(3)">We</button>
+            <button class="recur-wd-btn" data-wd="4" onclick="toggleRecurWd(4)">Th</button>
+            <button class="recur-wd-btn" data-wd="5" onclick="toggleRecurWd(5)">Fr</button>
+            <button class="recur-wd-btn" data-wd="6" onclick="toggleRecurWd(6)">Sa</button>
+          </div>
+        </div>
+
+        <!-- End condition -->
+        <div class="recur-section">
+          <div class="recur-label">ENDS</div>
+          <div class="recur-end-row">
+            <button class="recur-end-btn on" data-end="never"  onclick="setRecurEnd('never')">Never</button>
+            <button class="recur-end-btn"    data-end="count"  onclick="setRecurEnd('count')">After N times</button>
+            <button class="recur-end-btn"    data-end="date"   onclick="setRecurEnd('date')">On date</button>
+          </div>
+        </div>
+
+        <!-- End count -->
+        <div class="recur-section recur-interval-row" id="recurEndCountSection" style="display:none;">
+          <div class="recur-label">OCCURRENCES</div>
+          <div class="recur-interval-wrap">
+            <button class="recur-step-btn" onclick="stepRecurCount(-1)">−</button>
+            <div class="recur-interval-val" id="recurEndCountVal">5</div>
+            <button class="recur-step-btn" onclick="stepRecurCount(1)">+</button>
+            <span class="recur-interval-unit">times</span>
+          </div>
+        </div>
+
+        <!-- End date (BS selectors) -->
+        <div class="recur-section" id="recurEndDateSection" style="display:none;">
+          <div class="recur-label">END DATE (BS)</div>
+          <div class="ae-date-row" style="gap:6px;">
+            <select class="ae-select" id="recurEndBsY" onchange="updateRecurEndDay()">
+              <option value="2083">2083</option><option value="2084">2084</option>
+              <option value="2085">2085</option><option value="2086">2086</option>
+            </select>
+            <select class="ae-select ae-select-month" id="recurEndBsM" onchange="updateRecurEndDay()">
+              <option value="1">Baishakh</option><option value="2">Jestha</option>
+              <option value="3">Ashadh</option><option value="4">Shrawan</option>
+              <option value="5">Bhadra</option><option value="6">Ashwin</option>
+              <option value="7">Kartik</option><option value="8">Mangsir</option>
+              <option value="9">Poush</option><option value="10">Magh</option>
+              <option value="11">Falgun</option><option value="12">Chaitra</option>
+            </select>
+            <select class="ae-select ae-select-day" id="recurEndBsD"></select>
+          </div>
+        </div>
+
+        <!-- Summary chip -->
+        <div class="recur-summary" id="recurSummary">Repeats daily</div>
       </div>
     </div>
 
@@ -4976,25 +5120,101 @@ function getEventRangeMid(ev){
 }
 
 function eventMatchesDate(ev, y, m, d){
-  // Yearly repeat: match same BS month+day (and end range offset) in any year >= event year
-  if(ev.repeatYearly){
-    if(y < ev.bsY) return false;
-    // For single-day events: match same BS month and day in any year
-    const spanDays = Math.round(((ev.endAdMs??ev.adMs) - ev.adMs) / 86400000);
-    if(spanDays <= 0){
-      return m === ev.bsM && d === ev.bsD;
-    }
-    // Multi-day: build a virtual start in year y and check range
-    const virtualStart = bsToAd(y, ev.bsM, ev.bsD);
-    const virtualStartMid = new Date(virtualStart.getFullYear(), virtualStart.getMonth(), virtualStart.getDate());
-    const virtualEndMid = new Date(virtualStartMid.getTime() + spanDays * 86400000);
-    const day = bsToAd(y, m, d);
-    const dayMid = new Date(day.getFullYear(), day.getMonth(), day.getDate());
-    return dayMid >= virtualStartMid && dayMid <= virtualEndMid;
-  }
-  const day = bsToAd(y,m,d);
+  const day = bsToAd(y, m, d);
   const dayMid = new Date(day.getFullYear(), day.getMonth(), day.getDate());
   const {startMid, endMid} = getEventRangeMid(ev);
+  const spanDays = Math.round((endMid - startMid) / 86400000);
+
+  // No recurrence — simple range check
+  if(!ev.recur && !ev.repeatYearly){
+    return dayMid >= startMid && dayMid <= endMid;
+  }
+
+  // Legacy yearly toggle (backward compat)
+  if(ev.repeatYearly && !ev.recur){
+    if(y < ev.bsY) return false;
+    if(spanDays <= 0) return m === ev.bsM && d === ev.bsD;
+    const vStart = bsToAd(y, ev.bsM, ev.bsD);
+    const vSMid = new Date(vStart.getFullYear(), vStart.getMonth(), vStart.getDate());
+    const vEMid = new Date(vSMid.getTime() + spanDays * 86400000);
+    return dayMid >= vSMid && dayMid <= vEMid;
+  }
+
+  // Full recurrence engine
+  const r = ev.recur;
+  if(!r || !r.freq) return dayMid >= startMid && dayMid <= endMid;
+  if(dayMid < startMid) return false;
+
+  // Check end condition
+  if(r.endType === 'date' && r.endAdMs){
+    const endD = new Date(r.endAdMs);
+    const endDMid = new Date(endD.getFullYear(), endD.getMonth(), endD.getDate());
+    if(dayMid > endDMid) return false;
+  }
+
+  const msDay = 86400000;
+  const interval = r.interval || 1;
+  const diffDays = Math.round((dayMid - startMid) / msDay);
+
+  function occurrenceContains(occStartMid){
+    return dayMid >= occStartMid && dayMid <= new Date(occStartMid.getTime() + spanDays * msDay);
+  }
+
+  if(r.freq === 'daily'){
+    if(diffDays < 0 || diffDays % interval !== 0) return false;
+    const occN = Math.floor(diffDays / interval);
+    if(r.endType === 'count' && occN >= (r.endCount || 1)) return false;
+    const occStart = new Date(startMid.getTime() + occN * interval * msDay);
+    return occurrenceContains(occStart);
+  }
+
+  if(r.freq === 'weekly'){
+    const weekdays = r.weekdays && r.weekdays.length ? r.weekdays : [startMid.getDay()];
+    const dayOfWeek = dayMid.getDay();
+    if(!weekdays.includes(dayOfWeek)) return false;
+    const weeksDiff = Math.floor(diffDays / 7);
+    if(weeksDiff < 0 || weeksDiff % interval !== 0) return false;
+    if(r.endType === 'count'){
+      // count occurrences up to this point
+      let count = 0;
+      for(let w = 0; w * interval * 7 <= diffDays; w++){
+        count += weekdays.length;
+      }
+      if(count > (r.endCount || 1)) return false;
+    }
+    return true;
+  }
+
+  if(r.freq === 'monthly'){
+    // Match if dayMid falls in any occurrence month (same day-of-month as event start)
+    const startDOM = startMid.getDate();
+    if(dayMid.getDate() < startDOM || dayMid.getDate() > startDOM + spanDays) return false;
+    // months elapsed
+    const monthsElapsed = (dayMid.getFullYear() - startMid.getFullYear()) * 12
+      + (dayMid.getMonth() - startMid.getMonth());
+    if(monthsElapsed < 0 || monthsElapsed % interval !== 0) return false;
+    if(r.endType === 'count'){
+      const occN = Math.floor(monthsElapsed / interval);
+      if(occN >= (r.endCount || 1)) return false;
+    }
+    const occStart = new Date(startMid.getFullYear(), startMid.getMonth() + monthsElapsed, startMid.getDate());
+    return occurrenceContains(occStart);
+  }
+
+  if(r.freq === 'yearly'){
+    if(y < ev.bsY) return false;
+    const yearsElapsed = y - ev.bsY;
+    if(yearsElapsed % interval !== 0) return false;
+    if(r.endType === 'count'){
+      const occN = Math.floor(yearsElapsed / interval);
+      if(occN >= (r.endCount || 1)) return false;
+    }
+    if(spanDays <= 0) return m === ev.bsM && d === ev.bsD;
+    const vStart = bsToAd(y, ev.bsM, ev.bsD);
+    const vSMid = new Date(vStart.getFullYear(), vStart.getMonth(), vStart.getDate());
+    return occurrenceContains(vSMid);
+  }
+
   return dayMid >= startMid && dayMid <= endMid;
 }
 
@@ -5042,7 +5262,7 @@ function openSheet(t){
   if(t==='add'){
     // Default date = today BS
     setEventRange(TODAYBS.y, TODAYBS.m, TODAYBS.d);
-    document.getElementById('evRepeatYearly')?.classList.remove('on');
+    resetRecurPanel();
     setTimeout(()=>{ initSegTrack(); document.getElementById('evT').focus(); },360);
   }
 }
@@ -5152,6 +5372,170 @@ async function checkEventReminders(){
   }
 }
 
+// ══ RECURRENCE BUILDER STATE & HELPERS ══
+window._recurState = {
+  enabled: false,
+  freq: 'daily',
+  interval: 1,
+  weekdays: [],
+  endType: 'never',
+  endCount: 5,
+  endAdMs: null,
+};
+
+// recurrence functions are plain function declarations — globally accessible by inline onclick
+
+function recurLabel(ev){
+  if(ev.recur && ev.recur.freq){
+    const r = ev.recur;
+    const n = r.interval || 1;
+    const u = {daily:'day',weekly:'week',monthly:'month',yearly:'year'}[r.freq]||r.freq;
+    return n === 1 ? u+'ly' : `every ${n} ${u}s`;
+  }
+  if(ev.repeatYearly) return 'yearly';
+  return '';
+}
+
+function recurSummaryText(){
+  const r = window._recurState;
+  if(!r.enabled) return 'No repeat';
+  const n = r.interval || 1;
+  const freqMap = {daily:'day',weekly:'week',monthly:'month',yearly:'year'};
+  const u = freqMap[r.freq] || r.freq;
+  let s = n === 1 ? `Every ${u}` : `Every ${n} ${u}s`;
+  if(r.freq === 'weekly' && r.weekdays && r.weekdays.length){
+    const WDN = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+    s += ' on ' + r.weekdays.slice().sort((a,b)=>a-b).map(w=>WDN[w]).join(', ');
+  }
+  if(r.endType === 'count') s += ` · ${r.endCount||5} times`;
+  else if(r.endType === 'date' && r.endAdMs){
+    const ed = new Date(r.endAdMs);
+    s += ` · until ${ADMEN[ed.getMonth()]} ${ed.getDate()}, ${ed.getFullYear()}`;
+  }
+  return s;
+}
+
+function updateRecurSummary(){
+  const el = document.getElementById('recurSummary');
+  const sub = document.getElementById('recurToggleSub');
+  if(el) el.textContent = recurSummaryText();
+  if(sub) sub.textContent = window._recurState.enabled ? recurSummaryText() : 'Never';
+}
+
+function updateRecurIntervalUnit(){
+  const unit = document.getElementById('recurIntervalUnit');
+  const n = window._recurState.interval || 1;
+  const map = {daily:'day',weekly:'week',monthly:'month',yearly:'year'};
+  const base = map[window._recurState.freq] || 'day';
+  if(unit) unit.textContent = n === 1 ? base+'(s)' : base+'s';
+}
+
+function toggleRecurPanel(){
+  const tgl = document.getElementById('evRepeatYearly');
+  const panel = document.getElementById('recurPanel');
+  if(!tgl || !panel) return;
+  tgl.classList.toggle('on');
+  window._recurState.enabled = tgl.classList.contains('on');
+  panel.style.display = window._recurState.enabled ? 'block' : 'none';
+  // Default freq to daily when first opened
+  if(window._recurState.enabled) setRecurFreq(window._recurState.freq || 'daily');
+  updateRecurSummary();
+}
+
+function setRecurFreq(freq){
+  window._recurState.freq = freq;
+  document.querySelectorAll('.recur-freq-btn').forEach(b => b.classList.toggle('on', b.dataset.freq === freq));
+  const wdSec = document.getElementById('recurWeekdaySection');
+  if(wdSec) wdSec.style.display = freq === 'weekly' ? 'block' : 'none';
+  if(freq === 'weekly' && window._recurState.weekdays.length === 0){
+    // Pre-select today's weekday
+    const today = new Date();
+    window._recurState.weekdays = [today.getDay()];
+    document.querySelectorAll('.recur-wd-btn').forEach(b=>{
+      b.classList.toggle('on', b.dataset.wd == today.getDay());
+    });
+  }
+  updateRecurIntervalUnit();
+  updateRecurSummary();
+}
+
+function stepRecurInterval(delta){
+  const state = window._recurState;
+  state.interval = Math.max(1, Math.min(99, (state.interval||1) + delta));
+  const el = document.getElementById('recurIntervalVal');
+  if(el) el.textContent = state.interval;
+  updateRecurIntervalUnit();
+  updateRecurSummary();
+}
+
+function toggleRecurWd(wd){
+  const state = window._recurState;
+  if(!state.weekdays) state.weekdays = [];
+  const idx = state.weekdays.indexOf(wd);
+  if(idx === -1) state.weekdays.push(wd);
+  else if(state.weekdays.length > 1) state.weekdays.splice(idx,1); // keep at least 1
+  document.querySelectorAll('.recur-wd-btn').forEach(b=>{
+    b.classList.toggle('on', state.weekdays.includes(+b.dataset.wd));
+  });
+  updateRecurSummary();
+}
+
+function setRecurEnd(type){
+  window._recurState.endType = type;
+  document.querySelectorAll('.recur-end-btn').forEach(b => b.classList.toggle('on', b.dataset.end === type));
+  const countSec = document.getElementById('recurEndCountSection');
+  const dateSec  = document.getElementById('recurEndDateSection');
+  if(countSec) countSec.style.display = type === 'count' ? 'flex' : 'none';
+  if(dateSec)  dateSec.style.display  = type === 'date'  ? 'block': 'none';
+  if(type === 'date') updateRecurEndDay();
+  updateRecurSummary();
+}
+
+function stepRecurCount(delta){
+  window._recurState.endCount = Math.max(1, Math.min(999, (window._recurState.endCount||5) + delta));
+  const el = document.getElementById('recurEndCountVal');
+  if(el) el.textContent = window._recurState.endCount;
+  updateRecurSummary();
+}
+
+function updateRecurEndDay(){
+  const y = +document.getElementById('recurEndBsY')?.value || TODAYBS.y;
+  const m = +document.getElementById('recurEndBsM')?.value || TODAYBS.m;
+  const max = BS[y]?.[m-1] ?? 30;
+  const sel = document.getElementById('recurEndBsD');
+  if(!sel) return;
+  const cur = +sel.value || 1;
+  sel.innerHTML = Array.from({length:max},(_,i)=>`<option value="${i+1}"${i+1===cur?' selected':''}>${i+1}</option>`).join('');
+  // Store as AD ms
+  const ad = bsToAd(y, m, +sel.value||1);
+  window._recurState.endAdMs = new Date(ad.getFullYear(), ad.getMonth(), ad.getDate()).getTime();
+  updateRecurSummary();
+}
+
+// Reset recurrence panel when opening add sheet
+function resetRecurPanel(){
+  window._recurState = { enabled:false, freq:'daily', interval:1, weekdays:[], endType:'never', endCount:5, endAdMs:null };
+  const tgl = document.getElementById('evRepeatYearly');
+  if(tgl) tgl.classList.remove('on');
+  const panel = document.getElementById('recurPanel');
+  if(panel) panel.style.display = 'none';
+  updateRecurSummary();
+  // Reset UI elements
+  document.querySelectorAll('.recur-freq-btn').forEach(b=>b.classList.toggle('on', b.dataset.freq==='daily'));
+  document.querySelectorAll('.recur-end-btn').forEach(b=>b.classList.toggle('on', b.dataset.end==='never'));
+  document.querySelectorAll('.recur-wd-btn').forEach(b=>b.classList.remove('on'));
+  const ivEl = document.getElementById('recurIntervalVal');
+  if(ivEl) ivEl.textContent = '1';
+  const ctEl = document.getElementById('recurEndCountVal');
+  if(ctEl) ctEl.textContent = '5';
+  const cSec = document.getElementById('recurEndCountSection');
+  if(cSec) cSec.style.display = 'none';
+  const dSec = document.getElementById('recurEndDateSection');
+  if(dSec) dSec.style.display = 'none';
+  const wdSec = document.getElementById('recurWeekdaySection');
+  if(wdSec) wdSec.style.display = 'none';
+}
+
 async function saveEv(){
   const t=document.getElementById('evT').value.trim();
   if(!t){alert('Please enter an event title.');return;}
@@ -5179,7 +5563,15 @@ async function saveEv(){
     endAdMs:endMid.getTime(),
     note,
     color: (document.querySelector('#evColorPicker .ae-cat-card.on, #evColorPicker .ae-cat-pill.on, #evColorPicker .ev-cat-btn.on') || {}).dataset?.color || 'personal',
-    repeatYearly: document.getElementById('evRepeatYearly')?.classList.contains('on') || false
+    repeatYearly: window._recurState && window._recurState.enabled && window._recurState.freq === 'yearly' && (window._recurState.interval||1) === 1,
+    recur: (window._recurState && window._recurState.enabled) ? {
+      freq: window._recurState.freq,
+      interval: window._recurState.interval || 1,
+      weekdays: window._recurState.weekdays ? [...window._recurState.weekdays] : [],
+      endType: window._recurState.endType || 'never',
+      endCount: window._recurState.endCount || 5,
+      endAdMs: window._recurState.endAdMs || null,
+    } : null,
   });
   userEvents.sort((a,b)=>a.adMs-b.adMs);
   saveEvents();
@@ -5595,43 +5987,115 @@ function renderUpcoming(){
 
   // — User events within window —
   userEvents.forEach(ev=>{
-    if(ev.repeatYearly){
-      // For yearly repeats, project into the current/next year within the window
-      const spanDays=Math.round(((ev.endAdMs??ev.adMs)-ev.adMs)/86400000);
-      // Check occurrences for the years that overlap the window
-      const windowYears=new Set([todayMid.getFullYear(), windowEnd.getFullYear()]);
+    const msDay = 86400000;
+    const {startMid, endMid} = getEventRangeMid(ev);
+    const spanDays = Math.round((endMid - startMid) / msDay);
+
+    // Helper: push one occurrence into items
+    function pushOcc(occStartMid, occEndMid, rangeLabel){
+      if(occEndMid < todayMid || occStartMid > windowEnd) return;
+      const displayMid = occStartMid > todayMid ? occStartMid : todayMid;
+      const diff = Math.round((displayMid - todayMid) / msDay);
+      const bs = adToBs(displayMid);
+      const startStr = `${ADMEN[occStartMid.getMonth()]} ${occStartMid.getDate()}, ${occStartMid.getFullYear()}`;
+      const endStr   = `${ADMEN[occEndMid.getMonth()]} ${occEndMid.getDate()}, ${occEndMid.getFullYear()}`;
+      const rangeText = rangeLabel || (spanDays === 0 ? startStr : `${startStr} to ${endStr}`);
+      items.push({type:'evt', ky:bs.y, km:bs.m, kd:bs.d, ad:new Date(occStartMid), adMid:displayMid, diff, ev, rangeText, range:{startMid:occStartMid, endMid:occEndMid}, bsDisp:bs});
+    }
+
+    // No recurrence
+    if(!ev.recur && !ev.repeatYearly){
+      pushOcc(startMid, endMid);
+      return;
+    }
+
+    // Legacy yearly
+    if(ev.repeatYearly && !ev.recur){
+      const windowYears = new Set([todayMid.getFullYear(), windowEnd.getFullYear()]);
       windowYears.forEach(yr=>{
-        const virtualStart=bsToAd(adToBs(new Date(yr,0,1)).y, ev.bsM, ev.bsD);
-        const vStartMid=new Date(virtualStart.getFullYear(),virtualStart.getMonth(),virtualStart.getDate());
-        const vEndMid=new Date(vStartMid.getTime()+spanDays*86400000);
-        if(vEndMid<todayMid||vStartMid>windowEnd) return;
-        const displayMid=vStartMid>todayMid ? vStartMid : todayMid;
-        const diff=Math.round((displayMid-todayMid)/86400000);
-        const startStr=`${ADMEN[vStartMid.getMonth()]} ${vStartMid.getDate()}, ${vStartMid.getFullYear()}`;
-        const endStr=`${ADMEN[vEndMid.getMonth()]} ${vEndMid.getDate()}, ${vEndMid.getFullYear()}`;
-        const rangeText=spanDays===0 ? startStr : `${startStr} to ${endStr}`;
-        const bs=adToBs(displayMid);
-        items.push({type:'evt',ky:bs.y,km:bs.m,kd:bs.d,ad:new Date(vStartMid),adMid:displayMid,diff,ev,rangeText,range:{startMid:vStartMid,endMid:vEndMid},bsDisp:bs});
+        const vStart = bsToAd(adToBs(new Date(yr,0,1)).y, ev.bsM, ev.bsD);
+        const vSMid = new Date(vStart.getFullYear(), vStart.getMonth(), vStart.getDate());
+        const vEMid = new Date(vSMid.getTime() + spanDays * msDay);
+        pushOcc(vSMid, vEMid);
       });
       return;
     }
-    const {startMid,endMid}=getEventRangeMid(ev);
-    if(endMid<todayMid||startMid>windowEnd) return;
-    const displayMid=startMid>todayMid ? startMid : todayMid;
-    const diff=Math.round((displayMid-todayMid)/86400000);
-    const startStr=`${ADMEN[startMid.getMonth()]} ${startMid.getDate()}, ${startMid.getFullYear()}`;
-    const endStr=`${ADMEN[endMid.getMonth()]} ${endMid.getDate()}, ${endMid.getFullYear()}`;
-    const rangeText=startMid.getTime()===endMid.getTime()
-      ? startStr
-      : `${startStr} to ${endStr}`;
-    const bs=adToBs(displayMid);
-    items.push({
-      type:'evt',
-      ky:ev.bsY,km:ev.bsM,kd:ev.bsD,
-      ad:new Date(startMid),adMid:displayMid,diff,ev,rangeText,
-      range:{startMid,endMid},
-      bsDisp:bs
-    });
+
+    // Full recurrence engine
+    const r = ev.recur;
+    if(!r || !r.freq){ pushOcc(startMid, endMid); return; }
+
+    const interval = r.interval || 1;
+    let occCount = 0;
+    const maxOcc = 400; // safety cap
+
+    function withinEndCond(occN, occStartMid){
+      if(r.endType === 'count' && occN >= (r.endCount || 1)) return false;
+      if(r.endType === 'date' && r.endAdMs){
+        const ed = new Date(r.endAdMs);
+        const edMid = new Date(ed.getFullYear(), ed.getMonth(), ed.getDate());
+        if(occStartMid > edMid) return false;
+      }
+      return true;
+    }
+
+    if(r.freq === 'daily'){
+      for(let occN = 0; occN < maxOcc; occN++){
+        const oStart = new Date(startMid.getTime() + occN * interval * msDay);
+        if(oStart > windowEnd) break;
+        if(!withinEndCond(occN, oStart)) break;
+        const oEnd = new Date(oStart.getTime() + spanDays * msDay);
+        pushOcc(oStart, oEnd);
+      }
+      return;
+    }
+
+    if(r.freq === 'weekly'){
+      const weekdays = r.weekdays && r.weekdays.length ? r.weekdays : [startMid.getDay()];
+      // iterate week blocks
+      for(let wk = 0; wk < maxOcc; wk++){
+        const weekStart = new Date(startMid.getTime() + wk * interval * 7 * msDay);
+        if(weekStart > windowEnd) break;
+        weekdays.forEach(wd=>{
+          const dayDiff = ((wd - weekStart.getDay()) + 7) % 7;
+          const oStart = new Date(weekStart.getTime() + dayDiff * msDay);
+          if(oStart < startMid || oStart > windowEnd) return;
+          if(!withinEndCond(occCount, oStart)) return;
+          const oEnd = new Date(oStart.getTime() + spanDays * msDay);
+          pushOcc(oStart, oEnd);
+          occCount++;
+        });
+      }
+      return;
+    }
+
+    if(r.freq === 'monthly'){
+      for(let mo = 0; mo < maxOcc; mo++){
+        const oStart = new Date(startMid.getFullYear(), startMid.getMonth() + mo * interval, startMid.getDate());
+        if(oStart > windowEnd) break;
+        if(!withinEndCond(mo, oStart)) break;
+        const oEnd = new Date(oStart.getTime() + spanDays * msDay);
+        pushOcc(oStart, oEnd);
+      }
+      return;
+    }
+
+    if(r.freq === 'yearly'){
+      for(let yr = 0; yr < maxOcc; yr++){
+        const targetBsY = ev.bsY + yr * interval;
+        if(!BS[targetBsY]) break;
+        const vStart = bsToAd(targetBsY, ev.bsM, ev.bsD);
+        const vSMid = new Date(vStart.getFullYear(), vStart.getMonth(), vStart.getDate());
+        if(vSMid > windowEnd) break;
+        if(!withinEndCond(yr, vSMid)) break;
+        const vEMid = new Date(vSMid.getTime() + spanDays * msDay);
+        pushOcc(vSMid, vEMid);
+      }
+      return;
+    }
+
+    // fallback
+    pushOcc(startMid, endMid);
   });
 
   // — Cycle tracker projections within window —
@@ -5734,7 +6198,7 @@ function renderUpcoming(){
               <div class="up-name">${ev.title}</div>
               <div class="up-tag-row">
                 <span class="up-sub-pill">${it.rangeText||''}</span>
-                ${ev.repeatYearly?'<span style="font-size:9px;background:rgba(99,102,241,.13);color:#6366f1;border-radius:5px;padding:1px 5px;font-weight:800;">🔁</span>':''}
+                ${(ev.recur||ev.repeatYearly) ? `<span style="font-size:9px;background:rgba(99,102,241,.13);color:#6366f1;border-radius:5px;padding:1px 5px;font-weight:800;">🔁 ${recurLabel(ev)}</span>` : ''}
               </div>
               ${ev.note?`<div style="font-size:11px;color:var(--dsub);margin-top:2px;">${ev.note}</div>`:''}
             </div>
