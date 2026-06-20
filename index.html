@@ -4036,6 +4036,13 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
         <div class="slbl">Vikram</div>
         <div style="font-size:12.5px;color:var(--dsub);font-weight:700;">v2.1 · BS 2083</div>
       </div>
+      <div class="srow" style="cursor:pointer;" onclick="inviteFriends()">
+        <div>
+          <div class="slbl">Invite Friends</div>
+          <div class="ssub">Share Vikram with someone</div>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </div>
       <div class="srow" style="cursor:pointer;" onclick="window.open('https://x.com/ranjansinghx','_blank')">
         <div>
           <div class="slbl">Connect with us</div>
@@ -11134,6 +11141,19 @@ window.notesHighlight = function() {
   const ed = document.getElementById('notesEditor');
   if (ed) ed.focus();
   if (typeof updateToolbarState === 'function') updateToolbarState();
+};
+
+// ── INVITE FRIENDS ────────────────────────────────────────────
+window.inviteFriends = function() {
+  haptic('medium');
+  const text = '📅 Check out Vikram — a beautiful Nepali (Bikram Sambat) calendar with holidays, events & more!\n\nhttps://vikramcalendar.app';
+  if (navigator.share) {
+    navigator.share({ title: 'Vikram Calendar', text }).catch(() => {});
+  } else {
+    navigator.clipboard?.writeText(text).then(() => {
+      vikramToast('📋 Invite link copied!');
+    }).catch(() => vikramToast('Share not supported on this device'));
+  }
 };
 
 // ── 8. ACCESSIBILITY — aria-labels on icon buttons ────────────
