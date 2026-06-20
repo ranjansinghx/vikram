@@ -3595,9 +3595,10 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   <div class="modebar" id="modebar">
     <button class="mode-pill on" id="tabAll"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="13" width="7" height="7" rx="1.5"/><rect x="14" y="13" width="7" height="7" rx="1.5"/></svg>All</button>
     <button class="mode-pill" id="tab3M" onclick="toggle3MView()" title="3-month quarterly view"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="5.5" height="16" rx="1.2"/><rect x="9.2" y="4" width="5.5" height="16" rx="1.2"/><rect x="16.5" y="4" width="5.5" height="16" rx="1.2"/></svg>Quarter</button>
+    <button class="mode-pill" id="pomodoroBtn" draggable="true" data-pill="pomodoro" onclick="openSheet('pomodoro')" title="Focus Timer"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 12"/></svg>Focus</button>
+    <button class="mode-pill" id="converterBtn" draggable="true" data-pill="converter" onclick="openSheet('converter')" title="Date Converter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg>Tool</button>
     <button class="mode-pill" id="echoBtn" draggable="true" data-pill="echo" onclick="openSheet('echo')" title="Echo"><svg viewBox="0 0 24 24"><path d="M12 3 C7 3 3 7 3 12 C3 14.5 4 16.8 5.7 18.4 L4 21 L8.2 19.8 C9.4 20.6 10.7 21 12 21 C17 21 21 17 21 12 C21 7 17 3 12 3Z"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="14" x2="13" y2="14"/></svg>Echo</button>
     <button class="mode-pill" id="colorMatcherBtn" draggable="true" data-pill="colorMatcher" onclick="openSheet('colorMatcher')" title="Color Matcher"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="3.5" fill="#FF6B6B" stroke="none"/><circle cx="16" cy="8" r="3.5" fill="#3A86FF" stroke="none"/><circle cx="8" cy="16" r="3.5" fill="#70E000" stroke="none"/><circle cx="16" cy="16" r="3.5" fill="#FFB703" stroke="none"/></svg>Colors</button>
-    <button class="mode-pill" id="pomodoroBtn" draggable="true" data-pill="pomodoro" onclick="openSheet('pomodoro')" title="Focus Timer"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 12"/></svg>Focus</button>
   </div>
 
   <div class="ccard">
@@ -3948,36 +3949,6 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
         <button class="chip" onclick="setFD(0,this)">Sunday</button>
         <button class="chip on" onclick="setFD(1,this)">Monday</button>
         <button class="chip" onclick="setFD(6,this)">Saturday</button>
-      </div>
-    </div>
-    <div class="ssec">
-      <div class="ssect">Tools</div>
-      <div class="srow" style="cursor:pointer;" onclick="closeAll();setTimeout(()=>openSheet('converter'),60);">
-        <div>
-          <div class="slbl">🗓 Date Converter</div>
-          <div class="ssub">BS ↔ AD · 2055–2086</div>
-        </div>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-      </div>
-      <!-- Age Calculator -->
-      <div class="srow" style="flex-direction:column;align-items:stretch;gap:12px;padding:12px 0;">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div style="width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(130,80,200,.13);flex-shrink:0;">🎂</div>
-          <div>
-            <div class="slbl">Age Calculator</div>
-            <div class="ssub">Enter your BS birthdate to see your age</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:6px;align-items:center;">
-          <select id="ageBirthY" onchange="calcBsAge()" style="flex:1.4;height:36px;border-radius:10px;border:1px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:13px;font-weight:700;padding:0 8px;outline:none;"></select>
-          <select id="ageBirthM" onchange="calcBsAge()" style="flex:1.6;height:36px;border-radius:10px;border:1px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:13px;font-weight:700;padding:0 8px;outline:none;"></select>
-          <select id="ageBirthD" onchange="calcBsAge()" style="flex:1;height:36px;border-radius:10px;border:1px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:13px;font-weight:700;padding:0 8px;outline:none;"></select>
-        </div>
-        <div id="ageResult" style="display:none;border-radius:14px;background:rgba(130,80,200,.09);border:1px solid rgba(130,80,200,.18);padding:12px 14px;">
-          <div id="ageMainLine" style="font-size:22px;font-weight:900;color:var(--htext);letter-spacing:-.3px;line-height:1.2;"></div>
-          <div id="ageSubLine" style="font-size:12px;font-weight:600;color:var(--dsub);margin-top:3px;"></div>
-          <div id="ageNextBday" style="font-size:12px;font-weight:700;color:rgba(130,80,200,.9);margin-top:5px;"></div>
-        </div>
       </div>
     </div>
     <div class="ssec">
@@ -8151,7 +8122,7 @@ self.addEventListener('message',e=>{
 // ══ PILL DRAG & DROP ══
 (function(){
   const STORAGE_KEY = 'vikram_pill_order';
-  const DRAGGABLE_IDS = ['cycleBtn','echoBtn','colorMatcherBtn','pomodoroBtn'];
+  const DRAGGABLE_IDS = ['pomodoroBtn','converterBtn','echoBtn','colorMatcherBtn'];
 
   // Restore saved order on load
   function restoreOrder(){
@@ -9336,6 +9307,22 @@ window.pomoSkip  = pomoSkip;
   </div>
   <button class="cv-btn" onclick="doConvertAdToBs()">Convert to BS</button>
   <div id="cvAdResult"></div>
+</div>
+
+<div class="cv-section">
+  <div class="cv-section-title">🎂 Age Calculator</div>
+  <div style="font-size:12.5px;font-weight:600;color:var(--dsub);margin-bottom:12px;">Enter your BS birthdate to see your age</div>
+  <div class="cv-row">
+    <select class="cv-sel" id="ageBirthY" style="flex:1.4" onchange="calcBsAge()"></select>
+    <select class="cv-sel" id="ageBirthM" style="flex:1.6" onchange="calcBsAge()"></select>
+    <select class="cv-sel" id="ageBirthD" onchange="calcBsAge()"></select>
+  </div>
+  <button class="cv-btn" onclick="calcBsAge()">Calculate Age</button>
+  <div id="ageResult" style="display:none;border-radius:14px;background:rgba(130,80,200,.09);border:1px solid rgba(130,80,200,.18);padding:12px 14px;margin-top:12px;">
+    <div id="ageMainLine" style="font-size:22px;font-weight:900;color:var(--htext);letter-spacing:-.3px;line-height:1.2;"></div>
+    <div id="ageSubLine" style="font-size:12px;font-weight:600;color:var(--dsub);margin-top:3px;"></div>
+    <div id="ageNextBday" style="font-size:12px;font-weight:700;color:rgba(130,80,200,.9);margin-top:5px;"></div>
+  </div>
 </div>`;
 
     // Expose helpers globally so inline onclick works
@@ -9343,6 +9330,7 @@ window.pomoSkip  = pomoSkip;
     window.doConvertAdToBs = doConvertAdToBs;
     window.updateBsDayOpts = updateBsDayOpts;
     window.updateAdDayOpts = updateAdDayOpts;
+    if(window.initAgeCalc) window.initAgeCalc();
   };
 })();
 
@@ -9459,12 +9447,8 @@ window.pomoSkip  = pomoSkip;
     }
   };
 
-  // Init after DOM ready (settings sheet content is static)
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initAgeCalc);
-  } else {
-    initAgeCalc();
-  }
+  // Exposed so it can be re-run each time the Date Converter sheet renders
+  window.initAgeCalc = initAgeCalc;
 })();
 
 // ══ BOTTOM NAV TAB SWITCHING ══
