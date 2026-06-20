@@ -3726,8 +3726,6 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   <div class="modebar" id="modebar">
     <button class="mode-pill on" id="tabAll" onclick="if(mm3Active)toggle3MView()"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="13" width="7" height="7" rx="1.5"/><rect x="14" y="13" width="7" height="7" rx="1.5"/></svg>All</button>
     <button class="mode-pill" id="tab3M" onclick="toggle3MView()" title="3-month quarterly view"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="5.5" height="16" rx="1.2"/><rect x="9.2" y="4" width="5.5" height="16" rx="1.2"/><rect x="16.5" y="4" width="5.5" height="16" rx="1.2"/></svg>Quarter</button>
-    <button class="mode-pill" id="pomodoroBtn" draggable="true" data-pill="pomodoro" onclick="openSheet('pomodoro')" title="Focus Timer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/></svg>Focus</button>
-    <button class="mode-pill" id="colorMatcherBtn" draggable="true" data-pill="colorMatcher" onclick="openSheet('colorMatcher')" title="Color Matcher"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="3.5" fill="#FF6B6B" stroke="none"/><circle cx="16" cy="8" r="3.5" fill="#3A86FF" stroke="none"/><circle cx="8" cy="16" r="3.5" fill="#70E000" stroke="none"/><circle cx="16" cy="16" r="3.5" fill="#FFB703" stroke="none"/></svg>Colors</button>
   </div>
 
   <div class="ccard">
@@ -8253,182 +8251,6 @@ self.addEventListener('message',e=>{
   };
 })();
 
-// ══ PILL DRAG & DROP ══
-(function(){
-  const STORAGE_KEY = 'vikram_pill_order';
-  const DRAGGABLE_IDS = ['colorMatcherBtn'];
-
-  // Restore saved order on load
-  function restoreOrder(){
-    try{
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if(!Array.isArray(saved) || saved.length !== DRAGGABLE_IDS.length) return;
-      const bar = document.getElementById('modebar');
-      if(!bar) return;
-      const allBtn = document.getElementById('tabAll');
-      saved.forEach(id => {
-        const el = document.getElementById(id);
-        if(el) bar.appendChild(el);
-      });
-    } catch(e){}
-  }
-
-  function saveOrder(){
-    const bar = document.getElementById('modebar');
-    if(!bar) return;
-    const order = [...bar.querySelectorAll('[data-pill]')].map(el => el.id);
-    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(order)); } catch(e){}
-  }
-
-  function initDrag(){
-    const bar = document.getElementById('modebar');
-    if(!bar) return;
-
-    let dragged = null;
-    let dragOverEl = null;
-    let touchClone = null;
-    let touchDragging = false;
-    let touchStartX = 0, touchStartY = 0;
-    let touchDidMove = false;
-
-    // ── HTML5 Drag (desktop) ──
-    bar.addEventListener('dragstart', e => {
-      const pill = e.target.closest('[data-pill]');
-      if(!pill) return;
-      dragged = pill;
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', pill.id);
-      requestAnimationFrame(() => pill.classList.add('dragging'));
-    });
-
-    bar.addEventListener('dragend', e => {
-      const pill = e.target.closest('[data-pill]');
-      if(pill) pill.classList.remove('dragging');
-      if(dragOverEl) dragOverEl.classList.remove('drag-over');
-      dragged = null; dragOverEl = null;
-      saveOrder();
-    });
-
-    bar.addEventListener('dragover', e => {
-      e.preventDefault();
-      const pill = e.target.closest('[data-pill]');
-      if(!pill || pill === dragged) return;
-      if(dragOverEl && dragOverEl !== pill) dragOverEl.classList.remove('drag-over');
-      dragOverEl = pill;
-      pill.classList.add('drag-over');
-
-      // Insert before or after based on cursor position
-      const rect = pill.getBoundingClientRect();
-      const mid = rect.left + rect.width / 2;
-      if(e.clientX < mid){
-        bar.insertBefore(dragged, pill);
-      } else {
-        bar.insertBefore(dragged, pill.nextSibling);
-      }
-    });
-
-    bar.addEventListener('dragleave', e => {
-      const pill = e.target.closest('[data-pill]');
-      if(pill) pill.classList.remove('drag-over');
-    });
-
-    bar.addEventListener('drop', e => {
-      e.preventDefault();
-      if(dragOverEl) dragOverEl.classList.remove('drag-over');
-    });
-
-    // ── Touch Drag (mobile) ──
-    bar.addEventListener('touchstart', e => {
-      const pill = e.target.closest('[data-pill]');
-      if(!pill) return;
-      dragged = pill;
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-      touchDidMove = false;
-
-      // Long-press to start drag (350ms)
-      pill._dragTimer = setTimeout(() => {
-        touchDragging = true;
-        pill.classList.add('dragging');
-        // Create visual clone
-        const rect = pill.getBoundingClientRect();
-        touchClone = pill.cloneNode(true);
-        touchClone.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;height:${rect.height}px;z-index:9999;pointer-events:none;opacity:.9;transform:scale(1.08);transition:none;margin:0;`;
-        document.body.appendChild(touchClone);
-      }, 350);
-    }, {passive:true});
-
-    bar.addEventListener('touchmove', e => {
-      const pill = e.target.closest('[data-pill]') || dragged;
-      if(!pill || !touchDragging) {
-        // Cancel long-press if moved too much
-        const dx = Math.abs(e.touches[0].clientX - touchStartX);
-        const dy = Math.abs(e.touches[0].clientY - touchStartY);
-        if(dx > 8 || dy > 8){
-          clearTimeout(pill?._dragTimer);
-        }
-        return;
-      }
-      e.preventDefault();
-      touchDidMove = true;
-      const tx = e.touches[0].clientX;
-      const ty = e.touches[0].clientY;
-
-      // Move clone
-      if(touchClone){
-        touchClone.style.left = (tx - touchClone.offsetWidth/2) + 'px';
-        touchClone.style.top  = (ty - touchClone.offsetHeight/2) + 'px';
-      }
-
-      // Find pill under finger
-      if(touchClone) touchClone.style.display = 'none';
-      const elUnder = document.elementFromPoint(tx, ty);
-      if(touchClone) touchClone.style.display = '';
-
-      const target = elUnder && elUnder.closest('[data-pill]');
-      if(target && target !== dragged){
-        if(dragOverEl && dragOverEl !== target) dragOverEl.classList.remove('drag-over');
-        dragOverEl = target;
-        target.classList.add('drag-over');
-        const rect = target.getBoundingClientRect();
-        if(tx < rect.left + rect.width/2){
-          bar.insertBefore(dragged, target);
-        } else {
-          bar.insertBefore(dragged, target.nextSibling);
-        }
-      }
-    }, {passive:false});
-
-    bar.addEventListener('touchend', e => {
-      const pill = e.target.closest('[data-pill]') || dragged;
-      if(pill) clearTimeout(pill._dragTimer);
-      if(touchClone){ touchClone.remove(); touchClone = null; }
-      if(dragged) dragged.classList.remove('dragging');
-      if(dragOverEl) dragOverEl.classList.remove('drag-over');
-      touchDragging = false;
-      dragged = null; dragOverEl = null;
-      saveOrder();
-    }, {passive:true});
-
-    bar.addEventListener('touchcancel', e => {
-      const pill = e.target.closest('[data-pill]') || dragged;
-      if(pill) clearTimeout(pill._dragTimer);
-      if(touchClone){ touchClone.remove(); touchClone = null; }
-      if(dragged) dragged.classList.remove('dragging');
-      if(dragOverEl) dragOverEl.classList.remove('drag-over');
-      touchDragging = false;
-      dragged = null; dragOverEl = null;
-    }, {passive:true});
-  }
-
-  // Init after DOM ready
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', () => { restoreOrder(); initDrag(); });
-  } else {
-    restoreOrder(); initDrag();
-  }
-})();
-
 // ══ COLOR MATCHER ══
 (function(){
 const CM_COLORS=[
@@ -11243,9 +11065,19 @@ window.inviteFriends = function() {
 </script>
 <!-- HEADER DROPDOWN MENU (body-level to escape stacking contexts) -->
 <div id="hdrMenu" class="hdr-menu" style="display:none;" role="menu">
+  <button class="hdr-menu-item" onclick="closeHdrMenu();openSheet('pomodoro');" role="menuitem">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/></svg>
+    Focus Timer
+  </button>
+  <div class="hdr-menu-sep"></div>
   <button class="hdr-menu-item" onclick="closeHdrMenu();openSheet('converter');" role="menuitem">
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg>
     Date Converter
+  </button>
+  <div class="hdr-menu-sep"></div>
+  <button class="hdr-menu-item" onclick="closeHdrMenu();openSheet('colorMatcher');" role="menuitem">
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none"><circle cx="8" cy="8" r="3.2" fill="#FF6B6B" stroke="none"/><circle cx="16" cy="8" r="3.2" fill="#3A86FF" stroke="none"/><circle cx="8" cy="16" r="3.2" fill="#70E000" stroke="none"/><circle cx="16" cy="16" r="3.2" fill="#FFB703" stroke="none"/></svg>
+    Color Matcher
   </button>
   <div class="hdr-menu-sep"></div>
   <button class="hdr-menu-item" onclick="closeHdrMenu();openSheet('echo');" role="menuitem">
