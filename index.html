@@ -2174,6 +2174,127 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .notif-btn:hover{opacity:.85;}
 .notif-btn.off{background:var(--tgbg);color:var(--dsub);border:1.5px solid var(--border);cursor:default;}
 
+/* ── PROFILE NOTIFICATION HISTORY ── */
+.notif-hist-item{display:flex;align-items:flex-start;gap:10px;background:var(--tgbg);border-radius:13px;padding:11px 12px;margin-bottom:8px;}
+.notif-hist-ico{width:30px;height:30px;border-radius:9px;background:var(--card);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+[data-theme=dark] .notif-hist-ico{background:var(--sbg);box-shadow:none;}
+.notif-hist-body{flex:1;min-width:0;}
+.notif-hist-title{font-size:12.5px;font-weight:800;color:var(--dtext);line-height:1.3;}
+.notif-hist-sub{font-size:11px;font-weight:600;color:var(--dsub);margin-top:2px;line-height:1.4;}
+.notif-hist-time{font-size:10px;font-weight:700;color:var(--dsub);opacity:.7;margin-top:4px;}
+.notif-hist-empty{text-align:center;padding:26px 10px;font-size:12.5px;font-weight:700;color:var(--dsub);line-height:1.7;}
+.notif-hist-clear{font-size:11px;font-weight:800;color:var(--dsub);background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;padding:4px 2px;}
+.notif-hist-clear:hover{color:var(--dtext);}
+.notif-dot{position:absolute;top:-2px;right:-2px;min-width:16px;height:16px;border-radius:999px;background:#FF4757;color:#fff;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center;padding:0 3px;box-shadow:0 0 0 2px var(--sbg);}
+.notif-dot-mini{position:absolute;top:-1px;right:-1px;width:8px;height:8px;border-radius:50%;background:#FF4757;box-shadow:0 0 0 1.5px var(--mbg);display:none;}
+
+/* ── PROFILE SHARE: upcoming events preview ── */
+.pshare-evt{display:flex;align-items:center;gap:8px;background:var(--tgbg);border-radius:11px;padding:9px 12px;margin-bottom:6px;}
+.pshare-evt-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.pshare-evt-name{flex:1;min-width:0;font-size:12px;font-weight:800;color:var(--dtext);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pshare-evt-date{font-size:10.5px;font-weight:700;color:var(--dsub);flex-shrink:0;}
+/* ── Schedule View (Google Calendar style) ── */
+#scheduleView{padding:0 0 80px;animation:mmFadeIn .2s cubic-bezier(.22,.85,.25,1);overflow-x:hidden;}
+
+/* Month banner */
+.gc-month-banner{
+  padding:22px 16px 10px;
+  margin-bottom:0;
+}
+.gc-month-banner-label{
+  font-size:28px;font-weight:900;color:var(--dtext);
+  letter-spacing:-.5px;line-height:1.1;
+}
+
+/* Week range row */
+.gc-week-row{
+  display:flex;align-items:center;
+  padding:7px 14px 4px;
+  font-size:11px;font-weight:700;color:var(--dsub);
+  text-transform:uppercase;letter-spacing:.5px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg);
+  position:sticky;top:0;z-index:3;
+}
+.gc-week-range{flex:1;}
+
+/* Day row */
+.gc-day-row{
+  display:flex;align-items:stretch;
+  min-height:52px;
+  border-bottom:1px solid var(--border);
+  cursor:pointer;
+  transition:background .13s;
+}
+.gc-day-row:active{background:var(--tgbg);}
+
+.gc-day-left{
+  width:58px;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:10px 0 10px;
+  border-right:1px solid var(--border);
+}
+.gc-day-num{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.gc-day-num.today{background:var(--tgon);}
+.gc-day-n{font-size:16px;font-weight:900;color:var(--dtext);line-height:1;}
+.gc-day-num.today .gc-day-n{color:#fff;}
+.gc-day-wd{font-size:8.5px;font-weight:700;color:var(--dsub);text-transform:uppercase;letter-spacing:.3px;margin-top:2px;}
+.gc-day-num.today .gc-day-wd{color:rgba(255,255,255,.78);}
+
+.gc-day-right{
+  flex:1;min-width:0;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:8px 12px 8px 10px;
+  gap:4px;
+}
+.gc-day-empty{
+  font-size:11.5px;color:var(--dsub);font-style:italic;font-weight:600;
+}
+
+/* Event pill */
+.gc-evt-pill{
+  display:flex;align-items:center;gap:8px;
+  padding:5px 10px;border-radius:8px;
+  cursor:pointer;transition:filter .13s;
+  min-height:30px;
+}
+.gc-evt-pill:active{filter:brightness(.9);}
+.gc-evt-pill-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.gc-evt-pill-text{
+  flex:1;min-width:0;
+  font-size:13px;font-weight:800;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.gc-evt-pill-sub{
+  font-size:10px;font-weight:700;
+  opacity:.7;flex-shrink:0;
+}
+/* Holiday pill */
+.gc-evt-pill.hol{background:rgba(255,71,87,.11);}
+.gc-evt-pill.hol .gc-evt-pill-dot{background:#FF4757;}
+.gc-evt-pill.hol .gc-evt-pill-text{color:#d63031;}
+[data-theme=dark] .gc-evt-pill.hol{background:rgba(255,71,87,.18);}
+[data-theme=dark] .gc-evt-pill.hol .gc-evt-pill-text{color:#FF4757;}
+/* User event pill */
+.gc-evt-pill.evt{background:rgba(122,183,255,.12);}
+.gc-evt-pill.evt .gc-evt-pill-text{color:var(--dtext);}
+[data-theme=dark] .gc-evt-pill.evt{background:rgba(122,183,255,.16);}
+/* Observance pill */
+.gc-evt-pill.obs{background:rgba(122,183,255,.09);}
+.gc-evt-pill.obs .gc-evt-pill-text{color:#5a8fd6;}
+[data-theme=dark] .gc-evt-pill.obs{background:rgba(122,183,255,.14);}
+[data-theme=dark] .gc-evt-pill.obs .gc-evt-pill-text{color:#7ab7ff;}
+/* Cycle pill */
+.gc-evt-pill.cyc{background:rgba(255,107,157,.10);}
+.gc-evt-pill.cyc .gc-evt-pill-text{color:#c44569;}
+[data-theme=dark] .gc-evt-pill.cyc{background:rgba(255,107,157,.18);}
+[data-theme=dark] .gc-evt-pill.cyc .gc-evt-pill-text{color:#FF6B9D;}
+
+.schd-empty{text-align:center;padding:50px 20px;color:var(--dsub);font-size:13px;font-weight:700;}
+
 /* ── HOME SCREEN WIDGET ── */
 .widget-card{background:var(--tgbg);border-radius:16px;padding:16px;margin-top:6px;}
 .widget-preview-row{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px;}
@@ -2189,71 +2310,6 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .widget-step{display:flex;align-items:flex-start;gap:9px;padding:5px 0;font-size:11.5px;font-weight:600;color:var(--dsub);line-height:1.55;border-bottom:1px solid var(--border);}
 .widget-step:last-child{border-bottom:none;padding-bottom:0;}
 .ws-num{width:19px;height:19px;border-radius:50%;background:var(--tgon);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
-/* ── SCHEDULE VIEW ── */
-.sched-day-group{padding:0;}
-.sched-day-header{
-  display:flex;align-items:center;gap:10px;
-  padding:14px 16px 6px;
-  position:sticky;top:0;z-index:2;
-  background:var(--sheet-bg);
-  border-bottom:1px solid var(--sheet-border);
-}
-.sched-day-header.today-row .sched-date-num{
-  background:linear-gradient(135deg,#5a5a68,#2e2e38);
-  color:#fff;
-  box-shadow:0 4px 12px rgba(0,0,0,.25);
-}
-.sched-date-num{
-  width:36px;height:36px;border-radius:50%;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:var(--tgbg);flex-shrink:0;
-}
-.sched-date-num .sdn{font-size:15px;font-weight:900;color:var(--dtext);line-height:1;}
-.sched-date-num .sdm{font-size:8px;font-weight:800;color:var(--dsub);text-transform:uppercase;line-height:1;margin-top:1px;}
-.sched-date-meta{flex:1;min-width:0;}
-.sched-date-full{font-size:13px;font-weight:800;color:var(--dtext);line-height:1.2;}
-.sched-date-bs{font-size:10.5px;font-weight:700;color:var(--dsub);margin-top:1px;}
-.sched-today-badge{font-size:10px;font-weight:900;padding:3px 9px;border-radius:20px;background:linear-gradient(135deg,#5a5a68,#2e2e38);color:#fff;flex-shrink:0;}
-
-.sched-items{padding:4px 0 6px 16px;}
-.sched-item{
-  display:flex;align-items:flex-start;gap:11px;
-  padding:9px 16px 9px 0;
-  border-bottom:1px solid rgba(255,255,255,.04);
-  cursor:pointer;transition:background .15s;
-}
-.sched-item:last-child{border-bottom:none;}
-.sched-item:hover{background:rgba(255,255,255,.03);}
-.sched-item-color{width:4px;height:100%;min-height:36px;border-radius:2px;flex-shrink:0;margin-top:2px;}
-.sched-item-body{flex:1;min-width:0;}
-.sched-item-title{font-size:13.5px;font-weight:800;color:var(--sheet-text);line-height:1.25;}
-.sched-item-sub{font-size:11px;font-weight:600;color:var(--sheet-muted);margin-top:3px;line-height:1.4;}
-.sched-item-tag{
-  font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;
-  flex-shrink:0;margin-top:3px;align-self:flex-start;
-}
-.sched-item-tag.hol{background:rgba(255,71,87,.12);color:#FF4757;}
-[data-theme=dark] .sched-item-tag.hol{background:rgba(255,71,87,.22);}
-.sched-item-tag.evt{background:rgba(122,183,255,.14);color:#3b82f6;}
-[data-theme=dark] .sched-item-tag.evt{background:rgba(122,183,255,.2);}
-.sched-item-tag.cyc{background:rgba(255,107,157,.13);color:#FF6B9D;}
-[data-theme=dark] .sched-item-tag.cyc{background:rgba(255,107,157,.22);}
-
-.sched-empty-day{padding:8px 16px 10px;font-size:12px;color:var(--sheet-muted);font-weight:600;font-style:italic;}
-
-.sched-month-divider{
-  display:flex;align-items:center;gap:10px;
-  padding:16px 16px 8px;
-  font-size:12px;font-weight:900;color:var(--dsub);
-  letter-spacing:.6px;text-transform:uppercase;
-}
-.sched-month-divider::after{content:'';flex:1;height:1px;background:var(--sheet-border);}
-
-.sched-range-bar{
-  height:3px;border-radius:2px;background:rgba(122,183,255,.3);
-  margin:4px 0 2px;
-}
-
 /* ── POMODORO FOCUS TIMER ── */
 #pomodoroBtn{
   background:rgba(34,197,94,.08);
@@ -3586,6 +3642,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 [data-theme=light] .nt-hero-icon-wrap{ box-shadow:0 3px 10px rgba(99,102,241,.2); }
 /* ══ END LIGHT MODE POLISH ══ */
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -3724,8 +3781,8 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     </div>
   </div>
   <div class="modebar" id="modebar">
-    <button class="mode-pill on" id="tabAll" onclick="if(mm3Active)toggle3MView()"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="13" width="7" height="7" rx="1.5"/><rect x="14" y="13" width="7" height="7" rx="1.5"/></svg>All</button>
-    <button class="mode-pill" id="tab3M" onclick="toggle3MView()" title="3-month quarterly view"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="5.5" height="16" rx="1.2"/><rect x="9.2" y="4" width="5.5" height="16" rx="1.2"/><rect x="16.5" y="4" width="5.5" height="16" rx="1.2"/></svg>Quarter</button>
+    <button class="mode-pill on" id="tabAll" onclick="if(scheduleActive)toggleScheduleView();"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="13" width="7" height="7" rx="1.5"/><rect x="14" y="13" width="7" height="7" rx="1.5"/></svg>All</button>
+    <button class="mode-pill" id="tabSchedule" onclick="toggleScheduleView()" title="Schedule view"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Schedule</button>
   </div>
 
   <div class="ccard">
@@ -3761,6 +3818,9 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     </div>
     <div id="mmGrid"></div>
   </div>
+
+  <!-- ══ SCHEDULE VIEW ══ -->
+  <div id="scheduleView" style="display:none;"></div>
 
   <div class="upcoming">
     <div class="up-hdr">
@@ -4109,6 +4169,13 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
         <div class="slbl">Vikram</div>
         <div style="font-size:12.5px;color:var(--dsub);font-weight:700;">v2.1 · BS 2083</div>
       </div>
+      <div class="srow" style="cursor:pointer;" onclick="openHelpFeedback()">
+        <div>
+          <div class="slbl">Help &amp; Feedback</div>
+          <div class="ssub">Send us a message</div>
+        </div>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
       <div class="srow" style="cursor:pointer;" onclick="inviteFriends()">
         <div>
           <div class="slbl">Invite Friends</div>
@@ -4123,6 +4190,98 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
         </div>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE SHEET -->
+<div class="sheet" id="profileSheet">
+  <div class="shandle"></div>
+  <div class="stitle">👤 Profile</div>
+  <div class="sscroll">
+    <div class="ssec">
+      <!-- Avatar + name display -->
+      <div style="display:flex;flex-direction:column;align-items:center;padding:10px 0 18px;">
+        <div style="position:relative;display:inline-flex;">
+          <div id="profileAvatarBig" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--tgon),var(--fab));display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:12px;box-shadow:0 6px 20px rgba(0,0,0,.18);">?</div>
+          <span class="notif-dot" style="display:none;"></span>
+        </div>
+        <div id="profileNameDisplay" style="font-size:18px;font-weight:900;color:var(--dtext);letter-spacing:-.3px;">Your Name</div>
+        <div id="profileAboutDisplay" style="font-size:12px;color:var(--dsub);margin-top:4px;text-align:center;max-width:240px;line-height:1.5;"></div>
+      </div>
+    </div>
+    <div class="ssec" id="profileEditSec">
+      <!-- VIEW mode: name + about with pencil icons -->
+      <div id="profileViewMode" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0 4px;">
+          <div>
+            <div style="font-size:10.5px;font-weight:700;color:var(--dsub);margin-bottom:2px;">Name</div>
+            <div id="profileViewName" style="font-size:14px;font-weight:800;color:var(--dtext);"></div>
+          </div>
+          <button onclick="profileStartEdit()" style="width:30px;height:30px;border-radius:50%;border:none;background:var(--tgbg);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </button>
+        </div>
+        <div id="profileViewAboutWrap" style="padding:4px 0 2px;">
+          <div style="font-size:10.5px;font-weight:700;color:var(--dsub);margin-bottom:2px;">About</div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+            <div id="profileViewAbout" style="font-size:12.5px;font-weight:600;color:var(--dtext);line-height:1.5;flex:1;"></div>
+            <button onclick="profileStartEdit()" style="width:30px;height:30px;border-radius:50%;border:none;background:var(--tgbg);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;margin-top:-2px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- EDIT mode: inputs + save -->
+      <div id="profileEditMode">
+        <div class="ssect">Edit Profile</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <div>
+            <div class="slbl" style="margin-bottom:5px;font-size:11.5px;">Name</div>
+            <input class="einput" id="profileNameInput" type="text" placeholder="Enter your name…" maxlength="40" autocomplete="off" oninput="profilePreview()">
+          </div>
+          <div>
+            <div class="slbl" style="margin-bottom:5px;font-size:11.5px;">About</div>
+            <textarea class="einput" id="profileAboutInput" placeholder="A little about you…" maxlength="120" rows="3" style="resize:none;line-height:1.5;" oninput="profilePreview()"></textarea>
+          </div>
+          <button class="ebtn" onclick="saveProfile()" style="margin-top:4px;">Save Profile</button>
+        </div>
+      </div>
+    </div>
+    <!-- My Upcoming Events section -->
+    <div class="ssec" id="profileEventsSec" style="display:none;">
+      <div class="ssect">My Upcoming Events</div>
+      <div id="profileShareEvents"></div>
+    </div>
+    <div class="ssec">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
+        <div class="ssect" style="margin-bottom:0;">Notifications</div>
+        <button class="notif-hist-clear" onclick="clearNotifHistory()">Clear</button>
+      </div>
+      <div id="profileNotifList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SHARED PROFILE (read-only — shown when opening someone else's share link) -->
+<div class="sheet" id="sharedProfileSheet">
+  <div class="shandle"></div>
+  <div class="stitle">📨 Shared with You</div>
+  <div class="sscroll">
+    <div class="ssec">
+      <div style="display:flex;flex-direction:column;align-items:center;padding:10px 0 18px;">
+        <div id="sharedProfileAvatar" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--tgon),var(--fab));display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:12px;box-shadow:0 6px 20px rgba(0,0,0,.18);">?</div>
+        <div id="sharedProfileName" style="font-size:18px;font-weight:900;color:var(--dtext);letter-spacing:-.3px;">Someone</div>
+        <div id="sharedProfileAbout" style="font-size:12px;color:var(--dsub);margin-top:4px;text-align:center;max-width:240px;line-height:1.5;"></div>
+      </div>
+    </div>
+    <div class="ssec" id="sharedProfileEventsSec" style="display:none;">
+      <div class="ssect">Their Upcoming Events</div>
+      <div id="sharedProfileEvents"></div>
+      <div style="font-size:10.5px;font-weight:600;color:var(--dsub);margin-top:8px;line-height:1.5;">These events are theirs to view only — they haven't been added to your calendar.</div>
+    </div>
+    <div class="ssec">
+      <button class="ebtn" onclick="closeAll()">Got it</button>
     </div>
   </div>
 </div>
@@ -4436,69 +4595,91 @@ const BS={
 };
 
 // ══ HOLIDAYS (BS key → {np, en}) ══
-// Official Nepal Public Holidays 2083 BS — all 38 dates verified ✓
+// Nepal Public Holidays + Hindu & Regional Festivals 2083 BS
 // BS[2083] = [31,31,32,31,31,31,30,29,30,29,30,30]
 const HOL={
   // ── Baishakh ────────────────────────────────────────────────────────────
   "2083-1-1": {np:"नया वर्ष",                    en:"Nepali New Year"},
-  "2083-1-18":{np:"बुद्ध जयन्ती",                 en:"Buddha Jayanti"},
+  "2083-1-18":{np:"बुद्ध जयन्ती",                en:"Buddha Jayanti"},
 
   // ── Jestha ──────────────────────────────────────────────────────────────
   "2083-2-15":{np:"गणतन्त्र दिवस",               en:"Republic Day"},
 
   // ── Bhadra ──────────────────────────────────────────────────────────────
-  "2083-5-12":{np:"जनै पूर्णिमा",                 en:"Janai Purnima"},
-  "2083-5-13":{np:"गाईजात्रा",                    en:"Gaijatra"},
-  "2083-5-19":{np:"कृष्ण जन्माष्टमी",             en:"Krishna Janmashtami"},
-  "2083-5-29":{np:"हरितालिका तीज",               en:"Haritalika Teej"},
+  "2083-5-12":{np:"जनै पूर्णिमा",                en:"Janai Purnima"},
+  "2083-5-13":{np:"गाईजात्रा",                   en:"Gaijatra"},
+  "2083-5-19":{np:"कृष्ण जन्माष्टमी",            en:"Krishna Janmashtami"},
+  "2083-5-29":{np:"हरितालिका तीज",              en:"Haritalika Teej"},
 
   // ── Ashwin ──────────────────────────────────────────────────────────────
-  "2083-6-3": {np:"संविधान दिवस",                en:"Constitution Day"},
-  "2083-6-9": {np:"इन्द्र जात्रा",                 en:"Indra Jatra"},
-  "2083-6-25":{np:"घटस्थापना",                   en:"Ghatasthapana (Dashain)"},
-  "2083-6-31":{np:"फूलपाती",                     en:"Fulpati (Dashain)"},
+  "2083-6-3": {np:"संविधान दिवस",               en:"Constitution Day"},
+  "2083-6-9": {np:"इन्द्र जात्रा",                en:"Indra Jatra"},
+  "2083-6-25":{np:"घटस्थापना",                  en:"Ghatasthapana (Dashain)"},
+  "2083-6-31":{np:"फूलपाती",                    en:"Fulpati (Dashain)"},
 
   // ── Kartik ──────────────────────────────────────────────────────────────
-  "2083-7-1": {np:"महाअष्टमी",                   en:"Maha Ashtami (Dashain)"},
-  "2083-7-2": {np:"दशैं छुट्टी",                  en:"Dashain Holiday"},
-  "2083-7-3": {np:"महानवमी",                     en:"Maha Nawami (Dashain)"},
-  "2083-7-4": {np:"विजया दशमी",                  en:"Bijaya Dashami ✦"},
-  "2083-7-6": {np:"दशैं छुट्टी",                  en:"Dashain Holiday"},
-  "2083-7-22":{np:"लक्ष्मी पूजा",                 en:"Laxmi Puja (Tihar)"},
-  "2083-7-23":{np:"तिहार छुट्टी",                 en:"Tihar Holiday"},
-  "2083-7-24":{np:"म्ह पूजा",                    en:"Mha Puja (Tihar)"},
-  "2083-7-25":{np:"भाई टीका",                   en:"Bhai Tika (Tihar) ✦"},
-  "2083-7-29":{np:"छठ पर्व",                    en:"Chhath Parva"},
+  "2083-7-1": {np:"महाअष्टमी",                  en:"Maha Ashtami (Dashain)"},
+  "2083-7-2": {np:"दशैं छुट्टी",                 en:"Dashain Holiday"},
+  "2083-7-3": {np:"महानवमी",                    en:"Maha Nawami (Dashain)"},
+  "2083-7-4": {np:"विजया दशमी",                 en:"Bijaya Dashami ✦"},
+  "2083-7-6": {np:"दशैं छुट्टी",                 en:"Dashain Holiday"},
+  "2083-7-22":{np:"लक्ष्मी पूजा",                en:"Laxmi Puja (Tihar)"},
+  "2083-7-23":{np:"तिहार छुट्टी",                en:"Tihar Holiday"},
+  "2083-7-24":{np:"म्ह पूजा",                   en:"Mha Puja (Tihar)"},
+  "2083-7-25":{np:"भाई टीका",                  en:"Bhai Tika (Tihar) ✦"},
+  "2083-7-29":{np:"छठ पर्व",                   en:"Chhath Parva"},
 
   // ── Mangsir ─────────────────────────────────────────────────────────────
-  "2083-8-8": {np:"गुरु नानक जयन्ती",             en:"Guru Nanak Jayanti"},
-  "2083-8-18":{np:"उदौली पर्व",                  en:"Udhauli Parva"},
+  "2083-8-8": {np:"गुरु नानक जयन्ती",            en:"Guru Nanak Jayanti"},
+  "2083-8-18":{np:"उदौली पर्व",                 en:"Udhauli Parva"},
 
   // ── Poush ───────────────────────────────────────────────────────────────
-  "2083-9-9": {np:"योमरी पुन्ही",                 en:"Yomari Punhi"},
-  "2083-9-10":{np:"क्रिसमस",                     en:"Christmas Day"},
-  "2083-9-15":{np:"तमु ल्होसार",                 en:"Tamu Lhosar"},
-  "2083-9-27":{np:"पृथ्वी जयन्ती",               en:"Prithvi Jayanti"},
+  "2083-9-9": {np:"योमरी पुन्ही",                en:"Yomari Punhi"},
+  "2083-9-10":{np:"क्रिसमस",                    en:"Christmas Day"},
+  "2083-9-15":{np:"तमु ल्होसार",                en:"Tamu Lhosar"},
+  "2083-9-27":{np:"पृथ्वी जयन्ती",              en:"Prithvi Jayanti"},
 
   // ── Magh ────────────────────────────────────────────────────────────────
-  "2083-10-1":{np:"माघे सक्रान्ति",              en:"Maghe Sankranti"},
+  "2083-10-1": {np:"माघे सक्रान्ति",             en:"Maghe Sankranti"},
   "2083-10-16":{np:"शहीद दिवस",                 en:"Martyrs' Day"},
-  "2083-10-24":{np:"सोनाम ल्होसार",              en:"Sonam Lhosar"},
-  "2083-10-28":{np:"सरस्वती पूजा",              en:"Saraswati Puja"},
+  "2083-10-24":{np:"सोनाम ल्होसार",             en:"Sonam Lhosar"},
+  "2083-10-28":{np:"सरस्वती पूजा",             en:"Saraswati Puja"},
 
   // ── Falgun ──────────────────────────────────────────────────────────────
-  "2083-11-7":{np:"प्रजातन्त्र दिवस",             en:"Democracy Day"},
-  "2083-11-22":{np:"महाशिवरात्री",               en:"Maha Shivaratri"},
-  "2083-11-24":{np:"अन्तर्राष्ट्रिय महिला दिवस",  en:"International Women's Day"},
-  "2083-11-25":{np:"ग्याल्पो ल्होसार",            en:"Gyalpo Lhosar"},
+  "2083-11-7": {np:"प्रजातन्त्र दिवस",            en:"Democracy Day"},
+  "2083-11-22":{np:"महाशिवरात्री",              en:"Maha Shivaratri"},
+  "2083-11-24":{np:"अन्तर्राष्ट्रिय महिला दिवस", en:"International Women's Day"},
+  "2083-11-25":{np:"ग्याल्पो ल्होसार",           en:"Gyalpo Lhosar"},
 
   // ── Chaitra ─────────────────────────────────────────────────────────────
-  "2083-12-7":{np:"होली",                       en:"Holi"},
-  "2083-12-8":{np:"होली (तराई)",                en:"Holi (Terai)"},
-  "2083-12-23":{np:"घोडे जात्रा",               en:"Ghode Jatra"},
+  "2083-12-7": {np:"होली",                      en:"Holi"},
+  "2083-12-8": {np:"होली (तराई)",               en:"Holi (Terai)"},
+  "2083-12-23":{np:"घोडे जात्रा",              en:"Ghode Jatra"},
 
   // ── 2084 boundary ───────────────────────────────────────────────────────
   "2084-1-1": {np:"नया वर्ष",                   en:"Nepali New Year 2084"},
+};
+
+// ══ OBSERVANCES (religious & cultural events — not public holidays) ══
+// Shown as blue event chips/dots, no red cell highlight
+const OBS={
+  // ── Baishakh ────────────────────────────────────────────────────────────
+  "2083-1-4": {np:"मातातीर्थ औंसी",              en:"Matatirtha Aunshi (Mother's Day)"},
+  "2083-1-6": {np:"परशुराम जयन्ती",              en:"Parashu Ram Jayanti"},
+  "2083-1-7": {np:"अक्षय तृतीया",               en:"Akshaya Tritiya"},
+  "2083-1-11":{np:"लोकतन्त्र दिवस",              en:"Loktantra Diwas"},
+
+  // ── Jestha ──────────────────────────────────────────────────────────────
+  "2083-2-17":{np:"अनला पुन्ही",                 en:"Anala Punhi"},
+
+  // ── Ashadh ──────────────────────────────────────────────────────────────
+  "2083-3-15":{np:"मास्त पूर्णिमा",              en:"Masta Purnima / Dahi Chiura Khane Din"},
+  "2083-3-32":{np:"जगन्नाथ रथयात्रा",            en:"Jagannath Rath Yatra"},
+
+  // ── Shrawan ─────────────────────────────────────────────────────────────
+  "2083-4-1": {np:"साउने सक्रान्ति",             en:"Saune Sankranti"},
+  "2083-4-13":{np:"गुरु पूर्णिमा",               en:"Guru Purnima"},
+  "2083-4-26":{np:"घण्टाकर्ण चतुर्दशी",          en:"Ghantakarna Chaturdashi"},
 };
 
 // ══ STRINGS ══
@@ -4613,6 +4794,7 @@ function getTithi(ad){
 // ══ HOLIDAY HELPERS ══
 function hk(y,m,d){return`${y}-${m}-${d}`;}
 function getH(y,m,d){return cfg.hol?HOL[hk(y,m,d)]:null;}
+function getObs(y,m,d){return OBS[hk(y,m,d)]||null;}
 
 // ══ RENDER ══
 function render(){
@@ -4654,14 +4836,19 @@ function render(){
       const isT=vY===TODAYBS.y&&vM===TODAYBS.m&&nd===TODAYBS.d;
       const isSel=selectedDay.y===vY&&selectedDay.m===vM&&selectedDay.d===nd;
       const h=getH(vY,vM,nd),isH=!!h;
+      const obs=getObs(vY,vM,nd);
       let cls='cell active';
       if(isT)cls+=' today';else if(isH)cls+=' hol';else if(wk)cls+=' wk';
 
-      // Build inline chips: holiday, events, cycle
+      // Build inline chips: holiday, observance, events, cycle
       const chipArr=[];
       if(h && cfg.holn){
         const hn=lang==='ne'?h.np:h.en;
         chipArr.push(`<div class="cell-chip cell-chip-hol">${hn}</div>`);
+      }
+      if(obs){
+        const on=lang==='ne'?obs.np:obs.en;
+        chipArr.push(`<div class="cell-chip cell-chip-evt">${on}</div>`);
       }
       userEvents.forEach(ev=>{
         if(eventMatchesDate(ev,vY,vM,nd))
@@ -4694,9 +4881,9 @@ function render(){
   document.getElementById('cgrid').innerHTML=html;
 }
 
-function prevMonth(){haptic('light');vM--;if(vM<1){vM=12;vY--;}render();if(mm3Active)render3M();}
-function nextMonth(){haptic('light');vM++;if(vM>12){vM=1;vY++;}render();if(mm3Active)render3M();}
-function goToday(){haptic('medium');vY=TODAYBS.y;vM=TODAYBS.m;selectedDay={y:TODAYBS.y,m:TODAYBS.m,d:TODAYBS.d};render();renderSelectedDay();if(mm3Active)render3M();}
+function prevMonth(){haptic('light');vM--;if(vM<1){vM=12;vY--;}render();}
+function nextMonth(){haptic('light');vM++;if(vM>12){vM=1;vY++;}render();}
+function goToday(){haptic('medium');vY=TODAYBS.y;vM=TODAYBS.m;selectedDay={y:TODAYBS.y,m:TODAYBS.m,d:TODAYBS.d};render();renderSelectedDay();}
 
 // ══ MULTI-MONTH (QUARTERLY) VIEW ══
 let mm3Active = false;
@@ -4725,6 +4912,259 @@ function toggle3MView(){
   }
 }
 
+
+// ══ SCHEDULE VIEW ══
+let scheduleActive = false;
+
+function toggleScheduleView(){
+  haptic('light');
+  scheduleActive = !scheduleActive;
+  const btn = document.getElementById('tabSchedule');
+  const tabAll = document.getElementById('tabAll');
+  const ccard = document.querySelector('.ccard');
+  const schedView = document.getElementById('scheduleView');
+  const upcoming = document.querySelector('.upcoming');
+
+  if(scheduleActive){
+    btn.classList.add('on');
+    tabAll.classList.remove('on');
+    if(ccard) ccard.style.display='none';
+    if(schedView){ schedView.style.display=''; renderScheduleView(); }
+    if(upcoming) upcoming.style.display='none';
+  } else {
+    btn.classList.remove('on');
+    tabAll.classList.add('on');
+    if(ccard) ccard.style.display='';
+    if(schedView) schedView.style.display='none';
+    if(upcoming) upcoming.style.display='';
+    render();
+  }
+}
+
+function renderScheduleView(){
+  const wrap = document.getElementById('scheduleView');
+  if(!wrap) return;
+
+  const mArr = lang==='ne' ? MNE : MEN;
+  const wdArr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const colorMap = {'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'};
+  const todayMid = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
+
+  // Build day-keyed map for next 180 days
+  const DAYS = 180;
+  const dayMap = {};
+
+  function getDay(adMid){
+    const k = adMid.toISOString().slice(0,10);
+    if(!dayMap[k]) dayMap[k] = {adMid, items:[]};
+    return dayMap[k];
+  }
+
+  // — User events —
+  const msDay = 86400000;
+  userEvents.forEach(ev => {
+    const {startMid, endMid} = getEventRangeMid(ev);
+    const spanDays = Math.round((endMid - startMid) / msDay);
+
+    function pushDay(occStart, occEnd){
+      for(let s=new Date(occStart); s<=occEnd && s<=new Date(todayMid.getTime()+DAYS*msDay); s=new Date(s.getTime()+msDay)){
+        if(s < todayMid) continue;
+        const bs = adToBs(s);
+        getDay(new Date(s)).items.push({type:'evt', ev, bs});
+      }
+    }
+
+    if(!ev.recur && !ev.repeatYearly){ pushDay(startMid, endMid); return; }
+
+    if(ev.repeatYearly && !ev.recur){
+      for(let yr=TODAY.getFullYear(); yr<=TODAY.getFullYear()+1; yr++){
+        const vStart = bsToAd(adToBs(new Date(yr,0,1)).y, ev.bsM, ev.bsD);
+        const vS = new Date(vStart.getFullYear(), vStart.getMonth(), vStart.getDate());
+        pushDay(vS, new Date(vS.getTime()+spanDays*msDay));
+      }
+      return;
+    }
+
+    const r = ev.recur;
+    if(!r||!r.freq){ pushDay(startMid,endMid); return; }
+    const interval = r.interval || 1;
+    let occ = 0, cur = new Date(startMid);
+    const maxIter = 600;
+    let iter = 0;
+    const windowEnd = new Date(todayMid.getTime()+DAYS*msDay);
+    while(cur <= windowEnd && iter++ < maxIter){
+      if(r.endType==='count' && occ >= (r.endCount||1)) break;
+      if(r.endType==='date' && r.endAdMs){
+        const ed=new Date(r.endAdMs); const edM=new Date(ed.getFullYear(),ed.getMonth(),ed.getDate());
+        if(cur>edM) break;
+      }
+      const occEnd = new Date(cur.getTime()+spanDays*msDay);
+      if(cur>=todayMid || occEnd>=todayMid) pushDay(cur,occEnd);
+      occ++;
+      if(r.freq==='daily') cur=new Date(cur.getTime()+interval*msDay);
+      else if(r.freq==='weekly'){
+        if(r.weekdays&&r.weekdays.length){
+          cur=new Date(cur.getTime()+msDay);
+          while(!r.weekdays.includes(cur.getDay())) cur=new Date(cur.getTime()+msDay);
+        } else cur=new Date(cur.getTime()+interval*7*msDay);
+      } else if(r.freq==='monthly'){
+        const nm=new Date(cur); nm.setMonth(nm.getMonth()+interval); cur=nm;
+      } else if(r.freq==='yearly'){
+        const ny=new Date(cur); ny.setFullYear(ny.getFullYear()+interval); cur=ny;
+      } else break;
+    }
+  });
+
+  // — Holidays —
+  for(const key of Object.keys(HOL)){
+    const [ky,km,kd]=key.split('-').map(Number);
+    if(!BS[ky]) continue;
+    const ad=bsToAd(ky,km,kd);
+    const adMid=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
+    if(adMid>=todayMid && adMid<=new Date(todayMid.getTime()+DAYS*msDay)){
+      getDay(adMid).items.push({type:'hol',hol:HOL[key],ky,km,kd});
+    }
+  }
+
+  // — Observances —
+  for(const key of Object.keys(OBS)){
+    const [ky,km,kd]=key.split('-').map(Number);
+    if(!BS[ky]) continue;
+    const ad=bsToAd(ky,km,kd);
+    const adMid=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
+    if(adMid>=todayMid && adMid<=new Date(todayMid.getTime()+DAYS*msDay)){
+      getDay(adMid).items.push({type:'obs',obs:OBS[key],ky,km,kd});
+    }
+  }
+
+  // — Cycle phases (start of each phase as marker) —
+  if(cycleData && cycleData.lastPeriodStart){
+    const cl = cycleData.cycleLength||28;
+    const pl = cycleData.periodLength||5;
+    const baseRaw = new Date(cycleData.lastPeriodStart);
+    const baseMid = new Date(baseRaw.getFullYear(), baseRaw.getMonth(), baseRaw.getDate());
+    const windowEnd = new Date(todayMid.getTime()+DAYS*msDay);
+    let cycleStart = new Date(baseMid);
+    while(new Date(cycleStart.getTime()+cl*msDay) < todayMid) cycleStart = new Date(cycleStart.getTime()+cl*msDay);
+    const phases = [
+      {name:'Menstrual',  offset:0,      emoji:'🔴', color:'#FF4757'},
+      {name:'Follicular', offset:pl,     emoji:'🌱', color:'#FF6B9D'},
+      {name:'Ovulation',  offset:cl-16,  emoji:'✨', color:'#a78bfa'},
+      {name:'Luteal',     offset:cl-12,  emoji:'🌙', color:'#3B82F6'},
+    ];
+    for(let safe=0; safe<20 && cycleStart<=windowEnd; safe++){
+      phases.forEach(ph => {
+        const phDay = new Date(cycleStart.getTime() + ph.offset*msDay);
+        if(phDay >= todayMid && phDay <= windowEnd){
+          getDay(phDay).items.push({type:'cyc', phase:ph.name, emoji:ph.emoji, color:ph.color});
+        }
+      });
+      cycleStart = new Date(cycleStart.getTime()+cl*msDay);
+    }
+  }
+
+  // Sort all days
+  const sortedKeys = Object.keys(dayMap).sort();
+  if(!sortedKeys.length){
+    wrap.innerHTML='<div class="schd-empty">📅 No upcoming events</div>';
+    return;
+  }
+
+  // Group by AD month for month banners
+  // Also group by BS week for week labels
+  let html = '';
+  let lastMonthKey = null; // 'YYYY-M' AD
+  let lastWeekKey = null;  // 'YYYY-W' (Sun-Sat bucket)
+
+  const getWeekStart = (d) => {
+    const s = new Date(d); s.setDate(s.getDate() - s.getDay()); return s;
+  };
+  const fmtShort = (d) => {
+    const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[d.getMonth()]} ${d.getDate()}`;
+  };
+
+  sortedKeys.forEach(k => {
+    const {adMid, items} = dayMap[k];
+    const isToday = adMid.getTime()===todayMid.getTime();
+    const bs = adToBs(adMid);
+    const monthKey = `${bs.y}-${bs.m}`; // BS month key
+
+    // Month banner when BS month changes
+    if(monthKey !== lastMonthKey){
+      lastMonthKey = monthKey;
+      const bsMonthName = mArr[bs.m-1] || '';
+      html += `<div class="gc-month-banner">
+        <div class="gc-month-banner-label">${bsMonthName} ${bs.y}</div>
+      </div>`;
+      lastWeekKey = null; // force week label after banner
+    }
+
+    // Week row label (Jun 21 – 27) when week changes
+    const weekStart = getWeekStart(adMid);
+    const weekEnd = new Date(weekStart.getTime() + 6*86400000);
+    const weekKey = weekStart.toISOString().slice(0,10);
+    if(weekKey !== lastWeekKey){
+      lastWeekKey = weekKey;
+      const wLabel = `${fmtShort(weekStart)} – ${fmtShort(weekEnd)}`;
+      html += `<div class="gc-week-row"><span class="gc-week-range">${wLabel}</span></div>`;
+    }
+
+    // Day row
+    const wd = wdArr[adMid.getDay()];
+    const dd = adMid.getDate();
+    const bsStr = `${mArr[bs.m-1]} ${ns(bs.d)}`;
+
+    const pillsHtml = items.length === 0
+      ? `<div class="gc-day-empty">Nothing planned. Tap to create.</div>`
+      : items.map(it => {
+          if(it.type==='hol'){
+            const name = lang==='ne'?it.hol.np:it.hol.en;
+            return `<div class="gc-evt-pill hol" onclick="event.stopPropagation();openDay(${it.ky},${it.km},${it.kd})">
+              <div class="gc-evt-pill-dot"></div>
+              <div class="gc-evt-pill-text">🎉 ${name}</div>
+              <div class="gc-evt-pill-sub">${bsStr}</div>
+            </div>`;
+          }
+          if(it.type==='obs'){
+            const name = lang==='ne'?it.obs.np:it.obs.en;
+            return `<div class="gc-evt-pill obs" onclick="event.stopPropagation();openDay(${it.ky},${it.km},${it.kd})">
+              <div class="gc-evt-pill-dot" style="background:#7ab7ff;"></div>
+              <div class="gc-evt-pill-text">🎀 ${name}</div>
+              <div class="gc-evt-pill-sub">${bsStr}</div>
+            </div>`;
+          }
+          if(it.type==='cyc'){
+            return `<div class="gc-evt-pill cyc" onclick="event.stopPropagation();openSheet('cycle')">
+              <div class="gc-evt-pill-dot" style="background:${it.color};"></div>
+              <div class="gc-evt-pill-text">${it.emoji} ${it.phase} phase begins</div>
+              <div class="gc-evt-pill-sub">Cycle</div>
+            </div>`;
+          }
+          const ev=it.ev;
+          const colorMap2={'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'};
+          const c=colorMap2[ev.color]||'#3B82F6';
+          const bsDay=it.bs;
+          return `<div class="gc-evt-pill evt" onclick="event.stopPropagation();openDay(${bsDay.y},${bsDay.m},${bsDay.d})" style="border-left:3px solid ${c};">
+            <div class="gc-evt-pill-dot" style="background:${c};"></div>
+            <div class="gc-evt-pill-text">${ev.title}</div>
+            <div class="gc-evt-pill-sub">${bsStr}</div>
+          </div>`;
+        }).join('');
+
+    html += `<div class="gc-day-row" onclick="openDay(${bs.y},${bs.m},${bs.d})">
+      <div class="gc-day-left">
+        <div class="gc-day-num${isToday?' today':''}">
+          <div class="gc-day-n">${dd}</div>
+          <div class="gc-day-wd">${wd}</div>
+        </div>
+      </div>
+      <div class="gc-day-right">${pillsHtml}</div>
+    </div>`;
+  });
+
+  wrap.innerHTML = html;
+}
 function mmOffsetMonth(y, m, delta){
   m += delta;
   while(m > 12){ m -= 12; y++; }
@@ -4811,9 +5251,10 @@ function render3M(){
         else if(isWk)  cls += ' wk';
         if(isSel && !isToday) cls += ' sel';
 
-        // Dots: holiday, events, cycle
+        // Dots: holiday, observance, events, cycle
         const dots = [];
         if(h) dots.push('<div class="mm-dot hol"></div>');
+        else if(getObs(y, m, nd)) dots.push('<div class="mm-dot evt"></div>');
 
         userEvents.forEach(ev => {
           if(eventMatchesDate(ev, y, m, nd)) dots.push('<div class="mm-dot evt"></div>');
@@ -5296,6 +5737,12 @@ function openDay(bY,bM,bD){
     const hn=lang==='ne'?h.np:h.en;
     badges+=`<span class="bdg bdg-h">🇳🇵 Public Holiday · ${hn}</span>`;
   }
+  // Observance badge
+  const obs=OBS[hk(bY,bM,bD)];
+  if(obs){
+    const on=lang==='ne'?obs.np:obs.en;
+    badges+=`<span class="bdg" style="background:var(--chip-evt-bg);color:var(--chip-evt-text);">🎀 ${on}</span>`;
+  }
 
   document.getElementById('mbadges').innerHTML=badges;
 
@@ -5328,7 +5775,7 @@ function openDay(bY,bM,bD){
 function closeAll(){
   haptic('light');
   document.getElementById('ov').classList.remove('open');
-  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet','profileSheet','sharedProfileSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
   // Stop color matcher game if running
   if(window.cmState && window.cmState.running) window.cmStopGame && window.cmStopGame();
   // Pause pomodoro timer if running (don't stop — just pause so state persists)
@@ -5593,7 +6040,7 @@ function openSheet(t){
   }
   closeAll();
   document.getElementById('ov').classList.add('open');
-  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',echo:'echoSheet',colorMatcher:'colorMatcherSheet',pomodoro:'pomodoroSheet',converter:'converterSheet'};
+  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',echo:'echoSheet',colorMatcher:'colorMatcherSheet',pomodoro:'pomodoroSheet',converter:'converterSheet',profile:'profileSheet',sharedProfile:'sharedProfileSheet'};
   const sheet=document.getElementById(ids[t]);
   sheet?.classList.add('open');
   if(t==='echo'){
@@ -5628,6 +6075,9 @@ function openSheet(t){
 // Called from day modal to pre-fill date
 function openAddForDay(bsY,bsM,bsD){
   haptic('light');
+  window._profileEditIdx=null;
+  const titleEl=document.getElementById('addTitle');
+  if(titleEl) titleEl.textContent='New Event';
   selectedDay={y:bsY,m:bsM,d:bsD};
   renderSelectedDay();
   openSheet('add');
@@ -5639,6 +6089,84 @@ function openAddForDay(bsY,bsM,bsD){
 // ══ NOTIFICATIONS ══
 let notifEnabled=localStorage.getItem('vikram_notif_enabled')!=='false';
 
+// ── Notification history (what the user actually received, shown in Profile) ──
+const NOTIF_HIST_KEY='vikram_notif_history';
+const NOTIF_HIST_MAX=50;
+
+function loadNotifHistory(){
+  try{ return JSON.parse(localStorage.getItem(NOTIF_HIST_KEY)||'[]'); }catch(e){ return []; }
+}
+function saveNotifHistory(list){
+  try{ localStorage.setItem(NOTIF_HIST_KEY, JSON.stringify(list)); }catch(e){}
+}
+function logNotifHistory(title,body,tag){
+  const list=loadNotifHistory();
+  list.unshift({id:Date.now()+'_'+Math.random().toString(36).slice(2,7),title,body:body||'',tag:tag||'',ts:Date.now()});
+  if(list.length>NOTIF_HIST_MAX) list.length=NOTIF_HIST_MAX;
+  saveNotifHistory(list);
+  updateNotifBadges();
+  renderNotifHistory();
+}
+function getNotifUnreadCount(){
+  const lastSeen=Number(localStorage.getItem('vikram_notif_lastseen')||0);
+  return loadNotifHistory().filter(n=>n.ts>lastSeen).length;
+}
+function markNotifsSeen(){
+  localStorage.setItem('vikram_notif_lastseen', String(Date.now()));
+  updateNotifBadges();
+}
+function updateNotifBadges(){
+  const count=getNotifUnreadCount();
+  document.querySelectorAll('.notif-dot').forEach(el=>{
+    el.style.display=count>0?'flex':'none';
+    el.textContent=count>9?'9+':String(count);
+  });
+  document.querySelectorAll('.notif-dot-mini').forEach(el=>{
+    el.style.display=count>0?'block':'none';
+  });
+}
+function relTimeShort(ts){
+  const diff=Math.max(0,Date.now()-ts);
+  const min=Math.floor(diff/60000);
+  if(min<1) return lang==='ne'?'अहिले':'Just now';
+  if(min<60) return `${min}m ago`;
+  const hr=Math.floor(min/60);
+  if(hr<24) return `${hr}h ago`;
+  const day=Math.floor(hr/24);
+  if(day<7) return `${day}d ago`;
+  const d=new Date(ts);
+  return `${ADMEN[d.getMonth()].slice(0,3)} ${d.getDate()}`;
+}
+function renderNotifHistory(){
+  const wrap=document.getElementById('profileNotifList');
+  if(!wrap) return;
+  const list=loadNotifHistory();
+  if(list.length===0){
+    wrap.innerHTML=`<div class="notif-hist-empty">🔕 No notifications yet<br>Event reminders and alerts will show up here</div>`;
+    return;
+  }
+  wrap.innerHTML=list.map(n=>{
+    const icoMatch=(n.title||'').match(/^(\p{Emoji_Presentation}|\p{Extended_Pictographic})/u);
+    const ico=icoMatch?icoMatch[0]:'🔔';
+    const titleText=(n.title||'').replace(/^(\p{Emoji_Presentation}|\p{Extended_Pictographic})\s*/u,'');
+    return `<div class="notif-hist-item">
+      <div class="notif-hist-ico">${ico}</div>
+      <div class="notif-hist-body">
+        <div class="notif-hist-title">${titleText}</div>
+        ${n.body?`<div class="notif-hist-sub">${n.body}</div>`:''}
+        <div class="notif-hist-time">${relTimeShort(n.ts)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function clearNotifHistory(){
+  haptic('medium');
+  saveNotifHistory([]);
+  renderNotifHistory();
+  updateNotifBadges();
+  vikramToast('🗑️ Notifications cleared');
+}
+
 async function requestNotifPerm(){
   if(!('Notification' in window)) return 'unsupported';
   if(Notification.permission==='granted') return 'granted';
@@ -5648,6 +6176,7 @@ async function requestNotifPerm(){
 
 async function showNotif(title,body,tag='vikram'){
   if(!('Notification' in window)||Notification.permission!=='granted') return;
+  logNotifHistory(title,body,tag);
   const opts={body,tag,icon:'./icons/icon-192.png',badge:'./icons/favicon-32.png',
     vibrate:[200,100,200],requireInteraction:false};
   if(navigator.serviceWorker?.controller){
@@ -5913,7 +6442,7 @@ async function saveEv(){
     alert('End date must be the same as or after the start date.');
     return;
   }
-  userEvents.push({
+  const evData={
     title:t,
     bsY,bsM,bsD,
     endBsY,endBsM,endBsD,
@@ -5930,15 +6459,26 @@ async function saveEv(){
       endCount: window._recurState.endCount || 5,
       endAdMs: window._recurState.endAdMs || null,
     } : null,
-  });
+  };
+  // Edit mode — update in place
+  if(window._profileEditIdx!=null && window._profileEditIdx>=0 && window._profileEditIdx<userEvents.length){
+    userEvents[window._profileEditIdx]=evData;
+    window._profileEditIdx=null;
+  } else {
+    userEvents.push(evData);
+  }
   userEvents.sort((a,b)=>a.adMs-b.adMs);
   saveEvents();
   document.getElementById('evT').value='';
   document.getElementById('evN').value='';
+  // Reset sheet title
+  const titleEl=document.getElementById('addTitle');
+  if(titleEl) titleEl.textContent='New Event';
   closeAll();
   renderUpcoming();
   renderSelectedDay();
   render();
+  renderProfileShareEvents();
   // Confirmation notification
   if(Notification.permission==='granted'){
     const adStr=`${ADMEN[adDate.getMonth()]} ${adDate.getDate()}, ${adDate.getFullYear()}`;
@@ -6108,13 +6648,18 @@ function renderMonthView(){
   const monthName = mArr[m-1];
   const todayBS = TODAYBS;
 
-  // Build event map: day → {hols:[], evts:[], cycs:[]}
+  // Build event map: day → {hols:[], evts:[], cycs:[], obs:[]}
   const dayMap = {};
-  for(let d=1;d<=dims;d++) dayMap[d]={hols:[],evts:[],cycs:[]};
+  for(let d=1;d<=dims;d++) dayMap[d]={hols:[],evts:[],cycs:[],obs:[]};
 
   for(const key of Object.keys(HOL)){
     const[ky,km,kd]=key.split('-').map(Number);
     if(ky===y&&km===m&&dayMap[kd]) dayMap[kd].hols.push(HOL[key]);
+  }
+
+  for(const key of Object.keys(OBS)){
+    const[ky,km,kd]=key.split('-').map(Number);
+    if(ky===y&&km===m&&dayMap[kd]) dayMap[kd].obs.push(OBS[key]);
   }
 
   const monthStart = bsToAd(y,m,1);
@@ -6166,13 +6711,14 @@ function renderMonthView(){
     const isToday = todayBS.y===y&&todayBS.m===m&&todayBS.d===d;
     const isSel   = mvSelectedDay&&mvSelectedDay.y===y&&mvSelectedDay.m===m&&mvSelectedDay.d===d;
     const dm = dayMap[d];
-    const hasEvents = dm.hols.length||dm.evts.length||dm.cycs.length;
+    const hasEvents = dm.hols.length||dm.obs.length||dm.evts.length||dm.cycs.length;
     const cls = ['mv-cell', isToday?'today-cell':'', isSel&&!isToday?'selected-cell':''].filter(Boolean).join(' ');
 
     // Build inline chips (max 2 visible to avoid overflow)
     let chips = '';
     const allChips = [
       ...dm.hols.map(h=>({type:'hol', label: lang==='ne'?h.np:h.en})),
+      ...dm.obs.map(o=>({type:'evt', label: lang==='ne'?o.np:o.en})),
       ...dm.evts.map(e=>({type:'evt', label: e.title})),
       ...dm.cycs.map(c=>({type:'cyc', label: c.title})),
     ];
@@ -6203,6 +6749,7 @@ function renderMonthView(){
     const dayLabel = `${WDEN_FULL[adD.getDay()]}, ${mArr[m-1]} ${ns(sd)}`;
     const allItems = [
       ...dm.hols.map(h=>({type:'hol',h,d:sd})),
+      ...dm.obs.map(o=>({type:'obs',o,d:sd})),
       ...dm.evts.map(e=>({type:'evt',e,d:sd})),
       ...dm.cycs.map(c=>({type:'cyc',c,d:sd})),
     ];
@@ -6225,6 +6772,7 @@ function renderMonthView(){
         <div class="mv-day-label">${WDEN_S[adD.getDay()]} · ${ns(d)}${isToday?' <span style="color:#3b82f6">· Today</span>':''}</div>`;
       [
         ...dm.hols.map(h=>({type:'hol',h,d})),
+        ...dm.obs.map(o=>({type:'obs',o,d})),
         ...dm.evts.map(e=>({type:'evt',e,d})),
         ...dm.cycs.map(c=>({type:'cyc',c,d})),
       ].forEach(it=>{ listHtml+=mvItemHtml(it,y,m); });
@@ -6247,6 +6795,19 @@ function mvItemHtml(it,y,m){
         <div class="up-info">
           <div class="up-name ne">${name}</div>
           <div class="up-tag-row"><span class="up-tag hol">Holiday</span></div>
+        </div>
+        <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+      </div></div>`;
+  }
+  if(it.type==='obs'){
+    const name=lang==='ne'?it.o.np:it.o.en;
+    return `<div class="up-item" onclick="openDay(${y},${m},${it.d})">
+      <div class="up-item-accent evt"></div>
+      <div class="up-item-inner">
+        <div class="up-icon evt">🎀</div>
+        <div class="up-info">
+          <div class="up-name ne">${name}</div>
+          <div class="up-tag-row"><span class="up-tag evt">Observance</span></div>
         </div>
         <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
       </div></div>`;
@@ -6341,6 +6902,17 @@ function renderUpcoming(){
     const diff=Math.round((adMid-todayMid)/86400000);
     if(diff>=0&&diff<=WINDOW)
       items.push({type:'hol',ky,km,kd,ad,adMid,diff,hol:HOL[key]});
+  }
+
+  // — Observances within window (regional/cultural — not public holidays) —
+  for(const key of Object.keys(OBS)){
+    const[ky,km,kd]=key.split('-').map(Number);
+    if(!BS[ky]) continue;
+    const ad=bsToAd(ky,km,kd);
+    const adMid=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
+    const diff=Math.round((adMid-todayMid)/86400000);
+    if(diff>=0&&diff<=WINDOW)
+      items.push({type:'obs',ky,km,kd,ad,adMid,diff,obs:OBS[key]});
   }
 
   // — User events within window —
@@ -6536,6 +7108,16 @@ function renderUpcoming(){
           </div>
           <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
         </div>`;
+      } else if(it.type==='obs'){
+        const obsName=lang==='ne'?it.obs.np:it.obs.en;
+        html+=`<div class="up-item" onclick="openDay(${it.ky},${it.km},${it.kd})">
+          <div class="up-icon evt">🎀</div>
+          <div class="up-info">
+            <div class="up-name ne">${obsName}</div>
+            <div class="up-tag-row"><span class="up-tag evt">Observance</span></div>
+          </div>
+          <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+        </div>`;
       } else if(it.type==='cyc'){
         const meta=upItemMeta('cyc', it.title);
         html+=`<div class="up-item" onclick="openDay(${it.ky},${it.km},${it.kd})">
@@ -6603,6 +7185,23 @@ function renderSchedule(){
       title: lang==='ne' ? HOL[key].np : HOL[key].en,
       sub: `🇳🇵 Public Holiday · ${MEN[km-1]} ${kd}, ${ky} BS`,
       tag:'Holiday', tagCls:'hol',
+      action:()=>{ closeAll(); setTimeout(()=>openDay(ky,km,kd),60); }
+    });
+  }
+
+  // Observances (regional/cultural — not public holidays)
+  for(const key of Object.keys(OBS)){
+    const[ky,km,kd] = key.split('-').map(Number);
+    if(!BS[ky]) continue;
+    const ad = bsToAd(ky,km,kd);
+    const adMid = new Date(ad.getFullYear(), ad.getMonth(), ad.getDate());
+    if(adMid < todayMid || adMid > windowEnd) continue;
+    const dk = `${ad.getFullYear()}-${String(ad.getMonth()+1).padStart(2,'0')}-${String(ad.getDate()).padStart(2,'0')}`;
+    addToDay(dk, {
+      type:'obs', color:'#7ab7ff',
+      title: lang==='ne' ? OBS[key].np : OBS[key].en,
+      sub: `🎀 Observance · ${MEN[km-1]} ${kd}, ${ky} BS`,
+      tag:'Observance', tagCls:'evt',
       action:()=>{ closeAll(); setTimeout(()=>openDay(ky,km,kd),60); }
     });
   }
@@ -6760,6 +7359,7 @@ function renderSelectedDay(){
   const wdStr=lang==='ne'?WDNE[wd]:WDEN[wd];
   const adStr=`${wdStr}, ${ADMEN[ad.getMonth()]} ${ad.getDate()}, ${ad.getFullYear()}`;
   const h=HOL[hk(y,m,d)];
+  const obs=OBS[hk(y,m,d)];
   const dayEvts=userEvents.filter(ev=>eventMatchesDate(ev,y,m,d));
   const tm=new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
   const sm=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
@@ -6771,6 +7371,9 @@ function renderSelectedDay(){
       : `<span class="sel-badge">${-df} day${-df>1?'s':''} ago</span>`;
   const holBadge=h&&cfg.holn
     ? `<span class="sel-badge hol">${lang==='ne'?h.np:h.en}</span>`
+    : '';
+  const obsBadge=obs
+    ? `<span class="sel-badge" style="background:var(--chip-evt-bg);color:var(--chip-evt-text);">${lang==='ne'?obs.np:obs.en}</span>`
     : '';
   const evtBadge=dayEvts.length
     ? `<span class="sel-badge">${dayEvts.length} event${dayEvts.length>1?'s':''}</span>`
@@ -6787,6 +7390,7 @@ function renderSelectedDay(){
     </div>
     <div class="sel-badges">
       ${holBadge}
+      ${obsBadge}
       ${evtBadge}
     </div>
     <div class="sel-actions">
@@ -6794,8 +7398,9 @@ function renderSelectedDay(){
       <button class="sel-btn ghost" onclick="event.stopPropagation();openDay(${y},${m},${d})">Details</button>
     </div>
     <div class="sel-list">
-      ${!h&&!dayEvts.length?`<div class="sel-empty">No holidays or events on this day</div>`:''}
+      ${!h&&!obs&&!dayEvts.length?`<div class="sel-empty">No holidays or events on this day</div>`:''}
       ${h&&cfg.holn?`<div class="sel-row"><span class="sel-dot" style="background:var(--hol);"></span><span>${lang==='ne'?'सार्वजनिक बिदा':'Public holiday'} · ${lang==='ne'?h.np:h.en}</span></div>`:''}
+      ${obs?`<div class="sel-row"><span class="sel-dot" style="background:var(--dot-evt);"></span><span>${lang==='ne'?'पर्व / अनुष्ठान':'Observance'} · ${lang==='ne'?obs.np:obs.en}</span></div>`:''}
       ${dayEvts.map(ev=>{const c=({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'})[ev.color]||'#3B82F6';return`<div class="sel-row"><span class="sel-dot" style="background:${c};"></span><span>${ev.title}${ev.note?' · '+ev.note:''}${ev.repeatYearly?' <span style="font-size:10px;background:rgba(99,102,241,.15);color:#6366f1;border-radius:6px;padding:1px 5px;font-weight:800;">🔁 Yearly</span>':''}<span style="display:block;font-size:11px;color:var(--sel-muted);font-weight:700;margin-top:2px;">${formatEventRange(ev)}</span></span></div>`;}).join('')}
     </div>
   </div>`;
@@ -6819,6 +7424,7 @@ function removeEv(i){
   render();
   renderUpcoming();
   renderSelectedDay();
+  renderProfileShareEvents();
 }
 
 // ══ PREVIOUS 29 DAYS ══
@@ -8022,6 +8628,8 @@ _ric(()=>{
   renderUpcoming();
   renderSelectedDay();
   updateNotifCard();
+  updateNotifBadges();
+  checkIncomingSharedProfile();
 });;
 setTimeout(checkEventReminders, 2500);
 
@@ -8783,7 +9391,7 @@ function pomoPhaseComplete(){
   // Auto-ring notification
   if('Notification' in window && Notification.permission === 'granted'){
     const msg = s.phase === 'focus' ? 'Break is over — time to focus!' : 'Focus session complete! Take a well-earned break.';
-    try{ new Notification('🍅 Vikram Focus Timer', {body: msg, icon:'./icons/icon-192.png', tag:'pomodoro'}); }catch(e){}
+    showNotif('🍅 Vikram Focus Timer', msg, 'pomodoro');
   }
 }
 
@@ -10955,6 +11563,10 @@ window.openShareModal = function() {
     const hkey = `${bsY}-${bsM}-${bsD}`;
     if (HOL[hkey]) items.push({ icon: '🇳🇵', name: HOL[hkey].en });
   }
+  if (typeof OBS !== 'undefined') {
+    const okey = `${bsY}-${bsM}-${bsD}`;
+    if (OBS[okey]) items.push({ icon: '🎀', name: OBS[okey].en });
+  }
   if (typeof userEvents !== 'undefined') {
     userEvents.filter(ev => typeof eventMatchesDate === 'function' && eventMatchesDate(ev, bsY, bsM, bsD))
       .forEach(ev => items.push({ icon: '📌', name: ev.title }));
@@ -11032,6 +11644,306 @@ window.notesHighlight = function() {
   if (typeof updateToolbarState === 'function') updateToolbarState();
 };
 
+// ── PROFILE ───────────────────────────────────────────────────
+(function initProfile(){
+  try{
+    const p=JSON.parse(localStorage.getItem('vikram_profile')||'{}');
+    if(p.name||p.about) applyProfile(p.name||'',p.about||'');
+    showProfileShare(p.name||'',p.about||'');
+  }catch(e){}
+})();
+
+function profileInitials(name){
+  if(!name||!name.trim()) return '?';
+  return name.trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);
+}
+
+// ── Shareable events: the user's own upcoming added events ──
+function getShareableEvents(){
+  if(typeof userEvents==='undefined'||!userEvents.length) return [];
+  const todayMid=new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
+  return userEvents
+    .filter(ev=>{
+      const end = ev.endAdMs!=null ? ev.endAdMs : ev.adMs;
+      const endMid=new Date(new Date(end).setHours(0,0,0,0));
+      return endMid>=todayMid;
+    })
+    .sort((a,b)=>a.adMs-b.adMs)
+    .slice(0,5)
+    .map(ev=>({t:(ev.title||'').slice(0,40),y:ev.bsY,m:ev.bsM,d:ev.bsD,c:ev.color||'personal'}));
+}
+
+function encodeShareEvents(events){
+  if(!events||!events.length) return '';
+  try{ return btoa(unescape(encodeURIComponent(JSON.stringify(events)))); }catch(e){ return ''; }
+}
+function decodeShareEvents(str){
+  if(!str) return [];
+  try{ const v=JSON.parse(decodeURIComponent(escape(atob(str)))); return Array.isArray(v)?v:[]; }catch(e){ return []; }
+}
+
+// ── Receiving side: show a read-only preview when opening someone else's share link ──
+function checkIncomingSharedProfile(){
+  try{
+    const params=new URLSearchParams(location.search);
+    const pn=params.get('pn')||'';
+    const pa=params.get('pa')||'';
+    const pe=params.get('pe')||'';
+    if(!pn && !pa && !pe) return;
+
+    const events=decodeShareEvents(pe);
+
+    const av=document.getElementById('sharedProfileAvatar');
+    if(av) av.textContent=profileInitials(pn);
+    const nd=document.getElementById('sharedProfileName');
+    if(nd) nd.textContent=pn||(lang==='ne'?'कसैले':'Someone');
+    const ad=document.getElementById('sharedProfileAbout');
+    if(ad) ad.textContent=pa||'';
+
+    const sec=document.getElementById('sharedProfileEventsSec');
+    const list=document.getElementById('sharedProfileEvents');
+    if(events.length && sec && list){
+      sec.style.display='';
+      const mArr=lang==='ne'?MNE:MEN;
+      const colorMap={'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'};
+      list.innerHTML=events.map(e=>`<div class="pshare-evt">
+        <span class="pshare-evt-dot" style="background:${colorMap[e.c]||'#3B82F6'};"></span>
+        <span class="pshare-evt-name">${e.t}</span>
+        <span class="pshare-evt-date">${mArr[(e.m||1)-1]} ${ns(e.d)}</span>
+      </div>`).join('');
+    } else if(sec){
+      sec.style.display='none';
+    }
+
+    // Strip share params from the address bar so a refresh/re-share doesn't loop this
+    try{ history.replaceState(null,'',location.pathname+location.hash); }catch(e){}
+
+    openSheet('sharedProfile');
+  }catch(e){}
+}
+
+function buildProfileURL(name,about,events){
+  const base=location.origin+location.pathname;
+  const params=new URLSearchParams();
+  if(name) params.set('pn',name);
+  if(about) params.set('pa',about);
+  const enc=encodeShareEvents(events);
+  if(enc) params.set('pe',enc);
+  return base+'?'+params.toString()+'#profile';
+}
+
+let _qrInstance=null;
+function renderProfileQR(url){
+  const el=document.getElementById('profileQR');
+  if(!el) return;
+  el.innerHTML='';
+  _qrInstance=null;
+  if(typeof QRCode==='undefined') return;
+  try{
+    _qrInstance=new QRCode(el,{
+      text:url,
+      width:132,height:132,
+      colorDark:'#111',colorLight:'#ffffff',
+      correctLevel:QRCode.CorrectLevel.M
+    });
+  }catch(e){}
+}
+
+function renderProfileShareEvents(events){
+  const wrap=document.getElementById('profileShareEvents');
+  const sec=document.getElementById('profileEventsSec');
+  if(!wrap) return;
+  // Work directly from userEvents so we have real indices for edit/delete
+  const todayMid=new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
+  const upcoming=(typeof userEvents==='undefined'?[]:userEvents)
+    .map((ev,i)=>({ev,i}))
+    .filter(({ev})=>{
+      const end=ev.endAdMs!=null?ev.endAdMs:ev.adMs;
+      return new Date(new Date(end).setHours(0,0,0,0))>=todayMid;
+    })
+    .sort((a,b)=>a.ev.adMs-b.ev.adMs);
+  if(!upcoming.length){
+    if(sec) sec.style.display='none';
+    wrap.innerHTML='';
+    return;
+  }
+  if(sec) sec.style.display='';
+  const mArr=lang==='ne'?MNE:MEN;
+  const colorMap={'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'};
+  wrap.innerHTML=upcoming.map(({ev,i})=>`<div class="pshare-evt" style="gap:7px;padding:8px 10px;">
+    <span class="pshare-evt-dot" style="background:${colorMap[ev.color]||'#3B82F6'};flex-shrink:0;"></span>
+    <span class="pshare-evt-name" style="flex:1;font-size:12px;">${ev.title}</span>
+    <span class="pshare-evt-date" style="font-size:10px;">${mArr[ev.bsM-1]} ${ns(ev.bsD)}</span>
+    <button onclick="profileEditEvent(${i})" style="padding:3px 8px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--dsub);font-size:10px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;flex-shrink:0;line-height:1.4;">Edit</button>
+    <button onclick="profileDeleteEvent(${ev.adMs})" style="padding:3px 8px;border-radius:6px;border:1.5px solid rgba(224,62,62,.2);background:transparent;color:var(--wknd);font-size:10px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;flex-shrink:0;line-height:1.4;">Del</button>
+  </div>`).join('');
+}
+
+window.profileEditEvent=function(i){
+  haptic('light');
+  const ev=userEvents[i];
+  if(!ev) return;
+  // Store index so saveEv knows it's an edit
+  window._profileEditIdx=i;
+  // Open the add sheet pre-filled
+  openSheet('add');
+  setTimeout(()=>{
+    document.getElementById('evT').value=ev.title||'';
+    document.getElementById('evN').value=ev.note||'';
+    setEventRange(ev.bsY,ev.bsM,ev.bsD,ev.endBsY||ev.bsY,ev.endBsM||ev.bsM,ev.endBsD||ev.bsD);
+    // Set colour picker
+    const picker=document.getElementById('evColorPicker');
+    if(picker){
+      const target=picker.querySelector(`[data-color="${ev.color||'personal'}"]`);
+      if(target && typeof selectEvCat==='function') selectEvCat(target);
+    }
+    // Update title to show it's an edit
+    const titleEl=document.getElementById('addTitle');
+    if(titleEl) titleEl.textContent='Edit Event';
+  },80);
+};
+
+window.profileDeleteEvent=function(adMs){
+  haptic('medium');
+  const i=userEvents.findIndex(e=>e.adMs===adMs);
+  if(i<0){ vikramToast('Event not found'); return; }
+  userEvents.splice(i,1);
+  saveEvents();
+  render();
+  renderUpcoming();
+  renderSelectedDay();
+  renderProfileShareEvents();
+  vikramToast('🗑️ Event deleted');
+};
+
+function showProfileShare(name,about){
+  renderProfileShareEvents();
+}
+
+
+function applyProfile(name,about){
+  const initials=profileInitials(name);
+  const big=document.getElementById('profileAvatarBig');
+  if(big) big.textContent=initials;
+  const nd=document.getElementById('profileNameDisplay');
+  if(nd) nd.textContent=name||'Your Name';
+  const ad=document.getElementById('profileAboutDisplay');
+  if(ad) ad.textContent=about||'';
+  const sm=document.getElementById('hdrProfileAvatar');
+  if(sm) sm.textContent=initials;
+  // Switch between view/edit mode based on whether profile is saved
+  const hasSaved=!!(name||about);
+  const viewMode=document.getElementById('profileViewMode');
+  const editMode=document.getElementById('profileEditMode');
+  if(hasSaved){
+    if(viewMode){
+      viewMode.style.display='';
+      const vn=document.getElementById('profileViewName');
+      if(vn) vn.textContent=name||'';
+      const va=document.getElementById('profileViewAbout');
+      if(va) va.textContent=about||'';
+      const aw=document.getElementById('profileViewAboutWrap');
+      if(aw) aw.style.display=about?'':'none';
+    }
+    if(editMode) editMode.style.display='none';
+  } else {
+    if(viewMode) viewMode.style.display='none';
+    if(editMode) editMode.style.display='';
+  }
+}
+
+window.profileStartEdit=function(){
+  haptic('light');
+  const viewMode=document.getElementById('profileViewMode');
+  const editMode=document.getElementById('profileEditMode');
+  if(viewMode) viewMode.style.display='none';
+  if(editMode) editMode.style.display='';
+  // Pre-fill inputs with current saved values
+  try{
+    const p=JSON.parse(localStorage.getItem('vikram_profile')||'{}');
+    const ni=document.getElementById('profileNameInput');
+    const ai=document.getElementById('profileAboutInput');
+    if(ni) ni.value=p.name||'';
+    if(ai) ai.value=p.about||'';
+  }catch(e){}
+  setTimeout(()=>document.getElementById('profileNameInput')?.focus(),80);
+};
+
+window.profilePreview=function(){
+  const name=(document.getElementById('profileNameInput')||{}).value||'';
+  const about=(document.getElementById('profileAboutInput')||{}).value||'';
+  applyProfile(name,about);
+};
+
+window.saveProfile=function(){
+  haptic('medium');
+  const name=((document.getElementById('profileNameInput')||{}).value||'').trim();
+  const about=((document.getElementById('profileAboutInput')||{}).value||'').trim();
+  try{ localStorage.setItem('vikram_profile',JSON.stringify({name,about})); }catch(e){}
+  applyProfile(name,about);
+  showProfileShare(name,about);
+  vikramToast('✅ Profile saved!');
+};
+
+window.copyProfileLink=function(){
+  haptic('light');
+  try{
+    const p=JSON.parse(localStorage.getItem('vikram_profile')||'{}');
+    const events=getShareableEvents();
+    const url=buildProfileURL(p.name||'',p.about||'',events);
+    navigator.clipboard?.writeText(url).then(()=>vikramToast('🔗 Link copied!')).catch(()=>vikramToast('Could not copy'));
+  }catch(e){ vikramToast('Could not copy'); }
+};
+
+window.shareProfile=function(){
+  haptic('medium');
+  try{
+    const p=JSON.parse(localStorage.getItem('vikram_profile')||'{}');
+    const events=getShareableEvents();
+    const url=buildProfileURL(p.name||'',p.about||'',events);
+    let text='📅 Check out my Vikram Calendar profile!\n';
+    if(p.name) text+='👤 '+p.name+'\n';
+    if(p.about) text+=p.about+'\n';
+    if(events.length){
+      text+='\n🗓️ My upcoming events:\n'+events.map(e=>`• ${e.t} — ${MEN[e.m-1]} ${e.d}, ${e.y} BS`).join('\n')+'\n';
+    }
+    text+='\nVikram Calendar: https://vikram-nep.pages.dev/\n'+url;
+    if(navigator.share){
+      navigator.share({title:'Vikram — '+(p.name||'Profile'),text,url}).catch(()=>{});
+    } else {
+      navigator.clipboard?.writeText(url).then(()=>vikramToast('🔗 Link copied!')).catch(()=>{});
+    }
+  }catch(e){}
+};
+
+// Pre-fill inputs + show QR when profile sheet opens
+const _origOpenSheet=window.openSheet;
+window.openSheet=function(t){
+  if(t==='profile'){
+    try{
+      const p=JSON.parse(localStorage.getItem('vikram_profile')||'{}');
+      const ni=document.getElementById('profileNameInput');
+      const ai=document.getElementById('profileAboutInput');
+      if(ni) ni.value=p.name||'';
+      if(ai) ai.value=p.about||'';
+      applyProfile(p.name||'',p.about||'');
+      // Slight delay so sheet is visible before events render
+      setTimeout(()=>showProfileShare(p.name||'',p.about||''),80);
+    }catch(e){}
+    renderNotifHistory();
+    markNotifsSeen();
+  }
+  if(typeof _origOpenSheet==='function') _origOpenSheet(t);
+};
+
+
+window.openHelpFeedback = function() {
+  haptic('medium');
+  const subject = encodeURIComponent('Vikram Calendar — Help & Feedback');
+  const body = encodeURIComponent('Hi Ranjan,\n\n');
+  window.open('https://mail.google.com/mail/?view=cm&fs=1&to=ranzansingh29%40gmail.com&su=' + subject + '&body=' + body, '_blank');
+};
+
 // ── INVITE FRIENDS ────────────────────────────────────────────
 window.inviteFriends = function() {
   haptic('medium');
@@ -11093,6 +12005,14 @@ window.inviteFriends = function() {
   <button class="hdr-menu-item" onclick="closeHdrMenu();openSheet('settings');" role="menuitem">
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     Settings
+  </button>
+  <div class="hdr-menu-sep"></div>
+  <button class="hdr-menu-item" id="hdrProfileBtn" onclick="closeHdrMenu();openSheet('profile');" role="menuitem">
+    <span style="position:relative;display:inline-flex;flex-shrink:0;">
+      <span id="hdrProfileAvatar" style="width:16px;height:16px;border-radius:50%;background:var(--tgon);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff;flex-shrink:0;line-height:1;">?</span>
+      <span class="notif-dot-mini"></span>
+    </span>
+    Profile
   </button>
 </div>
 
