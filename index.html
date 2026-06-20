@@ -3627,6 +3627,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   <div class="modebar" id="modebar">
     <button class="mode-pill on" id="tabAll"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="13" width="7" height="7" rx="1.5"/><rect x="14" y="13" width="7" height="7" rx="1.5"/></svg>All</button>
     <button class="mode-pill" id="tab3M" onclick="toggle3MView()" title="3-month quarterly view"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="5.5" height="16" rx="1.2"/><rect x="9.2" y="4" width="5.5" height="16" rx="1.2"/><rect x="16.5" y="4" width="5.5" height="16" rx="1.2"/></svg>Quarter</button>
+    <button class="mode-pill" id="pomodoroBtn" draggable="true" data-pill="pomodoro" onclick="openSheet('pomodoro')" title="Focus Timer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/></svg>Focus</button>
     <button class="mode-pill" id="converterBtn" draggable="true" data-pill="converter" onclick="openSheet('converter')" title="Date Converter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg>Tool</button>
     <button class="mode-pill" id="colorMatcherBtn" draggable="true" data-pill="colorMatcher" onclick="openSheet('colorMatcher')" title="Color Matcher"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="3.5" fill="#FF6B6B" stroke="none"/><circle cx="16" cy="8" r="3.5" fill="#3A86FF" stroke="none"/><circle cx="8" cy="16" r="3.5" fill="#70E000" stroke="none"/><circle cx="16" cy="16" r="3.5" fill="#FFB703" stroke="none"/></svg>Colors</button>
   </div>
@@ -9968,16 +9969,6 @@ function switchTab(tab) {
         <span class="dc-hero-stat-lbl">Habits</span>
       </div>
     </div>
-  </div>
-
-  <!-- FOCUS TIMER QUICK TOOL -->
-  <div class="dc-tool-card" onclick="openSheet('pomodoro')">
-    <div class="dc-tool-icon">🍅</div>
-    <div class="dc-tool-main">
-      <div class="dc-tool-name">Focus Timer</div>
-      <div class="dc-tool-sub">25 min focus · 5 min rest</div>
-    </div>
-    <svg class="dc-tool-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
   </div>
 
   <!-- ACTIVITY HEATMAP -->
