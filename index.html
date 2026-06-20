@@ -8635,6 +8635,17 @@ function renderEchoQuestion(container) {
 
   let i = 0;
   const qEl = document.getElementById('echoQText');
+  const ta = document.getElementById('echoTextarea');
+  const cnt = document.getElementById('echoCount');
+  const btn = document.getElementById('echoNextBtn');
+
+  ta?.addEventListener('input', () => {
+    const l = ta.value.length;
+    if (cnt) { cnt.textContent = `${l} / 280`; cnt.className = 'echo-count'+(l > 238 ? ' warn' : ''); }
+    if (btn) btn.style.display = l > 20 ? 'block' : 'none';
+  });
+  btn?.addEventListener('click', () => { const a = ta?.value?.trim(); if (a) renderEchoTrigger(container, a); });
+
   const iv = setInterval(() => {
     i++;
     if (qEl) qEl.textContent = question.slice(0, i);
@@ -8642,33 +8653,18 @@ function renderEchoQuestion(container) {
       clearInterval(iv);
       const w = document.getElementById('echoInputWrap');
       if (w) { w.style.display = 'flex'; w.style.flexDirection = 'column'; }
-      setTimeout(() => document.getElementById('echoTextarea')?.focus(), 320);
+      setTimeout(() => ta?.focus(), 320);
     }
   }, 32);
-
-  setTimeout(() => {
-    const ta = document.getElementById('echoTextarea');
-    const cnt = document.getElementById('echoCount');
-    const btn = document.getElementById('echoNextBtn');
-    ta?.addEventListener('input', () => {
-      const l = ta.value.length;
-      if (cnt) { cnt.textContent = `${l} / 280`; cnt.className = 'echo-count'+(l > 238 ? ' warn' : ''); }
-      if (btn) btn.style.display = l > 20 ? 'block' : 'none';
-    });
-    btn?.addEventListener('click', () => { const a = ta?.value?.trim(); if (a) renderEchoTrigger(container, a); });
-  }, 60);
 }
 
 function renderEchoTrigger(container, answer) {
-  const lifeEvents = ["When I get married","When I have a child","When I buy a house","When I change careers","When I move cities","When I retire"];
   container.innerHTML = `
     <div class="echo-phase" style="align-items:flex-start;text-align:left;width:100%;">
       <p class="echo-qlabel">Step 2 of 2</p>
       <h2 class="echo-question" style="margin-bottom:1.4rem;">When should your echo return to you?</h2>
       <div style="display:flex;flex-direction:column;gap:.45rem;width:100%;">
         <button class="echo-trigger-btn" data-type="date"><span class="echo-trigger-icon">◈</span><span><span class="echo-trigger-label">On a date</span><span class="echo-trigger-desc">A specific day in the future</span></span></button>
-        <button class="echo-trigger-btn" data-type="age"><span class="echo-trigger-icon">◉</span><span><span class="echo-trigger-label">When I turn…</span><span class="echo-trigger-desc">A milestone birthday</span></span></button>
-        <button class="echo-trigger-btn" data-type="event"><span class="echo-trigger-icon">◇</span><span><span class="echo-trigger-label">A life event</span><span class="echo-trigger-desc">When something happens</span></span></button>
       </div>
       <div id="echoTriggerInput" style="width:100%;margin-top:.9rem;"></div>
       <div id="echoSealPreview" style="width:100%;margin-top:.9rem;display:none;">
@@ -8677,15 +8673,13 @@ function renderEchoTrigger(container, answer) {
       </div>
     </div>`;
 
-  let triggerType=null, dateVal='', ageVal='', eventVal='';
+  let triggerType=null, dateVal='';
 
   function updatePreview() {
     const pr = document.getElementById('echoSealPreview');
     const pv = document.getElementById('echoPreviewVal');
     let can=false, desc='';
     if (triggerType==='date' && dateVal) { can=true; desc=`on ${new Date(dateVal+'T12:00:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}`; }
-    else if (triggerType==='age' && ageVal && parseInt(ageVal)>0) { can=true; desc=`when you turn ${ageVal}`; }
-    else if (triggerType==='event' && eventVal) { can=true; desc=eventVal.toLowerCase(); }
     if (pr) pr.style.display = can ? 'block' : 'none';
     if (pv) pv.textContent = desc;
   }
@@ -8697,16 +8691,6 @@ function renderEchoTrigger(container, answer) {
       const min = new Date(Date.now()+86400000*30).toISOString().split('T')[0];
       box.innerHTML = `<input type="date" class="echo-date-input" id="echoDateIn" min="${min}" value="${dateVal}">`;
       document.getElementById('echoDateIn')?.addEventListener('change', e => { dateVal=e.target.value; updatePreview(); });
-    } else if (triggerType === 'age') {
-      box.innerHTML = `<div style="display:flex;align-items:center;gap:.7rem;"><span style="font-family:Georgia,serif;color:#6a5f4f;font-style:italic;">When I turn</span><input type="number" min="1" max="120" class="echo-age-input" id="echoAgeIn" placeholder="40" value="${ageVal}" style="width:60px;text-align:center;"><span style="font-family:Georgia,serif;color:#6a5f4f;font-style:italic;">years old</span></div>`;
-      document.getElementById('echoAgeIn')?.addEventListener('input', e => { ageVal=e.target.value; updatePreview(); });
-    } else if (triggerType === 'event') {
-      box.innerHTML = `<div style="display:flex;flex-direction:column;gap:.35rem;">${lifeEvents.map(ev=>`<button class="echo-event-btn${eventVal===ev?' on':''}" data-ev="${ev}">${ev}</button>`).join('')}</div>`;
-      box.querySelectorAll('.echo-event-btn').forEach(b => b.addEventListener('click', e => {
-        eventVal=e.currentTarget.dataset.ev;
-        box.querySelectorAll('.echo-event-btn').forEach(x => x.classList.toggle('on', x.dataset.ev===eventVal));
-        updatePreview();
-      }));
     } else { box.innerHTML=''; }
     updatePreview();
   }
@@ -8723,7 +8707,7 @@ function renderEchoTrigger(container, answer) {
   container.addEventListener('click', function onSeal(e) {
     if (e.target.id === 'echoSealBtn') {
       container.removeEventListener('click', onSeal);
-      const data = {answer, triggerType, trigger:{date:dateVal,age:ageVal,event:eventVal}, sealedAt:new Date().toISOString()};
+      const data = {answer, triggerType, trigger:{date:dateVal}, sealedAt:new Date().toISOString()};
       try { localStorage.setItem(ECHO_STORAGE_KEY, JSON.stringify(data)); } catch {}
       renderEchoSealing(container, data);
     }
@@ -8746,7 +8730,7 @@ function renderEchoSealing(container, data) {
     if (els[i]) els[i].className='echo-sealing-step done';
     i++;
     if (i < els.length) { if(els[i]) els[i].className='echo-sealing-step active'; }
-    if (i >= steps.length-1) { clearInterval(iv); setTimeout(()=>renderEchoSealed(container, data), 1050); }
+    if (i >= steps.length) { clearInterval(iv); setTimeout(()=>renderEchoSealed(container, data), 1050); }
   }, 680);
 }
 
@@ -8770,33 +8754,9 @@ function renderEchoSealed(container, data) {
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:.3rem;margin-top:1.4rem;">
         <p class="echo-closed-lbl">This echo is sealed.</p>
-        <button class="echo-demo-btn" id="echoDemoBtn">Preview your echo (demo only)</button>
       </div>
     </div>`;
 
-  document.getElementById('echoDemoBtn')?.addEventListener('click', () => {
-    const echoSheet = document.getElementById('echoSheet');
-    if (!echoSheet) return;
-    const overlay = document.createElement('div');
-    overlay.className = 'echo-delivered';
-    overlay.innerHTML = `
-      <div class="echo-delivered-inner">
-        ${echoMirrorSVG(40,true)}
-        <div>
-          <p class="echo-delivered-lbl">A message from your past self</p>
-          <div class="echo-delivered-box"><p class="echo-delivered-msg">"${safeAnswer}"</p></div>
-        </div>
-        <p class="echo-delivered-foot">You wrote this.<br>You knew you'd need it.</p>
-        <button class="echo-btn" id="echoCloseOverlay" style="margin-top:0;">Close</button>
-      </div>`;
-    echoSheet.style.position = 'relative';
-    echoSheet.appendChild(overlay);
-    setTimeout(() => overlay.classList.add('show'), 60);
-    overlay.querySelector('#echoCloseOverlay')?.addEventListener('click', () => {
-      overlay.classList.remove('show');
-      setTimeout(() => overlay.remove(), 1200);
-    });
-  });
 }
 })();
 
