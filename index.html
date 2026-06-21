@@ -2235,7 +2235,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   border-right:1px solid var(--border);
 }
 .gc-day-num{
-  width:34px;height:34px;border-radius:50%;
+  width:34px;height:42px;border-radius:10px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
 }
 .gc-day-num.today{background:var(--tgon);}
@@ -2243,6 +2243,8 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .gc-day-num.today .gc-day-n{color:#fff;}
 .gc-day-wd{font-size:8.5px;font-weight:700;color:var(--dsub);text-transform:uppercase;letter-spacing:.3px;margin-top:2px;}
 .gc-day-num.today .gc-day-wd{color:rgba(255,255,255,.78);}
+.gc-day-mon{font-size:7.5px;font-weight:700;color:var(--dsub);text-transform:uppercase;letter-spacing:.2px;margin-top:1px;opacity:.7;}
+.gc-day-num.today .gc-day-mon{color:rgba(255,255,255,.6);}
 
 .gc-day-right{
   flex:1;min-width:0;
@@ -2294,6 +2296,17 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 [data-theme=dark] .gc-evt-pill.cyc .gc-evt-pill-text{color:#FF6B9D;}
 
 .schd-empty{text-align:center;padding:50px 20px;color:var(--dsub);font-size:13px;font-weight:700;}
+
+/* Past months — dimmed */
+.gc-month-banner.past .gc-month-banner-label{color:var(--dsub);font-size:22px;}
+.gc-month-banner.current .gc-month-banner-label{color:var(--dtext);}
+.gc-month-banner.current{border-left:3px solid var(--tgon);padding-left:13px;}
+.gc-month-current-badge{font-size:10px;font-weight:800;color:var(--tgon);text-transform:uppercase;letter-spacing:.6px;margin-top:3px;opacity:.85;}
+.gc-month-past-badge{font-size:10px;font-weight:700;color:var(--dsub);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;opacity:.65;}
+.gc-day-row.past{opacity:.45;}
+.gc-day-num.past .gc-day-n{color:var(--dsub);}
+.gc-day-num.past .gc-day-wd{color:var(--dimsub);}
+.gc-month-empty{font-size:12px;color:var(--dsub);font-style:italic;padding:8px 16px 14px;font-weight:600;}
 
 /* ── HOME SCREEN WIDGET ── */
 .widget-card{background:var(--tgbg);border-radius:16px;padding:16px;margin-top:6px;}
@@ -4656,8 +4669,119 @@ const HOL={
   "2083-12-8": {np:"होली (तराई)",               en:"Holi (Terai)"},
   "2083-12-23":{np:"घोडे जात्रा",              en:"Ghode Jatra"},
 
-  // ── 2084 boundary ───────────────────────────────────────────────────────
-  "2084-1-1": {np:"नया वर्ष",                   en:"Nepali New Year 2084"},
+  // ══ 2084 ══════════════════════════════════════════════════════════════════
+  "2084-1-1": {np:"नया वर्ष",                    en:"Nepali New Year 2084"},
+  "2084-1-15":{np:"बुद्ध जयन्ती",                en:"Buddha Jayanti"},
+  "2084-2-15":{np:"गणतन्त्र दिवस",               en:"Republic Day"},
+  "2084-5-11":{np:"जनै पूर्णिमा",                en:"Janai Purnima"},
+  "2084-5-12":{np:"गाईजात्रा",                   en:"Gaijatra"},
+  "2084-5-22":{np:"कृष्ण जन्माष्टमी",            en:"Krishna Janmashtami"},
+  "2084-5-28":{np:"हरितालिका तीज",               en:"Haritalika Teej"},
+  "2084-6-3": {np:"संविधान दिवस",                en:"Constitution Day"},
+  "2084-6-29":{np:"घटस्थापना",                   en:"Ghatasthapana (Dashain)"},
+  "2084-7-5": {np:"फूलपाती",                     en:"Fulpati (Dashain)"},
+  "2084-7-6": {np:"महाअष्टमी",                   en:"Maha Ashtami (Dashain)"},
+  "2084-7-7": {np:"महानवमी",                     en:"Maha Nawami (Dashain)"},
+  "2084-7-8": {np:"विजया दशमी",                  en:"Bijaya Dashami ✦"},
+  "2084-7-10":{np:"दशैं छुट्टी",                  en:"Dashain Holiday"},
+  "2084-7-22":{np:"लक्ष्मी पूजा",                 en:"Laxmi Puja (Tihar)"},
+  "2084-7-23":{np:"तिहार छुट्टी",                 en:"Tihar Holiday"},
+  "2084-7-24":{np:"म्ह पूजा",                    en:"Mha Puja (Tihar)"},
+  "2084-7-25":{np:"भाई टीका",                    en:"Bhai Tika (Tihar) ✦"},
+  "2084-7-29":{np:"छठ पर्व",                    en:"Chhath Parva"},
+  "2084-8-6": {np:"गुरु नानक जयन्ती",             en:"Guru Nanak Jayanti"},
+  "2084-8-18":{np:"उदौली पर्व",                  en:"Udhauli Parva"},
+  "2084-9-14":{np:"योमरी पुन्ही",                 en:"Yomari Punhi"},
+  "2084-9-10":{np:"क्रिसमस",                     en:"Christmas Day"},
+  "2084-9-15":{np:"तमु ल्होसार",                 en:"Tamu Lhosar"},
+  "2084-9-27":{np:"पृथ्वी जयन्ती",               en:"Prithvi Jayanti"},
+  "2084-10-1":{np:"माघे सक्रान्ति",              en:"Maghe Sankranti"},
+  "2084-10-16":{np:"शहीद दिवस",                  en:"Martyrs' Day"},
+  "2084-10-23":{np:"सोनाम ल्होसार",              en:"Sonam Lhosar"},
+  "2084-10-27":{np:"सरस्वती पूजा",              en:"Saraswati Puja"},
+  "2084-11-7": {np:"प्रजातन्त्र दिवस",            en:"Democracy Day"},
+  "2084-11-20":{np:"महाशिवरात्री",               en:"Maha Shivaratri"},
+  "2084-11-24":{np:"अन्तर्राष्ट्रिय महिला दिवस",  en:"International Women's Day"},
+  "2084-11-25":{np:"ग्याल्पो ल्होसार",            en:"Gyalpo Lhosar"},
+  "2084-12-6": {np:"होली",                       en:"Holi"},
+  "2084-12-7": {np:"होली (तराई)",                en:"Holi (Terai)"},
+  "2084-12-23":{np:"घोडे जात्रा",               en:"Ghode Jatra"},
+
+  // ══ 2085 ══════════════════════════════════════════════════════════════════
+  "2085-1-1": {np:"नया वर्ष",                    en:"Nepali New Year 2085"},
+  "2085-1-4": {np:"बुद्ध जयन्ती",                en:"Buddha Jayanti"},
+  "2085-2-15":{np:"गणतन्त्र दिवस",               en:"Republic Day"},
+  "2085-5-1": {np:"जनै पूर्णिमा",                en:"Janai Purnima"},
+  "2085-5-2": {np:"गाईजात्रा",                   en:"Gaijatra"},
+  "2085-5-11":{np:"कृष्ण जन्माष्टमी",            en:"Krishna Janmashtami"},
+  "2085-5-17":{np:"हरितालिका तीज",               en:"Haritalika Teej"},
+  "2085-6-3": {np:"संविधान दिवस",                en:"Constitution Day"},
+  "2085-6-18":{np:"घटस्थापना",                   en:"Ghatasthapana (Dashain)"},
+  "2085-6-24":{np:"फूलपाती",                     en:"Fulpati (Dashain)"},
+  "2085-6-25":{np:"महाअष्टमी",                   en:"Maha Ashtami (Dashain)"},
+  "2085-6-26":{np:"महानवमी",                     en:"Maha Nawami (Dashain)"},
+  "2085-6-27":{np:"विजया दशमी",                  en:"Bijaya Dashami ✦"},
+  "2085-6-29":{np:"दशैं छुट्टी",                  en:"Dashain Holiday"},
+  "2085-7-12":{np:"लक्ष्मी पूजा",                 en:"Laxmi Puja (Tihar)"},
+  "2085-7-13":{np:"तिहार छुट्टी",                 en:"Tihar Holiday"},
+  "2085-7-14":{np:"म्ह पूजा",                    en:"Mha Puja (Tihar)"},
+  "2085-7-15":{np:"भाई टीका",                    en:"Bhai Tika (Tihar) ✦"},
+  "2085-7-19":{np:"छठ पर्व",                    en:"Chhath Parva"},
+  "2085-8-6": {np:"गुरु नानक जयन्ती",             en:"Guru Nanak Jayanti"},
+  "2085-8-18":{np:"उदौली पर्व",                  en:"Udhauli Parva"},
+  "2085-9-1": {np:"योमरी पुन्ही",                 en:"Yomari Punhi"},
+  "2085-9-10":{np:"क्रिसमस",                     en:"Christmas Day"},
+  "2085-9-15":{np:"तमु ल्होसार",                 en:"Tamu Lhosar"},
+  "2085-9-27":{np:"पृथ्वी जयन्ती",               en:"Prithvi Jayanti"},
+  "2085-10-1":{np:"माघे सक्रान्ति",              en:"Maghe Sankranti"},
+  "2085-10-16":{np:"शहीद दिवस",                  en:"Martyrs' Day"},
+  "2085-10-13":{np:"सोनाम ल्होसार",              en:"Sonam Lhosar"},
+  "2085-10-17":{np:"सरस्वती पूजा",              en:"Saraswati Puja"},
+  "2085-11-7": {np:"प्रजातन्त्र दिवस",            en:"Democracy Day"},
+  "2085-11-10":{np:"महाशिवरात्री",               en:"Maha Shivaratri"},
+  "2085-11-24":{np:"अन्तर्राष्ट्रिय महिला दिवस",  en:"International Women's Day"},
+  "2085-11-14":{np:"ग्याल्पो ल्होसार",            en:"Gyalpo Lhosar"},
+  "2085-12-24":{np:"होली",                       en:"Holi"},
+  "2085-12-25":{np:"होली (तराई)",                en:"Holi (Terai)"},
+  "2085-12-12":{np:"घोडे जात्रा",               en:"Ghode Jatra"},
+
+  // ══ 2086 ══════════════════════════════════════════════════════════════════
+  "2086-1-1": {np:"नया वर्ष",                    en:"Nepali New Year 2086"},
+  "2086-1-22":{np:"बुद्ध जयन्ती",                en:"Buddha Jayanti"},
+  "2086-2-15":{np:"गणतन्त्र दिवस",               en:"Republic Day"},
+  "2086-5-19":{np:"जनै पूर्णिमा",                en:"Janai Purnima"},
+  "2086-5-20":{np:"गाईजात्रा",                   en:"Gaijatra"},
+  "2086-5-29":{np:"कृष्ण जन्माष्टमी",            en:"Krishna Janmashtami"},
+  "2086-6-5": {np:"हरितालिका तीज",               en:"Haritalika Teej"},
+  "2086-6-3": {np:"संविधान दिवस",                en:"Constitution Day"},
+  "2086-7-6": {np:"घटस्थापना",                   en:"Ghatasthapana (Dashain)"},
+  "2086-7-12":{np:"फूलपाती",                     en:"Fulpati (Dashain)"},
+  "2086-7-13":{np:"महाअष्टमी",                   en:"Maha Ashtami (Dashain)"},
+  "2086-7-14":{np:"महानवमी",                     en:"Maha Nawami (Dashain)"},
+  "2086-7-15":{np:"विजया दशमी",                  en:"Bijaya Dashami ✦"},
+  "2086-7-17":{np:"दशैं छुट्टी",                  en:"Dashain Holiday"},
+  "2086-7-30":{np:"लक्ष्मी पूजा",                 en:"Laxmi Puja (Tihar)"},
+  "2086-8-1": {np:"तिहार छुट्टी",                 en:"Tihar Holiday"},
+  "2086-8-2": {np:"म्ह पूजा",                    en:"Mha Puja (Tihar)"},
+  "2086-8-3": {np:"भाई टीका",                    en:"Bhai Tika (Tihar) ✦"},
+  "2086-8-7": {np:"छठ पर्व",                    en:"Chhath Parva"},
+  "2086-8-16":{np:"गुरु नानक जयन्ती",             en:"Guru Nanak Jayanti"},
+  "2086-8-18":{np:"उदौली पर्व",                  en:"Udhauli Parva"},
+  "2086-9-19":{np:"योमरी पुन्ही",                 en:"Yomari Punhi"},
+  "2086-9-10":{np:"क्रिसमस",                     en:"Christmas Day"},
+  "2086-9-15":{np:"तमु ल्होसार",                 en:"Tamu Lhosar"},
+  "2086-9-27":{np:"पृथ्वी जयन्ती",               en:"Prithvi Jayanti"},
+  "2086-10-1":{np:"माघे सक्रान्ति",              en:"Maghe Sankranti"},
+  "2086-10-16":{np:"शहीद दिवस",                  en:"Martyrs' Day"},
+  "2086-10-3": {np:"सोनाम ल्होसार",              en:"Sonam Lhosar"},
+  "2086-10-6": {np:"सरस्वती पूजा",              en:"Saraswati Puja"},
+  "2086-11-7": {np:"प्रजातन्त्र दिवस",            en:"Democracy Day"},
+  "2086-11-28":{np:"महाशिवरात्री",               en:"Maha Shivaratri"},
+  "2086-11-24":{np:"अन्तर्राष्ट्रिय महिला दिवस",  en:"International Women's Day"},
+  "2086-11-3": {np:"ग्याल्पो ल्होसार",            en:"Gyalpo Lhosar"},
+  "2086-12-13":{np:"होली",                       en:"Holi"},
+  "2086-12-14":{np:"होली (तराई)",                en:"Holi (Terai)"},
+  "2086-12-1": {np:"घोडे जात्रा",               en:"Ghode Jatra"},
 };
 
 // ══ OBSERVANCES (religious & cultural events — not public holidays) ══
@@ -4680,6 +4804,42 @@ const OBS={
   "2083-4-1": {np:"साउने सक्रान्ति",             en:"Saune Sankranti"},
   "2083-4-13":{np:"गुरु पूर्णिमा",               en:"Guru Purnima"},
   "2083-4-26":{np:"घण्टाकर्ण चतुर्दशी",          en:"Ghantakarna Chaturdashi"},
+
+  // ── 2084 Observances ────────────────────────────────────────────────────
+  "2084-1-4": {np:"मातातीर्थ औंसी",              en:"Matatirtha Aunshi (Mother's Day)"},
+  "2084-1-6": {np:"परशुराम जयन्ती",              en:"Parashu Ram Jayanti"},
+  "2084-1-7": {np:"अक्षय तृतीया",               en:"Akshaya Tritiya"},
+  "2084-1-11":{np:"लोकतन्त्र दिवस",              en:"Loktantra Diwas"},
+  "2084-2-17":{np:"अनला पुन्ही",                 en:"Anala Punhi"},
+  "2084-3-15":{np:"मास्त पूर्णिमा",              en:"Masta Purnima / Dahi Chiura Khane Din"},
+  "2084-3-31":{np:"जगन्नाथ रथयात्रा",            en:"Jagannath Rath Yatra"},
+  "2084-4-1": {np:"साउने सक्रान्ति",             en:"Saune Sankranti"},
+  "2084-4-13":{np:"गुरु पूर्णिमा",               en:"Guru Purnima"},
+  "2084-4-26":{np:"घण्टाकर्ण चतुर्दशी",          en:"Ghantakarna Chaturdashi"},
+
+  // ── 2085 Observances ────────────────────────────────────────────────────
+  "2085-1-15":{np:"मातातीर्थ औंसी",              en:"Matatirtha Aunshi (Mother's Day)"},
+  "2085-1-6": {np:"परशुराम जयन्ती",              en:"Parashu Ram Jayanti"},
+  "2085-1-8": {np:"अक्षय तृतीया",               en:"Akshaya Tritiya"},
+  "2085-1-11":{np:"लोकतन्त्र दिवस",              en:"Loktantra Diwas"},
+  "2085-2-17":{np:"अनला पुन्ही",                 en:"Anala Punhi"},
+  "2085-3-15":{np:"मास्त पूर्णिमा",              en:"Masta Purnima / Dahi Chiura Khane Din"},
+  "2085-3-31":{np:"जगन्नाथ रथयात्रा",            en:"Jagannath Rath Yatra"},
+  "2085-4-1": {np:"साउने सक्रान्ति",             en:"Saune Sankranti"},
+  "2085-4-2": {np:"गुरु पूर्णिमा",               en:"Guru Purnima"},
+  "2085-4-25":{np:"घण्टाकर्ण चतुर्दशी",          en:"Ghantakarna Chaturdashi"},
+
+  // ── 2086 Observances ────────────────────────────────────────────────────
+  "2086-1-4": {np:"मातातीर्थ औंसी",              en:"Matatirtha Aunshi (Mother's Day)"},
+  "2086-1-6": {np:"परशुराम जयन्ती",              en:"Parashu Ram Jayanti"},
+  "2086-1-27":{np:"अक्षय तृतीया",               en:"Akshaya Tritiya"},
+  "2086-1-11":{np:"लोकतन्त्र दिवस",              en:"Loktantra Diwas"},
+  "2086-2-17":{np:"अनला पुन्ही",                 en:"Anala Punhi"},
+  "2086-3-15":{np:"मास्त पूर्णिमा",              en:"Masta Purnima / Dahi Chiura Khane Din"},
+  "2086-3-20":{np:"जगन्नाथ रथयात्रा",            en:"Jagannath Rath Yatra"},
+  "2086-4-1": {np:"साउने सक्रान्ति",             en:"Saune Sankranti"},
+  "2086-4-21":{np:"गुरु पूर्णिमा",               en:"Guru Purnima"},
+  "2086-4-14":{np:"घण्टाकर्ण चतुर्दशी",          en:"Ghantakarna Chaturdashi"},
 };
 
 // ══ STRINGS ══
@@ -4950,8 +5110,19 @@ function renderScheduleView(){
   const colorMap = {'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'};
   const todayMid = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
 
-  // Build day-keyed map for next 180 days
-  const DAYS = 180;
+  // Build day-keyed map for ALL BS years in data
+  const msDay = 86400000;
+  const bsYears = Object.keys(BS).map(Number).sort((a,b)=>a-b);
+  const firstBsY = bsYears[0], lastBsY = bsYears[bsYears.length-1];
+
+  // Compute AD bounds
+  const adStart = bsToAd(firstBsY, 1, 1);
+  const adStartMid = new Date(adStart.getFullYear(), adStart.getMonth(), adStart.getDate());
+  const lastDim = BS[lastBsY][11];
+  const adEnd = bsToAd(lastBsY, 12, lastDim);
+  const adEndMid = new Date(adEnd.getFullYear(), adEnd.getMonth(), adEnd.getDate());
+
+  const DAYS = Math.round((adEndMid - adStartMid) / msDay) + 1;
   const dayMap = {};
 
   function getDay(adMid){
@@ -4961,14 +5132,13 @@ function renderScheduleView(){
   }
 
   // — User events —
-  const msDay = 86400000;
   userEvents.forEach(ev => {
     const {startMid, endMid} = getEventRangeMid(ev);
     const spanDays = Math.round((endMid - startMid) / msDay);
 
     function pushDay(occStart, occEnd){
-      for(let s=new Date(occStart); s<=occEnd && s<=new Date(todayMid.getTime()+DAYS*msDay); s=new Date(s.getTime()+msDay)){
-        if(s < todayMid) continue;
+      for(let s=new Date(occStart); s<=occEnd && s<=adEndMid; s=new Date(s.getTime()+msDay)){
+        if(s < adStartMid) continue;
         const bs = adToBs(s);
         getDay(new Date(s)).items.push({type:'evt', ev, bs});
       }
@@ -4977,7 +5147,7 @@ function renderScheduleView(){
     if(!ev.recur && !ev.repeatYearly){ pushDay(startMid, endMid); return; }
 
     if(ev.repeatYearly && !ev.recur){
-      for(let yr=TODAY.getFullYear(); yr<=TODAY.getFullYear()+1; yr++){
+      for(let yr=adStart.getFullYear(); yr<=adEnd.getFullYear()+1; yr++){
         const vStart = bsToAd(adToBs(new Date(yr,0,1)).y, ev.bsM, ev.bsD);
         const vS = new Date(vStart.getFullYear(), vStart.getMonth(), vStart.getDate());
         pushDay(vS, new Date(vS.getTime()+spanDays*msDay));
@@ -4991,7 +5161,7 @@ function renderScheduleView(){
     let occ = 0, cur = new Date(startMid);
     const maxIter = 600;
     let iter = 0;
-    const windowEnd = new Date(todayMid.getTime()+DAYS*msDay);
+    const windowEnd = adEndMid;
     while(cur <= windowEnd && iter++ < maxIter){
       if(r.endType==='count' && occ >= (r.endCount||1)) break;
       if(r.endType==='date' && r.endAdMs){
@@ -4999,7 +5169,7 @@ function renderScheduleView(){
         if(cur>edM) break;
       }
       const occEnd = new Date(cur.getTime()+spanDays*msDay);
-      if(cur>=todayMid || occEnd>=todayMid) pushDay(cur,occEnd);
+      pushDay(cur,occEnd);
       occ++;
       if(r.freq==='daily') cur=new Date(cur.getTime()+interval*msDay);
       else if(r.freq==='weekly'){
@@ -5021,7 +5191,7 @@ function renderScheduleView(){
     if(!BS[ky]) continue;
     const ad=bsToAd(ky,km,kd);
     const adMid=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
-    if(adMid>=todayMid && adMid<=new Date(todayMid.getTime()+DAYS*msDay)){
+    if(adMid>=adStartMid && adMid<=adEndMid){
       getDay(adMid).items.push({type:'hol',hol:HOL[key],ky,km,kd});
     }
   }
@@ -5032,7 +5202,7 @@ function renderScheduleView(){
     if(!BS[ky]) continue;
     const ad=bsToAd(ky,km,kd);
     const adMid=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
-    if(adMid>=todayMid && adMid<=new Date(todayMid.getTime()+DAYS*msDay)){
+    if(adMid>=adStartMid && adMid<=adEndMid){
       getDay(adMid).items.push({type:'obs',obs:OBS[key],ky,km,kd});
     }
   }
@@ -5043,19 +5213,18 @@ function renderScheduleView(){
     const pl = cycleData.periodLength||5;
     const baseRaw = new Date(cycleData.lastPeriodStart);
     const baseMid = new Date(baseRaw.getFullYear(), baseRaw.getMonth(), baseRaw.getDate());
-    const windowEnd = new Date(todayMid.getTime()+DAYS*msDay);
     let cycleStart = new Date(baseMid);
-    while(new Date(cycleStart.getTime()+cl*msDay) < todayMid) cycleStart = new Date(cycleStart.getTime()+cl*msDay);
+    while(new Date(cycleStart.getTime()+cl*msDay) < adStartMid) cycleStart = new Date(cycleStart.getTime()+cl*msDay);
     const phases = [
       {name:'Menstrual',  offset:0,      emoji:'🔴', color:'#FF4757'},
       {name:'Follicular', offset:pl,     emoji:'🌱', color:'#FF6B9D'},
       {name:'Ovulation',  offset:cl-16,  emoji:'✨', color:'#a78bfa'},
       {name:'Luteal',     offset:cl-12,  emoji:'🌙', color:'#3B82F6'},
     ];
-    for(let safe=0; safe<20 && cycleStart<=windowEnd; safe++){
+    for(let safe=0; safe<1000 && cycleStart<=adEndMid; safe++){
       phases.forEach(ph => {
         const phDay = new Date(cycleStart.getTime() + ph.offset*msDay);
-        if(phDay >= todayMid && phDay <= windowEnd){
+        if(phDay >= adStartMid && phDay <= adEndMid){
           getDay(phDay).items.push({type:'cyc', phase:ph.name, emoji:ph.emoji, color:ph.color});
         }
       });
@@ -5063,61 +5232,66 @@ function renderScheduleView(){
     }
   }
 
-  // Sort all days
-  const sortedKeys = Object.keys(dayMap).sort();
-  if(!sortedKeys.length){
-    wrap.innerHTML='<div class="schd-empty">📅 No upcoming events</div>';
-    return;
-  }
+  // Build month-grouped structure across ALL BS years/months
+  // Only include months that have at least 1 event/holiday, PLUS today's month always
+  const eventDayKeys = new Set(Object.keys(dayMap));
 
-  // Group by AD month for month banners
-  // Also group by BS week for week labels
-  let html = '';
-  let lastMonthKey = null; // 'YYYY-M' AD
-  let lastWeekKey = null;  // 'YYYY-W' (Sun-Sat bucket)
-
-  const getWeekStart = (d) => {
-    const s = new Date(d); s.setDate(s.getDate() - s.getDay()); return s;
-  };
   const fmtShort = (d) => {
     const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     return `${months[d.getMonth()]} ${d.getDate()}`;
   };
+  const wdArr2 = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
-  sortedKeys.forEach(k => {
-    const {adMid, items} = dayMap[k];
-    const isToday = adMid.getTime()===todayMid.getTime();
-    const bs = adToBs(adMid);
-    const monthKey = `${bs.y}-${bs.m}`; // BS month key
+  let html = '';
+  let todayMonthAnchorId = null;
 
-    // Month banner when BS month changes
-    if(monthKey !== lastMonthKey){
-      lastMonthKey = monthKey;
-      const bsMonthName = mArr[bs.m-1] || '';
-      html += `<div class="gc-month-banner">
-        <div class="gc-month-banner-label">${bsMonthName} ${bs.y}</div>
+  for(let y = Math.max(firstBsY, 2083); y <= Math.min(lastBsY, 2086); y++){
+    if(!BS[y]) continue;
+    for(let m = 1; m <= 12; m++){
+      const dims = BS[y][m-1];
+      if(!dims) continue;
+
+      // Collect event days in this BS month
+      const evtDays = [];
+      for(let d = 1; d <= dims; d++){
+        const ad = bsToAd(y, m, d);
+        const adMid2 = new Date(ad.getFullYear(), ad.getMonth(), ad.getDate());
+        const k = adMid2.toISOString().slice(0,10);
+        if(eventDayKeys.has(k)) evtDays.push({d, adMid2, k});
+      }
+
+      const isCurrentMonth = (y === TODAYBS.y && m === TODAYBS.m);
+      const isPastMonth = (y < TODAYBS.y) || (y === TODAYBS.y && m < TODAYBS.m);
+
+      // Always show all months (don't skip empty ones)
+
+      const bsMonthName = mArr[m-1] || '';
+      const anchorId = `schd-month-${y}-${m}`;
+      if(isCurrentMonth) todayMonthAnchorId = anchorId;
+
+      const bannerClass = isPastMonth ? 'gc-month-banner past' : isCurrentMonth ? 'gc-month-banner current' : 'gc-month-banner';
+      html += `<div class="${bannerClass}" id="${anchorId}">
+        <div class="gc-month-banner-label">${bsMonthName} ${y}</div>
+        ${isCurrentMonth ? '<div class="gc-month-current-badge">Current Month</div>' : ''}
+        ${isPastMonth ? '<div class="gc-month-past-badge">Past</div>' : ''}
       </div>`;
-      lastWeekKey = null; // force week label after banner
-    }
 
-    // Week row label (Jun 21 – 27) when week changes
-    const weekStart = getWeekStart(adMid);
-    const weekEnd = new Date(weekStart.getTime() + 6*86400000);
-    const weekKey = weekStart.toISOString().slice(0,10);
-    if(weekKey !== lastWeekKey){
-      lastWeekKey = weekKey;
-      const wLabel = `${fmtShort(weekStart)} – ${fmtShort(weekEnd)}`;
-      html += `<div class="gc-week-row"><span class="gc-week-range">${wLabel}</span></div>`;
-    }
+      if(evtDays.length === 0){
+        html += `<div class="gc-month-empty">${isPastMonth ? 'No events' : isCurrentMonth ? 'No events this month' : 'No events scheduled'}</div>`;
+        continue;
+      }
 
-    // Day row
-    const wd = wdArr[adMid.getDay()];
-    const dd = adMid.getDate();
-    const bsStr = `${mArr[bs.m-1]} ${ns(bs.d)}`;
+      evtDays.forEach(({d, adMid2, k}) => {
+        const {adMid, items} = dayMap[k];
+        const isToday = adMid2.getTime() === todayMid.getTime();
+        const isPastDay = adMid2 < todayMid;
+        const bs = {y, m, d};
+        const dd = adMid2.getDate();
+        const wd = wdArr[adMid2.getDay()];
+        const adMon = ADMEN[adMid2.getMonth()];
+        const bsStr = `${mArr[m-1]} ${d}`;
 
-    const pillsHtml = items.length === 0
-      ? `<div class="gc-day-empty">Nothing planned. Tap to create.</div>`
-      : items.map(it => {
+        const pillsHtml = items.map(it => {
           if(it.type==='hol'){
             const name = lang==='ne'?it.hol.np:it.hol.en;
             return `<div class="gc-evt-pill hol" onclick="event.stopPropagation();openDay(${it.ky},${it.km},${it.kd})">
@@ -5152,18 +5326,34 @@ function renderScheduleView(){
           </div>`;
         }).join('');
 
-    html += `<div class="gc-day-row" onclick="openDay(${bs.y},${bs.m},${bs.d})">
-      <div class="gc-day-left">
-        <div class="gc-day-num${isToday?' today':''}">
-          <div class="gc-day-n">${dd}</div>
-          <div class="gc-day-wd">${wd}</div>
-        </div>
-      </div>
-      <div class="gc-day-right">${pillsHtml}</div>
-    </div>`;
-  });
+        html += `<div class="gc-day-row${isPastDay?' past':''}" onclick="openDay(${y},${m},${d})">
+          <div class="gc-day-left">
+            <div class="gc-day-num${isToday?' today':''}${isPastDay?' past':''}">
+              <div class="gc-day-n">${dd}</div>
+              <div class="gc-day-wd">${wd}</div>
+              <div class="gc-day-mon">${adMon}</div>
+            </div>
+          </div>
+          <div class="gc-day-right">${pillsHtml}</div>
+        </div>`;
+      });
+    }
+  }
+
+  if(!html){
+    wrap.innerHTML='<div class="schd-empty">📅 No events found</div>';
+    return;
+  }
 
   wrap.innerHTML = html;
+
+  // Scroll to today's month
+  if(todayMonthAnchorId){
+    requestAnimationFrame(()=>{
+      const el = document.getElementById(todayMonthAnchorId);
+      if(el) el.scrollIntoView({behavior:'instant', block:'start'});
+    });
+  }
 }
 function mmOffsetMonth(y, m, delta){
   m += delta;
