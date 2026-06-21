@@ -2297,6 +2297,153 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
 .schd-empty{text-align:center;padding:50px 20px;color:var(--dsub);font-size:13px;font-weight:700;}
 
+/* ── WEEK VIEW (Google Calendar style) ── */
+#weekView{
+  display:none;
+  flex-direction:column;
+  animation:mmFadeIn .2s cubic-bezier(.22,.85,.25,1);
+  overflow:hidden;
+  background:var(--bg);
+}
+
+/* Week nav header */
+.wv-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 10px 4px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg);
+  position:sticky;top:0;z-index:10;
+}
+.wv-nav-btn{
+  width:32px;height:32px;border:none;background:transparent;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;border-radius:50%;
+  color:var(--dtext);transition:background .15s;flex-shrink:0;
+}
+.wv-nav-btn:hover{background:var(--tgbg);}
+.wv-nav-btn svg{width:16px;height:16px;stroke:currentColor;stroke-width:2.3;fill:none;}
+.wv-nav-title{font-size:13px;font-weight:900;color:var(--dtext);text-align:center;letter-spacing:-.2px;}
+.wv-nav-sub{font-size:10px;font-weight:700;color:var(--dsub);text-align:center;margin-top:1px;}
+
+/* Day headers row */
+.wv-day-headers{
+  display:flex;
+  padding-left:44px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg);
+  position:sticky;top:53px;z-index:9;
+}
+.wv-day-col-hdr{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:6px 2px 5px;border-left:1px solid var(--border);
+}
+.wv-day-col-hdr:first-child{border-left:none;}
+.wv-day-name{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--dsub);}.wv-day-name.wknd{color:var(--wknd);}
+.wv-day-num{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:900;color:var(--dtext);margin-top:2px;
+}
+.wv-day-num.today{background:var(--tgon);color:#fff;}
+.wv-day-num.wknd{color:var(--wknd);}
+
+/* Scrollable time grid */
+.wv-scroll{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  position:relative;
+  height:calc(100vh - 220px);
+  max-height:640px;
+}
+.wv-grid{
+  display:flex;position:relative;
+}
+/* Time gutter */
+.wv-time-col{
+  width:44px;flex-shrink:0;position:relative;
+}
+.wv-time-label{
+  height:54px;display:flex;align-items:flex-start;justify-content:flex-end;
+  padding:0 8px 0 0;
+  font-size:9px;font-weight:700;color:var(--dsub);
+  margin-top:-7px;
+  position:relative;
+}
+.wv-time-label:first-child{height:27px;margin-top:0;}
+
+/* Day columns grid */
+.wv-days-area{
+  flex:1;display:flex;position:relative;min-width:0;
+}
+.wv-day-col{
+  flex:1;border-left:1px solid var(--border);
+  position:relative;min-width:0;
+}
+.wv-day-col:first-child{border-left:none;}
+.wv-hour-cell{
+  height:54px;border-top:1px solid var(--border);
+  position:relative;
+  cursor:pointer;
+  transition:background .1s;
+}
+.wv-hour-cell:hover{background:rgba(90,90,200,.04);}
+[data-theme=dark] .wv-hour-cell:hover{background:rgba(140,148,220,.06);}
+.wv-hour-cell:first-child{height:27px;border-top:none;}
+.wv-hour-cell.half::after{
+  content:'';position:absolute;top:50%;left:0;right:0;
+  border-top:1px dashed var(--border);opacity:.5;
+}
+
+/* Now line */
+.wv-now-line{
+  position:absolute;left:-44px;right:0;z-index:5;pointer-events:none;
+}
+.wv-now-line-dot{
+  width:10px;height:10px;border-radius:50%;background:#FF4757;
+  position:absolute;left:40px;top:-5px;
+}
+.wv-now-line-rule{
+  position:absolute;left:50px;right:0;height:2px;background:#FF4757;top:-1px;
+}
+
+/* Events */
+.wv-event{
+  position:absolute;left:2px;right:2px;border-radius:6px;
+  padding:3px 5px;cursor:pointer;overflow:hidden;
+  font-size:10px;font-weight:800;line-height:1.25;z-index:3;
+  transition:filter .13s, transform .13s;
+  min-height:18px;
+}
+.wv-event:active{filter:brightness(.88);transform:scale(.97);}
+.wv-event-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wv-event-time{font-size:8.5px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* Holiday/observance banners in day columns */
+.wv-hol-banner{
+  position:absolute;top:2px;left:2px;right:2px;z-index:4;
+  border-radius:5px;padding:2px 5px;
+  font-size:9px;font-weight:800;text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  background:rgba(255,71,87,.13);color:#d63031;
+  cursor:pointer;
+}
+[data-theme=dark] .wv-hol-banner{background:rgba(255,71,87,.2);color:#FF4757;}
+.wv-obs-banner{
+  position:absolute;top:20px;left:2px;right:2px;z-index:4;
+  border-radius:5px;padding:2px 5px;
+  font-size:9px;font-weight:800;text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  background:rgba(122,183,255,.12);color:#5a8fd6;
+  cursor:pointer;
+}
+[data-theme=dark] .wv-obs-banner{background:rgba(122,183,255,.18);color:#7ab7ff;}
+
+/* Weekend cols */
+.wv-day-col.wknd-col{background:rgba(224,62,62,.025);}
+[data-theme=dark] .wv-day-col.wknd-col{background:rgba(255,128,128,.03);}
+
+/* Today col */
+.wv-day-col.today-col{background:rgba(90,90,200,.03);}
+[data-theme=dark] .wv-day-col.today-col{background:rgba(140,148,220,.04);}
+
 /* Past months — dimmed */
 .gc-month-banner.past .gc-month-banner-label{color:var(--dsub);font-size:22px;}
 .gc-month-banner.current .gc-month-banner-label{color:var(--dtext);}
@@ -3190,6 +3337,53 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .ae-select-month { flex:2; }
 .ae-select-day { flex:.8; }
 
+/* Time picker block */
+.ae-time-block {
+  display:flex;align-items:center;gap:10px;
+  background:var(--card);
+  border:1.5px solid var(--border);
+  border-radius:14px;
+  padding:12px 14px;
+  transition:border-color .18s;
+}
+[data-theme=dark] .ae-time-block{background:var(--tgbg);}
+.ae-time-block:focus-within{border-color:var(--tgon);}
+.ae-time-col{flex:1;display:flex;flex-direction:column;gap:5px;}
+.ae-time-icon{
+  flex-shrink:0;width:30px;height:30px;border-radius:50%;
+  background:var(--tgbg);display:flex;align-items:center;justify-content:center;
+  color:var(--dsub);
+}
+[data-theme=dark] .ae-time-icon{background:rgba(255,255,255,.08);}
+.ae-time-icon svg{width:14px;height:14px;stroke:currentColor;stroke-width:2.2;fill:none;}
+.ae-time-row{display:flex;gap:6px;align-items:center;}
+.ae-time-input{
+  flex:1;padding:7px 8px;
+  border-radius:8px;
+  border:1.5px solid var(--border);
+  background:var(--card);
+  color:var(--dtext);
+  font-size:13px;font-family:'Nunito',sans-serif;font-weight:800;
+  outline:none;cursor:pointer;
+  transition:border-color .18s;
+  -webkit-appearance:none;
+  text-align:center;
+}
+[data-theme=dark] .ae-time-input{background:var(--sbg);}
+.ae-time-input:focus{border-color:var(--tgon);}
+.ae-time-sep{font-size:11px;font-weight:900;color:var(--dsub);flex-shrink:0;}
+.ae-time-clear{
+  flex-shrink:0;border:none;background:none;cursor:pointer;
+  color:var(--dsub);font-size:11px;font-weight:800;
+  font-family:'Nunito',sans-serif;padding:3px 6px;border-radius:6px;
+  transition:all .15s;white-space:nowrap;
+}
+.ae-time-clear:hover{background:var(--tgbg);color:var(--dtext);}
+.ae-time-allday{
+  font-size:11px;font-weight:800;color:var(--dsub);
+  font-family:'Nunito',sans-serif;letter-spacing:.2px;
+}
+
 /* Category pills */
 .ae-cat-row { display:flex;gap:7px;flex-wrap:wrap; }
 .ae-cat-pill {
@@ -3794,8 +3988,9 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     </div>
   </div>
   <div class="modebar" id="modebar">
-    <button class="mode-pill on" id="tabAll" onclick="if(scheduleActive)toggleScheduleView();"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="13" width="7" height="7" rx="1.5"/><rect x="14" y="13" width="7" height="7" rx="1.5"/></svg>All</button>
+    <button class="mode-pill on" id="tabAll" onclick="if(scheduleActive)toggleScheduleView();else if(typeof weekViewActive!=='undefined'&&weekViewActive)toggleWeekView();"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="13" width="7" height="7" rx="1.5"/><rect x="14" y="13" width="7" height="7" rx="1.5"/></svg>All</button>
     <button class="mode-pill" id="tabSchedule" onclick="toggleScheduleView()" title="Schedule view"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Schedule</button>
+    <button class="mode-pill" id="tabWeek" onclick="toggleWeekView()" title="Week view"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="4" x2="8" y2="21"/><line x1="12" y1="4" x2="12" y2="21"/><line x1="16" y1="4" x2="16" y2="21"/></svg>Week</button>
   </div>
 
   <div class="ccard">
@@ -3834,6 +4029,9 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
   <!-- ══ SCHEDULE VIEW ══ -->
   <div id="scheduleView" style="display:none;"></div>
+
+  <!-- ══ WEEK VIEW ══ -->
+  <div id="weekView"></div>
 
   <div class="upcoming">
     <div class="up-hdr">
@@ -4378,6 +4576,25 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
       </div>
 
 
+
+      <!-- Time section -->
+      <div class="ae-field-group">
+        <label class="ae-label">Time <span class="ae-label-optional">optional</span></label>
+        <div class="ae-time-block" id="evTimeBlock">
+          <div class="ae-time-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+          </div>
+          <div class="ae-time-col">
+            <div class="ae-time-row">
+              <input class="ae-time-input" type="time" id="evStartTime" placeholder="Start" onchange="onEvTimeChange()">
+              <span class="ae-time-sep">→</span>
+              <input class="ae-time-input" type="time" id="evEndTime" placeholder="End" onchange="onEvTimeChange()">
+              <button class="ae-time-clear" id="evTimeClearBtn" onclick="clearEvTime()" style="display:none;">✕ Clear</button>
+            </div>
+            <div class="ae-time-allday" id="evTimeAllDayLabel">All-day event</div>
+          </div>
+        </div>
+      </div>
 
       <!-- Note -->
       <div class="ae-field-group">
@@ -5050,6 +5267,15 @@ let scheduleActive = false;
 
 function toggleScheduleView(){
   haptic('light');
+  // Close week view if open
+  if(typeof weekViewActive!=='undefined' && weekViewActive){
+    weekViewActive = false;
+    const wvBtn = document.getElementById('tabWeek');
+    const weekView = document.getElementById('weekView');
+    if(wvBtn) wvBtn.classList.remove('on');
+    if(weekView) weekView.style.display='none';
+    scheduleActive = false; // force toggle on
+  }
   scheduleActive = !scheduleActive;
   const btn = document.getElementById('tabSchedule');
   const tabAll = document.getElementById('tabAll');
@@ -5327,6 +5553,255 @@ function renderScheduleView(){
     });
   }
 }
+
+// ── WEEK VIEW ────────────────────────────────────────────────────────────
+let weekViewActive = false;
+let weekViewOffset = 0; // offset in weeks from "this week"
+
+function toggleWeekView(){
+  haptic('light');
+  weekViewActive = !weekViewActive;
+  const btn = document.getElementById('tabWeek');
+  const tabAll = document.getElementById('tabAll');
+  const tabSchedule = document.getElementById('tabSchedule');
+  const ccard = document.querySelector('.ccard');
+  const schedView = document.getElementById('scheduleView');
+  const weekView = document.getElementById('weekView');
+  const upcoming = document.querySelector('.upcoming');
+
+  if(weekViewActive){
+    // Deactivate schedule if active
+    if(scheduleActive){
+      scheduleActive = false;
+      if(tabSchedule) tabSchedule.classList.remove('on');
+      if(schedView) schedView.style.display='none';
+    }
+    btn.classList.add('on');
+    tabAll.classList.remove('on');
+    if(ccard) ccard.style.display='none';
+    weekViewOffset = 0;
+    weekView.style.display = 'flex';
+    weekView.style.flexDirection = 'column';
+    renderWeekView();
+    if(upcoming) upcoming.style.display='none';
+  } else {
+    btn.classList.remove('on');
+    tabAll.classList.add('on');
+    if(ccard) ccard.style.display='';
+    weekView.style.display = 'none';
+    if(upcoming) upcoming.style.display='';
+    render();
+  }
+}
+
+function renderWeekView(){
+  const weekView = document.getElementById('weekView');
+  if(!weekView) return;
+
+  const msDay = 86400000;
+  const mArr = lang==='ne' ? MNE : MEN;
+  const wdShort = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const colorMap = {'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'};
+
+  // Find Sunday of the current week + offset
+  // Nepal is always UTC+5:45 (no DST) — add 345 minutes to UTC
+  const _rawNow = new Date();
+  const _nstMs = _rawNow.getTime() + (5*60+45)*60*1000;
+  const _nstDate = new Date(_nstMs);
+  const _nstH = _nstDate.getUTCHours();
+  const _nstM = _nstDate.getUTCMinutes();
+  const now = _nstDate;
+  const todayMid = new Date(Date.UTC(_nstDate.getUTCFullYear(), _nstDate.getUTCMonth(), _nstDate.getUTCDate()));
+  const dow = todayMid.getDay();
+  const weekStart = new Date(todayMid.getTime() - dow*msDay + weekViewOffset*7*msDay);
+  const weekEnd = new Date(weekStart.getTime() + 6*msDay);
+
+  const fmtDate = (d) => {
+    const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[d.getMonth()]} ${d.getDate()}`;
+  };
+  const weekLabel = `${fmtDate(weekStart)} \u2013 ${fmtDate(weekEnd)}, ${weekEnd.getFullYear()}`;
+
+  const bsWS = adToBs(weekStart);
+  const bsWE = adToBs(weekEnd);
+  const bsLabel = bsWS.m===bsWE.m
+    ? `${mArr[bsWS.m-1]} ${bsWS.y} BS`
+    : `${mArr[bsWS.m-1]} \u2013 ${mArr[bsWE.m-1]} ${bsWE.y} BS`;
+
+  // Build per-day data
+  const days = [];
+  for(let i=0;i<7;i++){
+    const adMid = new Date(weekStart.getTime()+i*msDay);
+    const bs = adToBs(adMid);
+    const isToday = adMid.getTime()===todayMid.getTime();
+    const isWknd = adMid.getDay()===0 || adMid.getDay()===6;
+    days.push({adMid, bs, isToday, isWknd, events:[], hols:[], obs:[]});
+  }
+
+  // Holidays & observances
+  days.forEach(day=>{
+    const k = `${day.bs.y}-${day.bs.m}-${day.bs.d}`;
+    if(HOL[k]) day.hols.push(HOL[k]);
+    if(OBS[k]) day.obs.push(OBS[k]);
+  });
+
+  // User events
+  userEvents.forEach(ev=>{
+    const {startMid, endMid} = getEventRangeMid(ev);
+    const spanDays = Math.round((endMid-startMid)/msDay);
+
+    function tryPush(occStart, occEnd){
+      days.forEach(day=>{
+        if(day.adMid>=occStart && day.adMid<=occEnd) day.events.push(ev);
+      });
+    }
+
+    if(!ev.recur&&!ev.repeatYearly){ tryPush(startMid,endMid); return; }
+    if(ev.repeatYearly&&!ev.recur){
+      for(let yr=weekStart.getFullYear()-1;yr<=weekEnd.getFullYear()+1;yr++){
+        const vS=bsToAd(adToBs(new Date(yr,0,1)).y,ev.bsM,ev.bsD);
+        const vSm=new Date(vS.getFullYear(),vS.getMonth(),vS.getDate());
+        tryPush(vSm,new Date(vSm.getTime()+spanDays*msDay));
+      }
+      return;
+    }
+    const r=ev.recur;
+    if(!r||!r.freq){tryPush(startMid,endMid);return;}
+    const interval=r.interval||1;
+    let occ=0,cur=new Date(startMid);
+    const maxIter=600;let iter=0;
+    while(cur<=weekEnd&&iter++<maxIter){
+      if(r.endType==='count'&&occ>=(r.endCount||1)) break;
+      if(r.endType==='date'&&r.endAdMs){const ed=new Date(r.endAdMs);const edM=new Date(ed.getFullYear(),ed.getMonth(),ed.getDate());if(cur>edM) break;}
+      tryPush(cur,new Date(cur.getTime()+spanDays*msDay));
+      occ++;
+      if(r.freq==='daily') cur=new Date(cur.getTime()+interval*msDay);
+      else if(r.freq==='weekly'){
+        if(r.weekdays&&r.weekdays.length){cur=new Date(cur.getTime()+msDay);while(!r.weekdays.includes(cur.getDay()))cur=new Date(cur.getTime()+msDay);}
+        else cur=new Date(cur.getTime()+interval*7*msDay);
+      } else if(r.freq==='monthly'){const nm=new Date(cur);nm.setMonth(nm.getMonth()+interval);cur=nm;}
+      else if(r.freq==='yearly'){const ny=new Date(cur);ny.setFullYear(ny.getFullYear()+interval);cur=ny;}
+      else break;
+    }
+  });
+
+  const CELL_H = 54;
+
+  // Day headers
+  let dayHdrHtml = '';
+  days.forEach(day=>{
+    const numCls = day.isToday?'wv-day-num today':day.isWknd?'wv-day-num wknd':'wv-day-num';
+    dayHdrHtml += `<div class="wv-day-col-hdr">
+      <div class="wv-day-name${day.isWknd?' wknd':''}">${wdShort[day.adMid.getDay()]}</div>
+      <div class="${numCls}">${day.adMid.getDate()}</div>
+    </div>`;
+  });
+
+  // Time labels
+  let timeColHtml = '<div class="wv-time-label"></div>';
+  for(let h=1;h<24;h++){
+    const label = h===12?'12 PM':h<12?`${h} AM`:`${h-12} PM`;
+    timeColHtml += `<div class="wv-time-label">${label}</div>`;
+  }
+
+  // Now line
+  const nowMins = _nstH*60+_nstM;
+  const nowTopPx = (CELL_H/2)+(nowMins/60)*CELL_H;
+  const showNow = weekViewOffset===0;
+  const todayColIdx = showNow ? todayMid.getDay() : -1;
+
+  let dayCols = '';
+  days.forEach((day,di)=>{
+    const colCls = day.isToday?'wv-day-col today-col':day.isWknd?'wv-day-col wknd-col':'wv-day-col';
+    let col = '';
+
+    // Hour cells — tappable to add event
+    for(let h=0;h<24;h++){
+      col += `<div class="wv-hour-cell half" onclick="wvCellTap(event,${di},${h},0)" data-day="${di}" data-h="${h}"></div>`;
+    }
+
+    let bannerTop = 2;
+    day.hols.forEach(hol=>{
+      const name = lang==='ne'?hol.np:hol.en;
+      const bsD=day.bs;
+      col += `<div class="wv-hol-banner" style="top:${bannerTop}px" onclick="openDay(${bsD.y},${bsD.m},${bsD.d})">🎉 ${name}</div>`;
+      bannerTop+=20;
+    });
+    day.obs.forEach(ob=>{
+      const name = lang==='ne'?ob.np:ob.en;
+      const bsD=day.bs;
+      col += `<div class="wv-obs-banner" style="top:${bannerTop}px" onclick="openDay(${bsD.y},${bsD.m},${bsD.d})">🎀 ${name}</div>`;
+      bannerTop+=18;
+    });
+
+    day.events.forEach((ev,ei)=>{
+      const c=colorMap[ev.color]||'#3B82F6';
+      let topPx, heightPx;
+      if(ev.startTime){
+        const [sh,sm]=ev.startTime.split(':').map(Number);
+        topPx=(CELL_H/2)+(sh+sm/60)*CELL_H;
+        if(ev.endTime){
+          const [eh,em]=ev.endTime.split(':').map(Number);
+          heightPx=Math.max(18,((eh+em/60)-(sh+sm/60))*CELL_H);
+        } else heightPx=CELL_H;
+      } else {
+        topPx=bannerTop+ei*22;
+        heightPx=20;
+      }
+      const bsD=day.bs;
+      col += `<div class="wv-event" style="top:${topPx}px;height:${heightPx}px;background:${c};color:#fff;" onclick="openDay(${bsD.y},${bsD.m},${bsD.d})">
+        <div class="wv-event-title">${ev.title}</div>
+        ${ev.startTime?`<div class="wv-event-time">${ev.startTime}${ev.endTime?' \u2013 '+ev.endTime:''}</div>`:''}
+      </div>`;
+    });
+
+    if(di===todayColIdx&&showNow){
+      col+=`<div class="wv-now-line" style="top:${nowTopPx}px;">
+        <div class="wv-now-line-dot"></div>
+        <div class="wv-now-line-rule"></div>
+      </div>`;
+    }
+
+    dayCols+=`<div class="${colCls}">${col}</div>`;
+  });
+
+  weekView.innerHTML=`
+    <div class="wv-nav">
+      <button class="wv-nav-btn" onclick="weekViewOffset--;renderWeekView()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div style="text-align:center;">
+        <div class="wv-nav-title">${weekLabel}</div>
+        <div class="wv-nav-sub">${bsLabel}</div>
+      </div>
+      <button class="wv-nav-btn" onclick="weekViewOffset++;renderWeekView()"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+    <div class="wv-day-headers">${dayHdrHtml}</div>
+    <div class="wv-scroll">
+      <div class="wv-grid">
+        <div class="wv-time-col">${timeColHtml}</div>
+        <div class="wv-days-area">${dayCols}</div>
+      </div>
+    </div>
+  `;
+
+  requestAnimationFrame(()=>{
+    const scroll = weekView.querySelector('.wv-scroll');
+    if(scroll) scroll.scrollTop=(CELL_H/2)+7*CELL_H-20;
+  });
+}
+
+// Tap on a week view time cell → open add event sheet pre-filled with that time/date
+function wvCellTap(e, dayIdx, hour, min){
+  // Don't trigger if an event/banner was clicked
+  if(e.target.closest('.wv-event,.wv-hol-banner,.wv-obs-banner,.wv-nav-btn')) return;
+  const msDay = 86400000;
+  const todayMid = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
+  const dow = todayMid.getDay();
+  const weekStart = new Date(todayMid.getTime() - dow*msDay + weekViewOffset*7*msDay);
+  const adMid = new Date(weekStart.getTime() + dayIdx*msDay);
+  const bs = adToBs(adMid);
+  openAddForDayTime(bs.y, bs.m, bs.d, hour, min);
+}
+
 function mmOffsetMonth(y, m, delta){
   m += delta;
   while(m > 12){ m -= 12; y++; }
@@ -5919,6 +6394,7 @@ function openDay(bY,bM,bD){
       <div style="padding:10px 11px;background:var(--card);border-radius:14px;border:1px solid var(--panel-border);border-left:3px solid var(--tgon);">
         <div style="display:flex;gap:8px;align-items:center;">
           <span style="font-size:13px;font-weight:800;color:var(--panel-text);">${ev.title}</span>
+          ${ev.startTime?`<span style="font-size:11px;font-weight:700;color:var(--panel-muted);margin-left:auto;">⏰ ${ev.startTime}${ev.endTime?' – '+ev.endTime:''}</span>`:''}
         </div>
         <div style="font-size:11px;color:var(--panel-muted);margin-top:4px;">${formatEventRange(ev)}</div>
         ${ev.note?`<div style="font-size:11px;color:var(--panel-muted);margin-top:3px;">${ev.note}</div>`:''}
@@ -6242,10 +6718,59 @@ function openAddForDay(bsY,bsM,bsD){
   if(titleEl) titleEl.textContent='New Event';
   selectedDay={y:bsY,m:bsM,d:bsD};
   renderSelectedDay();
+  clearEvTime();
   openSheet('add');
   setTimeout(()=>{
     setEventRange(bsY, bsM, bsD);
   },50);
+}
+
+// Open add sheet with a pre-filled time (called from week view tap)
+function openAddForDayTime(bsY,bsM,bsD,startH,startMin){
+  haptic('light');
+  window._profileEditIdx=null;
+  const titleEl=document.getElementById('addTitle');
+  if(titleEl) titleEl.textContent='New Event';
+  selectedDay={y:bsY,m:bsM,d:bsD};
+  renderSelectedDay();
+  openSheet('add');
+  setTimeout(()=>{
+    setEventRange(bsY, bsM, bsD);
+    const pad = n => String(n).padStart(2,'0');
+    const endH = (startH+1)%24;
+    const st = document.getElementById('evStartTime');
+    const et = document.getElementById('evEndTime');
+    if(st) st.value=`${pad(startH)}:${pad(startMin)}`;
+    if(et) et.value=`${pad(endH)}:${pad(startMin)}`;
+    onEvTimeChange();
+  },50);
+}
+
+// Time field helpers
+function onEvTimeChange(){
+  const st=document.getElementById('evStartTime');
+  const et=document.getElementById('evEndTime');
+  const lbl=document.getElementById('evTimeAllDayLabel');
+  const clearBtn=document.getElementById('evTimeClearBtn');
+  const hasTime=st&&st.value;
+  if(lbl) lbl.style.display=hasTime?'none':'';
+  if(clearBtn) clearBtn.style.display=hasTime?'':'none';
+  // Auto set end time to start+1h if end is empty
+  if(st&&st.value&&et&&!et.value){
+    const [h,m]=st.value.split(':').map(Number);
+    const endH=(h+1)%24;
+    et.value=`${String(endH).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  }
+}
+function clearEvTime(){
+  const st=document.getElementById('evStartTime');
+  const et=document.getElementById('evEndTime');
+  const lbl=document.getElementById('evTimeAllDayLabel');
+  const clearBtn=document.getElementById('evTimeClearBtn');
+  if(st) st.value='';
+  if(et) et.value='';
+  if(lbl){ lbl.style.display=''; }
+  if(clearBtn) clearBtn.style.display='none';
 }
 
 // ══ NOTIFICATIONS ══
@@ -6611,6 +7136,8 @@ async function saveEv(){
     adMs:startMid.getTime(),
     endAdMs:endMid.getTime(),
     note,
+    startTime: document.getElementById('evStartTime')?.value || null,
+    endTime: document.getElementById('evEndTime')?.value || null,
     color: (document.querySelector('#evColorPicker .ae-cat-card.on, #evColorPicker .ae-cat-pill.on, #evColorPicker .ev-cat-btn.on') || {}).dataset?.color || 'personal',
     repeatYearly: window._recurState && window._recurState.enabled && window._recurState.freq === 'yearly' && (window._recurState.interval||1) === 1,
     recur: (window._recurState && window._recurState.enabled) ? {
@@ -6633,6 +7160,7 @@ async function saveEv(){
   saveEvents();
   document.getElementById('evT').value='';
   document.getElementById('evN').value='';
+  clearEvTime();
   // Reset sheet title
   const titleEl=document.getElementById('addTitle');
   if(titleEl) titleEl.textContent='New Event';
@@ -6988,7 +7516,7 @@ function mvItemHtml(it,y,m){
         <div class="up-icon evt" style="color:${c};">📌</div>
         <div class="up-info">
           <div class="up-name">${ev.title}</div>
-          <div class="up-tag-row"><span class="up-sub-pill">${rangeStr}</span></div>
+          <div class="up-tag-row"><span class="up-sub-pill">${rangeStr}</span>${ev.startTime?`<span class="up-sub-pill">⏰ ${ev.startTime}${ev.endTime?' – '+ev.endTime:''}</span>`:''}</div>
           ${ev.note?`<div style="font-size:11px;color:var(--sheet-muted);font-weight:600;margin-top:3px;">${ev.note}</div>`:''}
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
@@ -11967,6 +12495,12 @@ window.profileEditEvent=function(i){
     document.getElementById('evT').value=ev.title||'';
     document.getElementById('evN').value=ev.note||'';
     setEventRange(ev.bsY,ev.bsM,ev.bsD,ev.endBsY||ev.bsY,ev.endBsM||ev.bsM,ev.endBsD||ev.bsD);
+    // Pre-fill time fields
+    const st=document.getElementById('evStartTime');
+    const et=document.getElementById('evEndTime');
+    if(st) st.value=ev.startTime||'';
+    if(et) et.value=ev.endTime||'';
+    onEvTimeChange();
     // Set colour picker
     const picker=document.getElementById('evColorPicker');
     if(picker){
