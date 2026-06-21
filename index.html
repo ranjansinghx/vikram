@@ -6488,16 +6488,6 @@ function renderDayView(){
       </div>
       <button class="dv-nav-btn" onclick="dayViewOffset++;renderDayView()"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
-    <div class="dv-day-hdr">
-      <div class="dv-day-badge${isToday?' today':''}">
-        <div class="dv-day-badge-num">${ns(bs.d)}</div>
-        <div class="dv-day-badge-wd">${wdFull[targetMid.getDay()].slice(0,3).toUpperCase()}</div>
-      </div>
-      <div class="dv-day-meta">
-        <div class="dv-day-meta-date">${ADMEN[targetMid.getMonth()]} ${targetMid.getDate()}, ${targetMid.getFullYear()}</div>
-        <div class="dv-day-meta-bs">${mArr[bs.m-1]} ${ns(bs.d)}, ${ns(bs.y)} BS</div>
-      </div>
-    </div>
     ${holBannersHtml ? `<div class="dv-hol-banner-row">${holBannersHtml}</div>` : ''}
     ${allDaySectionHtml}
     <div class="dv-scroll" id="dvScroll">
