@@ -9691,8 +9691,22 @@ function cyResetConfirmYes(){
         </button>
       </div>
       <div class="pair-enter-row">
-        <input class="pair-enter-input" id="pairCodeInput" placeholder="Enter partner's code…" maxlength="7">
+        <input class="pair-enter-input" id="pairCodeInput" placeholder="Enter partner's code…" maxlength="7"
+          oninput="
+            let v=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+            if(v.length>3) v=v.slice(0,3)+'-'+v.slice(3,6);
+            this.value=v;
+          ">
         <button class="pair-connect-btn" onclick="pairConnect()">Connect 💞</button>
+      </div>
+      <div id="pairNameRow" style="display:none;margin-top:8px;">
+        <div class="pair-enter-row">
+          <input class="pair-enter-input" id="pairNameInput" placeholder="Partner's name or nickname…"
+            style="letter-spacing:0;text-transform:none;font-family:'Nunito',sans-serif;font-size:13px;"
+            maxlength="30"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();pairConnectConfirm();}">
+          <button class="pair-connect-btn" onclick="pairConnectConfirm()">Save 💗</button>
+        </div>
       </div>
     </div>`;
   }
@@ -9769,24 +9783,41 @@ function cyResetConfirmYes(){
     }catch(e){}
   };
 
+  // Step 1: validate code, show name input row inline
   window.pairConnect = function(){
+    if(typeof haptic === 'function') haptic('light');
     const inp = document.getElementById('pairCodeInput');
     if(!inp) return;
     const raw = inp.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
     if(raw.length < 6){ inp.style.borderColor='#f43f5e'; setTimeout(()=>inp.style.borderColor='',1200); return; }
+    inp.style.borderColor='#22c55e';
+    const nameRow = document.getElementById('pairNameRow');
+    if(nameRow){
+      nameRow.style.display = 'block';
+      setTimeout(()=>document.getElementById('pairNameInput')?.focus(), 60);
+    }
+  };
+
+  // Step 2: confirm with partner name and save
+  window.pairConnectConfirm = function(){
+    if(typeof haptic === 'function') haptic('medium');
+    const inp = document.getElementById('pairCodeInput');
+    const nameInp = document.getElementById('pairNameInput');
+    if(!inp || !nameInp) return;
+
+    const raw = inp.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+    if(raw.length < 6) return;
     const code = raw.slice(0,3)+'-'+raw.slice(3,6);
 
-    // Ask for partner name
-    const name = prompt("What's your partner's name or nickname?","Partner");
-    if(!name) return;
+    const name = (nameInp.value || '').trim() || 'Partner';
 
     const d = pairLoad();
     d.partnerCode = code;
-    d.partnerName = name.trim()||'Partner';
+    d.partnerName = name;
     d.sharedAt = Date.now();
 
-    // Always store current cycle data as the shared partner view.
-    // cycleData is the user's own cycle; in a local demo this is what we share.
+    // Store current user's cycle data as shared partner data (local demo — no backend).
+    // In a real implementation the partner's device would push their own cycle data.
     const cd = (typeof cycleData !== 'undefined') ? cycleData : {};
     d.partnerCycleData = {
       lastPeriodStart: cd.lastPeriodStart || null,
@@ -9795,14 +9826,20 @@ function cyResetConfirmYes(){
     };
 
     pairSave(d);
+    // Reset demo reply flag so partner sends one reply on first moment
+    if(typeof window._pairResetDemo === 'function') window._pairResetDemo();
     renderPairSection();
   };
 
   window.pairDisconnect = function(){
     if(!confirm('Disconnect from your partner? This only affects your device.')) return;
+    if(typeof haptic === 'function') haptic('medium');
     const d = pairLoad();
     delete d.partnerCode; delete d.partnerName; delete d.partnerCycleData; delete d.sharedAt;
     pairSave(d);
+    // Clear moments so a new pairing starts fresh
+    msgsSave([]);
+    if(typeof window._pairResetDemo === 'function') window._pairResetDemo();
     renderPairSection();
   };
 
@@ -9850,6 +9887,8 @@ function cyResetConfirmYes(){
     const text = inp.value.trim();
     if(!text) return;
 
+    if(typeof haptic === 'function') haptic('light');
+
     const msgs = msgsLoad();
     msgs.push({ from:'me', text, ts: Date.now() });
     msgsSave(msgs);
@@ -9858,6 +9897,10 @@ function cyResetConfirmYes(){
     inp.style.height = 'auto';
 
     renderMoments();
+
+    // Fire demo partner reply (once per pairing session)
+    const d = pairLoad();
+    window._pairSimulateReply(d.partnerName || 'Partner');
 
     // Visual feedback
     const sendBtn = document.querySelector('.pair-moment-send');
@@ -9873,6 +9916,7 @@ function cyResetConfirmYes(){
 
   // Simulate partner reply (for demo — fires once after first message)
   let _demoReplied = false;
+  window._pairResetDemo = function(){ _demoReplied = false; };
   window._pairSimulateReply = function(partnerName){
     if(_demoReplied) return;
     _demoReplied = true;
