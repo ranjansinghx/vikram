@@ -2306,6 +2306,135 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   background:var(--bg);
 }
 
+/* ── DAY VIEW (single-column Google Calendar style) ── */
+#dayView{
+  display:none;
+  flex-direction:column;
+  animation:mmFadeIn .2s cubic-bezier(.22,.85,.25,1);
+  overflow:hidden;
+  background:var(--bg);
+}
+.dv-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 10px 4px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg);
+  position:sticky;top:0;z-index:10;
+}
+.dv-nav-btn{
+  width:32px;height:32px;border:none;background:transparent;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;border-radius:50%;
+  color:var(--dtext);transition:background .15s;flex-shrink:0;
+}
+.dv-nav-btn:hover{background:var(--tgbg);}
+.dv-nav-btn svg{width:16px;height:16px;stroke:currentColor;stroke-width:2.3;fill:none;}
+.dv-nav-center{text-align:center;flex:1;}
+.dv-nav-title{font-size:16px;font-weight:900;color:var(--dtext);letter-spacing:-.3px;}
+.dv-nav-sub{font-size:10px;font-weight:700;color:var(--dsub);margin-top:1px;}
+.dv-day-hdr{
+  display:flex;align-items:center;justify-content:center;
+  padding:8px 14px 6px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg);
+  position:sticky;top:53px;z-index:9;
+  gap:10px;
+}
+.dv-day-badge{
+  width:44px;height:44px;border-radius:14px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--tgbg);
+}
+.dv-day-badge.today{background:var(--tgon);}
+.dv-day-badge-num{font-size:18px;font-weight:900;color:var(--dtext);line-height:1;}
+.dv-day-badge.today .dv-day-badge-num{color:#fff;}
+.dv-day-badge-wd{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--dsub);margin-top:2px;}
+.dv-day-badge.today .dv-day-badge-wd{color:rgba(255,255,255,.78);}
+.dv-day-meta{display:flex;flex-direction:column;gap:2px;}
+.dv-day-meta-date{font-size:13px;font-weight:800;color:var(--dtext);}
+.dv-day-meta-bs{font-size:11px;font-weight:700;color:var(--dsub);}
+.dv-hol-banner-row{
+  display:flex;flex-wrap:wrap;gap:5px;
+  padding:7px 12px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg);
+}
+.dv-hol-pill{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:20px;
+  font-size:11px;font-weight:800;
+}
+.dv-hol-pill.hol{background:rgba(255,71,87,.12);color:#d63031;}
+[data-theme=dark] .dv-hol-pill.hol{background:rgba(255,71,87,.2);color:#FF4757;}
+.dv-hol-pill.obs{background:rgba(122,183,255,.12);color:#5a8fd6;}
+[data-theme=dark] .dv-hol-pill.obs{background:rgba(122,183,255,.18);color:#7ab7ff;}
+.dv-scroll{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  position:relative;
+  height:calc(100vh - 200px);
+  max-height:680px;
+}
+.dv-grid{
+  display:flex;position:relative;
+}
+.dv-time-col{
+  width:56px;flex-shrink:0;position:relative;
+}
+.dv-time-label{
+  height:54px;display:flex;align-items:flex-start;justify-content:flex-end;
+  padding:0 10px 0 0;
+  font-size:9.5px;font-weight:700;color:var(--dsub);
+  position:relative;
+}
+.dv-day-col-area{
+  flex:1;position:relative;min-width:0;
+  border-left:1px solid var(--border);
+}
+.dv-hour-cell{
+  height:54px;border-top:1px solid var(--border);
+  position:relative;cursor:pointer;transition:background .1s;
+}
+.dv-hour-cell:hover{background:rgba(90,90,200,.04);}
+[data-theme=dark] .dv-hour-cell:hover{background:rgba(140,148,220,.06);}
+.dv-hour-cell.half::after{
+  content:'';position:absolute;top:50%;left:0;right:0;
+  border-top:1px dashed var(--border);opacity:.5;
+}
+.dv-now-line{
+  position:absolute;left:-56px;right:0;z-index:5;pointer-events:none;
+}
+.dv-now-line-dot{
+  width:10px;height:10px;border-radius:50%;background:#FF4757;
+  position:absolute;left:52px;top:-5px;
+}
+.dv-now-line-rule{
+  position:absolute;left:62px;right:0;height:2px;background:#FF4757;top:-1px;
+}
+.dv-event{
+  position:absolute;left:4px;right:4px;border-radius:8px;
+  padding:4px 8px;cursor:pointer;overflow:hidden;
+  font-size:11px;font-weight:800;line-height:1.3;z-index:3;
+  transition:filter .13s,transform .13s;min-height:22px;
+}
+.dv-event:active{filter:brightness(.88);transform:scale(.98);}
+.dv-event-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dv-event-time{font-size:9px;opacity:.82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
+.dv-allday-area{
+  padding:0 12px 8px;border-bottom:1px solid var(--border);
+  background:var(--bg);
+}
+.dv-allday-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--dsub);padding:6px 0 4px;}
+.dv-allday-pill{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 10px;border-radius:8px;margin-bottom:4px;
+  font-size:12px;font-weight:800;
+}
+.dv-allday-pill.evt{background:rgba(122,183,255,.13);color:var(--dtext);}
+[data-theme=dark] .dv-allday-pill.evt{background:rgba(122,183,255,.18);}
+.dv-allday-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dv-empty{
+  text-align:center;padding:40px 20px;color:var(--dsub);font-size:13px;font-weight:700;
+}
+
 /* ── MONTH TAB VIEW ── */
 #monthTabView{
   animation:mmFadeIn .2s cubic-bezier(.22,.85,.25,1);
@@ -4094,8 +4223,9 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     </div>
   </div>
   <div class="modebar" id="modebar">
-    <button class="mode-pill on" id="tabAll" onclick="if(scheduleActive)toggleScheduleView();else if(typeof weekViewActive!=='undefined'&&weekViewActive)toggleWeekView();else if(typeof monthTabActive!=='undefined'&&monthTabActive)toggleMonthTab();"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="13" width="7" height="7" rx="1.5"/><rect x="14" y="13" width="7" height="7" rx="1.5"/></svg>All</button>
+    <button class="mode-pill on" id="tabAll" onclick="if(scheduleActive)toggleScheduleView();else if(typeof dayViewActive!=='undefined'&&dayViewActive)toggleDayView();else if(typeof weekViewActive!=='undefined'&&weekViewActive)toggleWeekView();else if(typeof monthTabActive!=='undefined'&&monthTabActive)toggleMonthTab();"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="13" width="7" height="7" rx="1.5"/><rect x="14" y="13" width="7" height="7" rx="1.5"/></svg>All</button>
     <button class="mode-pill" id="tabSchedule" onclick="toggleScheduleView()" title="Schedule view"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Schedule</button>
+    <button class="mode-pill" id="tabDay" onclick="toggleDayView()" title="Day view"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="12" y1="4" x2="12" y2="21"/></svg>Day</button>
     <button class="mode-pill" id="tabWeek" onclick="toggleWeekView()" title="Week view"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="4" x2="8" y2="21"/><line x1="12" y1="4" x2="12" y2="21"/><line x1="16" y1="4" x2="16" y2="21"/></svg>Week</button>
     <button class="mode-pill" id="tabMonth" onclick="toggleMonthTab()" title="Month view"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="4" x2="8" y2="9"/><line x1="16" y1="4" x2="16" y2="9"/></svg>Month</button>
   </div>
@@ -4139,6 +4269,9 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
   <!-- ══ WEEK VIEW ══ -->
   <div id="weekView"></div>
+
+  <!-- ══ DAY VIEW ══ -->
+  <div id="dayView" style="display:none;flex-direction:column;"></div>
 
   <!-- ══ MONTH TAB VIEW ══ -->
   <div id="monthTabView" style="display:none;"></div>
@@ -5397,6 +5530,16 @@ function toggleScheduleView(){
     if(typeof wvStopNowLineTimer==='function') wvStopNowLineTimer();
     scheduleActive = false; // force toggle on
   }
+  // Close day view if open
+  if(typeof dayViewActive!=='undefined' && dayViewActive){
+    dayViewActive = false;
+    const dvBtn = document.getElementById('tabDay');
+    const dayView = document.getElementById('dayView');
+    if(dvBtn) dvBtn.classList.remove('on');
+    if(dayView) dayView.style.display='none';
+    if(typeof dvStopNowLineTimer==='function') dvStopNowLineTimer();
+    scheduleActive = false; // force toggle on
+  }
   // Close month tab if open
   if(typeof monthTabActive!=='undefined' && monthTabActive){
     monthTabActive = false;
@@ -5694,9 +5837,11 @@ function toggleWeekView(){
   const btn = document.getElementById('tabWeek');
   const tabAll = document.getElementById('tabAll');
   const tabSchedule = document.getElementById('tabSchedule');
+  const tabDay = document.getElementById('tabDay');
   const ccard = document.querySelector('.ccard');
   const schedView = document.getElementById('scheduleView');
   const weekView = document.getElementById('weekView');
+  const dayView = document.getElementById('dayView');
   const upcoming = document.querySelector('.upcoming');
 
   if(weekViewActive){
@@ -5705,6 +5850,13 @@ function toggleWeekView(){
       scheduleActive = false;
       if(tabSchedule) tabSchedule.classList.remove('on');
       if(schedView) schedView.style.display='none';
+    }
+    // Deactivate day view if active
+    if(typeof dayViewActive!=='undefined'&&dayViewActive){
+      dayViewActive = false;
+      if(tabDay) tabDay.classList.remove('on');
+      if(dayView) dayView.style.display='none';
+      if(typeof dvStopNowLineTimer==='function') dvStopNowLineTimer();
     }
     // Deactivate month tab if active
     if(typeof monthTabActive!=='undefined'&&monthTabActive){
@@ -5743,9 +5895,11 @@ function toggleMonthTab(){
   const tabAll = document.getElementById('tabAll');
   const tabSchedule = document.getElementById('tabSchedule');
   const tabWeekBtn = document.getElementById('tabWeek');
+  const tabDayBtn = document.getElementById('tabDay');
   const ccard = document.querySelector('.ccard');
   const schedView = document.getElementById('scheduleView');
   const weekView = document.getElementById('weekView');
+  const dayView = document.getElementById('dayView');
   const monthTabView = document.getElementById('monthTabView');
   const upcoming = document.querySelector('.upcoming');
 
@@ -5755,6 +5909,13 @@ function toggleMonthTab(){
       scheduleActive = false;
       if(tabSchedule) tabSchedule.classList.remove('on');
       if(schedView) schedView.style.display='none';
+    }
+    // Deactivate day view if active
+    if(typeof dayViewActive!=='undefined'&&dayViewActive){
+      dayViewActive = false;
+      if(tabDayBtn) tabDayBtn.classList.remove('on');
+      if(dayView) dayView.style.display='none';
+      if(typeof dvStopNowLineTimer==='function') dvStopNowLineTimer();
     }
     // Deactivate week view if active
     if(weekViewActive){
@@ -6128,7 +6289,267 @@ function wvUpdateNowLine(){
   document.querySelectorAll('#weekView .wv-now-line').forEach(el=>{ el.style.top=nowTopPx+'px'; });
 }
 
-// Tap on a week view time cell → open add event sheet pre-filled with that time/date
+// ══ DAY VIEW ══
+let dayViewActive = false;
+let dayViewOffset = 0; // offset in days from today
+
+function toggleDayView(){
+  haptic('light');
+  dayViewActive = !dayViewActive;
+  const btn = document.getElementById('tabDay');
+  const tabAll = document.getElementById('tabAll');
+  const tabSchedule = document.getElementById('tabSchedule');
+  const tabWeekBtn = document.getElementById('tabWeek');
+  const ccard = document.querySelector('.ccard');
+  const schedView = document.getElementById('scheduleView');
+  const weekView = document.getElementById('weekView');
+  const dayView = document.getElementById('dayView');
+  const upcoming = document.querySelector('.upcoming');
+
+  if(dayViewActive){
+    // Deactivate schedule if active
+    if(scheduleActive){
+      scheduleActive = false;
+      if(tabSchedule) tabSchedule.classList.remove('on');
+      if(schedView) schedView.style.display='none';
+    }
+    // Deactivate week view if active
+    if(weekViewActive){
+      weekViewActive = false;
+      if(tabWeekBtn) tabWeekBtn.classList.remove('on');
+      if(weekView) weekView.style.display='none';
+      if(typeof wvStopNowLineTimer==='function') wvStopNowLineTimer();
+    }
+    // Deactivate month tab if active
+    if(typeof monthTabActive!=='undefined'&&monthTabActive){
+      monthTabActive = false;
+      const tabMonth = document.getElementById('tabMonth');
+      const monthTabView = document.getElementById('monthTabView');
+      if(tabMonth) tabMonth.classList.remove('on');
+      if(monthTabView) monthTabView.style.display='none';
+    }
+    btn.classList.add('on');
+    tabAll.classList.remove('on');
+    if(ccard) ccard.style.display='none';
+    dayViewOffset = 0;
+    dayView.style.display = 'flex';
+    dayView.style.flexDirection = 'column';
+    renderDayView();
+    if(upcoming) upcoming.style.display='none';
+  } else {
+    btn.classList.remove('on');
+    tabAll.classList.add('on');
+    if(ccard) ccard.style.display='';
+    dayView.style.display = 'none';
+    if(upcoming) upcoming.style.display='';
+    dvStopNowLineTimer();
+    render();
+  }
+}
+
+function renderDayView(){
+  const dayView = document.getElementById('dayView');
+  if(!dayView) return;
+
+  const CELL_H = 54;
+  const msDay = 86400000;
+  const colorMap = {'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'};
+  const mArr = lang==='ne' ? MNE : MEN;
+  const ADMEN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const wdFull = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+  // Nepal time
+  const nstNow = new Date(Date.now()+345*60000);
+  const todayMid = new Date(Date.UTC(nstNow.getUTCFullYear(), nstNow.getUTCMonth(), nstNow.getUTCDate()));
+  const targetMid = new Date(todayMid.getTime() + dayViewOffset*msDay);
+  const isToday = dayViewOffset === 0;
+  const isWknd = targetMid.getDay()===0||targetMid.getDay()===6;
+
+  // AD label
+  const adLabel = `${wdFull[targetMid.getDay()]}, ${ADMEN[targetMid.getMonth()]} ${targetMid.getDate()}, ${targetMid.getFullYear()}`;
+
+  // BS info
+  const bs = adToBs(targetMid);
+  const bsLabel = `${mArr[bs.m-1]} ${ns(bs.d)}, ${ns(bs.y)} BS`;
+
+  // Holidays & observances
+  const hols = [], obsList = [];
+  const bsKey = `${bs.y}-${bs.m}-${bs.d}`;
+  if(HOL[bsKey]) hols.push(HOL[bsKey]);
+  if(OBS[bsKey]) obsList.push(OBS[bsKey]);
+
+  // User events for this day
+  const dayEvents = [];
+  userEvents.forEach(ev=>{
+    const {startMid, endMid} = getEventRangeMid(ev);
+    const spanDays = Math.round((endMid-startMid)/msDay);
+
+    function check(occStart, occEnd){
+      if(targetMid>=occStart && targetMid<=occEnd) dayEvents.push(ev);
+    }
+    if(!ev.recur&&!ev.repeatYearly){ check(startMid,endMid); return; }
+    if(ev.repeatYearly&&!ev.recur){
+      for(let yr=targetMid.getFullYear()-1;yr<=targetMid.getFullYear()+1;yr++){
+        const vS=bsToAd(adToBs(new Date(yr,0,1)).y,ev.bsM,ev.bsD);
+        const vSm=new Date(vS.getFullYear(),vS.getMonth(),vS.getDate());
+        check(vSm,new Date(vSm.getTime()+spanDays*msDay));
+      }
+      return;
+    }
+    const r=ev.recur;
+    if(!r||!r.freq){check(startMid,endMid);return;}
+    const interval=r.interval||1;
+    let occ=0,cur=new Date(startMid);
+    const maxIter=600;let iter=0;
+    while(cur<=targetMid&&iter++<maxIter){
+      if(r.endType==='count'&&occ>=(r.endCount||1)) break;
+      if(r.endType==='date'&&r.endAdMs){const ed=new Date(r.endAdMs);const edM=new Date(ed.getFullYear(),ed.getMonth(),ed.getDate());if(cur>edM) break;}
+      check(cur,new Date(cur.getTime()+spanDays*msDay));
+      occ++;
+      if(r.freq==='daily') cur=new Date(cur.getTime()+interval*msDay);
+      else if(r.freq==='weekly'){
+        if(r.weekdays&&r.weekdays.length){cur=new Date(cur.getTime()+msDay);while(!r.weekdays.includes(cur.getDay()))cur=new Date(cur.getTime()+msDay);}
+        else cur=new Date(cur.getTime()+interval*7*msDay);
+      } else if(r.freq==='monthly'){const nm=new Date(cur);nm.setMonth(nm.getMonth()+interval);cur=nm;}
+      else if(r.freq==='yearly'){const ny=new Date(cur);ny.setFullYear(ny.getFullYear()+interval);cur=ny;}
+      else break;
+    }
+  });
+
+  // Now line
+  const nowMins = nstNow.getUTCHours()*60 + nstNow.getUTCMinutes();
+  const nowTopPx = (nowMins/60)*CELL_H;
+
+  function dvTimeToTop(h,m){ return (h||0)*CELL_H+((m||0)/60)*CELL_H; }
+
+  // Time labels
+  let timeColHtml = '';
+  for(let h=0;h<24;h++){
+    const label = h===0?'12 AM':h===12?'12 PM':h<12?`${h} AM`:`${h-12} PM`;
+    timeColHtml += `<div class="dv-time-label">${label}</div>`;
+  }
+
+  // Hour cells + events
+  let hoursHtml = '';
+  for(let h=0;h<24;h++){
+    hoursHtml += `<div class="dv-hour-cell half" onclick="dvCellTap(${h},0)"></div>`;
+  }
+
+  // Timed events
+  let timedEventsHtml = '';
+  let allDayEventsHtml = '';
+  let allDayCount = 0;
+
+  dayEvents.forEach(ev=>{
+    const c = colorMap[ev.color]||'#3B82F6';
+    if(ev.startTime){
+      const [sh,sm] = ev.startTime.split(':').map(Number);
+      let heightPx = CELL_H;
+      if(ev.endTime){
+        const [eh,em] = ev.endTime.split(':').map(Number);
+        heightPx = Math.max(22,((eh+em/60)-(sh+sm/60))*CELL_H);
+      }
+      const topPx = dvTimeToTop(sh,sm);
+      timedEventsHtml += `<div class="dv-event" style="top:${topPx}px;height:${heightPx}px;background:${c};color:#fff;" onclick="openDay(${bs.y},${bs.m},${bs.d})">
+        <div class="dv-event-title">${ev.title}</div>
+        <div class="dv-event-time">${ev.startTime}${ev.endTime?' \u2013 '+ev.endTime:''}</div>
+      </div>`;
+    } else {
+      allDayEventsHtml += `<div class="dv-allday-pill evt">
+        <div class="dv-allday-dot" style="background:${c};"></div>
+        ${ev.title}
+      </div>`;
+      allDayCount++;
+    }
+  });
+
+  // Holiday banners
+  const holBannersHtml = [
+    ...hols.map(h=>`<span class="dv-hol-pill hol">🎉 ${lang==='ne'?h.np:h.en}</span>`),
+    ...obsList.map(o=>`<span class="dv-hol-pill obs">🎀 ${lang==='ne'?o.np:o.en}</span>`)
+  ].join('');
+
+  const nowLineHtml = isToday ? `<div class="dv-now-line" id="dvNowLine" style="top:${nowTopPx}px;">
+    <div class="dv-now-line-dot"></div>
+    <div class="dv-now-line-rule"></div>
+  </div>` : '';
+
+  const allDaySectionHtml = allDayCount>0 ? `<div class="dv-allday-area">
+    <div class="dv-allday-label">All-day</div>
+    ${allDayEventsHtml}
+  </div>` : '';
+
+  dayView.innerHTML = `
+    <div class="dv-nav">
+      <button class="dv-nav-btn" onclick="dayViewOffset--;renderDayView()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <div class="dv-nav-center">
+        <div class="dv-nav-title">${isToday?'Today':adLabel.split(',')[0]+','+adLabel.split(',').slice(1).join(',')}</div>
+        <div class="dv-nav-sub">${bsLabel}</div>
+      </div>
+      <button class="dv-nav-btn" onclick="dayViewOffset++;renderDayView()"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
+    <div class="dv-day-hdr">
+      <div class="dv-day-badge${isToday?' today':''}">
+        <div class="dv-day-badge-num">${ns(bs.d)}</div>
+        <div class="dv-day-badge-wd">${wdFull[targetMid.getDay()].slice(0,3).toUpperCase()}</div>
+      </div>
+      <div class="dv-day-meta">
+        <div class="dv-day-meta-date">${ADMEN[targetMid.getMonth()]} ${targetMid.getDate()}, ${targetMid.getFullYear()}</div>
+        <div class="dv-day-meta-bs">${mArr[bs.m-1]} ${ns(bs.d)}, ${ns(bs.y)} BS</div>
+      </div>
+    </div>
+    ${holBannersHtml ? `<div class="dv-hol-banner-row">${holBannersHtml}</div>` : ''}
+    ${allDaySectionHtml}
+    <div class="dv-scroll" id="dvScroll">
+      <div class="dv-grid">
+        <div class="dv-time-col">${timeColHtml}</div>
+        <div class="dv-day-col-area">
+          ${hoursHtml}
+          ${timedEventsHtml}
+          ${nowLineHtml}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Scroll to current time or 8 AM
+  requestAnimationFrame(()=>{
+    const scroll = dayView.querySelector('.dv-scroll');
+    if(scroll) scroll.scrollTop = isToday ? Math.max(0,nowTopPx-120) : 8*CELL_H-60;
+  });
+
+  dvStartNowLineTimer();
+}
+
+function dvCellTap(hour, min){
+  // Get current target day
+  const msDay = 86400000;
+  const nstNow = new Date(Date.now()+345*60000);
+  const todayMid = new Date(Date.UTC(nstNow.getUTCFullYear(),nstNow.getUTCMonth(),nstNow.getUTCDate()));
+  const targetMid = new Date(todayMid.getTime()+dayViewOffset*msDay);
+  const bs = adToBs(targetMid);
+  openAddForDayTime(bs.y, bs.m, bs.d, hour, min);
+}
+
+let _dvNowLineIv = null;
+function dvStartNowLineTimer(){
+  if(_dvNowLineIv) clearInterval(_dvNowLineIv);
+  _dvNowLineIv = setInterval(dvUpdateNowLine, 30000);
+}
+function dvStopNowLineTimer(){
+  if(_dvNowLineIv){ clearInterval(_dvNowLineIv); _dvNowLineIv=null; }
+}
+function dvUpdateNowLine(){
+  if(!dayViewActive||dayViewOffset!==0) return;
+  const CELL_H=54;
+  const nstNow=new Date(Date.now()+345*60000);
+  const nowMins=nstNow.getUTCHours()*60+nstNow.getUTCMinutes();
+  const nowTopPx=(nowMins/60)*CELL_H;
+  const el=document.getElementById('dvNowLine');
+  if(el) el.style.top=nowTopPx+'px';
+}
+
+
 function wvCellTap(e, dayIdx, hour, min){
   // Don't trigger if an event/banner was clicked
   if(e.target.closest('.wv-event,.wv-hol-banner,.wv-obs-banner,.wv-nav-btn')) return;
