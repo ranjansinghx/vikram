@@ -4223,8 +4223,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     </div>
   </div>
   <div class="modebar" id="modebar">
-    <button class="mode-pill on" id="tabAll" onclick="if(scheduleActive)toggleScheduleView();else if(typeof dayViewActive!=='undefined'&&dayViewActive)toggleDayView();else if(typeof weekViewActive!=='undefined'&&weekViewActive)toggleWeekView();else if(typeof monthTabActive!=='undefined'&&monthTabActive)toggleMonthTab();"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="13" width="7" height="7" rx="1.5"/><rect x="14" y="13" width="7" height="7" rx="1.5"/></svg>All</button>
-    <button class="mode-pill" id="tabSchedule" onclick="toggleScheduleView()" title="Schedule view"><svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Schedule</button>
+    <button class="mode-pill on" id="tabAll" onclick="if(typeof dayViewActive!=='undefined'&&dayViewActive)toggleDayView();else if(typeof weekViewActive!=='undefined'&&weekViewActive)toggleWeekView();else if(typeof monthTabActive!=='undefined'&&monthTabActive)toggleMonthTab();"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="7" height="7" rx="1.5"/><rect x="14" y="4" width="7" height="7" rx="1.5"/><rect x="3" y="13" width="7" height="7" rx="1.5"/><rect x="14" y="13" width="7" height="7" rx="1.5"/></svg>All</button>
     <button class="mode-pill" id="tabDay" onclick="toggleDayView()" title="Day view"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="12" y1="4" x2="12" y2="21"/></svg>Day</button>
     <button class="mode-pill" id="tabWeek" onclick="toggleWeekView()" title="Week view"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="4" x2="8" y2="21"/><line x1="12" y1="4" x2="12" y2="21"/><line x1="16" y1="4" x2="16" y2="21"/></svg>Week</button>
     <button class="mode-pill" id="tabMonth" onclick="toggleMonthTab()" title="Month view"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="4" x2="8" y2="9"/><line x1="16" y1="4" x2="16" y2="9"/></svg>Month</button>
@@ -4707,6 +4706,24 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     <div class="ssec" id="profileEventsSec" style="display:none;">
       <div class="ssect">My Upcoming Events</div>
       <div id="profileShareEvents"></div>
+    </div>
+    <!-- My Notes section -->
+    <div class="ssec" id="profileNotesSec" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
+        <div class="ssect" style="margin-bottom:0;">My Notes</div>
+        <button class="notif-hist-clear" onclick="closeAll();switchTab('notes');">View all</button>
+      </div>
+      <div id="profileNotesList"></div>
+      <div class="ssub" id="profileNotesEmpty" style="display:none;padding:6px 2px;">No notes yet.</div>
+    </div>
+    <!-- My Tasks section -->
+    <div class="ssec" id="profileTasksSec" style="display:none;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
+        <div class="ssect" style="margin-bottom:0;">My Tasks</div>
+        <button class="notif-hist-clear" onclick="closeAll();switchTab('home');setUpView('tasks');">View all</button>
+      </div>
+      <div id="profileTasksList"></div>
+      <div class="ssub" id="profileTasksEmpty" style="display:none;padding:6px 2px;">No tasks yet.</div>
     </div>
     <div class="ssec">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
@@ -11612,7 +11629,7 @@ function switchTab(tab) {
   try { window.localStorage.setItem('vikram_active_tab', tab); } catch(e) {}
   if(tab !== 'notes' && typeof window.notesFlushSave === 'function') window.notesFlushSave();
   if(tab !== 'notes' && typeof window.tasksFlushSave === 'function') window.tasksFlushSave();
-  ['home','cycle','counter','notes'].forEach(t => {
+  ['home','schedule','cycle','counter','notes'].forEach(t => {
     const id = 'bnav' + t.charAt(0).toUpperCase() + t.slice(1);
     const btn = document.getElementById(id);
     if(btn) btn.classList.toggle('active', t === tab);
@@ -11626,6 +11643,7 @@ function switchTab(tab) {
   const cycleView   = document.getElementById('cycleView');
   const dcFab       = document.getElementById('dcFab');
   const notesView   = document.getElementById('notesView');
+  const schedView   = document.getElementById('scheduleView');
 
   if(tab === 'home') {
     // In home, show ccard unless 3M view is active
@@ -11642,10 +11660,28 @@ function switchTab(tab) {
     if(dcView)      dcView.classList.remove('active');
     if(cycleView)   cycleView.classList.remove('active');
     if(notesView)   notesView.classList.remove('active');
+    if(schedView)   schedView.style.display   = 'none';
+    scheduleActive = false;
     if(dcFab)       dcFab.style.display       = 'none';
     const mainFab = document.querySelector('.fab');
     if(mainFab)     mainFab.style.display     = '';
     closeAll();
+  } else if(tab === 'schedule') {
+    if(mainContent) mainContent.style.display = 'none';
+    const mmView0 = document.getElementById('mmView');
+    if(mmView0) mmView0.style.display = 'none';
+    if(upcoming)    upcoming.style.display    = 'none';
+    if(modebar)     modebar.style.display     = 'none';
+    if(hdr)         hdr.style.display         = '';
+    if(dcView)      dcView.classList.remove('active');
+    if(cycleView)   cycleView.classList.remove('active');
+    if(notesView)   notesView.classList.remove('active');
+    if(dcFab)       dcFab.style.display       = 'none';
+    const mainFab = document.querySelector('.fab');
+    if(mainFab)     mainFab.style.display     = 'none';
+    closeAll();
+    scheduleActive = true;
+    if(schedView){ schedView.style.display = ''; renderScheduleView(); }
   } else if(tab === 'cycle') {
     if(mainContent) mainContent.style.display = 'none';
     const mmView2 = document.getElementById('mmView');
@@ -11656,6 +11692,8 @@ function switchTab(tab) {
     if(dcView)      dcView.classList.remove('active');
     if(cycleView)   cycleView.classList.add('active');
     if(notesView)   notesView.classList.remove('active');
+    if(schedView)   schedView.style.display   = 'none';
+    scheduleActive = false;
     if(dcFab)       dcFab.style.display       = 'none';
     const mainFab = document.querySelector('.fab');
     if(mainFab)     mainFab.style.display     = 'none';
@@ -11671,6 +11709,8 @@ function switchTab(tab) {
     if(cycleView)   cycleView.classList.remove('active');
     if(dcView)      dcView.classList.add('active');
     if(notesView)   notesView.classList.remove('active');
+    if(schedView)   schedView.style.display   = 'none';
+    scheduleActive = false;
     if(dcFab)       dcFab.style.display       = 'flex';
     const mainFab = document.querySelector('.fab');
     if(mainFab)     mainFab.style.display     = 'none';
@@ -11686,6 +11726,8 @@ function switchTab(tab) {
     if(hdr)         hdr.style.display         = '';
     if(dcView)      dcView.classList.remove('active');
     if(cycleView)   cycleView.classList.remove('active');
+    if(schedView)   schedView.style.display   = 'none';
+    scheduleActive = false;
     if(dcFab)       dcFab.style.display       = 'none';
     const mainFab = document.querySelector('.fab');
     if(mainFab)     mainFab.style.display     = 'none';
@@ -12031,6 +12073,10 @@ function switchTab(tab) {
   <button class="bnav-btn" id="bnavHome" onclick="handleHomeNavTap()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M7 16h2M11 16h2M15 16h2M7 12.5h2M11 12.5h2"/></svg>
     Home
+  </button>
+  <button class="bnav-btn" id="bnavSchedule" onclick="switchTab('schedule')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="6" y1="4" x2="6" y2="20"/><circle cx="6" cy="6" r="1.7" fill="currentColor" stroke="none"/><circle cx="6" cy="12.5" r="1.7" fill="currentColor" stroke="none"/><circle cx="6" cy="19" r="1.7" fill="currentColor" stroke="none"/><line x1="10" y1="6" x2="20" y2="6"/><line x1="10" y1="12.5" x2="20" y2="12.5"/><line x1="10" y1="19" x2="16" y2="19"/></svg>
+    Schedule
   </button>
   <button class="bnav-btn" id="bnavCycle" onclick="switchTab('cycle')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2c3.5 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 2.5-7 6-11Z"/></svg>
@@ -13429,6 +13475,113 @@ function renderProfileShareEvents(events){
   </div>`).join('');
 }
 
+// ── PROFILE: NOTES + TASKS SUMMARY ──
+function profEsc(str){
+  return String(str||'').replace(/[&<>"']/g, function(c){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+  });
+}
+
+function profNoteSnippet(html){
+  const tmp=document.createElement('div');
+  tmp.innerHTML=html||'';
+  return (tmp.textContent||tmp.innerText||'').replace(/\s+/g,' ').trim();
+}
+
+function renderProfileNotes(){
+  const wrap=document.getElementById('profileNotesList');
+  const sec=document.getElementById('profileNotesSec');
+  const empty=document.getElementById('profileNotesEmpty');
+  if(!wrap||!sec) return;
+  let list=[];
+  try{ list=JSON.parse(localStorage.getItem('vikram_notes_v2')||'[]')||[]; }catch(e){ list=[]; }
+  sec.style.display='';
+  if(!list.length){
+    wrap.innerHTML='';
+    if(empty) empty.style.display='';
+    return;
+  }
+  if(empty) empty.style.display='none';
+  list.sort((a,b)=>{
+    if(!!b.pinned!==!!a.pinned) return b.pinned?1:-1;
+    return (b.updated||0)-(a.updated||0);
+  });
+  const shown=list.slice(0,5);
+  wrap.innerHTML=shown.map(n=>{
+    const plain=profNoteSnippet(n.html);
+    const title=(n.title&&n.title.trim())||(plain?plain.slice(0,40):'Untitled note');
+    const d=n.updated?new Date(n.updated):null;
+    const dateStr=d?(ADMEN[d.getMonth()].slice(0,3)+' '+d.getDate()):'';
+    return '<div class="pshare-evt" style="cursor:pointer;" onclick="profileOpenNote(\''+n.id+'\')">'+
+      '<span class="pshare-evt-dot" style="background:'+(n.pinned?'#f59e0b':'#888')+';"></span>'+
+      '<span class="pshare-evt-name">'+profEsc(title)+'</span>'+
+      '<span class="pshare-evt-date">'+profEsc(dateStr)+'</span>'+
+    '</div>';
+  }).join('') + (list.length>5 ? '<div class="ssub" style="text-align:center;margin-top:4px;">+'+(list.length-5)+' more</div>' : '');
+}
+
+function renderProfileTasks(){
+  const wrap=document.getElementById('profileTasksList');
+  const sec=document.getElementById('profileTasksSec');
+  const empty=document.getElementById('profileTasksEmpty');
+  if(!wrap||!sec) return;
+  let list=[];
+  try{ list=JSON.parse(localStorage.getItem('vikram_tasks_v1')||'[]')||[]; }catch(e){ list=[]; }
+  sec.style.display='';
+  if(!list.length){
+    wrap.innerHTML='';
+    if(empty) empty.style.display='';
+    return;
+  }
+  if(empty) empty.style.display='none';
+  list.sort((a,b)=>{
+    if(!!a.done!==!!b.done) return a.done?1:-1;
+    if(!a.done){
+      if(a.due&&b.due) return a.due<b.due?-1:(a.due>b.due?1:(b.updated||0)-(a.updated||0));
+      if(a.due) return -1;
+      if(b.due) return 1;
+    }
+    return (b.updated||0)-(a.updated||0);
+  });
+  const shown=list.slice(0,5);
+  const today=new Date(); today.setHours(0,0,0,0);
+  wrap.innerHTML=shown.map(t=>{
+    const title=(t.title&&t.title.trim())||'Untitled task';
+    let meta='No due date', dotColor='#888';
+    if(t.done){ meta='Done'; dotColor='#10b981'; }
+    else if(t.due){
+      const parts=t.due.split('-').map(Number);
+      const d=new Date(parts[0],parts[1]-1,parts[2]);
+      const diff=Math.round((d-today)/86400000);
+      const dStr=ADMEN[d.getMonth()].slice(0,3)+' '+d.getDate();
+      if(diff<0){ meta='Overdue · '+dStr; dotColor='#e03e3e'; }
+      else if(diff===0){ meta='Due today'; dotColor='#f59e0b'; }
+      else meta='Due '+dStr;
+    }
+    const nameStyle=t.done?' style="text-decoration:line-through;opacity:.6;"':'';
+    return '<div class="pshare-evt" style="cursor:pointer;" onclick="profileOpenTask(\''+t.id+'\')">'+
+      '<span class="pshare-evt-dot" style="background:'+dotColor+';"></span>'+
+      '<span class="pshare-evt-name"'+nameStyle+'>'+profEsc(title)+'</span>'+
+      '<span class="pshare-evt-date">'+profEsc(meta)+'</span>'+
+    '</div>';
+  }).join('') + (list.length>5 ? '<div class="ssub" style="text-align:center;margin-top:4px;">+'+(list.length-5)+' more</div>' : '');
+}
+
+window.profileOpenNote=function(id){
+  haptic('light');
+  closeAll();
+  switchTab('notes');
+  setTimeout(function(){ if(typeof window.notesOpen==='function') window.notesOpen(id); },300);
+};
+
+window.profileOpenTask=function(id){
+  haptic('light');
+  closeAll();
+  switchTab('home');
+  setUpView('tasks');
+  setTimeout(function(){ if(typeof window.taskOpen==='function') window.taskOpen(id); },300);
+};
+
 window.profileEditEvent=function(i){
   haptic('light');
   const ev=userEvents[i];
@@ -13717,6 +13870,8 @@ window.openSheet=function(t){
     }catch(e){}
     renderNotifHistory();
     markNotifsSeen();
+    renderProfileNotes();
+    renderProfileTasks();
   }
   if(typeof _origOpenSheet==='function') _origOpenSheet(t);
 };
