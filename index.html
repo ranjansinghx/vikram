@@ -6001,7 +6001,7 @@ function renderWeekView(){
     const numCls = day.isToday?'wv-day-num today':day.isWknd?'wv-day-num wknd':'wv-day-num';
     dayHdrHtml += `<div class="wv-day-col-hdr">
       <div class="wv-day-name${day.isWknd?' wknd':''}">${wdShort[day.adMid.getDay()]}</div>
-      <div class="${numCls}">${day.adMid.getDate()}</div>
+      <div class="${numCls}">${ns(day.bs.d)}</div>
     </div>`;
   });
 
