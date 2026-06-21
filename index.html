@@ -4672,6 +4672,25 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </button>
         </div>
+        <!-- Birthday display / edit -->
+        <div id="profileBdayRow" style="display:flex;align-items:center;gap:6px;margin-top:8px;">
+          <div id="profileBdayDisplay" style="font-size:12px;font-weight:700;color:var(--dsub);">🎂 Add your birthday</div>
+          <button onclick="profileBdayStartEdit()" style="width:22px;height:22px;border-radius:50%;border:none;background:var(--tgbg);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </button>
+        </div>
+        <div id="profileBdayEditRow" style="display:none;flex-direction:column;align-items:center;gap:8px;margin-top:8px;width:100%;">
+          <div style="display:flex;gap:6px;width:100%;max-width:250px;">
+            <select class="cv-sel" id="profileBdayY" style="flex:1.1;"></select>
+            <select class="cv-sel" id="profileBdayM" style="flex:1.7;" onchange="refreshBdayDayOpts()"></select>
+            <select class="cv-sel" id="profileBdayD" style="flex:.8;"></select>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="profileSaveBday()" style="padding:7px 16px;border-radius:10px;border:none;background:var(--tgon);color:#fff;font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;">Save</button>
+            <button onclick="profileCancelBdayEdit()" style="padding:7px 16px;border-radius:10px;border:none;background:var(--tgbg);color:var(--dtext);font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;">Cancel</button>
+          </div>
+          <button onclick="profileRemoveBday()" id="profileBdayRemoveBtn" style="display:none;background:none;border:none;color:var(--wknd);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;padding:2px 4px;">Remove birthday</button>
+        </div>
       </div>
     </div>
     <!-- Echo -->
@@ -5454,7 +5473,7 @@ function render(){
       }
       userEvents.forEach(ev=>{
         if(eventMatchesDate(ev,vY,vM,nd))
-          chipArr.push(`<div class="cell-chip cell-chip-evt" style="color:${({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'})[ev.color]||'#3B82F6'};">${ev.title||'Event'}</div>`);
+          chipArr.push(`<div class="cell-chip cell-chip-evt" style="color:${({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'})[ev.color]||'#3B82F6'};">${ev.title||'Event'}</div>`);
       });
       if(cycleData.lastPeriodStart){
         const cl2=cycleData.cycleLength||28,pl2=cycleData.periodLength||5;
@@ -5578,7 +5597,7 @@ function renderScheduleView(){
 
   const mArr = lang==='ne' ? MNE : MEN;
   const wdArr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const colorMap = {'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'};
+  const colorMap = {'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'};
   const todayMid = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
 
   // Build day-keyed map for ALL BS years in data
@@ -5618,9 +5637,15 @@ function renderScheduleView(){
     if(!ev.recur && !ev.repeatYearly){ pushDay(startMid, endMid); return; }
 
     if(ev.repeatYearly && !ev.recur){
-      for(let yr=adStart.getFullYear(); yr<=adEnd.getFullYear()+1; yr++){
-        const vStart = bsToAd(adToBs(new Date(yr,0,1)).y, ev.bsM, ev.bsD);
+      // Iterate BS years directly — using Jan-1 AD→BS mapping mis-assigns
+      // dates whose BS year starts mid-April, causing duplicates or misses.
+      for(let bsY=firstBsY; bsY<=lastBsY+1; bsY++){
+        if(!BS[bsY]) continue;
+        const maxD = BS[bsY][ev.bsM - 1] ?? 30;
+        const clampedD = Math.min(ev.bsD, maxD);
+        const vStart = bsToAd(bsY, ev.bsM, clampedD);
         const vS = new Date(vStart.getFullYear(), vStart.getMonth(), vStart.getDate());
+        if(vS > adEndMid) break;
         pushDay(vS, new Date(vS.getTime()+spanDays*msDay));
       }
       return;
@@ -5787,7 +5812,7 @@ function renderScheduleView(){
             </div>`;
           }
           const ev=it.ev;
-          const colorMap2={'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'};
+          const colorMap2={'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'};
           const c=colorMap2[ev.color]||'#3B82F6';
           const bsDay=it.bs;
           return `<div class="gc-evt-pill evt" onclick="event.stopPropagation();openDay(${bsDay.y},${bsDay.m},${bsDay.d})" style="border-left:3px solid ${c};">
@@ -5971,13 +5996,50 @@ function renderMonthTabView(){
   const mEndMid    = new Date(monthEnd.getFullYear(),monthEnd.getMonth(),monthEnd.getDate());
 
   userEvents.forEach(ev=>{
+    const msDay2 = 86400000;
     const{startMid,endMid}=getEventRangeMid(ev);
-    if(endMid<mStartMid||startMid>mEndMid) return;
-    for(let d=1;d<=dims;d++){
-      const adD=bsToAd(y,m,d);
-      const adMid=new Date(adD.getFullYear(),adD.getMonth(),adD.getDate());
-      if(adMid>=startMid&&adMid<=endMid) dayMap[d].evts.push(ev);
+    const spanDays=Math.round((endMid-startMid)/msDay2);
+    const occurrences = [];
+    if(!ev.recur && !ev.repeatYearly){
+      occurrences.push({oStart:startMid, oEnd:endMid});
+    } else if(ev.repeatYearly && !ev.recur){
+      [y-1, y, y+1].forEach(bsY=>{
+        if(!BS[bsY]) return;
+        const maxD2 = BS[bsY][ev.bsM-1] ?? 30;
+        const clampedD = Math.min(ev.bsD, maxD2);
+        const vStart = bsToAd(bsY, ev.bsM, clampedD);
+        const vSMid = new Date(vStart.getFullYear(), vStart.getMonth(), vStart.getDate());
+        occurrences.push({oStart:vSMid, oEnd:new Date(vSMid.getTime()+spanDays*msDay2)});
+      });
+    } else {
+      const r = ev.recur;
+      if(!r||!r.freq){ occurrences.push({oStart:startMid, oEnd:endMid}); }
+      else {
+        const interval=r.interval||1;
+        let occ=0, cur=new Date(startMid), maxIter=600, iter=0;
+        while(cur<=mEndMid && iter++<maxIter){
+          if(r.endType==='count'&&occ>=(r.endCount||1)) break;
+          if(r.endType==='date'&&r.endAdMs){const ed=new Date(r.endAdMs);const edM=new Date(ed.getFullYear(),ed.getMonth(),ed.getDate());if(cur>edM) break;}
+          occurrences.push({oStart:new Date(cur), oEnd:new Date(cur.getTime()+spanDays*msDay2)});
+          occ++;
+          if(r.freq==='daily') cur=new Date(cur.getTime()+interval*msDay2);
+          else if(r.freq==='weekly'){
+            if(r.weekdays&&r.weekdays.length){cur=new Date(cur.getTime()+msDay2);while(!r.weekdays.includes(cur.getDay()))cur=new Date(cur.getTime()+msDay2);}
+            else cur=new Date(cur.getTime()+interval*7*msDay2);
+          } else if(r.freq==='monthly'){const nm=new Date(cur);nm.setMonth(nm.getMonth()+interval);cur=nm;}
+          else if(r.freq==='yearly'){const ny=new Date(cur);ny.setFullYear(ny.getFullYear()+interval);cur=ny;}
+          else break;
+        }
+      }
     }
+    occurrences.forEach(({oStart, oEnd})=>{
+      if(oEnd<mStartMid||oStart>mEndMid) return;
+      for(let d=1;d<=dims;d++){
+        const adD=bsToAd(y,m,d);
+        const adMid=new Date(adD.getFullYear(),adD.getMonth(),adD.getDate());
+        if(adMid>=oStart&&adMid<=oEnd && !dayMap[d].evts.includes(ev)) dayMap[d].evts.push(ev);
+      }
+    });
   });
 
   const cycItems = buildCycleUpcomingItems(mStartMid, mEndMid);
@@ -6007,7 +6069,7 @@ function renderMonthTabView(){
 
   for(let i=0;i<startDow;i++) html+=`<div class="mtv-cell mtv-cell-empty"></div>`;
 
-  const evtColorMap = {'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'};
+  const evtColorMap = {'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'};
 
   for(let d=1;d<=dims;d++){
     const isToday = todayBS.y===y&&todayBS.m===m&&todayBS.d===d;
@@ -6073,7 +6135,7 @@ function renderWeekView(){
   const msDay = 86400000;
   const mArr = lang==='ne' ? MNE : MEN;
   const wdShort = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const colorMap = {'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'};
+  const colorMap = {'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'};
 
   // Find Sunday of the current week + offset
   // Nepal is always UTC+5:45 (no DST) — add 345 minutes to UTC
@@ -6130,11 +6192,18 @@ function renderWeekView(){
 
     if(!ev.recur&&!ev.repeatYearly){ tryPush(startMid,endMid); return; }
     if(ev.repeatYearly&&!ev.recur){
-      for(let yr=weekStart.getFullYear()-1;yr<=weekEnd.getFullYear()+1;yr++){
-        const vS=bsToAd(adToBs(new Date(yr,0,1)).y,ev.bsM,ev.bsD);
+      // Derive BS years from the week's AD dates, then also check adjacent BS years
+      const bsWS2 = adToBs(weekStart);
+      const bsWE2 = adToBs(weekEnd);
+      const bsYrs = new Set([bsWS2.y - 1, bsWS2.y, bsWE2.y, bsWE2.y + 1]);
+      bsYrs.forEach(bsY=>{
+        if(!BS[bsY]) return;
+        const maxD2 = BS[bsY][ev.bsM-1] ?? 30;
+        const clampedD = Math.min(ev.bsD, maxD2);
+        const vS=bsToAd(bsY, ev.bsM, clampedD);
         const vSm=new Date(vS.getFullYear(),vS.getMonth(),vS.getDate());
         tryPush(vSm,new Date(vSm.getTime()+spanDays*msDay));
-      }
+      });
       return;
     }
     const r=ev.recur;
@@ -6353,7 +6422,7 @@ function renderDayView(){
 
   const CELL_H = 54;
   const msDay = 86400000;
-  const colorMap = {'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'};
+  const colorMap = {'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'};
   const mArr = lang==='ne' ? MNE : MEN;
   const ADMEN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const wdFull = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -6389,11 +6458,17 @@ function renderDayView(){
     }
     if(!ev.recur&&!ev.repeatYearly){ check(startMid,endMid); return; }
     if(ev.repeatYearly&&!ev.recur){
-      for(let yr=targetMid.getFullYear()-1;yr<=targetMid.getFullYear()+1;yr++){
-        const vS=bsToAd(adToBs(new Date(yr,0,1)).y,ev.bsM,ev.bsD);
+      // Use the BS year of the target day, plus neighbours, to find the correct occurrence
+      const bsTarget = adToBs(targetMid);
+      const bsYrs = new Set([bsTarget.y - 1, bsTarget.y, bsTarget.y + 1]);
+      bsYrs.forEach(bsY=>{
+        if(!BS[bsY]) return;
+        const maxD2 = BS[bsY][ev.bsM-1] ?? 30;
+        const clampedD = Math.min(ev.bsD, maxD2);
+        const vS=bsToAd(bsY, ev.bsM, clampedD);
         const vSm=new Date(vS.getFullYear(),vS.getMonth(),vS.getDate());
         check(vSm,new Date(vSm.getTime()+spanDays*msDay));
-      }
+      });
       return;
     }
     const r=ev.recur;
@@ -7279,6 +7354,22 @@ function doConvBS(){
 let userEvents=JSON.parse(localStorage.getItem('vikram_events')||'[]');
 let upTab='hol';
 
+// Sync birthday from profile into userEvents on startup —
+// so it appears in Upcoming and Schedule without needing to open Profile.
+(function initBirthdayFromProfile(){
+  try{
+    const p=JSON.parse(localStorage.getItem('vikram_profile')||'{}');
+    if(p && p.bday && p.bday.y && p.bday.m && p.bday.d){
+      // Remove any stale birthday event already saved in vikram_events
+      for(let i=userEvents.length-1;i>=0;i--){
+        if(userEvents[i].isBirthday) userEvents.splice(i,1);
+      }
+      // syncBirthdayEvent will be called after it's defined; store profile for it
+      window._pendingBdayProfile = p;
+    }
+  }catch(e){}
+})();
+
 function saveEvents(){
   localStorage.setItem('vikram_events',JSON.stringify(userEvents));
 }
@@ -8108,13 +8199,50 @@ function renderMonthView(){
   const mEndMid    = new Date(monthEnd.getFullYear(),monthEnd.getMonth(),monthEnd.getDate());
 
   userEvents.forEach(ev=>{
+    const msDay2 = 86400000;
     const{startMid,endMid}=getEventRangeMid(ev);
-    if(endMid<mStartMid||startMid>mEndMid) return;
-    for(let d=1;d<=dims;d++){
-      const adD=bsToAd(y,m,d);
-      const adMid=new Date(adD.getFullYear(),adD.getMonth(),adD.getDate());
-      if(adMid>=startMid&&adMid<=endMid) dayMap[d].evts.push(ev);
+    const spanDays=Math.round((endMid-startMid)/msDay2);
+    const occurrences = [];
+    if(!ev.recur && !ev.repeatYearly){
+      occurrences.push({oStart:startMid, oEnd:endMid});
+    } else if(ev.repeatYearly && !ev.recur){
+      [y-1, y, y+1].forEach(bsY=>{
+        if(!BS[bsY]) return;
+        const maxD2 = BS[bsY][ev.bsM-1] ?? 30;
+        const clampedD = Math.min(ev.bsD, maxD2);
+        const vStart = bsToAd(bsY, ev.bsM, clampedD);
+        const vSMid = new Date(vStart.getFullYear(), vStart.getMonth(), vStart.getDate());
+        occurrences.push({oStart:vSMid, oEnd:new Date(vSMid.getTime()+spanDays*msDay2)});
+      });
+    } else {
+      const r = ev.recur;
+      if(!r||!r.freq){ occurrences.push({oStart:startMid, oEnd:endMid}); }
+      else {
+        const interval=r.interval||1;
+        let occ=0, cur=new Date(startMid), maxIter=600, iter=0;
+        while(cur<=mEndMid && iter++<maxIter){
+          if(r.endType==='count'&&occ>=(r.endCount||1)) break;
+          if(r.endType==='date'&&r.endAdMs){const ed=new Date(r.endAdMs);const edM=new Date(ed.getFullYear(),ed.getMonth(),ed.getDate());if(cur>edM) break;}
+          occurrences.push({oStart:new Date(cur), oEnd:new Date(cur.getTime()+spanDays*msDay2)});
+          occ++;
+          if(r.freq==='daily') cur=new Date(cur.getTime()+interval*msDay2);
+          else if(r.freq==='weekly'){
+            if(r.weekdays&&r.weekdays.length){cur=new Date(cur.getTime()+msDay2);while(!r.weekdays.includes(cur.getDay()))cur=new Date(cur.getTime()+msDay2);}
+            else cur=new Date(cur.getTime()+interval*7*msDay2);
+          } else if(r.freq==='monthly'){const nm=new Date(cur);nm.setMonth(nm.getMonth()+interval);cur=nm;}
+          else if(r.freq==='yearly'){const ny=new Date(cur);ny.setFullYear(ny.getFullYear()+interval);cur=ny;}
+          else break;
+        }
+      }
     }
+    occurrences.forEach(({oStart, oEnd})=>{
+      if(oEnd<mStartMid||oStart>mEndMid) return;
+      for(let d=1;d<=dims;d++){
+        const adD=bsToAd(y,m,d);
+        const adMid=new Date(adD.getFullYear(),adD.getMonth(),adD.getDate());
+        if(adMid>=oStart&&adMid<=oEnd && !dayMap[d].evts.includes(ev)) dayMap[d].evts.push(ev);
+      }
+    });
   });
 
   const cycItems = buildCycleUpcomingItems(mStartMid, mEndMid);
@@ -8259,7 +8387,7 @@ function mvItemHtml(it,y,m){
       ?`${ADMEN[startMid.getMonth()]} ${startMid.getDate()}, ${startMid.getFullYear()}`
       :`${ADMEN[startMid.getMonth()]} ${startMid.getDate()} – ${ADMEN[endMid.getMonth()]} ${endMid.getDate()}`;
     const realIdx=userEvents.indexOf(ev);
-    const c=({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'})[ev.color]||'#3B82F6';
+    const c=({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'})[ev.color]||'#3B82F6';
     return `<div class="up-item" onclick="openDay(${y},${m},${it.d})">
       <div class="up-item-accent evt" style="background:${c};"></div>
       <div class="up-item-inner">
@@ -8379,11 +8507,16 @@ function renderUpcoming(){
       return;
     }
 
-    // Legacy yearly
+    // Legacy yearly (including isBirthday from profile)
     if(ev.repeatYearly && !ev.recur){
-      const windowYears = new Set([todayMid.getFullYear(), windowEnd.getFullYear()]);
-      windowYears.forEach(yr=>{
-        const vStart = bsToAd(adToBs(new Date(yr,0,1)).y, ev.bsM, ev.bsD);
+      // Use BS years directly to avoid the Jan-1 AD→BS mapping bug.
+      // Check the current BS year and the next two BS years to cover the full window.
+      const bsYearsToCheck = new Set([TODAYBS.y, TODAYBS.y + 1, TODAYBS.y + 2]);
+      bsYearsToCheck.forEach(bsY=>{
+        if(!BS[bsY]) return;
+        const maxD = BS[bsY][ev.bsM - 1] ?? 30;
+        const clampedD = Math.min(ev.bsD, maxD);
+        const vStart = bsToAd(bsY, ev.bsM, clampedD);
         const vSMid = new Date(vStart.getFullYear(), vStart.getMonth(), vStart.getDate());
         const vEMid = new Date(vSMid.getTime() + spanDays * msDay);
         pushOcc(vSMid, vEMid);
@@ -8841,7 +8974,7 @@ function renderSelectedDay(){
       ${!h&&!obs&&!dayEvts.length?`<div class="sel-empty">No holidays or events on this day</div>`:''}
       ${h&&cfg.holn?`<div class="sel-row"><span class="sel-dot" style="background:var(--hol);"></span><span>${lang==='ne'?'सार्वजनिक बिदा':'Public holiday'} · ${lang==='ne'?h.np:h.en}</span></div>`:''}
       ${obs?`<div class="sel-row"><span class="sel-dot" style="background:var(--dot-evt);"></span><span>${lang==='ne'?'पर्व / अनुष्ठान':'Observance'} · ${lang==='ne'?obs.np:obs.en}</span></div>`:''}
-      ${dayEvts.map(ev=>{const c=({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'})[ev.color]||'#3B82F6';return`<div class="sel-row"><span class="sel-dot" style="background:${c};"></span><span>${ev.title}${ev.note?' · '+ev.note:''}${ev.repeatYearly?' <span style="font-size:10px;background:rgba(99,102,241,.15);color:#6366f1;border-radius:6px;padding:1px 5px;font-weight:800;">🔁 Yearly</span>':''}<span style="display:block;font-size:11px;color:var(--sel-muted);font-weight:700;margin-top:2px;">${formatEventRange(ev)}</span></span></div>`;}).join('')}
+      ${dayEvts.map(ev=>{const c=({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'})[ev.color]||'#3B82F6';return`<div class="sel-row"><span class="sel-dot" style="background:${c};"></span><span>${ev.title}${ev.note?' · '+ev.note:''}${ev.repeatYearly?' <span style="font-size:10px;background:rgba(99,102,241,.15);color:#6366f1;border-radius:6px;padding:1px 5px;font-weight:800;">🔁 Yearly</span>':''}<span style="display:block;font-size:11px;color:var(--sel-muted);font-weight:700;margin-top:2px;">${formatEventRange(ev)}</span></span></div>`;}).join('')}
     </div>
   </div>`;
 }
@@ -13112,17 +13245,35 @@ function profileInitials(name){
   return name.trim().split(/\s+/).map(w=>w[0]).join('').toUpperCase().slice(0,2);
 }
 
+// For a yearly birthday entry, the stored adMs is the *original* birth date
+// (possibly years ago). This computes the AD-midnight ms of the next time
+// that BS month/day comes around, so "upcoming" lists sort/filter correctly.
+function nextOccurrenceAdMs(ev){
+  if(!ev || !ev.isBirthday) return ev ? ev.adMs : 0;
+  const t=TODAYBS;
+  let occY=t.y;
+  let maxD=BS[occY]?.[ev.bsM-1]??30;
+  let occD=Math.min(ev.bsD,maxD);
+  if(ev.bsM<t.m||(ev.bsM===t.m&&occD<t.d)){
+    occY++;
+    maxD=BS[occY]?.[ev.bsM-1]??30;
+    occD=Math.min(ev.bsD,maxD);
+  }
+  const ad=bsToAd(occY,ev.bsM,occD);
+  return new Date(ad.getFullYear(),ad.getMonth(),ad.getDate()).getTime();
+}
+
 // ── Shareable events: the user's own upcoming added events ──
 function getShareableEvents(){
   if(typeof userEvents==='undefined'||!userEvents.length) return [];
   const todayMid=new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
   return userEvents
     .filter(ev=>{
-      const end = ev.endAdMs!=null ? ev.endAdMs : ev.adMs;
+      const end = ev.isBirthday ? nextOccurrenceAdMs(ev) : (ev.endAdMs!=null ? ev.endAdMs : ev.adMs);
       const endMid=new Date(new Date(end).setHours(0,0,0,0));
       return endMid>=todayMid;
     })
-    .sort((a,b)=>a.adMs-b.adMs)
+    .sort((a,b)=>(a.isBirthday?nextOccurrenceAdMs(a):a.adMs)-(b.isBirthday?nextOccurrenceAdMs(b):b.adMs))
     .slice(0,5)
     .map(ev=>({t:(ev.title||'').slice(0,40),y:ev.bsY,m:ev.bsM,d:ev.bsD,c:ev.color||'personal'}));
 }
@@ -13159,7 +13310,7 @@ function checkIncomingSharedProfile(){
     if(events.length && sec && list){
       sec.style.display='';
       const mArr=lang==='ne'?MNE:MEN;
-      const colorMap={'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'};
+      const colorMap={'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'};
       list.innerHTML=events.map(e=>`<div class="pshare-evt">
         <span class="pshare-evt-dot" style="background:${colorMap[e.c]||'#3B82F6'};"></span>
         <span class="pshare-evt-name">${e.t}</span>
@@ -13212,10 +13363,10 @@ function renderProfileShareEvents(events){
   const upcoming=(typeof userEvents==='undefined'?[]:userEvents)
     .map((ev,i)=>({ev,i}))
     .filter(({ev})=>{
-      const end=ev.endAdMs!=null?ev.endAdMs:ev.adMs;
+      const end=ev.isBirthday?nextOccurrenceAdMs(ev):(ev.endAdMs!=null?ev.endAdMs:ev.adMs);
       return new Date(new Date(end).setHours(0,0,0,0))>=todayMid;
     })
-    .sort((a,b)=>a.ev.adMs-b.ev.adMs);
+    .sort((a,b)=>(a.ev.isBirthday?nextOccurrenceAdMs(a.ev):a.ev.adMs)-(b.ev.isBirthday?nextOccurrenceAdMs(b.ev):b.ev.adMs));
   if(!upcoming.length){
     if(sec) sec.style.display='none';
     wrap.innerHTML='';
@@ -13223,13 +13374,14 @@ function renderProfileShareEvents(events){
   }
   if(sec) sec.style.display='';
   const mArr=lang==='ne'?MNE:MEN;
-  const colorMap={'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444'};
+  const colorMap={'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'};
   wrap.innerHTML=upcoming.map(({ev,i})=>`<div class="pshare-evt" style="gap:7px;padding:8px 10px;">
     <span class="pshare-evt-dot" style="background:${colorMap[ev.color]||'#3B82F6'};flex-shrink:0;"></span>
     <span class="pshare-evt-name" style="flex:1;font-size:12px;">${ev.title}</span>
     <span class="pshare-evt-date" style="font-size:10px;">${mArr[ev.bsM-1]} ${ns(ev.bsD)}</span>
+    ${ev.isBirthday ? `<span style="font-size:9.5px;font-weight:700;color:var(--dsub);flex-shrink:0;">via profile</span>` : `
     <button onclick="profileEditEvent(${i})" style="padding:3px 8px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--dsub);font-size:10px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;flex-shrink:0;line-height:1.4;">Edit</button>
-    <button onclick="profileDeleteEvent(${ev.adMs})" style="padding:3px 8px;border-radius:6px;border:1.5px solid rgba(224,62,62,.2);background:transparent;color:var(--wknd);font-size:10px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;flex-shrink:0;line-height:1.4;">Del</button>
+    <button onclick="profileDeleteEvent(${ev.adMs})" style="padding:3px 8px;border-radius:6px;border:1.5px solid rgba(224,62,62,.2);background:transparent;color:var(--wknd);font-size:10px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;flex-shrink:0;line-height:1.4;">Del</button>`}
   </div>`).join('');
 }
 
@@ -13267,8 +13419,18 @@ window.profileDeleteEvent=function(adMs){
   haptic('medium');
   const i=userEvents.findIndex(e=>e.adMs===adMs);
   if(i<0){ vikramToast('Event not found'); return; }
+  const wasBirthday=!!userEvents[i].isBirthday;
   userEvents.splice(i,1);
   saveEvents();
+  if(wasBirthday){
+    try{
+      const p=JSON.parse(localStorage.getItem('vikram_profile')||'{}');
+      delete p.bday;
+      localStorage.setItem('vikram_profile',JSON.stringify(p));
+      const disp=document.getElementById('profileBdayDisplay');
+      if(disp) disp.textContent=bdayDisplayText(null);
+    }catch(e){}
+  }
   render();
   renderUpcoming();
   renderSelectedDay();
@@ -13289,6 +13451,147 @@ function applyProfile(name,about){
   if(sm) sm.textContent=initials;
   const nd=document.getElementById('profileNameDisplay');
   if(nd) nd.textContent=name||'Your Name';
+}
+
+// ── BIRTHDAY (Profile) ─────────────────────────────────────────
+function bdayDisplayText(b){
+  if(!b||!b.y) return '🎂 Add your birthday';
+  return `🎂 ${MEN[b.m-1]} ${b.d}, ${b.y} BS`;
+}
+
+function bdayYearOpts(sel){
+  const minY=2055, maxY=TODAYBS.y;
+  let h='';
+  for(let y=maxY;y>=minY;y--) h+=`<option value="${y}"${y===sel?' selected':''}>${y}</option>`;
+  return h;
+}
+function bdayMonthOpts(sel){
+  return MEN.map((m,i)=>`<option value="${i+1}"${i+1===sel?' selected':''}>${m}</option>`).join('');
+}
+function bdayDayOpts(y,m,sel){
+  const max=BS[y]?.[m-1]??30;
+  let h='';
+  for(let d=1;d<=max;d++) h+=`<option value="${d}"${d===sel?' selected':''}>${d}</option>`;
+  return h;
+}
+window.refreshBdayDayOpts=function(){
+  const yEl=document.getElementById('profileBdayY');
+  const mEl=document.getElementById('profileBdayM');
+  const dEl=document.getElementById('profileBdayD');
+  if(!yEl||!mEl||!dEl) return;
+  const y=+yEl.value, m=+mEl.value;
+  const cur=+dEl.value||1;
+  const max=BS[y]?.[m-1]??30;
+  dEl.innerHTML=bdayDayOpts(y,m,Math.min(cur,max));
+};
+
+window.profileBdayStartEdit=function(){
+  haptic('light');
+  let p={};
+  try{ p=JSON.parse(localStorage.getItem('vikram_profile')||'{}'); }catch(e){}
+  const b=p.bday||{};
+  const defY=b.y||Math.max(2055,TODAYBS.y-25);
+  const defM=b.m||1;
+  const defD=b.d||1;
+  const yEl=document.getElementById('profileBdayY');
+  const mEl=document.getElementById('profileBdayM');
+  const dEl=document.getElementById('profileBdayD');
+  if(yEl) yEl.innerHTML=bdayYearOpts(defY);
+  if(mEl) mEl.innerHTML=bdayMonthOpts(defM);
+  if(dEl) dEl.innerHTML=bdayDayOpts(defY,defM,defD);
+  const rmBtn=document.getElementById('profileBdayRemoveBtn');
+  if(rmBtn) rmBtn.style.display=b.y?'block':'none';
+  const dispRow=document.getElementById('profileBdayRow');
+  const editRow=document.getElementById('profileBdayEditRow');
+  if(dispRow) dispRow.style.display='none';
+  if(editRow) editRow.style.display='flex';
+};
+
+window.profileCancelBdayEdit=function(){
+  haptic('light');
+  const dispRow=document.getElementById('profileBdayRow');
+  const editRow=document.getElementById('profileBdayEditRow');
+  if(editRow) editRow.style.display='none';
+  if(dispRow) dispRow.style.display='flex';
+};
+
+window.profileSaveBday=function(){
+  haptic('medium');
+  const y=+(document.getElementById('profileBdayY')||{}).value;
+  const m=+(document.getElementById('profileBdayM')||{}).value;
+  const d=+(document.getElementById('profileBdayD')||{}).value;
+  if(!y||!m||!d) return;
+  let p={};
+  try{ p=JSON.parse(localStorage.getItem('vikram_profile')||'{}'); }catch(e){}
+  p.bday={y,m,d};
+  try{ localStorage.setItem('vikram_profile',JSON.stringify(p)); }catch(e){}
+  const disp=document.getElementById('profileBdayDisplay');
+  if(disp) disp.textContent=bdayDisplayText(p.bday);
+  const dispRow=document.getElementById('profileBdayRow');
+  const editRow=document.getElementById('profileBdayEditRow');
+  if(editRow) editRow.style.display='none';
+  if(dispRow) dispRow.style.display='flex';
+  syncBirthdayEvent(p);
+  vikramToast('🎂 Birthday saved!');
+};
+
+window.profileRemoveBday=function(){
+  haptic('medium');
+  let p={};
+  try{ p=JSON.parse(localStorage.getItem('vikram_profile')||'{}'); }catch(e){}
+  delete p.bday;
+  try{ localStorage.setItem('vikram_profile',JSON.stringify(p)); }catch(e){}
+  const disp=document.getElementById('profileBdayDisplay');
+  if(disp) disp.textContent=bdayDisplayText(null);
+  const dispRow=document.getElementById('profileBdayRow');
+  const editRow=document.getElementById('profileBdayEditRow');
+  if(editRow) editRow.style.display='none';
+  if(dispRow) dispRow.style.display='flex';
+  syncBirthdayEvent(p);
+  vikramToast('Birthday removed');
+};
+
+// Creates/updates a yearly-recurring "Birthday" entry inside userEvents so it
+// automatically shows up on the month calendar, day view and Schedule view —
+// anywhere userEvents is already rendered.
+function syncBirthdayEvent(p){
+  if(typeof userEvents==='undefined') return;
+  for(let i=userEvents.length-1;i>=0;i--){
+    if(userEvents[i].isBirthday) userEvents.splice(i,1);
+  }
+  if(p && p.bday && p.bday.y && p.bday.m && p.bday.d){
+    const {y,m,d}=p.bday;
+    const adDate=bsToAd(y,m,d);
+    const mid=new Date(adDate.getFullYear(),adDate.getMonth(),adDate.getDate());
+    const name=(p.name||'').trim();
+    userEvents.push({
+      title: name?`🎂 ${name}'s Birthday`:'🎂 My Birthday',
+      bsY:y,bsM:m,bsD:d,
+      endBsY:y,endBsM:m,endBsD:d,
+      adMs:mid.getTime(),
+      endAdMs:mid.getTime(),
+      note:'',
+      startTime:null,
+      endTime:null,
+      color:'birthday',
+      repeatYearly:true,
+      recur:null,
+      isBirthday:true,
+    });
+  }
+  userEvents.sort((a,b)=>a.adMs-b.adMs);
+  if(typeof saveEvents==='function') saveEvents();
+  if(typeof render==='function') render();
+  if(typeof renderUpcoming==='function') renderUpcoming();
+  if(typeof renderSelectedDay==='function') renderSelectedDay();
+  if(typeof renderProfileShareEvents==='function') renderProfileShareEvents();
+  if(typeof renderScheduleView==='function' && typeof scheduleActive!=='undefined' && scheduleActive) renderScheduleView();
+}
+
+// Apply any birthday profile that was loaded before this function was defined
+if(window._pendingBdayProfile){
+  syncBirthdayEvent(window._pendingBdayProfile);
+  delete window._pendingBdayProfile;
 }
 
 window.profileStartEdit=function(){
@@ -13317,6 +13620,7 @@ window.profileSaveName=function(){
   const editRow=document.getElementById('profileNameEditRow');
   if(editRow) editRow.style.display='none';
   if(dispRow) dispRow.style.display='flex';
+  syncBirthdayEvent(p);
   vikramToast('✅ Name saved!');
 };
 
@@ -13358,6 +13662,12 @@ window.openSheet=function(t){
     try{
       const p=JSON.parse(localStorage.getItem('vikram_profile')||'{}');
       applyProfile(p.name||'',p.about||'');
+      const bdisp=document.getElementById('profileBdayDisplay');
+      if(bdisp) bdisp.textContent=bdayDisplayText(p.bday);
+      const bDispRow=document.getElementById('profileBdayRow');
+      const bEditRow=document.getElementById('profileBdayEditRow');
+      if(bEditRow) bEditRow.style.display='none';
+      if(bDispRow) bDispRow.style.display='flex';
       // Slight delay so sheet is visible before events render
       setTimeout(()=>showProfileShare(p.name||'',p.about||''),80);
     }catch(e){}
