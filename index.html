@@ -4182,13 +4182,13 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
         <div class="slbl">Vikram</div>
         <div style="font-size:12.5px;color:var(--dsub);font-weight:700;">v2.1 · BS 2083</div>
       </div>
-      <div class="srow" style="cursor:pointer;" onclick="openHelpFeedback()">
+      <a class="srow" style="cursor:pointer;text-decoration:none;color:inherit;" href="mailto:ranzansingh29@gmail.com?subject=Vikram%20Calendar%20%E2%80%94%20Help%20%26%20Feedback&amp;body=Hi%20Ranjan%2C%0A%0A" onclick="openHelpFeedback(event)">
         <div>
           <div class="slbl">Help &amp; Feedback</div>
           <div class="ssub">Send us a message</div>
         </div>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      </div>
+      </a>
       <div class="srow" style="cursor:pointer;" onclick="inviteFriends()">
         <div>
           <div class="slbl">Invite Friends</div>
@@ -4219,45 +4219,17 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
           <div id="profileAvatarBig" style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--tgon),var(--fab));display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#fff;letter-spacing:-1px;margin-bottom:12px;box-shadow:0 6px 20px rgba(0,0,0,.18);">?</div>
           <span class="notif-dot" style="display:none;"></span>
         </div>
-        <div id="profileNameDisplay" style="font-size:18px;font-weight:900;color:var(--dtext);letter-spacing:-.3px;">Your Name</div>
-        <div id="profileAboutDisplay" style="font-size:12px;color:var(--dsub);margin-top:4px;text-align:center;max-width:240px;line-height:1.5;"></div>
-      </div>
-    </div>
-    <div class="ssec" id="profileEditSec">
-      <!-- VIEW mode: name + about with pencil icons -->
-      <div id="profileViewMode" style="display:none;">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0 4px;">
-          <div>
-            <div style="font-size:10.5px;font-weight:700;color:var(--dsub);margin-bottom:2px;">Name</div>
-            <div id="profileViewName" style="font-size:14px;font-weight:800;color:var(--dtext);"></div>
-          </div>
-          <button onclick="profileStartEdit()" style="width:30px;height:30px;border-radius:50%;border:none;background:var(--tgbg);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        <div id="profileNameRow" style="display:flex;align-items:center;gap:6px;">
+          <div id="profileNameDisplay" style="font-size:15px;font-weight:800;color:var(--dtext);">Your Name</div>
+          <button onclick="profileStartEdit()" style="width:26px;height:26px;border-radius:50%;border:none;background:var(--tgbg);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
           </button>
         </div>
-        <div id="profileViewAboutWrap" style="padding:4px 0 2px;">
-          <div style="font-size:10.5px;font-weight:700;color:var(--dsub);margin-bottom:2px;">About</div>
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
-            <div id="profileViewAbout" style="font-size:12.5px;font-weight:600;color:var(--dtext);line-height:1.5;flex:1;"></div>
-            <button onclick="profileStartEdit()" style="width:30px;height:30px;border-radius:50%;border:none;background:var(--tgbg);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;margin-top:-2px;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-            </button>
-          </div>
-        </div>
-      </div>
-      <!-- EDIT mode: inputs + save -->
-      <div id="profileEditMode">
-        <div class="ssect">Edit Profile</div>
-        <div style="display:flex;flex-direction:column;gap:9px;">
-          <div>
-            <div class="slbl" style="margin-bottom:5px;font-size:11.5px;">Name</div>
-            <input class="einput" id="profileNameInput" type="text" placeholder="Enter your name…" maxlength="40" autocomplete="off" oninput="profilePreview()">
-          </div>
-          <div>
-            <div class="slbl" style="margin-bottom:5px;font-size:11.5px;">About</div>
-            <textarea class="einput" id="profileAboutInput" placeholder="A little about you…" maxlength="120" rows="3" style="resize:none;line-height:1.5;" oninput="profilePreview()"></textarea>
-          </div>
-          <button class="ebtn" onclick="saveProfile()" style="margin-top:4px;">Save Profile</button>
+        <div id="profileNameEditRow" style="display:none;align-items:center;gap:6px;margin-top:6px;">
+          <input id="profileNameInput" class="einput" type="text" placeholder="Enter your name…" maxlength="40" autocomplete="off" style="width:170px;text-align:center;padding:7px 10px;font-size:13px;" onkeydown="if(event.key==='Enter')profileSaveName()">
+          <button onclick="profileSaveName()" style="width:26px;height:26px;border-radius:50%;border:none;background:var(--tgon);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -10166,6 +10138,20 @@ window.pomoSkip  = pomoSkip;
 })();
 
 // ══ BOTTOM NAV TAB SWITCHING ══
+let _homeNavLastTap = 0;
+window.handleHomeNavTap = function() {
+  const now = Date.now();
+  if (now - _homeNavLastTap < 400) {
+    _homeNavLastTap = 0;
+    haptic('medium');
+    vikramToast('🔄 Refreshing…');
+    setTimeout(() => location.reload(), 150);
+    return;
+  }
+  _homeNavLastTap = now;
+  switchTab('home');
+};
+
 function switchTab(tab) {
   if(!window._vikramRestoring) haptic('light');
   try { window.localStorage.setItem('vikram_active_tab', tab); } catch(e) {}
@@ -10587,7 +10573,7 @@ function switchTab(tab) {
 </script>
 <!-- BOTTOM NAV BAR -->
 <nav class="bottom-nav" id="bottomNav">
-  <button class="bnav-btn" id="bnavHome" onclick="switchTab('home')">
+  <button class="bnav-btn" id="bnavHome" onclick="handleHomeNavTap()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M7 16h2M11 16h2M15 16h2M7 12.5h2M11 12.5h2"/></svg>
     Home
   </button>
@@ -12015,64 +12001,39 @@ function applyProfile(name,about){
   const initials=profileInitials(name);
   const big=document.getElementById('profileAvatarBig');
   if(big) big.textContent=initials;
-  const nd=document.getElementById('profileNameDisplay');
-  if(nd) nd.textContent=name||'Your Name';
-  const ad=document.getElementById('profileAboutDisplay');
-  if(ad) ad.textContent=about||'';
   const sm=document.getElementById('hdrProfileAvatar');
   if(sm) sm.textContent=initials;
-  // Switch between view/edit mode based on whether profile is saved
-  const hasSaved=!!(name||about);
-  const viewMode=document.getElementById('profileViewMode');
-  const editMode=document.getElementById('profileEditMode');
-  if(hasSaved){
-    if(viewMode){
-      viewMode.style.display='';
-      const vn=document.getElementById('profileViewName');
-      if(vn) vn.textContent=name||'';
-      const va=document.getElementById('profileViewAbout');
-      if(va) va.textContent=about||'';
-      const aw=document.getElementById('profileViewAboutWrap');
-      if(aw) aw.style.display=about?'':'none';
-    }
-    if(editMode) editMode.style.display='none';
-  } else {
-    if(viewMode) viewMode.style.display='none';
-    if(editMode) editMode.style.display='';
-  }
+  const nd=document.getElementById('profileNameDisplay');
+  if(nd) nd.textContent=name||'Your Name';
 }
 
 window.profileStartEdit=function(){
   haptic('light');
-  const viewMode=document.getElementById('profileViewMode');
-  const editMode=document.getElementById('profileEditMode');
-  if(viewMode) viewMode.style.display='none';
-  if(editMode) editMode.style.display='';
-  // Pre-fill inputs with current saved values
+  const dispRow=document.getElementById('profileNameRow');
+  const editRow=document.getElementById('profileNameEditRow');
+  if(dispRow) dispRow.style.display='none';
+  if(editRow) editRow.style.display='flex';
   try{
     const p=JSON.parse(localStorage.getItem('vikram_profile')||'{}');
     const ni=document.getElementById('profileNameInput');
-    const ai=document.getElementById('profileAboutInput');
     if(ni) ni.value=p.name||'';
-    if(ai) ai.value=p.about||'';
   }catch(e){}
   setTimeout(()=>document.getElementById('profileNameInput')?.focus(),80);
 };
 
-window.profilePreview=function(){
-  const name=(document.getElementById('profileNameInput')||{}).value||'';
-  const about=(document.getElementById('profileAboutInput')||{}).value||'';
-  applyProfile(name,about);
-};
-
-window.saveProfile=function(){
+window.profileSaveName=function(){
   haptic('medium');
   const name=((document.getElementById('profileNameInput')||{}).value||'').trim();
-  const about=((document.getElementById('profileAboutInput')||{}).value||'').trim();
-  try{ localStorage.setItem('vikram_profile',JSON.stringify({name,about})); }catch(e){}
-  applyProfile(name,about);
-  showProfileShare(name,about);
-  vikramToast('✅ Profile saved!');
+  let p={};
+  try{ p=JSON.parse(localStorage.getItem('vikram_profile')||'{}'); }catch(e){}
+  p.name=name;
+  try{ localStorage.setItem('vikram_profile',JSON.stringify(p)); }catch(e){}
+  applyProfile(name,p.about||'');
+  const dispRow=document.getElementById('profileNameRow');
+  const editRow=document.getElementById('profileNameEditRow');
+  if(editRow) editRow.style.display='none';
+  if(dispRow) dispRow.style.display='flex';
+  vikramToast('✅ Name saved!');
 };
 
 window.copyProfileLink=function(){
@@ -12112,10 +12073,6 @@ window.openSheet=function(t){
   if(t==='profile'){
     try{
       const p=JSON.parse(localStorage.getItem('vikram_profile')||'{}');
-      const ni=document.getElementById('profileNameInput');
-      const ai=document.getElementById('profileAboutInput');
-      if(ni) ni.value=p.name||'';
-      if(ai) ai.value=p.about||'';
       applyProfile(p.name||'',p.about||'');
       // Slight delay so sheet is visible before events render
       setTimeout(()=>showProfileShare(p.name||'',p.about||''),80);
@@ -12127,11 +12084,28 @@ window.openSheet=function(t){
 };
 
 
-window.openHelpFeedback = function() {
+window.openHelpFeedback = function(e) {
+  if (e) e.preventDefault();
   haptic('medium');
   const subject = encodeURIComponent('Vikram Calendar — Help & Feedback');
   const body = encodeURIComponent('Hi Ranjan,\n\n');
-  window.open('https://mail.google.com/mail/?view=cm&fs=1&to=ranzansingh29%40gmail.com&su=' + subject + '&body=' + body, '_blank');
+  const mailtoUrl = 'mailto:ranzansingh29@gmail.com?subject=' + subject + '&body=' + body;
+  const gmailWebUrl = 'https://mail.google.com/mail/?view=cm&fs=1&to=ranzansingh29%40gmail.com&su=' + subject + '&body=' + body;
+
+  // If a mail app actually opens, the page loses focus quickly — track that.
+  let leftPage = false;
+  const onBlur = () => { leftPage = true; };
+  window.addEventListener('blur', onBlur, { once: true });
+
+  window.location.href = mailtoUrl;
+
+  // No mail-app handler grabbed it (common on desktop) — fall back to Gmail web compose.
+  setTimeout(() => {
+    window.removeEventListener('blur', onBlur);
+    if (!leftPage && !document.hidden) {
+      window.open(gmailWebUrl, '_blank');
+    }
+  }, 600);
 };
 
 // ── INVITE FRIENDS ────────────────────────────────────────────
