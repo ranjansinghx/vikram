@@ -2,6 +2,10 @@
 <html lang="en" data-theme="light" data-lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://www.googleapis.com; frame-src 'none'; object-src 'none'; base-uri 'self';">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Vikram</title>
 <meta name="theme-color" content="#ECEEF8">
@@ -15,7 +19,7 @@
       dark=stored==='dark';
     } else {
       // Default to dark mode (original default), but respect system preference if possible
-      dark=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches!==false?true:true;
+      dark=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)').matches:true;
     }
     document.documentElement.setAttribute('data-theme',dark?'dark':'light');
     document.documentElement.style.colorScheme=dark?'dark':'light';
@@ -4971,6 +4975,10 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
         <div><div class="slbl">Show Public Holidays</div><div class="ssub">Highlight holidays in red</div></div>
         <button class="tgl on" id="tgH" onclick="togSetting('hol',this)"></button>
       </div>
+      <div class="srow">
+        <div><div class="slbl">Show Holiday Names</div><div class="ssub">Display holiday name in day details</div></div>
+        <button class="tgl on" id="tgHN" onclick="togSetting('holn',this)"></button>
+      </div>
 
     </div>
     <div class="ssec">
@@ -5028,7 +5036,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
         </div>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
       </div>
-      <div class="srow" style="cursor:pointer;" onclick="window.open('https://x.com/ranjansinghx','_blank')">
+      <div class="srow" style="cursor:pointer;" onclick="window.open('https://x.com/ranjansinghx','_blank','noopener,noreferrer')" rel="noopener noreferrer">
         <div>
           <div class="slbl">Connect with us</div>
           <div class="ssub">@ranjansinghx</div>
@@ -5728,6 +5736,17 @@ const TPAKSHA=['Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','S
 // UTC noon – safe anchor: .getDate() gives the same calendar day in every timezone (UTC-12 to UTC+14)
 const REF=new Date(Date.UTC(2026,3,14,12,0,0)); // Baishakh 1, 2083 = Apr 14, 2026
 let cfg={greg:true,hol:true,holn:true,fd:1};
+(function loadCfg(){
+  try{
+    const stored=JSON.parse(localStorage.getItem('vikram_cfg')||'null');
+    if(stored&&typeof stored==='object'){
+      if(typeof stored.greg==='boolean') cfg.greg=stored.greg;
+      if(typeof stored.hol==='boolean')  cfg.hol=stored.hol;
+      if(typeof stored.holn==='boolean') cfg.holn=stored.holn;
+      if(typeof stored.fd==='number')    cfg.fd=stored.fd;
+    }
+  }catch(e){}
+})();
 // Sync with the theme already applied by the early inline script
 let lang='en',dark=(function(){
   try{
@@ -5882,7 +5901,7 @@ function render(){
       }
       userEvents.forEach(ev=>{
         if(eventMatchesDate(ev,vY,vM,nd))
-          chipArr.push(`<div class="cell-chip cell-chip-evt" style="color:${({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'})[ev.color]||'#3B82F6'};">${ev.title||'Event'}</div>`);
+          chipArr.push(`<div class="cell-chip cell-chip-evt" style="color:${safeCss(({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'})[ev.color],'#3B82F6')};">${esc(ev.title)||'Event'}</div>`);
       });
       if(cycleData.lastPeriodStart){
         const cl2=cycleData.cycleLength||28,pl2=cycleData.periodLength||5;
@@ -6218,7 +6237,7 @@ function renderScheduleView(){
             <div class="sv-evt-accent"></div>
             <div class="sv-evt-icon">🎉</div>
             <div class="sv-evt-body">
-              <div class="sv-evt-title">${name}</div>
+              <div class="sv-evt-title">${esc(name)}</div>
               <div class="sv-evt-sub">${bsStr} · Public Holiday</div>
             </div>
             <span class="sv-evt-tag hol">Holiday</span>
@@ -6230,7 +6249,7 @@ function renderScheduleView(){
             <div class="sv-evt-accent"></div>
             <div class="sv-evt-icon">🎀</div>
             <div class="sv-evt-body">
-              <div class="sv-evt-title">${name}</div>
+              <div class="sv-evt-title">${esc(name)}</div>
               <div class="sv-evt-sub">${bsStr} · Observance</div>
             </div>
             <span class="sv-evt-tag obs">Observe</span>
@@ -6241,7 +6260,7 @@ function renderScheduleView(){
             <div class="sv-evt-accent" style="background:linear-gradient(180deg,${it.color},${it.color}88);"></div>
             <div class="sv-evt-icon">${it.emoji}</div>
             <div class="sv-evt-body">
-              <div class="sv-evt-title">${it.phase} phase begins</div>
+              <div class="sv-evt-title">${esc(it.phase)} phase begins</div>
               <div class="sv-evt-sub">${bsStr} · Cycle</div>
             </div>
             <span class="sv-evt-tag cyc">Cycle</span>
@@ -6257,7 +6276,7 @@ function renderScheduleView(){
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="${c}" stroke-width="2.3" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
           </div>
           <div class="sv-evt-body">
-            <div class="sv-evt-title">${ev.title}</div>
+            <div class="sv-evt-title">${esc(ev.title)}</div>
             <div class="sv-evt-sub">${bsStr}</div>
           </div>
           <span class="sv-evt-tag evt" style="background:${c}14;color:${c};">${catLabel}</span>
@@ -6562,7 +6581,7 @@ function renderMonthTabView(){
     });
     dm.evts.forEach(ev=>{
       const c = evtColorMap[ev.color]||'#3B82F6';
-      chipArr.push(`<div class="mtv-chip mtv-chip-evt" style="color:${c};">${ev.title||'Event'}</div>`);
+      chipArr.push(`<div class="mtv-chip mtv-chip-evt" style="color:${safeCss(c,'#3B82F6')};">${esc(ev.title)||'Event'}</div>`);
     });
     dm.cycs.forEach(ci=>{
       chipArr.push(`<div class="mtv-chip mtv-chip-cyc">${ci.title}</div>`);
@@ -6617,15 +6636,15 @@ function renderWeekView(){
   const _nstM = _nstDate.getUTCMinutes();
   const now = _nstDate;
   const todayMid = new Date(Date.UTC(_nstDate.getUTCFullYear(), _nstDate.getUTCMonth(), _nstDate.getUTCDate()));
-  const dow = todayMid.getDay();
+  const dow = todayMid.getUTCDay();
   const weekStart = new Date(todayMid.getTime() - dow*msDay + weekViewOffset*7*msDay);
   const weekEnd = new Date(weekStart.getTime() + 6*msDay);
 
   const fmtDate = (d) => {
     const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    return `${months[d.getMonth()]} ${d.getDate()}`;
+    return `${months[d.getUTCMonth()]} ${d.getUTCDate()}`;
   };
-  const weekLabel = `${fmtDate(weekStart)} \u2013 ${fmtDate(weekEnd)}, ${weekEnd.getFullYear()}`;
+  const weekLabel = `${fmtDate(weekStart)} \u2013 ${fmtDate(weekEnd)}, ${weekEnd.getUTCFullYear()}`;
 
   const bsWS = adToBs(weekStart);
   const bsWE = adToBs(weekEnd);
@@ -6744,13 +6763,13 @@ function renderWeekView(){
     day.hols.forEach(hol=>{
       const name = lang==='ne'?hol.np:hol.en;
       const bsD=day.bs;
-      col += `<div class="wv-hol-banner" style="top:${bannerTop}px" onclick="openDay(${bsD.y},${bsD.m},${bsD.d})">🎉 ${name}</div>`;
+      col += `<div class="wv-hol-banner" style="top:${bannerTop}px" onclick="openDay(${bsD.y},${bsD.m},${bsD.d})">🎉 ${esc(name)}</div>`;
       bannerTop+=20;
     });
     day.obs.forEach(ob=>{
       const name = lang==='ne'?ob.np:ob.en;
       const bsD=day.bs;
-      col += `<div class="wv-obs-banner" style="top:${bannerTop}px" onclick="openDay(${bsD.y},${bsD.m},${bsD.d})">🎀 ${name}</div>`;
+      col += `<div class="wv-obs-banner" style="top:${bannerTop}px" onclick="openDay(${bsD.y},${bsD.m},${bsD.d})">🎀 ${esc(name)}</div>`;
       bannerTop+=18;
     });
 
@@ -6769,9 +6788,9 @@ function renderWeekView(){
         heightPx=20;
       }
       const bsD=day.bs;
-      col += `<div class="wv-event" style="top:${topPx}px;height:${heightPx}px;background:${c};color:#fff;" onclick="openDay(${bsD.y},${bsD.m},${bsD.d})">
-        <div class="wv-event-title">${ev.title}</div>
-        ${ev.startTime?`<div class="wv-event-time">${ev.startTime}${ev.endTime?' \u2013 '+ev.endTime:''}</div>`:''}
+      col += `<div class="wv-event" style="top:${topPx}px;height:${heightPx}px;background:${safeCss(c,'#3B82F6')};color:#fff;" onclick="openDay(${bsD.y},${bsD.m},${bsD.d})">
+        <div class="wv-event-title">${esc(ev.title)}</div>
+        ${ev.startTime?`<div class="wv-event-time">${esc(ev.startTime)}${ev.endTime?' \u2013 '+esc(ev.endTime):''}</div>`:''}
       </div>`;
     });
 
@@ -6998,14 +7017,14 @@ function renderDayView(){
         heightPx = Math.max(22,((eh+em/60)-(sh+sm/60))*CELL_H);
       }
       const topPx = dvTimeToTop(sh,sm);
-      timedEventsHtml += `<div class="dv-event" style="top:${topPx}px;height:${heightPx}px;background:${c};color:#fff;" onclick="openDay(${bs.y},${bs.m},${bs.d})">
-        <div class="dv-event-title">${ev.title}</div>
+      timedEventsHtml += `<div class="dv-event" style="top:${topPx}px;height:${heightPx}px;background:${safeCss(c,'#3B82F6')};color:#fff;" onclick="openDay(${bs.y},${bs.m},${bs.d})">
+        <div class="dv-event-title">${esc(ev.title)}</div>
         <div class="dv-event-time">${ev.startTime}${ev.endTime?' \u2013 '+ev.endTime:''}</div>
       </div>`;
     } else {
       allDayEventsHtml += `<div class="dv-allday-pill evt">
-        <div class="dv-allday-dot" style="background:${c};"></div>
-        ${ev.title}
+        <div class="dv-allday-dot" style="background:${safeCss(c,'#3B82F6')};"></div>
+        ${esc(ev.title)}
       </div>`;
       allDayCount++;
     }
@@ -7013,8 +7032,8 @@ function renderDayView(){
 
   // Holiday banners
   const holBannersHtml = [
-    ...hols.map(h=>`<span class="dv-hol-pill hol">🎉 ${lang==='ne'?h.np:h.en}</span>`),
-    ...obsList.map(o=>`<span class="dv-hol-pill obs">🎀 ${lang==='ne'?o.np:o.en}</span>`)
+    ...hols.map(h=>`<span class="dv-hol-pill hol">🎉 ${esc(lang==='ne'?h.np:h.en)}</span>`),
+    ...obsList.map(o=>`<span class="dv-hol-pill obs">🎀 ${esc(lang==='ne'?o.np:o.en)}</span>`)
   ].join('');
 
   const nowLineHtml = isToday ? `<div class="dv-now-line" id="dvNowLine" style="top:${nowTopPx}px;">
@@ -7092,8 +7111,10 @@ function wvCellTap(e, dayIdx, hour, min){
   // Don't trigger if an event/banner was clicked
   if(e.target.closest('.wv-event,.wv-hol-banner,.wv-obs-banner,.wv-nav-btn')) return;
   const msDay = 86400000;
-  const todayMid = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
-  const dow = todayMid.getDay();
+  // Use UTC noon anchor (same as renderWeekView) so adToBs always gets the right BS day
+  const nstNow = new Date(Date.now() + (5*60+45)*60*1000);
+  const todayMid = new Date(Date.UTC(nstNow.getUTCFullYear(), nstNow.getUTCMonth(), nstNow.getUTCDate()));
+  const dow = todayMid.getUTCDay();
   const weekStart = new Date(todayMid.getTime() - dow*msDay + weekViewOffset*7*msDay);
   const adMid = new Date(weekStart.getTime() + dayIdx*msDay);
   const bs = adToBs(adMid);
@@ -7691,11 +7712,11 @@ function openDay(bY,bM,bD){
       return `
       <div style="padding:10px 11px;background:var(--card);border-radius:14px;border:1px solid var(--panel-border);border-left:3px solid var(--tgon);">
         <div style="display:flex;gap:8px;align-items:center;">
-          <span style="font-size:13px;font-weight:800;color:var(--panel-text);">${ev.title}</span>
-          ${ev.startTime?`<span style="font-size:11px;font-weight:700;color:var(--panel-muted);margin-left:auto;">⏰ ${ev.startTime}${ev.endTime?' – '+ev.endTime:''}</span>`:''}
+          <span style="font-size:13px;font-weight:800;color:var(--panel-text);">${esc(ev.title)}</span>
+          ${ev.startTime?`<span style="font-size:11px;font-weight:700;color:var(--panel-muted);margin-left:auto;">⏰ ${esc(ev.startTime)}${ev.endTime?' – '+esc(ev.endTime):''}</span>`:''}
         </div>
         <div style="font-size:11px;color:var(--panel-muted);margin-top:4px;">${formatEventRange(ev)}</div>
-        ${ev.note?`<div style="font-size:11px;color:var(--panel-muted);margin-top:3px;">${ev.note}</div>`:''}
+        ${ev.note?`<div style="font-size:11px;color:var(--panel-muted);margin-top:3px;">${esc(ev.note)}</div>`:''}
         ${ev.repeatYearly?`<div style="margin-top:4px;"><span style="font-size:10px;background:rgba(99,102,241,.15);color:#6366f1;border-radius:6px;padding:1px 5px;font-weight:800;">🔁 Yearly</span></div>`:''}
       </div>`;
     }).join('');
@@ -7781,7 +7802,13 @@ function setLang(l){
 }
 
 // ══ SETTINGS ══
-function togSetting(k,btn){haptic('light');cfg[k]=!cfg[k];btn.classList.toggle('on',cfg[k]);render();}
+function togSetting(k,btn){
+  haptic('light');
+  cfg[k]=!cfg[k];
+  btn.classList.toggle('on',cfg[k]);
+  try{ localStorage.setItem('vikram_cfg',JSON.stringify(cfg)); }catch(e){}
+  render();
+}
 function setFD(v,btn){
   haptic('light');
   cfg.fd=v;
@@ -7824,7 +7851,25 @@ function doConvBS(){
 }
 
 // ══ ADD EVENT ══
-let userEvents=JSON.parse(localStorage.getItem('vikram_events')||'[]');
+
+// ── SECURITY: HTML-escape helper ──────────────────────────────────────────
+function esc(str){
+  return String(str==null?'':str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;')
+    .replace(/'/g,'&#39;');
+}
+// ── SECURITY: CSS-value sanitiser (allows safe colour values only) ──────────
+function safeCss(val, fallback){
+  // Allow hex colours, rgb/rgba, named colours that are strictly alphabetic
+  if(typeof val!=='string') return fallback||'';
+  if(/^(#[0-9a-fA-F]{3,8}|rgba?\([^)]{0,60}\)|[a-zA-Z]{1,30})$/.test(val.trim())) return val.trim();
+  return fallback||'';
+}
+
+let userEvents=(function(){try{return JSON.parse(localStorage.getItem('vikram_events')||'[]');}catch(e){return [];}})();
 let upTab='hol';
 
 // Sync birthday from profile into userEvents on startup —
@@ -7932,10 +7977,16 @@ function eventMatchesDate(ev, y, m, d){
     const weeksDiff = Math.floor(diffDays / 7);
     if(weeksDiff < 0 || weeksDiff % interval !== 0) return false;
     if(r.endType === 'count'){
-      // count occurrences up to this point
+      // Count individual occurrences up to and including dayMid
       let count = 0;
-      for(let w = 0; w * interval * 7 <= diffDays; w++){
-        count += weekdays.length;
+      const msD = 86400000;
+      for(let w = 0; w * interval * 7 * msD <= dayMid - startMid; w++){
+        const wkStart = new Date(startMid.getTime() + w * interval * 7 * msD);
+        weekdays.forEach(wd=>{
+          const dayDiff2 = ((wd - wkStart.getDay()) + 7) % 7;
+          const occD = new Date(wkStart.getTime() + dayDiff2 * msD);
+          if(occD >= startMid && occD <= dayMid) count++;
+        });
       }
       if(count > (r.endCount || 1)) return false;
     }
@@ -7945,7 +7996,10 @@ function eventMatchesDate(ev, y, m, d){
   if(r.freq === 'monthly'){
     // Match if dayMid falls in any occurrence month (same day-of-month as event start)
     const startDOM = startMid.getDate();
-    if(dayMid.getDate() < startDOM || dayMid.getDate() > startDOM + spanDays) return false;
+    // Clamp startDOM to actual days in target month to handle e.g. event on day 31 in a 30-day month
+    const daysInDayMonth = new Date(dayMid.getFullYear(), dayMid.getMonth() + 1, 0).getDate();
+    const effectiveDOM = Math.min(startDOM, daysInDayMonth);
+    if(dayMid.getDate() < effectiveDOM || dayMid.getDate() > effectiveDOM + spanDays) return false;
     // months elapsed
     const monthsElapsed = (dayMid.getFullYear() - startMid.getFullYear()) * 12
       + (dayMid.getMonth() - startMid.getMonth());
@@ -7954,7 +8008,11 @@ function eventMatchesDate(ev, y, m, d){
       const occN = Math.floor(monthsElapsed / interval);
       if(occN >= (r.endCount || 1)) return false;
     }
-    const occStart = new Date(startMid.getFullYear(), startMid.getMonth() + monthsElapsed, startMid.getDate());
+    const tgtYear2  = startMid.getFullYear();
+    const tgtMonth2 = startMid.getMonth() + monthsElapsed;
+    const daysInMonth2 = new Date(tgtYear2, tgtMonth2 + 1, 0).getDate();
+    const clampedDay2  = Math.min(startMid.getDate(), daysInMonth2);
+    const occStart = new Date(tgtYear2, tgtMonth2, clampedDay2);
     return occurrenceContains(occStart);
   }
 
@@ -8147,14 +8205,14 @@ function renderNotifHistory(){
     return;
   }
   wrap.innerHTML=list.map(n=>{
-    const icoMatch=(n.title||'').match(/^(\p{Emoji_Presentation}|\p{Extended_Pictographic})/u);
+    const icoMatch=(String(n.title||'')).match(/^(\p{Emoji_Presentation}|\p{Extended_Pictographic})/u);
     const ico=icoMatch?icoMatch[0]:'🔔';
-    const titleText=(n.title||'').replace(/^(\p{Emoji_Presentation}|\p{Extended_Pictographic})\s*/u,'');
+    const titleText=String(n.title||'').replace(/^(\p{Emoji_Presentation}|\p{Extended_Pictographic})\s*/u,'');
     return `<div class="notif-hist-item">
       <div class="notif-hist-ico">${ico}</div>
       <div class="notif-hist-body">
-        <div class="notif-hist-title">${titleText}</div>
-        ${n.body?`<div class="notif-hist-sub">${n.body}</div>`:''}
+        <div class="notif-hist-title">${esc(titleText)}</div>
+        ${n.body?`<div class="notif-hist-sub">${esc(n.body)}</div>`:''}
         <div class="notif-hist-time">${relTimeShort(n.ts)}</div>
       </div>
     </div>`;
@@ -8434,6 +8492,7 @@ async function saveEv(){
   const endBsY=+document.getElementById('evEndBsY').value;
   const endBsM=+document.getElementById('evEndBsM').value;
   const endBsD=+document.getElementById('evEndBsD').value;
+  if(!bsY||!bsM||!bsD||!endBsY||!endBsM||!endBsD){alert('Please select a valid date.');return;}
   const note=document.getElementById('evN').value.trim();
   const adDate=bsToAd(bsY,bsM,bsD);
   const endAdDate=bsToAd(endBsY,endBsM,endBsD);
@@ -8768,7 +8827,7 @@ function renderMonthView(){
     const extra = allChips.length - MAX_CHIPS;
     visible.forEach(ch=>{
       const truncated = ch.label.length > 9 ? ch.label.slice(0,8)+'…' : ch.label;
-      chips += `<div class="mv-chip mv-chip-${ch.type}">${truncated}</div>`;
+      chips += `<div class="mv-chip mv-chip-${ch.type}">${esc(truncated)}</div>`;
     });
     if(extra > 0) chips += `<div class="mv-chip mv-chip-more">+${extra}</div>`;
 
@@ -8866,13 +8925,13 @@ function mvItemHtml(it,y,m){
       <div class="up-item-inner">
         <div class="up-icon evt" style="color:${c};">📌</div>
         <div class="up-info">
-          <div class="up-name">${ev.title}</div>
-          <div class="up-tag-row"><span class="up-sub-pill">${rangeStr}</span>${ev.startTime?`<span class="up-sub-pill">⏰ ${ev.startTime}${ev.endTime?' – '+ev.endTime:''}</span>`:''}</div>
-          ${ev.note?`<div style="font-size:11px;color:var(--sheet-muted);font-weight:600;margin-top:3px;">${ev.note}</div>`:''}
+          <div class="up-name">${esc(ev.title)}</div>
+          <div class="up-tag-row"><span class="up-sub-pill">${rangeStr}</span>${ev.startTime?`<span class="up-sub-pill">⏰ ${esc(ev.startTime)}${ev.endTime?' – '+esc(ev.endTime):''}</span>`:''}</div>
+          ${ev.note?`<div style="font-size:11px;color:var(--sheet-muted);font-weight:600;margin-top:3px;">${esc(ev.note)}</div>`:''}
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
           <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
-          <span class="up-remove" data-remove-idx="${realIdx}" data-remove-adms="${ev.adMs}" data-remove-title="${ev.title}" onclick="(function(e){e.stopPropagation();upRemoveEv(e.currentTarget);})(event)">✕</span>
+          <span class="up-remove" data-remove-idx="${realIdx}" data-remove-adms="${ev.adMs}" data-remove-title="${esc(ev.title)}" onclick="(function(e){e.stopPropagation();upRemoveEv(e.currentTarget);})(event)">✕</span>
         </div>
       </div></div>`;
   }
@@ -8883,8 +8942,8 @@ function mvItemHtml(it,y,m){
       <div class="up-item-inner">
         <div class="up-icon cyc">🌸</div>
         <div class="up-info">
-          <div class="up-name">${ci.title}</div>
-          <div class="up-tag-row"><span class="up-tag cyc">Cycle</span>${ci.sub?`<span class="up-sub-pill">${ci.sub}</span>`:''}</div>
+          <div class="up-name">${esc(ci.title)}</div>
+          <div class="up-tag-row"><span class="up-tag cyc">Cycle</span>${ci.sub?`<span class="up-sub-pill">${esc(ci.sub)}</span>`:''}</div>
         </div>
         <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
       </div></div>`;
@@ -9047,7 +9106,12 @@ function renderUpcoming(){
 
     if(r.freq === 'monthly'){
       for(let mo = 0; mo < maxOcc; mo++){
-        const oStart = new Date(startMid.getFullYear(), startMid.getMonth() + mo * interval, startMid.getDate());
+        const tgtYear  = startMid.getFullYear();
+        const tgtMonth = startMid.getMonth() + mo * interval;
+        // Clamp day to last day of the target month to avoid Date overflow
+        const daysInTgtMonth = new Date(tgtYear, tgtMonth + 1, 0).getDate();
+        const clampedDay = Math.min(startMid.getDate(), daysInTgtMonth);
+        const oStart = new Date(tgtYear, tgtMonth, clampedDay);
         if(oStart > windowEnd) break;
         if(!withinEndCond(mo, oStart)) break;
         const oEnd = new Date(oStart.getTime() + spanDays * msDay);
@@ -9149,7 +9213,7 @@ function renderUpcoming(){
         html+=`<div class="up-item" onclick="openDay(${it.ky},${it.km},${it.kd})">
           <div class="up-icon hol">${meta.icon}</div>
           <div class="up-info">
-            <div class="up-name ne">${holName}</div>
+            <div class="up-name ne">${esc(holName)}</div>
             <div class="up-tag-row"><span class="up-tag hol">${meta.tagLabel}</span></div>
           </div>
           <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
@@ -9159,7 +9223,7 @@ function renderUpcoming(){
         html+=`<div class="up-item" onclick="openDay(${it.ky},${it.km},${it.kd})">
           <div class="up-icon evt">🎀</div>
           <div class="up-info">
-            <div class="up-name ne">${obsName}</div>
+            <div class="up-name ne">${esc(obsName)}</div>
             <div class="up-tag-row"><span class="up-tag evt">Observance</span></div>
           </div>
           <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
@@ -9169,7 +9233,7 @@ function renderUpcoming(){
         html+=`<div class="up-item" onclick="openDay(${it.ky},${it.km},${it.kd})">
           <div class="up-icon cyc">${meta.icon}</div>
           <div class="up-info">
-            <div class="up-name">${it.title}</div>
+            <div class="up-name">${esc(it.title)}</div>
             <div class="up-tag-row"><span class="up-tag cyc">${meta.tagLabel}</span></div>
           </div>
           <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
@@ -9181,16 +9245,16 @@ function renderUpcoming(){
           <div class="up-item-body" onclick="openDay(${it.ky},${it.km},${it.kd})">
             <div class="up-icon evt">📌</div>
             <div class="up-info">
-              <div class="up-name">${ev.title}</div>
+              <div class="up-name">${esc(ev.title)}</div>
               <div class="up-tag-row">
                 <span class="up-sub-pill">${it.rangeText||''}</span>
                 ${(ev.recur||ev.repeatYearly) ? `<span style="font-size:9px;background:rgba(99,102,241,.13);color:#6366f1;border-radius:5px;padding:1px 5px;font-weight:800;">🔁 ${recurLabel(ev)}</span>` : ''}
               </div>
-              ${ev.note?`<div style="font-size:11px;color:var(--dsub);margin-top:2px;">${ev.note}</div>`:''}
+              ${ev.note?`<div style="font-size:11px;color:var(--dsub);margin-top:2px;">${esc(ev.note)}</div>`:''}
             </div>
             <div class="up-chev"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
           </div>
-          <button class="up-remove-btn" data-remove-idx="${realIdx}" data-remove-adms="${ev.adMs}" data-remove-title="${ev.title}" onclick="upRemoveEv(this)">✕</button>
+          <button class="up-remove-btn" data-remove-idx="${realIdx}" data-remove-adms="${ev.adMs}" data-remove-title="${esc(ev.title)}" onclick="upRemoveEv(this)">✕</button>
         </div>`;
       }
     });
@@ -9341,10 +9405,10 @@ function renderSchedule(){
         html += `<div class="sched-item" onclick="_schedItemClick('${dk}',${items.indexOf(it)})">
           <div class="sched-item-color" style="background:${it.color};"></div>
           <div class="sched-item-body">
-            <div class="sched-item-title">${it.title}</div>
-            <div class="sched-item-sub">${it.sub}</div>
+            <div class="sched-item-title">${esc(it.title)}</div>
+            <div class="sched-item-sub">${esc(it.sub)}</div>
           </div>
-          <span class="sched-item-tag ${it.tagCls}">${it.tag}</span>
+          <span class="sched-item-tag ${it.tagCls}">${esc(it.tag)}</span>
         </div>`;
       });
     }
@@ -9447,7 +9511,7 @@ function renderSelectedDay(){
       ${!h&&!obs&&!dayEvts.length?`<div class="sel-empty">No holidays or events on this day</div>`:''}
       ${h&&cfg.holn?`<div class="sel-row"><span class="sel-dot" style="background:var(--hol);"></span><span>${lang==='ne'?'सार्वजनिक बिदा':'Public holiday'} · ${lang==='ne'?h.np:h.en}</span></div>`:''}
       ${obs?`<div class="sel-row"><span class="sel-dot" style="background:var(--dot-evt);"></span><span>${lang==='ne'?'पर्व / अनुष्ठान':'Observance'} · ${lang==='ne'?obs.np:obs.en}</span></div>`:''}
-      ${dayEvts.map(ev=>{const c=({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'})[ev.color]||'#3B82F6';return`<div class="sel-row"><span class="sel-dot" style="background:${c};"></span><span>${ev.title}${ev.note?' · '+ev.note:''}${ev.repeatYearly?' <span style="font-size:10px;background:rgba(99,102,241,.15);color:#6366f1;border-radius:6px;padding:1px 5px;font-weight:800;">🔁 Yearly</span>':''}<span style="display:block;font-size:11px;color:var(--sel-muted);font-weight:700;margin-top:2px;">${formatEventRange(ev)}</span></span></div>`;}).join('')}
+      ${dayEvts.map(ev=>{const c=({'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'})[ev.color]||'#3B82F6';return`<div class="sel-row"><span class="sel-dot" style="background:${safeCss(c,'#3B82F6')};"></span><span>${esc(ev.title)}${ev.note?' · '+esc(ev.note):''}${ev.repeatYearly?' <span style="font-size:10px;background:rgba(99,102,241,.15);color:#6366f1;border-radius:6px;padding:1px 5px;font-weight:800;">🔁 Yearly</span>':''}<span style="display:block;font-size:11px;color:var(--sel-muted);font-weight:700;margin-top:2px;">${formatEventRange(ev)}</span></span></div>`;}).join('')}
     </div>
   </div>`;
 }
@@ -9456,8 +9520,13 @@ function upRemoveEv(el){
   let i = parseInt(el.getAttribute('data-remove-idx'), 10);
   if(isNaN(i) || i < 0 || i >= userEvents.length){
     const adMs = parseInt(el.getAttribute('data-remove-adms'), 10);
-    const title = el.getAttribute('data-remove-title') || '';
-    i = userEvents.findIndex(e => e.adMs === adMs && e.title === title);
+    // Attribute stores HTML-encoded title (via esc()); decode before comparing to raw ev.title
+    const rawAttr = el.getAttribute('data-remove-title') || '';
+    const decodedTitle = rawAttr
+      .replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'");
+    i = userEvents.findIndex(e => e.adMs === adMs && e.title === decodedTitle);
+    // Fallback: match by adMs alone if title comparison still fails
+    if(i < 0) i = userEvents.findIndex(e => e.adMs === adMs);
   }
   if(i < 0 || i >= userEvents.length) return;
   removeEv(i);
@@ -9475,8 +9544,6 @@ function removeEv(i){
 
 // ══ PREVIOUS 29 DAYS ══
 function renderPrevious(){
-  renderSelectedDay();
-  return;
   const todayMid=new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
   const windowStart=new Date(todayMid.getTime()-29*86400000);
   const mArr=lang==='ne'?MNE:MEN;
@@ -9534,7 +9601,7 @@ function renderPrevious(){
           <div class="up-mon">${mName.slice(0,3).toUpperCase()}</div>
         </div>
         <div class="up-info">
-          <div class="up-name ne">${holName}</div>
+          <div class="up-name ne">${esc(holName)}</div>
           <div class="up-sub">🇳🇵 Holiday · ${adStr}</div>
         </div>
         <span class="up-badge bdg-p" style="background:var(--tgbg);color:var(--dsub);">${agoLabel}</span>
@@ -9548,12 +9615,12 @@ function renderPrevious(){
           <div class="up-mon">${mName.slice(0,3).toUpperCase()}</div>
         </div>
         <div class="up-info">
-          <div class="up-name">${ev.title}</div>
-          <div class="up-sub">📌 Event · ${adStr}${ev.note?' · '+ev.note:''}</div>
+          <div class="up-name">${esc(ev.title)}</div>
+          <div class="up-sub">📌 Event · ${adStr}${ev.note?' · '+esc(ev.note):''}</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;">
           <span class="up-badge" style="background:var(--tgbg);color:var(--dsub);">${agoLabel}</span>
-          <span style="font-size:10px;color:var(--dsub);cursor:pointer;font-weight:700;" data-remove-idx="${realIdx}" data-remove-adms="${ev.adMs}" data-remove-title="${ev.title}" onclick="(function(e){e.stopPropagation();upRemoveEv(e.currentTarget);})(event)">✕ Remove</span>
+          <span style="font-size:10px;color:var(--dsub);cursor:pointer;font-weight:700;" data-remove-idx="${realIdx}" data-remove-adms="${ev.adMs}" data-remove-title="${esc(ev.title)}" onclick="(function(e){e.stopPropagation();upRemoveEv(e.currentTarget);})(event)">✕ Remove</span>
         </div>
       </div>`;
     }
@@ -9616,6 +9683,10 @@ let gcalClientId = localStorage.getItem('vikram_gcal_cid')  || '';
 
 // ── ICS export ──────────────────────────────────────────────────────────────
 function padZ(n){return String(n).padStart(2,'0');}
+function icsEscape(str){
+  // RFC 5545 §3.3.11: escape \, ;, , and newlines in text values
+  return String(str||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n').replace(/\r/g,'');
+}
 function adToIcsDate(adMs){
   const d=new Date(adMs);
   return `${d.getFullYear()}${padZ(d.getMonth()+1)}${padZ(d.getDate())}`;
@@ -9638,7 +9709,7 @@ function generateICS(){
     lines.push('BEGIN:VEVENT',
       `UID:vikram-hol-${key}@vikram.app`,`DTSTAMP:${stamp}`,
       `DTSTART;VALUE=DATE:${ds}`,`DTEND;VALUE=DATE:${de}`,
-      `SUMMARY:🇳🇵 ${h.en}`,`DESCRIPTION:${h.np}`,
+      `SUMMARY:🇳🇵 ${icsEscape(h.en)}`,`DESCRIPTION:${icsEscape(h.np)}`,
       'CATEGORIES:HOLIDAY','END:VEVENT');
   });
   // Add user events
@@ -9650,8 +9721,8 @@ function generateICS(){
     lines.push('BEGIN:VEVENT',
       `UID:vikram-evt-${ev.adMs}-${i}@vikram.app`,`DTSTAMP:${stamp}`,
       `DTSTART;VALUE=DATE:${ds}`,`DTEND;VALUE=DATE:${de}`,
-      `SUMMARY:📌 ${ev.title}`,
-      desc?`DESCRIPTION:${desc}`:'',
+      `SUMMARY:📌 ${icsEscape(ev.title)}`,
+      desc?`DESCRIPTION:${icsEscape(desc)}`:'',
       'END:VEVENT');
   });
   lines.push('END:VCALENDAR');
@@ -9662,7 +9733,7 @@ function exportICS(){
   const blob=new Blob([content],{type:'text/calendar;charset=utf-8'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url; a.download='vikram-calendar-2083.ics'; a.click();
+  a.href=url; a.download=`vikram-calendar-${vY}.ics`; a.click();
   URL.revokeObjectURL(url);
   renderGcalCard();
 }
@@ -9761,7 +9832,7 @@ function renderGcalCard(){
     <div class="gcal-block-sub">Download all ${evCount} event${evCount!==1?'s':''} + ${holCount} holidays as a standard .ics file. Import directly into Google Calendar, Apple Calendar, or Outlook.</div>
     <button class="gcal-btn primary" onclick="exportICS()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Download vikram-calendar-2083.ics
+      Download vikram-calendar-${vY}.ics
     </button>
   </div>
 
@@ -10159,7 +10230,7 @@ function cyResetConfirmYes(){
       <div class="pair-code-box">
         <span class="pair-code-lbl">Your code</span>
         <span class="pair-code-val" id="pairMyCode">${code}</span>
-        <button class="pair-copy-btn" onclick="pairCopyCode('${code}')" title="Copy">
+        <button class="pair-copy-btn" onclick="pairCopyCode('${esc(code)}')" title="Copy">
           <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         </button>
       </div>
@@ -10711,6 +10782,14 @@ const savedLang=localStorage.getItem('vikram_lang');
 if(savedLang==='ne') setLang('ne');
 
 
+// Sync settings toggle buttons to loaded cfg state
+(function syncCfgButtons(){
+  const map={greg:'tgG',hol:'tgH',holn:'tgHN'};
+  Object.entries(map).forEach(([k,id])=>{
+    const el=document.getElementById(id);
+    if(el) el.classList.toggle('on',!!cfg[k]);
+  });
+})();
 render();
 updateDayOpts();
 const _ric=window.requestIdleCallback||((cb)=>setTimeout(cb,50));
@@ -10720,7 +10799,7 @@ _ric(()=>{
   updateNotifCard();
   updateNotifBadges();
   checkIncomingSharedProfile();
-});;
+});
 setTimeout(checkEventReminders, 2500);
 
 // ══ PWA — INSTALL BANNER ══
@@ -11202,6 +11281,16 @@ const ECHO_STORAGE_KEY = 'vikram_echo_sealed';
 window.renderEchoSheet = function(targetEl) {
   const body = targetEl || document.getElementById('echoBody');
   if (!body) return;
+
+  // Load Cormorant Garamond font if not already injected
+  if (!document.getElementById('echoFonts')) {
+    const lk = document.createElement('link');
+    lk.id = 'echoFonts';
+    lk.rel = 'stylesheet';
+    lk.href = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap';
+    document.head.appendChild(lk);
+  }
+
   body.innerHTML = '';
 
   let sealed = null;
@@ -11361,10 +11450,10 @@ function renderEchoSealed(container, data) {
   function getTriggerText() {
     if (data.triggerType==='date') return `on ${new Date(data.trigger.date+'T12:00:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}`;
     if (data.triggerType==='age') return `when you turn ${data.trigger.age}`;
-    if (data.triggerType==='event') return data.trigger.event.toLowerCase();
+    if (data.triggerType==='event') return esc(data.trigger.event.toLowerCase());
     return 'at the moment you set';
   }
-  const safeAnswer = (data.answer||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const safeAnswer = esc(data.answer||'');
   container.innerHTML = `
     <div class="echo-phase">
       ${echoMirrorSVG(44,false)}
@@ -11672,7 +11761,7 @@ function renderPomodoroTodos(){
       <div class="pomo-todo-check">
         <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
       </div>
-      <span class="pomo-todo-text">${t.text.replace(/</g,'&lt;')}</span>
+      <span class="pomo-todo-text">${esc(t.text)}</span>
       <button class="pomo-todo-del" onclick="event.stopPropagation();pomoDeleteTodo(${t.id})" title="Remove">×</button>
     </div>`).join('');
 }
@@ -12242,7 +12331,7 @@ function switchTab(tab) {
     if(!name){ document.getElementById('dcNameInput').focus(); return; }
     haptic('success');
     const dateVal = document.getElementById('dcDateInput').value;
-    const startTs = dateVal ? new Date(dateVal).getTime() : Date.now();
+    const startTs = dateVal ? (() => { const [y,m,d] = dateVal.split('-').map(Number); return new Date(y, m-1, d).getTime(); })() : Date.now();
     const arr = dcLoad();
     arr.push({ id: Date.now(), name, type: _dcType, startTs, lastCheckin: null });
     dcSaveAll(arr);
@@ -12421,7 +12510,7 @@ function switchTab(tab) {
         + '</div>'
         + '<div class="dc-card-main">'
         +   '<div class="dc-card-header">'
-        +     '<div class="dc-card-name">' + emoji + ' ' + c.name + '</div>'
+        +     '<div class="dc-card-name">' + emoji + ' ' + esc(c.name) + '</div>'
         +     '<div class="dc-card-type ' + c.type + '">' + typeLabel + '</div>'
         +   '</div>'
         +   '<div class="dc-card-sub">' + (days===0?'Started today':'Next milestone: <b>'+ms.target+' days</b>') + ' \u00b7 Since ' + startStr + '</div>'
@@ -13300,7 +13389,7 @@ function switchTab(tab) {
 window._ntActiveSeg = 'notes';
 
 window.ntSwitchSeg = function(seg, skipLoad){
-  window._ntActiveSeg = 'notes';
+  window._ntActiveSeg = seg || 'notes';
   if(typeof window.notesLoad === 'function') window.notesLoad();
 };
 
@@ -13632,8 +13721,8 @@ window.searchRun = function() {
     <div class="search-result-item" onclick="searchGoTo(${h.ky},${h.km},${h.kd})">
       <div class="sri-dot ${h.type}"></div>
       <div class="sri-main">
-        <div class="sri-name">${h.name}</div>
-        <div class="sri-sub">${h.sub}</div>
+        <div class="sri-name">${esc(h.name)}</div>
+        <div class="sri-sub">${esc(h.sub)}</div>
       </div>
       <span class="sri-badge ${h.type}">${h.type === 'hol' ? 'HOLIDAY' : 'EVENT'}</span>
     </div>
@@ -13709,7 +13798,7 @@ window.openShareModal = function() {
       ${adStr}
     </div>
     ${tithi ? `<div class="share-card-tithi">🌙 ${tithi}</div>` : ''}
-    ${items.length ? `<div class="share-card-events">${items.map(it => `<div class="share-card-event">${it.icon} ${it.name}</div>`).join('')}</div>` : ''}
+    ${items.length ? `<div class="share-card-events">${items.map(it => `<div class="share-card-event">${it.icon} ${esc(it.name)}</div>`).join('')}</div>` : ''}
     <div class="share-card-footer">
       <span class="share-card-logo">VIKRAM CALENDAR</span>
     </div>
@@ -13823,11 +13912,24 @@ function getShareableEvents(){
 
 function encodeShareEvents(events){
   if(!events||!events.length) return '';
-  try{ return btoa(unescape(encodeURIComponent(JSON.stringify(events)))); }catch(e){ return ''; }
+  try{
+    const json=JSON.stringify(events);
+    const bytes=new TextEncoder().encode(json);
+    let bin='';
+    bytes.forEach(b=>{ bin+=String.fromCharCode(b); });
+    return btoa(bin);
+  }catch(e){ return ''; }
 }
 function decodeShareEvents(str){
   if(!str) return [];
-  try{ const v=JSON.parse(decodeURIComponent(escape(atob(str)))); return Array.isArray(v)?v:[]; }catch(e){ return []; }
+  try{
+    const bin=atob(str);
+    const bytes=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    const json=new TextDecoder().decode(bytes);
+    const v=JSON.parse(json);
+    return Array.isArray(v)?v:[];
+  }catch(e){ return []; }
 }
 
 // ── Receiving side: show a read-only preview when opening someone else's share link ──
@@ -13855,8 +13957,8 @@ function checkIncomingSharedProfile(){
       const mArr=lang==='ne'?MNE:MEN;
       const colorMap={'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'};
       list.innerHTML=events.map(e=>`<div class="pshare-evt">
-        <span class="pshare-evt-dot" style="background:${colorMap[e.c]||'#3B82F6'};"></span>
-        <span class="pshare-evt-name">${e.t}</span>
+        <span class="pshare-evt-dot" style="background:${safeCss(colorMap[e.c],'#3B82F6')};"></span>
+        <span class="pshare-evt-name">${esc(e.t)}</span>
         <span class="pshare-evt-date">${mArr[(e.m||1)-1]} ${ns(e.d)}</span>
       </div>`).join('');
     } else if(sec){
@@ -13919,8 +14021,8 @@ function renderProfileShareEvents(events){
   const mArr=lang==='ne'?MNE:MEN;
   const colorMap={'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'};
   wrap.innerHTML=upcoming.map(({ev,i})=>`<div class="pshare-evt" style="gap:7px;padding:8px 10px;">
-    <span class="pshare-evt-dot" style="background:${colorMap[ev.color]||'#3B82F6'};flex-shrink:0;"></span>
-    <span class="pshare-evt-name" style="flex:1;font-size:12px;">${ev.title}</span>
+    <span class="pshare-evt-dot" style="background:${safeCss(colorMap[ev.color],'#3B82F6')};flex-shrink:0;"></span>
+    <span class="pshare-evt-name" style="flex:1;font-size:12px;">${esc(ev.title)}</span>
     <span class="pshare-evt-date" style="font-size:10px;">${mArr[ev.bsM-1]} ${ns(ev.bsD)}</span>
     ${ev.isBirthday ? `<span style="font-size:9.5px;font-weight:700;color:var(--dsub);flex-shrink:0;">via profile</span>` : `
     <button onclick="profileEditEvent(${i})" style="padding:3px 8px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--dsub);font-size:10px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;flex-shrink:0;line-height:1.4;">Edit</button>
@@ -14349,7 +14451,7 @@ window.openHelpFeedback = function(e) {
   setTimeout(() => {
     window.removeEventListener('blur', onBlur);
     if (!leftPage && !document.hidden) {
-      window.open(gmailWebUrl, '_blank');
+      window.open(gmailWebUrl, '_blank', 'noopener,noreferrer');
     }
   }, 600);
 };
