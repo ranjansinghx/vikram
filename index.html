@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light" data-lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://www.googleapis.com; frame-src 'none'; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://www.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebasedatabase.app wss://*.firebasedatabase.app; frame-src 'none'; object-src 'none'; base-uri 'self';">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="X-Frame-Options" content="DENY">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
@@ -10144,16 +10144,117 @@ function cyResetConfirmYes(){
   renderCycleSheet();
 }
 
-// ══ PAIR & SYNC WITH PARTNER ══════════════════════════════════════════════════
+// ══ PAIR & SYNC WITH PARTNER — Firebase Realtime Database ════════════════════
 (function(){
   const PAIR_KEY = 'vikram_pair_v1';
+  // ── Firebase refs ─────────────────────────────────────────────────────────
+  let _db = null;
+  let _cycleRef = null;   // /cycles/<myCode>
+  let _msgsRef  = null;   // /moments/<roomKey>
+  let _msgsListener = null;
+  let _partnerCycleListener = null;
 
-  // ── helpers ────────────────────────────────────────────────────────────────
+  function db(){
+    if(_db) return _db;
+    try{ _db = firebase.database(); return _db; }
+    catch(e){ return null; }
+  }
+
+  function fbReady(){
+    try{ return !!(window.firebase && firebase.apps && firebase.apps.length); }
+    catch(e){ return false; }
+  }
+
+  // Canonical room key for two codes (order-independent)
+  function roomKey(a, b){
+    return [a.replace('-',''), b.replace('-','')].sort().join('_');
+  }
+
+  // ── local helpers ──────────────────────────────────────────────────────────
   function pairLoad(){ try{ return JSON.parse(localStorage.getItem(PAIR_KEY)||'{}'); }catch(e){ return {}; } }
   function pairSave(d){ try{ localStorage.setItem(PAIR_KEY, JSON.stringify(d)); }catch(e){} }
 
   function escapeHtml(str){
     return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Firebase: push MY cycle data to /cycles/<myCode> ──────────────────────
+  function fbPushMyCycle(){
+    if(!fbReady()) return;
+    const d = pairLoad();
+    if(!d.myCode) return;
+    const cd = (typeof cycleData !== 'undefined') ? cycleData : {};
+    const payload = {
+      lastPeriodStart: cd.lastPeriodStart || null,
+      cycleLength:     cd.cycleLength     || 28,
+      periodLength:    cd.periodLength    || 5,
+      updatedAt:       Date.now()
+    };
+    try{ db().ref('cycles/'+d.myCode).set(payload); }catch(e){}
+  }
+
+  // ── Firebase: subscribe to partner's cycle ─────────────────────────────────
+  function fbSubscribePartnerCycle(partnerCode){
+    if(!fbReady() || !partnerCode) return;
+    // Detach previous listener if any
+    if(_partnerCycleListener && _cycleRef){
+      try{ _cycleRef.off('value', _partnerCycleListener); }catch(e){}
+    }
+    _cycleRef = db().ref('cycles/'+partnerCode);
+    _partnerCycleListener = _cycleRef.on('value', snap => {
+      const val = snap.val();
+      if(!val) return;
+      const d = pairLoad();
+      d.partnerCycleData = {
+        lastPeriodStart: val.lastPeriodStart || null,
+        cycleLength:     val.cycleLength     || 28,
+        periodLength:    val.periodLength    || 5,
+      };
+      d.partnerCycleUpdatedAt = val.updatedAt || Date.now();
+      pairSave(d);
+      // Re-render cycle section if visible
+      const wrap = document.getElementById('pairSyncSection');
+      if(wrap && wrap.closest('.sheet.open')) renderPairSection();
+    }, e => console.warn('[Vikram] partner cycle listen error:', e));
+  }
+
+  // ── Firebase: subscribe to messages ───────────────────────────────────────
+  function fbSubscribeMsgs(myCode, partnerCode){
+    if(!fbReady()) return;
+    if(_msgsListener && _msgsRef){
+      try{ _msgsRef.off('value', _msgsListener); }catch(e){}
+    }
+    _msgsRef = db().ref('moments/'+roomKey(myCode, partnerCode));
+    _msgsListener = _msgsRef.on('value', snap => {
+      const val = snap.val() || {};
+      // Flatten object of objects → sorted array
+      const msgs = Object.values(val).sort((a,b) => a.ts - b.ts);
+      try{ localStorage.setItem('vikram_pair_moments', JSON.stringify(msgs)); }catch(e){}
+      renderMoments();
+    }, e => console.warn('[Vikram] moments listen error:', e));
+  }
+
+  // ── Firebase: send a message ───────────────────────────────────────────────
+  function fbSendMsg(myCode, partnerCode, text){
+    if(!fbReady()) return false;
+    try{
+      db().ref('moments/'+roomKey(myCode, partnerCode)).push({
+        from: myCode.replace('-',''),
+        text,
+        ts: Date.now()
+      });
+      return true;
+    }catch(e){ return false; }
+  }
+
+  // ── Firebase: detach all listeners ────────────────────────────────────────
+  function fbDetach(){
+    try{
+      if(_msgsListener && _msgsRef) _msgsRef.off('value', _msgsListener);
+      if(_partnerCycleListener && _cycleRef) _cycleRef.off('value', _partnerCycleListener);
+    }catch(e){}
+    _msgsListener = null; _partnerCycleListener = null;
+    _msgsRef = null; _cycleRef = null;
   }
 
   function genCode(){
@@ -10168,6 +10269,16 @@ function cyResetConfirmYes(){
     if(!d.myCode){ d.myCode=genCode(); pairSave(d); }
     return d.myCode;
   }
+
+  // Auto-subscribe on load if already paired
+  (function initOnLoad(){
+    const d = pairLoad();
+    if(d.partnerCode && d.myCode){
+      fbPushMyCycle();
+      fbSubscribePartnerCycle(d.partnerCode);
+      fbSubscribeMsgs(d.myCode, d.partnerCode);
+    }
+  })();
 
   // Derive "partner cycle" info from stored partner data
   function partnerPhaseInfo(p){
@@ -10200,33 +10311,35 @@ function cyResetConfirmYes(){
     if(!wrap) return;
     const d = pairLoad();
     const paired = !!(d.partnerCode && d.partnerName);
+    const fbOk = fbReady();
 
     wrap.innerHTML = `
     <div class="pair-card">
       <div class="pair-card-head">
         <div class="pair-icon-wrap">💞</div>
         <div class="pair-head-text">
-          <div class="pair-head-title">Pair & Sync with Partner</div>
-          <div class="pair-head-sub">${paired ? 'Connected · sharing cycle info' : 'Connect with your partner\'s cycle'}</div>
+          <div class="pair-head-title">Pair &amp; Sync with Partner</div>
+          <div class="pair-head-sub">${paired ? 'Connected · live cycle sync' : fbOk ? 'Real-time sync ready' : 'Connect with your partner\'s cycle'}</div>
         </div>
-        <div class="pair-status-dot ${paired?'':'offline'}"></div>
+        <div class="pair-status-dot ${paired && fbOk ? '' : 'offline'}"></div>
       </div>
-      ${paired ? renderPaired(d) : renderUnpaired(d)}
+      ${paired ? renderPaired(d, fbOk) : renderUnpaired(d, fbOk)}
     </div>`;
 
-    // Populate moment messages after DOM is ready
     if(paired && typeof window.renderPairMoments === 'function'){
       setTimeout(window.renderPairMoments, 0);
     }
   };
 
-  function renderUnpaired(d){
+  function renderUnpaired(d, fbOk){
     const code = myCode();
+    const fbNote = fbOk ? '' : `<div style="font-size:11px;font-weight:700;color:#f59e0b;text-align:center;margin-bottom:10px;padding:8px 12px;background:rgba(245,158,11,.1);border-radius:10px;border:1px solid rgba(245,158,11,.25);">⚙️ Firebase not configured — see setup guide below</div>`;
     return `
     <div class="pair-unpaired">
       <div class="pair-unpaired-emoji">💞</div>
       <div class="pair-unpaired-title">Sync Cycles Together</div>
-      <div class="pair-unpaired-sub">Share your code with your partner, or enter theirs below to stay in sync — see their phase, fertile window &amp; next period.</div>
+      <div class="pair-unpaired-sub">Share your code with your partner, or enter theirs below to stay in sync — see their phase, fertile window &amp; next period in real time.</div>
+      ${fbNote}
       <div class="pair-code-box">
         <span class="pair-code-lbl">Your code</span>
         <span class="pair-code-val" id="pairMyCode">${code}</span>
@@ -10255,16 +10368,17 @@ function cyResetConfirmYes(){
     </div>`;
   }
 
-  function renderPaired(d){
+  function renderPaired(d, fbOk){
     const pi = partnerPhaseInfo(d.partnerCycleData);
     const sharedTs = d.sharedAt ? new Date(d.sharedAt).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '';
+    const lastSync = d.partnerCycleUpdatedAt ? new Date(d.partnerCycleUpdatedAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : null;
     return `
     <div class="pair-paired">
       <div class="pair-partner-row">
         <div class="pair-partner-avatar">💑</div>
         <div class="pair-partner-info">
           <div class="pair-partner-name">${escapeHtml(d.partnerName||'Partner')}</div>
-          <div class="pair-partner-status">Connected${sharedTs?' · since '+sharedTs:''}</div>
+          <div class="pair-partner-status">${fbOk ? '🟢 Live sync' : '⚠️ Offline mode'}${sharedTs?' · since '+sharedTs:''}${lastSync ? ' · updated '+lastSync : ''}</div>
         </div>
         <button class="pair-disconnect-btn" onclick="pairDisconnect()">Disconnect</button>
       </div>
@@ -10327,13 +10441,15 @@ function cyResetConfirmYes(){
     }catch(e){}
   };
 
-  // Step 1: validate code, show name input row inline
+  // Step 1: validate code format, then ask for name
   window.pairConnect = function(){
     if(typeof haptic === 'function') haptic('light');
     const inp = document.getElementById('pairCodeInput');
     if(!inp) return;
     const raw = inp.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
     if(raw.length < 6){ inp.style.borderColor='#f43f5e'; setTimeout(()=>inp.style.borderColor='',1200); return; }
+    const me = myCode().replace('-','');
+    if(raw === me){ inp.style.borderColor='#f43f5e'; if(typeof vikramToast==='function') vikramToast('⚠️ That\'s your own code!'); setTimeout(()=>inp.style.borderColor='',1200); return; }
     inp.style.borderColor='#22c55e';
     const nameRow = document.getElementById('pairNameRow');
     if(nameRow){
@@ -10342,7 +10458,7 @@ function cyResetConfirmYes(){
     }
   };
 
-  // Step 2: confirm with partner name and save
+  // Step 2: confirm — push MY cycle to Firebase, subscribe to partner
   window.pairConnectConfirm = function(){
     if(typeof haptic === 'function') haptic('medium');
     const inp = document.getElementById('pairCodeInput');
@@ -10352,45 +10468,46 @@ function cyResetConfirmYes(){
     const raw = inp.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
     if(raw.length < 6) return;
     const code = raw.slice(0,3)+'-'+raw.slice(3,6);
-
     const name = (nameInp.value || '').trim() || 'Partner';
 
     const d = pairLoad();
     d.partnerCode = code;
     d.partnerName = name;
-    d.sharedAt = Date.now();
-
-    // Store current user's cycle data as shared partner data (local demo — no backend).
-    // In a real implementation the partner's device would push their own cycle data.
+    d.sharedAt    = Date.now();
+    // Seed local partner data from own cycle as placeholder until Firebase updates
     const cd = (typeof cycleData !== 'undefined') ? cycleData : {};
     d.partnerCycleData = {
       lastPeriodStart: cd.lastPeriodStart || null,
-      cycleLength: cd.cycleLength || 28,
-      periodLength: cd.periodLength || 5,
+      cycleLength:     cd.cycleLength     || 28,
+      periodLength:    cd.periodLength    || 5,
     };
-
     pairSave(d);
-    // Reset demo reply flag so partner sends one reply on first moment
-    if(typeof window._pairResetDemo === 'function') window._pairResetDemo();
+
+    // Firebase: push MY cycle data so partner can read it, then subscribe
+    fbPushMyCycle();
+    fbSubscribePartnerCycle(code);
+    fbSubscribeMsgs(d.myCode || myCode(), code);
+
+    if(typeof vikramToast === 'function') vikramToast(fbReady() ? '💞 Connected — syncing live!' : '💞 Connected (offline mode)');
     renderPairSection();
   };
 
   window.pairDisconnect = function(){
     if(!confirm('Disconnect from your partner? This only affects your device.')) return;
     if(typeof haptic === 'function') haptic('medium');
+    fbDetach();
     const d = pairLoad();
-    delete d.partnerCode; delete d.partnerName; delete d.partnerCycleData; delete d.sharedAt;
+    delete d.partnerCode; delete d.partnerName; delete d.partnerCycleData; delete d.sharedAt; delete d.partnerCycleUpdatedAt;
     pairSave(d);
-    // Clear moments so a new pairing starts fresh
-    msgsSave([]);
-    if(typeof window._pairResetDemo === 'function') window._pairResetDemo();
+    // Clear local message cache
+    try{ localStorage.removeItem('vikram_pair_moments'); }catch(e){}
     renderPairSection();
   };
 
   const MSG_KEY = 'vikram_pair_moments';
 
+  // Local cache helpers (Firebase listener keeps this fresh)
   function msgsLoad(){ try{ return JSON.parse(localStorage.getItem(MSG_KEY)||'[]'); }catch(e){ return []; } }
-  function msgsSave(arr){ try{ localStorage.setItem(MSG_KEY, JSON.stringify(arr)); }catch(e){} }
 
   function renderMoments(){
     const container = document.getElementById('pairMomentMsgs');
@@ -10398,27 +10515,26 @@ function cyResetConfirmYes(){
     if(!container) return;
     const msgs = msgsLoad();
     const d    = pairLoad();
-    const myName = 'You';
+    const meRaw = (d.myCode || '').replace('-','');
     const theirName = escapeHtml(d.partnerName||'Partner');
 
     countEl && (countEl.textContent = msgs.length ? msgs.length + ' msg' + (msgs.length===1?'':'s') : '');
 
     if(!msgs.length){
-      container.innerHTML = '';
+      container.innerHTML = '<div style="text-align:center;padding:14px 0;font-size:12px;font-weight:600;color:var(--hsub);">No messages yet 💌</div>';
       return;
     }
 
     container.innerHTML = msgs.map(m => {
-      const mine = m.from === 'me';
+      const mine = m.from === meRaw;
       const time = new Date(m.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) +
                    ', ' + new Date(m.ts).toLocaleDateString([], {month:'short', day:'numeric'});
       return `<div class="pair-msg-bubble ${mine ? 'mine' : 'theirs'}">
         <div class="pair-msg-text">${escapeHtml(m.text)}</div>
-        <div class="pair-msg-meta">${mine ? myName : theirName} · ${time}</div>
+        <div class="pair-msg-meta">${mine ? 'You' : theirName} · ${time}</div>
       </div>`;
     }).join('');
 
-    // Scroll to bottom
     container.scrollTop = container.scrollHeight;
   }
 
@@ -10430,21 +10546,25 @@ function cyResetConfirmYes(){
     if(!inp) return;
     const text = inp.value.trim();
     if(!text) return;
-
     if(typeof haptic === 'function') haptic('light');
 
-    const msgs = msgsLoad();
-    msgs.push({ from:'me', text, ts: Date.now() });
-    msgsSave(msgs);
+    const d = pairLoad();
+    if(!d.partnerCode){ if(typeof vikramToast==='function') vikramToast('Connect with a partner first 💞'); return; }
 
     inp.value = '';
     inp.style.height = 'auto';
 
-    renderMoments();
-
-    // Fire demo partner reply (once per pairing session)
-    const d = pairLoad();
-    window._pairSimulateReply(d.partnerName || 'Partner');
+    // Firebase send (real-time); falls back to local cache if offline
+    const sent = fbSendMsg(d.myCode || myCode(), d.partnerCode, text);
+    if(!sent){
+      // Offline fallback: append to local cache and re-render
+      const msgs = msgsLoad();
+      const meRaw = (d.myCode || myCode()).replace('-','');
+      msgs.push({ from: meRaw, text, ts: Date.now() });
+      try{ localStorage.setItem(MSG_KEY, JSON.stringify(msgs)); }catch(e){}
+      renderMoments();
+      if(typeof vikramToast==='function') vikramToast('⚠️ Saved locally — no Firebase connection');
+    }
 
     // Visual feedback
     const sendBtn = document.querySelector('.pair-moment-send');
@@ -10458,40 +10578,18 @@ function cyResetConfirmYes(){
     }
   };
 
-  // Simulate partner reply (for demo — fires once after first message)
-  let _demoReplied = false;
-  window._pairResetDemo = function(){ _demoReplied = false; };
-  window._pairSimulateReply = function(partnerName){
-    if(_demoReplied) return;
-    _demoReplied = true;
-    const replies = [
-      'Thinking of you 💗',
-      'Love you! 🌸',
-      'Thanks for letting me know ✨',
-      'You okay? 💌',
-      'Sending you all my love 💕',
-    ];
-    const text = replies[Math.floor(Math.random()*replies.length)];
-    setTimeout(()=>{
-      const msgs = msgsLoad();
-      msgs.push({ from:'partner', text, ts: Date.now() });
-      msgsSave(msgs);
-      renderMoments();
-    }, 1800);
-  };
-
-  // Hook into cycle saves: whenever cycleData changes, update partner preview.
-  // We patch via a DOMContentLoaded-safe approach to avoid capture-order issues.
+  // Hook into cycle saves: whenever cycleData changes, push to Firebase + update local preview.
   window._pairOnCycleSave = function(){
     try{
       const d = pairLoad();
-      if(!d.partnerCode) return;
+      if(!d.myCode) return;
       const cd = (typeof cycleData !== 'undefined') ? cycleData : {};
-      d.partnerCycleData = {
-        lastPeriodStart: cd.lastPeriodStart || null,
-        cycleLength: cd.cycleLength || 28,
-        periodLength: cd.periodLength || 5,
-      };
+      // Push to Firebase so partner gets live update
+      fbPushMyCycle();
+      // Also keep local preview current (used when offline)
+      if(d.partnerCode){
+        // Don't overwrite partnerCycleData from own data — leave it for Firebase listener
+      }
       pairSave(d);
     }catch(e){}
   };
@@ -14523,5 +14621,59 @@ window.inviteFriends = function() {
   </button>
 </div>
 
+<!-- ══ FIREBASE SDK — loaded last so it never blocks page render ══ -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+(function(){
+  try {
+    if (firebase.apps.length) return; // already initialised
+    firebase.initializeApp({
+      apiKey:            "AIzaSyAFr9Amc7C3YKY27P_RdQ-3Rb-cH1ReFoc",
+      authDomain:        "vikram-6e99b.firebaseapp.com",
+      databaseURL:       "https://vikram-6e99b-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId:         "vikram-6e99b",
+      storageBucket:     "vikram-6e99b.firebasestorage.app",
+      messagingSenderId: "198553115649",
+      appId:             "1:198553115649:web:081e794d5b68810556f400"
+    });
+    // If already paired, kick off Firebase subscriptions now that SDK is ready
+    if (typeof window._pairOnCycleSave === 'function') {
+      try {
+        const pd = JSON.parse(localStorage.getItem('vikram_pair_v1') || '{}');
+        if (pd.myCode && pd.partnerCode) {
+          const db = firebase.database();
+          // Push own cycle
+          const cd = (typeof cycleData !== 'undefined') ? cycleData : {};
+          db.ref('cycles/' + pd.myCode).set({
+            lastPeriodStart: cd.lastPeriodStart || null,
+            cycleLength:     cd.cycleLength     || 28,
+            periodLength:    cd.periodLength    || 5,
+            updatedAt:       Date.now()
+          }).catch(()=>{});
+          // Subscribe to partner cycle
+          db.ref('cycles/' + pd.partnerCode).on('value', snap => {
+            const val = snap.val(); if (!val) return;
+            const d = JSON.parse(localStorage.getItem('vikram_pair_v1') || '{}');
+            d.partnerCycleData = { lastPeriodStart: val.lastPeriodStart||null, cycleLength: val.cycleLength||28, periodLength: val.periodLength||5 };
+            d.partnerCycleUpdatedAt = val.updatedAt || Date.now();
+            localStorage.setItem('vikram_pair_v1', JSON.stringify(d));
+            const wrap = document.getElementById('pairSyncSection');
+            if (wrap && wrap.closest('.sheet.open') && typeof renderPairSection === 'function') renderPairSection();
+          });
+          // Subscribe to moments
+          const rk = [pd.myCode.replace('-',''), pd.partnerCode.replace('-','')].sort().join('_');
+          db.ref('moments/' + rk).on('value', snap => {
+            const val = snap.val() || {};
+            const msgs = Object.values(val).sort((a,b) => a.ts - b.ts);
+            localStorage.setItem('vikram_pair_moments', JSON.stringify(msgs));
+            if (typeof window.renderPairMoments === 'function') window.renderPairMoments();
+          });
+        }
+      } catch(e) { console.warn('[Vikram] post-init pair setup failed:', e); }
+    }
+  } catch(e) { console.warn('[Vikram] Firebase init failed:', e); }
+})();
+</script>
 </body>
 </html>
