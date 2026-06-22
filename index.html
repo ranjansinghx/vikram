@@ -1739,6 +1739,223 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .up-empty-ico{font-size:34px;display:block;margin-bottom:8px;}
 .up-empty-txt{font-size:13px;font-weight:600;line-height:1.5;}
 
+/* ══════════════════════════════════════════
+   NOTES REDESIGN — ntr-* classes
+   ══════════════════════════════════════════ */
+
+/* Header row — matches .up-hdr style */
+.ntr-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 16px 14px;
+  margin:0;
+  background:transparent;
+  border:none;
+  box-shadow:none;
+  border-radius:0;
+  position:static;
+  overflow:visible;
+}
+.ntr-header::before{ display:none; }
+[data-theme=light] .ntr-header,[data-theme=dark] .ntr-header{
+  background:transparent;border:none;box-shadow:none;
+}
+.ntr-header-left{
+  display:flex;flex-direction:column;gap:2px;
+}
+.ntr-quill-icon{ display:none; }
+.ntr-header-title{
+  font-size:22px;font-weight:900;color:var(--htext);letter-spacing:-.4px;line-height:1.1;
+}
+[data-theme=light] .ntr-header-title{ color:#1a1a2e; }
+[data-theme=dark] .ntr-header-title{ color:var(--htext); }
+.ntr-header-sub{
+  font-size:10px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;
+  color:var(--dsub);margin-top:0;order:-1;
+}
+
+/* New note button */
+.ntr-add-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:8px 14px;border:none;border-radius:10px;
+  background:rgba(99,102,241,.12);
+  color:#6366f1;
+  font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:900;
+  cursor:pointer;flex-shrink:0;
+  border:1.5px solid rgba(99,102,241,.22);
+  transition:background .14s,transform .12s,box-shadow .14s;
+  letter-spacing:.1px;
+}
+[data-theme=dark] .ntr-add-btn{
+  background:rgba(99,102,241,.18);
+  color:#a5b4fc;
+  border-color:rgba(99,102,241,.3);
+}
+.ntr-add-btn:hover{
+  background:rgba(99,102,241,.2);
+  box-shadow:0 2px 10px rgba(99,102,241,.2);
+}
+.ntr-add-btn:active{ transform:scale(.93); }
+
+/* List wrapper */
+.ntr-list-wrap{
+  padding:0 16px;
+  display:flex;flex-direction:column;gap:0;
+}
+
+/* Note card — slim horizontal layout */
+.notes-list-item{
+  display:flex;align-items:center;gap:12px;
+  background:transparent;
+  border:none;border-radius:0;
+  border-bottom:1px solid var(--border);
+  padding:12px 2px;
+  margin-bottom:0;
+  cursor:pointer;
+  box-shadow:none;
+  transition:background .13s,transform .12s;
+}
+.notes-list-item:last-child{ border-bottom:none; }
+[data-theme=dark] .notes-list-item{
+  background:transparent;border-color:rgba(255,255,255,.07);box-shadow:none;
+}
+.notes-list-item:hover{ background:rgba(99,102,241,.04); border-radius:12px; }
+[data-theme=dark] .notes-list-item:hover{ background:rgba(99,102,241,.06); }
+.notes-list-item:active{ transform:scale(.985); }
+
+/* Colored left dot replaces the icon */
+.notes-list-item-icon{
+  width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  background:#6366f1;
+  margin-left:4px;
+  display:flex;align-items:center;justify-content:center;
+  color:transparent;font-size:0;/* hide the SVG inside */
+}
+[data-theme=dark] .notes-list-item-icon{ background:#818cf8; }
+.notes-list-item.pinned .notes-list-item-icon{ background:#f59e0b; }
+[data-theme=dark] .notes-list-item.pinned .notes-list-item-icon{ background:#fbbf24; }
+
+/* Hide SVG inside the dot icon (existing JS injects it) */
+.notes-list-item-icon svg{ display:none; }
+
+.notes-list-item-body{ flex:1;min-width:0;display:flex;flex-direction:column;gap:2px; }
+.notes-list-item-title{
+  font-size:13.5px;font-weight:800;color:var(--htext);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.notes-list-item-snippet{
+  font-size:11.5px;font-weight:600;color:var(--hsub);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.notes-list-item-meta{
+  font-size:10px;font-weight:700;color:var(--dsub);letter-spacing:.3px;margin-top:1px;
+}
+.notes-list-item-chevron{ flex-shrink:0;color:var(--dimsub); }
+.notes-list-item.pinned .notes-list-item-title{ color:#d97706; }
+[data-theme=dark] .notes-list-item.pinned .notes-list-item-title{ color:#fcd34d; }
+.notes-pin-badge{
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:9px;font-weight:800;letter-spacing:.3px;
+  color:#d97706;background:rgba(245,158,11,.12);
+  border-radius:5px;padding:2px 5px;margin-top:2px;width:fit-content;
+}
+[data-theme=dark] .notes-pin-badge{ color:#fcd34d;background:rgba(251,191,36,.14); }
+
+/* Empty state */
+.ntr-empty{
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;padding:52px 32px 44px;text-align:center;
+  margin:0 14px 12px;
+  background:transparent;
+  border:1.5px dashed var(--border);
+  border-radius:18px;
+}
+.ntr-empty.show{ display:flex; }
+[data-theme=dark] .ntr-empty{ border-color:rgba(255,255,255,.09); }
+.ntr-empty-ring{
+  width:58px;height:58px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(99,102,241,.08);
+  border:1.5px solid rgba(99,102,241,.18);
+  color:#6366f1;
+}
+[data-theme=dark] .ntr-empty-ring{
+  background:rgba(99,102,241,.12);
+  border-color:rgba(99,102,241,.25);
+  color:#a5b4fc;
+}
+.notes-empty-title{ font-size:15px;font-weight:900;color:var(--dtext); }
+.notes-empty-sub{ font-size:12.5px;font-weight:600;line-height:1.6;color:var(--hsub);max-width:220px; }
+.notes-empty-sub strong{ color:var(--htext);font-weight:900; }
+
+/* Editor wrapper */
+.ntr-editor-wrap{ display:flex;flex-direction:column; }
+
+/* Editor top bar */
+.ntr-editor-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 14px 10px;
+  border-bottom:1px solid var(--border);
+  background:var(--card);
+  position:sticky;top:0;z-index:10;
+}
+[data-theme=dark] .ntr-editor-bar{ background:var(--card);border-color:rgba(255,255,255,.07); }
+.ntr-back-btn{
+  width:34px;height:34px;border:none;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(99,102,241,.09);color:#6366f1;cursor:pointer;flex-shrink:0;
+  transition:background .12s,transform .12s;
+}
+[data-theme=dark] .ntr-back-btn{ background:rgba(99,102,241,.14);color:#a5b4fc; }
+.ntr-back-btn:hover{ background:rgba(99,102,241,.16); }
+.ntr-back-btn:active{ transform:scale(.9); }
+.ntr-title-input{
+  flex:1;min-width:0;border:none;background:transparent;outline:none;
+  font-family:'Nunito',sans-serif;font-size:17px;font-weight:900;
+  color:var(--htext);letter-spacing:-.3px;line-height:1;padding:0 2px;
+}
+.ntr-title-input::placeholder{ color:var(--dsub);opacity:.8; }
+.ntr-del-btn{
+  width:32px;height:32px;border:none;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(214,69,63,.1);color:#d6453f;cursor:pointer;flex-shrink:0;
+  transition:background .12s,transform .12s;
+}
+.ntr-del-btn:hover{ background:rgba(214,69,63,.18); }
+.ntr-del-btn:active{ transform:scale(.9); }
+
+/* Toolbar */
+.ntr-toolbar{
+  margin:10px 14px 8px;border-radius:12px;
+  border:1px solid var(--border);background:var(--card);
+  padding:5px 7px;
+}
+
+/* Editor canvas */
+.ntr-editor{
+  margin:0 14px 16px;
+  min-height:46vh;
+  padding:16px 18px 20px;
+  font-family:'Nunito',sans-serif;
+  font-size:14.5px;font-weight:600;line-height:1.75;
+  color:var(--htext);outline:none;word-break:break-word;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+}
+[data-theme=dark] .ntr-editor{
+  background:rgba(255,255,255,.03);
+  border-color:rgba(255,255,255,.07);
+}
+.ntr-editor:empty::before{
+  content:attr(data-placeholder);
+  color:var(--dsub);pointer-events:none;font-weight:600;font-style:italic;
+}
+.ntr-editor ul,.ntr-editor ol{ padding-left:20px; }
+.ntr-editor li{ margin-bottom:3px; }
+.ntr-editor b,.ntr-editor strong{ font-weight:900;color:var(--htext); }
+
+/* ══════════════════════════════════════════ */
+
 /* ── Notes View — indigo-tinted background ── */
 #notesView{
   background:radial-gradient(ellipse 70% 28% at 50% 0%,rgba(99,102,241,.06),transparent 55%),var(--app-bg);
@@ -2193,108 +2410,275 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .pshare-evt-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .pshare-evt-name{flex:1;min-width:0;font-size:12px;font-weight:800;color:var(--dtext);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .pshare-evt-date{font-size:10.5px;font-weight:700;color:var(--dsub);flex-shrink:0;}
-/* ── Schedule View (Google Calendar style) ── */
-#scheduleView{padding:0 0 80px;animation:mmFadeIn .2s cubic-bezier(.22,.85,.25,1);overflow-x:hidden;}
-
-/* Month banner */
-.gc-month-banner{
-  padding:22px 16px 10px;
-  margin-bottom:0;
-}
-.gc-month-banner-label{
-  font-size:28px;font-weight:900;color:var(--dtext);
-  letter-spacing:-.5px;line-height:1.1;
+/* ══════════════════════════════════════════
+   SCHEDULE VIEW — Redesigned Timeline Layout
+   ══════════════════════════════════════════ */
+#scheduleView{
+  display:flex;flex-direction:column;
+  padding:0 0 80px;
+  animation:mmFadeIn .25s cubic-bezier(.22,.85,.25,1);
+  overflow-x:hidden;
 }
 
-/* Week range row */
-.gc-week-row{
-  display:flex;align-items:center;
-  padding:7px 14px 4px;
-  font-size:11px;font-weight:700;color:var(--dsub);
-  text-transform:uppercase;letter-spacing:.5px;
-  border-bottom:1px solid var(--border);
+/* ── Month Pill Strip (sticky top nav) ── */
+.sv-month-strip{
+  position:sticky;top:0;z-index:10;
   background:var(--bg);
-  position:sticky;top:0;z-index:3;
-}
-.gc-week-range{flex:1;}
-
-/* Day row */
-.gc-day-row{
-  display:flex;align-items:stretch;
-  min-height:52px;
   border-bottom:1px solid var(--border);
-  cursor:pointer;
-  transition:background .13s;
-}
-.gc-day-row:active{background:var(--tgbg);}
-
-.gc-day-left{
-  width:58px;flex-shrink:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-  padding:10px 0 10px;
-  border-right:1px solid var(--border);
-}
-.gc-day-num{
-  width:34px;height:42px;border-radius:10px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-}
-.gc-day-num.today{background:var(--tgon);}
-.gc-day-n{font-size:16px;font-weight:900;color:var(--dtext);line-height:1;}
-.gc-day-num.today .gc-day-n{color:#fff;}
-.gc-day-wd{font-size:8.5px;font-weight:700;color:var(--dsub);text-transform:uppercase;letter-spacing:.3px;margin-top:2px;}
-.gc-day-num.today .gc-day-wd{color:rgba(255,255,255,.78);}
-.gc-day-mon{font-size:7.5px;font-weight:700;color:var(--dsub);text-transform:uppercase;letter-spacing:.2px;margin-top:1px;opacity:.7;}
-.gc-day-num.today .gc-day-mon{color:rgba(255,255,255,.6);}
-
-.gc-day-right{
-  flex:1;min-width:0;
-  display:flex;flex-direction:column;justify-content:center;
-  padding:8px 12px 8px 10px;
-  gap:4px;
-}
-.gc-day-empty{
-  font-size:11.5px;color:var(--dsub);font-style:italic;font-weight:600;
-}
-
-/* Event pill */
-.gc-evt-pill{
+  padding:10px 14px 8px;
   display:flex;align-items:center;gap:8px;
-  padding:5px 10px;border-radius:8px;
-  cursor:pointer;transition:filter .13s;
-  min-height:30px;
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
 }
-.gc-evt-pill:active{filter:brightness(.9);}
-.gc-evt-pill-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.gc-evt-pill-text{
-  flex:1;min-width:0;
-  font-size:13px;font-weight:800;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+.sv-month-strip-scroll{
+  display:flex;gap:6px;overflow-x:auto;flex:1;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
 }
-.gc-evt-pill-sub{
-  font-size:10px;font-weight:700;
-  opacity:.7;flex-shrink:0;
+.sv-month-strip-scroll::-webkit-scrollbar{display:none;}
+.sv-month-chip{
+  flex-shrink:0;display:inline-flex;align-items:center;gap:4px;
+  padding:5px 12px;border-radius:20px;border:none;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-size:11.5px;font-weight:800;
+  background:var(--tgbg);color:var(--dsub);
+  transition:background .16s,color .16s,transform .12s;
+  white-space:nowrap;
 }
-/* Holiday pill */
-.gc-evt-pill.hol{background:rgba(255,71,87,.11);}
-.gc-evt-pill.hol .gc-evt-pill-dot{background:#FF4757;}
-.gc-evt-pill.hol .gc-evt-pill-text{color:#d63031;}
-[data-theme=dark] .gc-evt-pill.hol{background:rgba(255,71,87,.18);}
-[data-theme=dark] .gc-evt-pill.hol .gc-evt-pill-text{color:#FF4757;}
-/* User event pill */
-.gc-evt-pill.evt{background:rgba(122,183,255,.12);}
-.gc-evt-pill.evt .gc-evt-pill-text{color:var(--dtext);}
-[data-theme=dark] .gc-evt-pill.evt{background:rgba(122,183,255,.16);}
-/* Observance pill */
-.gc-evt-pill.obs{background:rgba(122,183,255,.09);}
-.gc-evt-pill.obs .gc-evt-pill-text{color:#5a8fd6;}
-[data-theme=dark] .gc-evt-pill.obs{background:rgba(122,183,255,.14);}
-[data-theme=dark] .gc-evt-pill.obs .gc-evt-pill-text{color:#7ab7ff;}
-/* Cycle pill */
-.gc-evt-pill.cyc{background:rgba(255,107,157,.10);}
-.gc-evt-pill.cyc .gc-evt-pill-text{color:#c44569;}
-[data-theme=dark] .gc-evt-pill.cyc{background:rgba(255,107,157,.18);}
-[data-theme=dark] .gc-evt-pill.cyc .gc-evt-pill-text{color:#FF6B9D;}
+.sv-month-chip:active{transform:scale(.93);}
+.sv-month-chip.sv-cur{
+  background:var(--tgon);color:#fff;
+}
+[data-theme=dark] .sv-month-chip.sv-cur{
+  background:linear-gradient(135deg,#4e5178,#313456);color:#fff;
+}
+.sv-month-chip-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:currentColor;opacity:.6;
+}
 
+/* ── Month Section Header ── */
+.sv-month-section{
+  padding:20px 16px 2px;
+  display:flex;align-items:flex-end;gap:10px;
+}
+.sv-month-label{
+  font-size:22px;font-weight:900;letter-spacing:-.4px;
+  color:var(--dtext);line-height:1;flex:1;
+}
+.sv-month-badge{
+  font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;
+  padding:3px 9px;border-radius:20px;margin-bottom:2px;
+}
+.sv-month-badge.current{background:rgba(59,130,246,.14);color:#3b82f6;}
+[data-theme=dark] .sv-month-badge.current{background:rgba(122,183,255,.18);color:#7ab7ff;}
+.sv-month-badge.past{background:var(--tgbg);color:var(--dsub);}
+.sv-month-evt-count{
+  font-size:10px;font-weight:700;color:var(--dsub);
+  margin-bottom:3px;
+}
+
+/* ── Timeline container ── */
+.sv-timeline{
+  padding:0 14px 0;
+  position:relative;
+}
+.sv-timeline::before{
+  content:'';position:absolute;
+  left:40px;top:0;bottom:0;width:1px;
+  background:linear-gradient(180deg,var(--border) 0%,transparent 100%);
+  pointer-events:none;
+}
+[data-theme=dark] .sv-timeline::before{
+  background:linear-gradient(180deg,rgba(255,255,255,.07) 0%,transparent 100%);
+}
+
+/* ── Day Block ── */
+.sv-day-block{
+  display:flex;align-items:flex-start;gap:0;
+  margin-bottom:0;
+  position:relative;
+}
+
+/* Date column (left) */
+.sv-day-date{
+  width:56px;flex-shrink:0;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding-top:8px;
+  padding-bottom:8px;
+  position:relative;z-index:1;
+}
+.sv-day-bubble{
+  width:42px;height:48px;border-radius:14px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--cell-bg);
+  border:1.5px solid var(--border);
+  cursor:pointer;transition:transform .14s,background .14s,border-color .14s;
+  flex-shrink:0;gap:1px;
+}
+.sv-day-bubble:active{transform:scale(.88);}
+.sv-day-bubble.today{
+  background:var(--tgon);border-color:transparent;
+  box-shadow:0 4px 14px rgba(26,26,26,.22);
+}
+[data-theme=dark] .sv-day-bubble.today{
+  background:linear-gradient(135deg,#4e5178,#313456);
+  box-shadow:0 4px 14px rgba(78,81,120,.38);
+}
+.sv-day-bubble.past{opacity:.52;}
+.sv-day-bubble.wknd .sv-dn{color:var(--wknd);}
+.sv-day-bubble.wknd.today .sv-dn{color:#fff;}
+/* BS date — big number */
+.sv-dn{font-size:16px;font-weight:900;color:var(--dtext);line-height:1;}
+.sv-day-bubble.today .sv-dn{color:#fff;}
+/* Weekday label inside bubble */
+.sv-dw{font-size:7px;font-weight:800;text-transform:uppercase;letter-spacing:.3px;color:var(--dsub);margin-top:0;}
+.sv-day-bubble.today .sv-dw{color:rgba(255,255,255,.75);}
+/* AD date shown below bubble */
+.sv-ad-label{
+  font-size:8.5px;font-weight:700;color:var(--dsub);
+  line-height:1;text-align:center;
+  opacity:.75;
+}
+.sv-day-block.past .sv-ad-label{opacity:.5;}
+/* BS divider line inside bubble */
+.sv-bubble-sep{
+  width:22px;height:1px;
+  background:var(--border);
+  margin:1px 0;
+  opacity:.6;
+}
+.sv-day-bubble.today .sv-bubble-sep{background:rgba(255,255,255,.25);}
+
+/* Cards column (right) */
+.sv-day-cards{
+  flex:1;min-width:0;
+  padding:0 0 0 8px;
+  display:flex;flex-direction:column;gap:0;
+  padding-top:2px;
+}
+
+/* ── Event Row (slim, no heavy border) ── */
+.sv-evt-card{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px 8px 0;
+  cursor:pointer;position:relative;
+  border-bottom:1px solid var(--border);
+  transition:background .13s;
+  border-radius:0;background:transparent;border-left:none;border-right:none;border-top:none;
+}
+.sv-evt-card:first-child{border-top:1px solid var(--border);}
+.sv-evt-card:active{background:var(--tgbg);}
+[data-theme=dark] .sv-evt-card:active{background:rgba(255,255,255,.04);}
+
+/* Thin color strip on far left */
+.sv-evt-accent{
+  width:3px;min-height:36px;border-radius:3px;flex-shrink:0;
+  align-self:stretch;
+}
+.sv-evt-card.hol .sv-evt-accent{background:linear-gradient(180deg,#FF4757,#ff8080);}
+.sv-evt-card.obs .sv-evt-accent{background:linear-gradient(180deg,#7ab7ff,#a5d0ff);}
+.sv-evt-card.cyc .sv-evt-accent{background:linear-gradient(180deg,#FF6B9D,#ffaac8);}
+.sv-evt-card.evt .sv-evt-accent{background:var(--dsub);}
+
+/* Icon dot — minimal, not a heavy circle */
+.sv-evt-icon{
+  width:32px;height:32px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;flex-shrink:0;
+}
+.sv-evt-card.hol .sv-evt-icon{background:rgba(255,71,87,.10);}
+[data-theme=dark] .sv-evt-card.hol .sv-evt-icon{background:rgba(255,71,87,.16);}
+.sv-evt-card.obs .sv-evt-icon{background:rgba(122,183,255,.10);}
+[data-theme=dark] .sv-evt-card.obs .sv-evt-icon{background:rgba(122,183,255,.16);}
+.sv-evt-card.cyc .sv-evt-icon{background:rgba(255,107,157,.10);}
+[data-theme=dark] .sv-evt-card.cyc .sv-evt-icon{background:rgba(255,107,157,.16);}
+.sv-evt-card.evt .sv-evt-icon{background:var(--tgbg);}
+
+/* Text block */
+.sv-evt-body{flex:1;min-width:0;}
+.sv-evt-title{
+  font-size:13.5px;font-weight:800;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  line-height:1.25;color:var(--dtext);
+}
+.sv-evt-card.hol .sv-evt-title{color:#c8303030;}
+[data-theme=dark] .sv-evt-card.hol .sv-evt-title{color:#ffaaaa;}
+.sv-evt-card.obs .sv-evt-title{color:var(--dtext);}
+.sv-evt-card.cyc .sv-evt-title{color:var(--dtext);}
+
+.sv-evt-sub{
+  font-size:10.5px;font-weight:600;color:var(--dsub);
+  margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* Tag pill — small, right-aligned */
+.sv-evt-tag{
+  flex-shrink:0;font-size:9px;font-weight:900;
+  padding:3px 8px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.6px;
+  white-space:nowrap;
+}
+.sv-evt-tag.hol{background:rgba(255,71,87,.12);color:#e04040;}
+[data-theme=dark] .sv-evt-tag.hol{background:rgba(255,71,87,.18);color:#ff8888;}
+.sv-evt-tag.obs{background:rgba(122,183,255,.12);color:#4a90d9;}
+[data-theme=dark] .sv-evt-tag.obs{background:rgba(122,183,255,.18);color:#90c8ff;}
+.sv-evt-tag.cyc{background:rgba(255,107,157,.12);color:#c44569;}
+[data-theme=dark] .sv-evt-tag.cyc{background:rgba(255,107,157,.18);color:#ff90b8;}
+.sv-evt-tag.evt{background:var(--tgbg);color:var(--dsub);}
+
+/* ── No events state ── */
+.sv-empty-month{
+  margin:4px 0 8px;
+  padding:12px 14px;
+  border-radius:12px;
+  background:var(--tgbg);
+  font-size:11.5px;font-weight:700;
+  color:var(--dsub);font-style:italic;
+  display:flex;align-items:center;gap:8px;
+}
+.sv-empty-global{
+  text-align:center;padding:60px 24px;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.sv-empty-global-icon{font-size:36px;opacity:.4;}
+.sv-empty-global-text{font-size:13px;font-weight:700;color:var(--dsub);}
+
+/* ── Today line connector ── */
+.sv-today-line{
+  position:absolute;left:40px;right:0;height:1.5px;
+  background:linear-gradient(90deg,rgba(255,71,87,.7),transparent);
+  border-radius:2px;pointer-events:none;top:0;
+}
+
+/* Today day block — subtle red left border */
+.sv-day-block.is-today{
+  border-left:3px solid #ff4757;
+  border-radius:0 0 0 0;
+  background:rgba(255,71,87,.03);
+  margin-left:-3px;
+  padding-left:3px;
+}
+[data-theme=dark] .sv-day-block.is-today{
+  background:rgba(255,71,87,.05);
+  border-left-color:#ff6b6b;
+}
+
+/* No-events placeholder inside today row */
+.sv-today-no-events{
+  font-size:12px;font-weight:700;color:var(--dsub);
+  padding:10px 0;
+  font-style:italic;
+  opacity:.75;
+}
+
+/* ── Past opacity ── */
+.sv-day-block.past .sv-day-cards{opacity:.5;}
+
+/* ── Backwards compat for old gc- classes still referenced in JS ── */
+.gc-month-banner{padding:20px 16px 4px;}
+.gc-month-banner-label{font-size:22px;font-weight:900;color:var(--dtext);letter-spacing:-.4px;}
+.gc-month-current-badge,.gc-month-past-badge{display:none;}
+.gc-month-empty{display:none;}
+.gc-day-row{display:none;}
 .schd-empty{text-align:center;padding:50px 20px;color:var(--dsub);font-size:13px;font-weight:700;}
 
 /* ── WEEK VIEW (Google Calendar style) ── */
@@ -4347,6 +4731,80 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
     </div>
   </div>
+
+  <!-- ══ NOTES INLINE SECTION ══ -->
+  <div id="notesInlineSection" style="padding-bottom:24px;margin-top:-28px;padding-top:0;">
+
+    <!-- ── Notes Header Bar ── -->
+    <div id="ntSegmentHeader" class="ntr-header">
+      <div class="ntr-header-left">
+        <div class="ntr-quill-icon">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 3C20 3 16 5 12 12C8 19 4 21 4 21"/><path d="M4 21l2-6"/><path d="M4 21l6-2"/></svg>
+        </div>
+        <div>
+          <div class="ntr-header-title" id="ntHeroTitle">Notes</div>
+          <div class="ntr-header-sub" id="ntHeroSub">Your personal space</div>
+        </div>
+      </div>
+      <button class="ntr-add-btn" id="ntAddBtn" onclick="ntAddCurrent()" aria-label="New note">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span>New</span>
+      </button>
+    </div>
+
+    <!-- ── Notes List + Editor Panel ── -->
+    <div id="ntNotesPanel">
+
+      <!-- List view -->
+      <div class="notes-view" id="notesListView">
+        <div id="notesListItems" class="ntr-list-wrap"></div>
+        <div class="notes-empty ntr-empty" id="notesEmpty">
+          <div class="ntr-empty-ring">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 3C20 3 16 5 12 12C8 19 4 21 4 21"/><path d="M4 21l2-6"/><path d="M4 21l6-2"/></svg>
+          </div>
+          <div class="notes-empty-title">Nothing written yet</div>
+          <div class="notes-empty-sub">Tap <strong>New</strong> to capture a thought, list, or reminder.</div>
+        </div>
+      </div>
+
+      <!-- Editor view -->
+      <div class="notes-view ntr-editor-wrap" id="notesEditorView" style="display:none;">
+        <!-- Editor top bar -->
+        <div class="ntr-editor-bar">
+          <button class="ntr-back-btn" onclick="notesBackToList()" aria-label="Back">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <input class="notes-title-input ntr-title-input" id="notesTitleInput" placeholder="Untitled" maxlength="80">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div class="notes-save-dot" id="notesSaveDot" title="Saved"></div>
+            <button class="ntr-del-btn" onclick="notesDeleteCurrent()" aria-label="Delete note">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            </button>
+          </div>
+        </div>
+        <!-- Formatting toolbar -->
+        <div class="notes-toolbar ntr-toolbar">
+          <button class="notes-fmt-btn" data-cmd="bold" title="Bold" onclick="notesFmt('bold')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg></button>
+          <button class="notes-fmt-btn" data-cmd="italic" title="Italic" onclick="notesFmt('italic')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="notes-fmt-btn" data-cmd="underline" title="Underline" onclick="notesFmt('underline')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg></button>
+          <button class="notes-fmt-btn" data-cmd="strikeThrough" title="Strikethrough" onclick="notesFmt('strikeThrough')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><path d="M16 6c0-1.6-1.8-3-4-3s-4 1.4-4 3c0 2 2 2.5 4 3"/><path d="M8 18c0 1.6 1.8 3 4 3s4-1.4 4-3"/></svg></button>
+          <button class="notes-fmt-btn" data-cmd="hiliteColor" title="Highlight" onclick="notesHighlight()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7L4 19h3l1.5-4h7L17 19h3L15 7z"/><line x1="6.5" y1="13" x2="17.5" y2="13"/></svg></button>
+          <div class="notes-fmt-sep"></div>
+          <button class="notes-fmt-btn" data-cmd="formatBlock-h3" title="Heading" onclick="notesFmt('formatBlock','H3')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="M4 5v14"/><path d="M12 5v14"/></svg></button>
+          <div class="notes-fmt-sep"></div>
+          <button class="notes-fmt-btn" data-cmd="insertUnorderedList" title="Bullet list" onclick="notesFmt('insertUnorderedList')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg></button>
+          <button class="notes-fmt-btn" data-cmd="insertOrderedList" title="Numbered list" onclick="notesFmt('insertOrderedList')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></button>
+          <div class="notes-fmt-sep"></div>
+          <button class="notes-fmt-btn notes-clear-btn" title="Clear note" onclick="notesClear()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
+          <button class="notes-fmt-btn" id="notesPinBtn" title="Pin note" onclick="notesTogglePin()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 6.4L21 9l-5 4.8 1.2 6.7L12 17l-5.2 3.5L8 13.8 3 9l6.6-.6z"/></svg></button>
+        </div>
+        <!-- Writing area -->
+        <div class="notes-editor ntr-editor" id="notesEditor" contenteditable="true" spellcheck="true" data-placeholder="Start writing…"></div>
+      </div>
+
+    </div>
+  </div>
+
 </div>
 
 <!-- ECHO SHEET -->
@@ -4420,72 +4878,6 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   </div>
 </div>
 
-
-<!-- NOTES + TASKS COMBINED VIEW -->
-<div class="daycounter-view" id="notesView">
-
-  <!-- ── Notes header ── -->
-  <div id="ntSegmentHeader" class="nt-hero">
-    <div class="nt-hero-inner">
-      <div class="nt-hero-icon-wrap">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
-      </div>
-      <div class="nt-hero-text">
-        <div class="nt-hero-title" id="ntHeroTitle">Notes</div>
-        <div class="nt-hero-sub" id="ntHeroSub">Your personal space</div>
-      </div>
-      <button class="nt-hero-btn" id="ntAddBtn" onclick="ntAddCurrent()">
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        <span>New</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- ══ NOTES PANEL ══ -->
-  <div id="ntNotesPanel">
-    <!-- Notes list -->
-    <div class="notes-view" id="notesListView">
-      <div id="notesListItems" style="padding:12px 14px 0;"></div>
-      <div class="notes-empty" id="notesEmpty">
-        <svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <div class="notes-empty-title">No notes yet</div>
-        <div class="notes-empty-sub">Tap + to write down your thoughts, lists, or reminders.</div>
-      </div>
-    </div>
-    <!-- Note editor -->
-    <div class="notes-view" id="notesEditorView" style="display:none;">
-      <div class="dc-page-header">
-        <button class="notes-back-btn" onclick="notesBackToList()" aria-label="Back">
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
-        <input class="notes-title-input" id="notesTitleInput" placeholder="Untitled note" maxlength="80">
-        <button class="notes-delete-btn" onclick="notesDeleteCurrent()" aria-label="Delete note">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-        </button>
-      </div>
-      <div class="notes-toolbar">
-        <button class="notes-fmt-btn" data-cmd="bold" title="Bold" onclick="notesFmt('bold')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg></button>
-        <button class="notes-fmt-btn" data-cmd="italic" title="Italic" onclick="notesFmt('italic')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="notes-fmt-btn" data-cmd="underline" title="Underline" onclick="notesFmt('underline')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg></button>
-        <button class="notes-fmt-btn" data-cmd="strikeThrough" title="Strikethrough" onclick="notesFmt('strikeThrough')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><path d="M16 6c0-1.6-1.8-3-4-3s-4 1.4-4 3c0 2 2 2.5 4 3"/><path d="M8 18c0 1.6 1.8 3 4 3s4-1.4 4-3"/></svg></button>
-        <button class="notes-fmt-btn" data-cmd="hiliteColor" title="Highlight" onclick="notesHighlight()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7L4 19h3l1.5-4h7L17 19h3L15 7z"/><line x1="6.5" y1="13" x2="17.5" y2="13"/></svg></button>
-        <div class="notes-fmt-sep"></div>
-        <button class="notes-fmt-btn" data-cmd="formatBlock-h3" title="Heading" onclick="notesFmt('formatBlock','H3')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="M4 5v14"/><path d="M12 5v14"/></svg></button>
-        <div class="notes-fmt-sep"></div>
-        <button class="notes-fmt-btn" data-cmd="insertUnorderedList" title="Bullet list" onclick="notesFmt('insertUnorderedList')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg></button>
-        <button class="notes-fmt-btn" data-cmd="insertOrderedList" title="Numbered list" onclick="notesFmt('insertOrderedList')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></button>
-        <div class="notes-fmt-sep"></div>
-        <button class="notes-fmt-btn notes-clear-btn" title="Clear note" onclick="notesClear()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
-        <button class="notes-fmt-btn" id="notesPinBtn" title="Pin note" onclick="notesTogglePin()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 6.4L21 9l-5 4.8 1.2 6.7L12 17l-5.2 3.5L8 13.8 3 9l6.6-.6z"/></svg></button>
-        <div class="notes-save-dot" id="notesSaveDot" title="Saved"></div>
-      </div>
-      <div class="notes-editor" id="notesEditor" contenteditable="true" spellcheck="true" data-placeholder="Start writing…"></div>
-    </div>
-  </div>
-
-  <!-- ══ TASKS PANEL ══ -->
-
-</div>
 
 <!-- NOTES DELETE CONFIRM MODAL -->
 <div class="dc-modal-overlay" id="notesConfirmOverlay" onclick="notesConfirmClose(event)">
@@ -5614,24 +6006,20 @@ function renderScheduleView(){
 
   const mArr = lang==='ne' ? MNE : MEN;
   const wdArr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const colorMap = {'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'};
+  const colorMap2 = {'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'};
   const todayMid = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
 
-  // Build day-keyed map for ALL BS years in data
   const msDay = 86400000;
   const bsYears = Object.keys(BS).map(Number).sort((a,b)=>a-b);
   const firstBsY = bsYears[0], lastBsY = bsYears[bsYears.length-1];
 
-  // Compute AD bounds
   const adStart = bsToAd(firstBsY, 1, 1);
   const adStartMid = new Date(adStart.getFullYear(), adStart.getMonth(), adStart.getDate());
   const lastDim = BS[lastBsY][11];
   const adEnd = bsToAd(lastBsY, 12, lastDim);
   const adEndMid = new Date(adEnd.getFullYear(), adEnd.getMonth(), adEnd.getDate());
 
-  const DAYS = Math.round((adEndMid - adStartMid) / msDay) + 1;
   const dayMap = {};
-
   function getDay(adMid){
     const k = adMid.toISOString().slice(0,10);
     if(!dayMap[k]) dayMap[k] = {adMid, items:[]};
@@ -5642,7 +6030,6 @@ function renderScheduleView(){
   userEvents.forEach(ev => {
     const {startMid, endMid} = getEventRangeMid(ev);
     const spanDays = Math.round((endMid - startMid) / msDay);
-
     function pushDay(occStart, occEnd){
       for(let s=new Date(occStart); s<=occEnd && s<=adEndMid; s=new Date(s.getTime()+msDay)){
         if(s < adStartMid) continue;
@@ -5650,12 +6037,8 @@ function renderScheduleView(){
         getDay(new Date(s)).items.push({type:'evt', ev, bs});
       }
     }
-
     if(!ev.recur && !ev.repeatYearly){ pushDay(startMid, endMid); return; }
-
     if(ev.repeatYearly && !ev.recur){
-      // Iterate BS years directly — using Jan-1 AD→BS mapping mis-assigns
-      // dates whose BS year starts mid-April, causing duplicates or misses.
       for(let bsY=firstBsY; bsY<=lastBsY+1; bsY++){
         if(!BS[bsY]) continue;
         const maxD = BS[bsY][ev.bsM - 1] ?? 30;
@@ -5667,22 +6050,18 @@ function renderScheduleView(){
       }
       return;
     }
-
     const r = ev.recur;
     if(!r||!r.freq){ pushDay(startMid,endMid); return; }
     const interval = r.interval || 1;
     let occ = 0, cur = new Date(startMid);
-    const maxIter = 600;
-    let iter = 0;
-    const windowEnd = adEndMid;
-    while(cur <= windowEnd && iter++ < maxIter){
+    const maxIter = 600; let iter = 0;
+    while(cur <= adEndMid && iter++ < maxIter){
       if(r.endType==='count' && occ >= (r.endCount||1)) break;
       if(r.endType==='date' && r.endAdMs){
         const ed=new Date(r.endAdMs); const edM=new Date(ed.getFullYear(),ed.getMonth(),ed.getDate());
         if(cur>edM) break;
       }
-      const occEnd = new Date(cur.getTime()+spanDays*msDay);
-      pushDay(cur,occEnd);
+      pushDay(cur, new Date(cur.getTime()+spanDays*msDay));
       occ++;
       if(r.freq==='daily') cur=new Date(cur.getTime()+interval*msDay);
       else if(r.freq==='weekly'){
@@ -5704,9 +6083,8 @@ function renderScheduleView(){
     if(!BS[ky]) continue;
     const ad=bsToAd(ky,km,kd);
     const adMid=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
-    if(adMid>=adStartMid && adMid<=adEndMid){
+    if(adMid>=adStartMid && adMid<=adEndMid)
       getDay(adMid).items.push({type:'hol',hol:HOL[key],ky,km,kd});
-    }
   }
 
   // — Observances —
@@ -5715,158 +6093,230 @@ function renderScheduleView(){
     if(!BS[ky]) continue;
     const ad=bsToAd(ky,km,kd);
     const adMid=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
-    if(adMid>=adStartMid && adMid<=adEndMid){
+    if(adMid>=adStartMid && adMid<=adEndMid)
       getDay(adMid).items.push({type:'obs',obs:OBS[key],ky,km,kd});
-    }
   }
 
-  // — Cycle phases (start of each phase as marker) —
+  // — Cycle phases —
   if(cycleData && cycleData.lastPeriodStart){
-    const cl = cycleData.cycleLength||28;
-    const pl = cycleData.periodLength||5;
-    const baseRaw = new Date(cycleData.lastPeriodStart);
-    const baseMid = new Date(baseRaw.getFullYear(), baseRaw.getMonth(), baseRaw.getDate());
-    let cycleStart = new Date(baseMid);
-    while(new Date(cycleStart.getTime()+cl*msDay) < adStartMid) cycleStart = new Date(cycleStart.getTime()+cl*msDay);
-    const phases = [
-      {name:'Menstrual',  offset:0,      emoji:'🔴', color:'#FF4757'},
-      {name:'Follicular', offset:pl,     emoji:'🌱', color:'#FF6B9D'},
-      {name:'Ovulation',  offset:cl-16,  emoji:'✨', color:'#a78bfa'},
-      {name:'Luteal',     offset:cl-12,  emoji:'🌙', color:'#3B82F6'},
+    const cl=cycleData.cycleLength||28, pl=cycleData.periodLength||5;
+    const baseRaw=new Date(cycleData.lastPeriodStart);
+    const baseMid=new Date(baseRaw.getFullYear(),baseRaw.getMonth(),baseRaw.getDate());
+    let cycleStart=new Date(baseMid);
+    while(new Date(cycleStart.getTime()+cl*msDay)<adStartMid) cycleStart=new Date(cycleStart.getTime()+cl*msDay);
+    const phases=[
+      {name:'Menstrual',offset:0,emoji:'🔴',color:'#FF4757'},
+      {name:'Follicular',offset:pl,emoji:'🌱',color:'#FF6B9D'},
+      {name:'Ovulation',offset:cl-16,emoji:'✨',color:'#a78bfa'},
+      {name:'Luteal',offset:cl-12,emoji:'🌙',color:'#3B82F6'},
     ];
     for(let safe=0; safe<1000 && cycleStart<=adEndMid; safe++){
-      phases.forEach(ph => {
-        const phDay = new Date(cycleStart.getTime() + ph.offset*msDay);
-        if(phDay >= adStartMid && phDay <= adEndMid){
-          getDay(phDay).items.push({type:'cyc', phase:ph.name, emoji:ph.emoji, color:ph.color});
-        }
+      phases.forEach(ph=>{
+        const phDay=new Date(cycleStart.getTime()+ph.offset*msDay);
+        if(phDay>=adStartMid && phDay<=adEndMid)
+          getDay(phDay).items.push({type:'cyc',phase:ph.name,emoji:ph.emoji,color:ph.color});
       });
-      cycleStart = new Date(cycleStart.getTime()+cl*msDay);
+      cycleStart=new Date(cycleStart.getTime()+cl*msDay);
     }
   }
 
-  // Build month-grouped structure across ALL BS years/months
-  // Only include months that have at least 1 event/holiday, PLUS today's month always
   const eventDayKeys = new Set(Object.keys(dayMap));
 
-  const fmtShort = (d) => {
-    const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    return `${months[d.getMonth()]} ${d.getDate()}`;
-  };
-  const wdArr2 = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-
-  let html = '';
+  // ── Build month chip strip + body HTML ──
+  let chipHtml = '';
+  let bodyHtml = '';
   let todayMonthAnchorId = null;
 
-  for(let y = Math.max(firstBsY, 2083); y <= Math.min(lastBsY, 2086); y++){
+  // Collect months that have events or are current/near-current
+  const months = [];
+  for(let y=Math.max(firstBsY,2083); y<=Math.min(lastBsY,2086); y++){
     if(!BS[y]) continue;
-    for(let m = 1; m <= 12; m++){
-      const dims = BS[y][m-1];
-      if(!dims) continue;
+    for(let m=1; m<=12; m++){
+      const dims=BS[y][m-1]; if(!dims) continue;
+      const isCurrentMonth=(y===TODAYBS.y && m===TODAYBS.m);
+      const isPastMonth=(y<TODAYBS.y)||(y===TODAYBS.y&&m<TODAYBS.m);
 
-      // Collect event days in this BS month
-      const evtDays = [];
-      for(let d = 1; d <= dims; d++){
-        const ad = bsToAd(y, m, d);
-        const adMid2 = new Date(ad.getFullYear(), ad.getMonth(), ad.getDate());
-        const k = adMid2.toISOString().slice(0,10);
-        if(eventDayKeys.has(k)) evtDays.push({d, adMid2, k});
+      // Collect event days
+      const evtDays=[];
+      for(let d=1;d<=dims;d++){
+        const ad=bsToAd(y,m,d);
+        const adMid2=new Date(ad.getFullYear(),ad.getMonth(),ad.getDate());
+        const k=adMid2.toISOString().slice(0,10);
+        if(eventDayKeys.has(k)) evtDays.push({d,adMid2,k});
       }
-
-      const isCurrentMonth = (y === TODAYBS.y && m === TODAYBS.m);
-      const isPastMonth = (y < TODAYBS.y) || (y === TODAYBS.y && m < TODAYBS.m);
-
-      // Always show all months (don't skip empty ones)
-
-      const bsMonthName = mArr[m-1] || '';
-      const anchorId = `schd-month-${y}-${m}`;
-      if(isCurrentMonth) todayMonthAnchorId = anchorId;
-
-      const bannerClass = isPastMonth ? 'gc-month-banner past' : isCurrentMonth ? 'gc-month-banner current' : 'gc-month-banner';
-      html += `<div class="${bannerClass}" id="${anchorId}">
-        <div class="gc-month-banner-label">${bsMonthName} ${y}</div>
-        ${isCurrentMonth ? '<div class="gc-month-current-badge">Current Month</div>' : ''}
-        ${isPastMonth ? '<div class="gc-month-past-badge">Past</div>' : ''}
-      </div>`;
-
-      if(evtDays.length === 0){
-        html += `<div class="gc-month-empty">${isPastMonth ? 'No events' : isCurrentMonth ? 'No events this month' : 'No events scheduled'}</div>`;
-        continue;
-      }
-
-      evtDays.forEach(({d, adMid2, k}) => {
-        const {adMid, items} = dayMap[k];
-        const isToday = adMid2.getTime() === todayMid.getTime();
-        const isPastDay = adMid2 < todayMid;
-        const bs = {y, m, d};
-        const dd = adMid2.getDate();
-        const wd = wdArr[adMid2.getDay()];
-        const adMon = ADMEN[adMid2.getMonth()];
-        const bsStr = `${mArr[m-1]} ${d}`;
-
-        const pillsHtml = items.map(it => {
-          if(it.type==='hol'){
-            const name = lang==='ne'?it.hol.np:it.hol.en;
-            return `<div class="gc-evt-pill hol" onclick="event.stopPropagation();openDay(${it.ky},${it.km},${it.kd})">
-              <div class="gc-evt-pill-dot"></div>
-              <div class="gc-evt-pill-text">🎉 ${name}</div>
-              <div class="gc-evt-pill-sub">${bsStr}</div>
-            </div>`;
-          }
-          if(it.type==='obs'){
-            const name = lang==='ne'?it.obs.np:it.obs.en;
-            return `<div class="gc-evt-pill obs" onclick="event.stopPropagation();openDay(${it.ky},${it.km},${it.kd})">
-              <div class="gc-evt-pill-dot" style="background:#7ab7ff;"></div>
-              <div class="gc-evt-pill-text">🎀 ${name}</div>
-              <div class="gc-evt-pill-sub">${bsStr}</div>
-            </div>`;
-          }
-          if(it.type==='cyc'){
-            return `<div class="gc-evt-pill cyc" onclick="event.stopPropagation();openSheet('cycle')">
-              <div class="gc-evt-pill-dot" style="background:${it.color};"></div>
-              <div class="gc-evt-pill-text">${it.emoji} ${it.phase} phase begins</div>
-              <div class="gc-evt-pill-sub">Cycle</div>
-            </div>`;
-          }
-          const ev=it.ev;
-          const colorMap2={'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'};
-          const c=colorMap2[ev.color]||'#3B82F6';
-          const bsDay=it.bs;
-          return `<div class="gc-evt-pill evt" onclick="event.stopPropagation();openDay(${bsDay.y},${bsDay.m},${bsDay.d})" style="border-left:3px solid ${c};">
-            <div class="gc-evt-pill-dot" style="background:${c};"></div>
-            <div class="gc-evt-pill-text">${ev.title}</div>
-            <div class="gc-evt-pill-sub">${bsStr}</div>
-          </div>`;
-        }).join('');
-
-        html += `<div class="gc-day-row${isPastDay?' past':''}" onclick="openDay(${y},${m},${d})">
-          <div class="gc-day-left">
-            <div class="gc-day-num${isToday?' today':''}${isPastDay?' past':''}">
-              <div class="gc-day-n">${dd}</div>
-              <div class="gc-day-wd">${wd}</div>
-              <div class="gc-day-mon">${adMon}</div>
-            </div>
-          </div>
-          <div class="gc-day-right">${pillsHtml}</div>
-        </div>`;
-      });
+      months.push({y,m,dims,isCurrentMonth,isPastMonth,evtDays});
     }
   }
 
-  if(!html){
-    wrap.innerHTML='<div class="schd-empty">📅 No events found</div>';
+  months.forEach(({y,m,dims,isCurrentMonth,isPastMonth,evtDays})=>{
+    const bsMonthName=mArr[m-1]||'';
+    const anchorId=`schd-month-${y}-${m}`;
+    if(isCurrentMonth) todayMonthAnchorId=anchorId;
+    const chipOnClass=isCurrentMonth?' sv-cur':'';
+
+    // Month chip
+    chipHtml += `<button class="sv-month-chip${chipOnClass}" onclick="document.getElementById('${anchorId}')?.scrollIntoView({behavior:'smooth',block:'start'})">
+      ${isCurrentMonth?'<span class="sv-month-chip-dot"></span>':''}${bsMonthName.substring(0,3)} ${y}
+    </button>`;
+
+    // Section header
+    const badgeHtml = isCurrentMonth
+      ? `<span class="sv-month-badge current">This month</span>`
+      : isPastMonth
+      ? `<span class="sv-month-badge past">Past</span>`
+      : '';
+
+    const evtCountText = evtDays.length > 0
+      ? `<span class="sv-month-evt-count">${evtDays.length} event${evtDays.length!==1?'s':''}</span>`
+      : '';
+
+    bodyHtml += `<div class="sv-month-section" id="${anchorId}">
+      <span class="sv-month-label">${bsMonthName} <span style="font-weight:700;opacity:.6;font-size:.8em;">${y}</span></span>
+      ${evtCountText}${badgeHtml}
+    </div>`;
+
+    // Always inject today into evtDays if it belongs to this month and isn't already there
+    if(isCurrentMonth){
+      const todayBsD = TODAYBS.d;
+      const alreadyHasToday = evtDays.some(({d})=> d === todayBsD);
+      if(!alreadyHasToday){
+        const adToday = bsToAd(y, m, todayBsD);
+        const adTodayMid = new Date(adToday.getFullYear(), adToday.getMonth(), adToday.getDate());
+        evtDays.push({d: todayBsD, adMid2: adTodayMid, k: adTodayMid.toISOString().slice(0,10)});
+        evtDays.sort((a,b)=>a.d-b.d);
+      }
+    }
+
+    if(evtDays.length===0){
+      const emptyMsg = isPastMonth ? 'No events recorded' : isCurrentMonth ? 'Nothing scheduled' : 'Clear ahead';
+      bodyHtml += `<div style="padding:0 16px 4px;">
+        <div class="sv-empty-month">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+          ${emptyMsg}
+        </div>
+      </div>`;
+      return;
+    }
+
+    // Timeline for this month
+    bodyHtml += `<div class="sv-timeline">`;
+
+    evtDays.forEach(({d,adMid2,k})=>{
+      const dayEntry = dayMap[k];
+      const items = dayEntry ? dayEntry.items : [];
+      const isToday = adMid2.getTime() === todayMid.getTime();
+      const isPastDay = adMid2 < todayMid;
+      const isWknd = [0,6].includes(adMid2.getDay());
+      const dd = adMid2.getDate();
+      const wd = wdArr[adMid2.getDay()];
+      const bsStr = `${mArr[m-1]} ${d}`;
+
+      const cardsHtml = items.map(it=>{
+        if(it.type==='hol'){
+          const name = lang==='ne'?it.hol.np:it.hol.en;
+          return `<div class="sv-evt-card hol" onclick="event.stopPropagation();openDay(${it.ky},${it.km},${it.kd})">
+            <div class="sv-evt-accent"></div>
+            <div class="sv-evt-icon">🎉</div>
+            <div class="sv-evt-body">
+              <div class="sv-evt-title">${name}</div>
+              <div class="sv-evt-sub">${bsStr} · Public Holiday</div>
+            </div>
+            <span class="sv-evt-tag hol">Holiday</span>
+          </div>`;
+        }
+        if(it.type==='obs'){
+          const name = lang==='ne'?it.obs.np:it.obs.en;
+          return `<div class="sv-evt-card obs" onclick="event.stopPropagation();openDay(${it.ky},${it.km},${it.kd})">
+            <div class="sv-evt-accent"></div>
+            <div class="sv-evt-icon">🎀</div>
+            <div class="sv-evt-body">
+              <div class="sv-evt-title">${name}</div>
+              <div class="sv-evt-sub">${bsStr} · Observance</div>
+            </div>
+            <span class="sv-evt-tag obs">Observe</span>
+          </div>`;
+        }
+        if(it.type==='cyc'){
+          return `<div class="sv-evt-card cyc" onclick="event.stopPropagation();openSheet('cycle')">
+            <div class="sv-evt-accent" style="background:linear-gradient(180deg,${it.color},${it.color}88);"></div>
+            <div class="sv-evt-icon">${it.emoji}</div>
+            <div class="sv-evt-body">
+              <div class="sv-evt-title">${it.phase} phase begins</div>
+              <div class="sv-evt-sub">${bsStr} · Cycle</div>
+            </div>
+            <span class="sv-evt-tag cyc">Cycle</span>
+          </div>`;
+        }
+        const ev=it.ev;
+        const c=colorMap2[ev.color]||'#3B82F6';
+        const bsDay=it.bs;
+        const catLabel=ev.color?ev.color.charAt(0).toUpperCase()+ev.color.slice(1):'Event';
+        return `<div class="sv-evt-card evt" onclick="event.stopPropagation();openDay(${bsDay.y},${bsDay.m},${bsDay.d})">
+          <div class="sv-evt-accent" style="background:linear-gradient(180deg,${c},${c}66);"></div>
+          <div class="sv-evt-icon" style="background:${c}18;">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="${c}" stroke-width="2.3" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+          </div>
+          <div class="sv-evt-body">
+            <div class="sv-evt-title">${ev.title}</div>
+            <div class="sv-evt-sub">${bsStr}</div>
+          </div>
+          <span class="sv-evt-tag evt" style="background:${c}14;color:${c};">${catLabel}</span>
+        </div>`;
+      }).join('');
+
+      const emptyTodayHtml = (isToday && items.length === 0)
+        ? `<div class="sv-today-no-events">No events today — tap to add one</div>`
+        : '';
+
+      const todayIndicator = isToday ? `<div class="sv-today-line"></div>` : '';
+      const todayAnchorAttr = isToday ? ' id="schd-today-anchor"' : '';
+      bodyHtml += `<div class="sv-day-block${isPastDay?' past':''}${isToday?' is-today':''}" onclick="openDay(${y},${m},${d})"${todayAnchorAttr}>
+        ${todayIndicator}
+        <div class="sv-day-date">
+          <div class="sv-day-bubble${isToday?' today':''}${isPastDay?' past':''}${isWknd?' wknd':''}">
+            <div class="sv-dn">${d}</div>
+            <div class="sv-bubble-sep"></div>
+            <div class="sv-dw">${wd}</div>
+          </div>
+          <div class="sv-ad-label">${dd}</div>
+        </div>
+        <div class="sv-day-cards">${cardsHtml}${emptyTodayHtml}</div>
+      </div>`;
+    });
+
+    bodyHtml += `</div>`; // end sv-timeline
+  });
+
+  if(!bodyHtml){
+    wrap.innerHTML = `<div class="sv-empty-global">
+      <div class="sv-empty-global-icon">📅</div>
+      <div class="sv-empty-global-text">No events found</div>
+    </div>`;
     return;
   }
 
-  wrap.innerHTML = html;
+  // Assemble: sticky month strip + body
+  wrap.innerHTML = `
+    <div class="sv-month-strip">
+      <div class="sv-month-strip-scroll">${chipHtml}</div>
+    </div>
+    ${bodyHtml}
+  `;
 
-  // Scroll to today's month
-  if(todayMonthAnchorId){
-    requestAnimationFrame(()=>{
+  // Scroll so today is visible with a bit of context above it
+  requestAnimationFrame(()=>{
+    const todayEl = document.getElementById('schd-today-anchor');
+    if(todayEl){
+      const top = todayEl.getBoundingClientRect().top + window.pageYOffset - 160;
+      window.scrollTo({top: Math.max(0, top), behavior: 'instant'});
+    } else if(todayMonthAnchorId){
       const el = document.getElementById(todayMonthAnchorId);
-      if(el) el.scrollIntoView({behavior:'instant', block:'start'});
-    });
-  }
+      if(el){
+        const top = el.getBoundingClientRect().top + window.pageYOffset - 60;
+        window.scrollTo({top: Math.max(0, top), behavior: 'instant'});
+      }
+    }
+  });
 }
 
 // ── WEEK VIEW ────────────────────────────────────────────────────────────
@@ -5916,12 +6366,14 @@ function toggleWeekView(){
     weekView.style.flexDirection = 'column';
     renderWeekView();
     if(upcoming) upcoming.style.display='none';
+    const ni=document.getElementById('notesInlineSection'); if(ni) ni.style.display='none';
   } else {
     btn.classList.remove('on');
     tabAll.classList.add('on');
     if(ccard) ccard.style.display='';
     weekView.style.display = 'none';
     if(upcoming) upcoming.style.display='';
+    const ni=document.getElementById('notesInlineSection'); if(ni) ni.style.display='';
     wvStopNowLineTimer();
     render();
   }
@@ -5970,6 +6422,7 @@ function toggleMonthTab(){
     tabAll.classList.remove('on');
     if(ccard) ccard.style.display='none';
     if(upcoming) upcoming.style.display='none';
+    const ni=document.getElementById('notesInlineSection'); if(ni) ni.style.display='none';
     if(monthTabView){
       monthTabView.style.display='block';
       renderMonthTabView();
@@ -5980,6 +6433,7 @@ function toggleMonthTab(){
     if(ccard) ccard.style.display='';
     if(monthTabView) monthTabView.style.display='none';
     if(upcoming) upcoming.style.display='';
+    const ni=document.getElementById('notesInlineSection'); if(ni) ni.style.display='';
     render();
   }
 }
@@ -6422,12 +6876,14 @@ function toggleDayView(){
     dayView.style.flexDirection = 'column';
     renderDayView();
     if(upcoming) upcoming.style.display='none';
+    const ni=document.getElementById('notesInlineSection'); if(ni) ni.style.display='none';
   } else {
     btn.classList.remove('on');
     tabAll.classList.add('on');
     if(ccard) ccard.style.display='';
     dayView.style.display = 'none';
     if(upcoming) upcoming.style.display='';
+    const ni=document.getElementById('notesInlineSection'); if(ni) ni.style.display='';
     dvStopNowLineTimer();
     render();
   }
@@ -12086,10 +12542,7 @@ function switchTab(tab) {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.6 20H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4"/><path d="M14 19l2 2l4-4"/><path d="M9 8h4"/><path d="M9 12h2"/></svg>
     Tracker
   </button>
-  <button class="bnav-btn" id="bnavNotes" onclick="switchTab('notes')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-    Notes
-  </button>
+
 </nav>
 
 <div class="daycounter-view" id="dayCounterView">
