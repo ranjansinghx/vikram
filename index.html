@@ -10270,15 +10270,15 @@ function cyResetConfirmYes(){
     return d.myCode;
   }
 
-  // Auto-subscribe on load if already paired
-  (function initOnLoad(){
-    const d = pairLoad();
-    if(d.partnerCode && d.myCode){
-      fbPushMyCycle();
-      fbSubscribePartnerCycle(d.partnerCode);
-      fbSubscribeMsgs(d.myCode, d.partnerCode);
-    }
-  })();
+  // Expose Firebase helpers so the bottom-of-body init (after SDK loads) can call them
+  window._fbPair = {
+    pushMyCycle:           fbPushMyCycle,
+    subscribePartnerCycle: fbSubscribePartnerCycle,
+    subscribeMsgs:         fbSubscribeMsgs,
+    pairLoad:              pairLoad
+  };
+  // initOnLoad intentionally skipped here — Firebase SDK is not loaded yet.
+  // The bottom-of-body <script> calls window._fbPair after firebase.initializeApp().
 
   // Derive "partner cycle" info from stored partner data
   function partnerPhaseInfo(p){
@@ -14627,7 +14627,7 @@ window.inviteFriends = function() {
 <script>
 (function(){
   try {
-    if (firebase.apps.length) return; // already initialised
+    if (firebase.apps.length) return;
     firebase.initializeApp({
       apiKey:            "AIzaSyAFr9Amc7C3YKY27P_RdQ-3Rb-cH1ReFoc",
       authDomain:        "vikram-6e99b.firebaseapp.com",
@@ -14637,40 +14637,17 @@ window.inviteFriends = function() {
       messagingSenderId: "198553115649",
       appId:             "1:198553115649:web:081e794d5b68810556f400"
     });
-    // If already paired, kick off Firebase subscriptions now that SDK is ready
-    if (typeof window._pairOnCycleSave === 'function') {
-      try {
-        const pd = JSON.parse(localStorage.getItem('vikram_pair_v1') || '{}');
-        if (pd.myCode && pd.partnerCode) {
-          const db = firebase.database();
-          // Push own cycle
-          const cd = (typeof cycleData !== 'undefined') ? cycleData : {};
-          db.ref('cycles/' + pd.myCode).set({
-            lastPeriodStart: cd.lastPeriodStart || null,
-            cycleLength:     cd.cycleLength     || 28,
-            periodLength:    cd.periodLength    || 5,
-            updatedAt:       Date.now()
-          }).catch(()=>{});
-          // Subscribe to partner cycle
-          db.ref('cycles/' + pd.partnerCode).on('value', snap => {
-            const val = snap.val(); if (!val) return;
-            const d = JSON.parse(localStorage.getItem('vikram_pair_v1') || '{}');
-            d.partnerCycleData = { lastPeriodStart: val.lastPeriodStart||null, cycleLength: val.cycleLength||28, periodLength: val.periodLength||5 };
-            d.partnerCycleUpdatedAt = val.updatedAt || Date.now();
-            localStorage.setItem('vikram_pair_v1', JSON.stringify(d));
-            const wrap = document.getElementById('pairSyncSection');
-            if (wrap && wrap.closest('.sheet.open') && typeof renderPairSection === 'function') renderPairSection();
-          });
-          // Subscribe to moments
-          const rk = [pd.myCode.replace('-',''), pd.partnerCode.replace('-','')].sort().join('_');
-          db.ref('moments/' + rk).on('value', snap => {
-            const val = snap.val() || {};
-            const msgs = Object.values(val).sort((a,b) => a.ts - b.ts);
-            localStorage.setItem('vikram_pair_moments', JSON.stringify(msgs));
-            if (typeof window.renderPairMoments === 'function') window.renderPairMoments();
-          });
-        }
-      } catch(e) { console.warn('[Vikram] post-init pair setup failed:', e); }
+
+    // Firebase is now ready — wire up the pair IIFE's functions via the bridge it exposed
+    if (window._fbPair) {
+      const p = window._fbPair;
+      const d = p.pairLoad();
+      if (d.myCode && d.partnerCode) {
+        p.pushMyCycle();                              // push own cycle to /cycles/<myCode>
+        p.subscribePartnerCycle(d.partnerCode);       // listen to /cycles/<partnerCode>
+        p.subscribeMsgs(d.myCode, d.partnerCode);     // listen to /moments/<roomKey>
+        console.log('[Vikram] Firebase pair subscriptions active');
+      }
     }
   } catch(e) { console.warn('[Vikram] Firebase init failed:', e); }
 })();
