@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light" data-lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://www.gstatic.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://lh3.googleusercontent.com https://www.gstatic.com; connect-src https://www.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebasedatabase.app wss://*.firebasedatabase.app https://securetoken.googleapis.com https://identitytoolkit.googleapis.com; frame-src https://accounts.google.com https://vikram-6e99b.firebaseapp.com; object-src 'none'; base-uri 'self';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' blob:; script-src 'self' 'unsafe-inline' blob: https://accounts.google.com https://apis.google.com https://www.gstatic.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com data:; img-src 'self' data: blob: https://lh3.googleusercontent.com https://www.gstatic.com; connect-src 'self' blob: https://www.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com https://*.firebasedatabase.app wss://*.firebasedatabase.app https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://fonts.googleapis.com https://fonts.gstatic.com; worker-src blob: 'self'; frame-src https://accounts.google.com https://vikram-6e99b.firebaseapp.com; object-src 'none'; base-uri 'self';">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="X-Frame-Options" content="DENY">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
@@ -36,8 +36,17 @@
 <link rel="manifest" id="pwaManifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preload" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" onerror="this.remove()">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
+<style>
+/* System font fallback stack when Google Fonts can't load (offline) */
+@supports (font-family: 'Nunito') {
+  /* Will be overridden when Nunito loads */
+}
+body, .ne, [class*="splash"] {
+  font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+</style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -4553,7 +4562,10 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 <script>
 // Dismiss splash once page is fully loaded and first render settles
 (function(){
+  var splashDone = false;
   function hideSplash(){
+    if(splashDone) return;
+    splashDone = true;
     var el = document.getElementById('vikramSplash');
     if(!el) return;
     el.classList.add('fade-out');
@@ -4567,6 +4579,12 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
       setTimeout(hideSplash, 320);
     });
   }
+  // Safety timeout: if offline or external resources stall, dismiss after 2.5s anyway
+  setTimeout(hideSplash, 2500);
+  // Also dismiss on DOMContentLoaded if we're already offline — calendar works without network
+  document.addEventListener('DOMContentLoaded', function(){
+    if(!navigator.onLine) setTimeout(hideSplash, 600);
+  });
 })();
 </script>
 
@@ -11186,6 +11204,8 @@ self.addEventListener('message',e=>{
 });`;
     const swBlob=new Blob([sw],{type:'application/javascript'});
     const swURL=URL.createObjectURL(swBlob);
+    // Store the SW blob URL so the SW can survive page refreshes within the session
+    try { sessionStorage.setItem('vikram_sw_blob', swURL); } catch(e){}
     navigator.serviceWorker.register(swURL,{scope:'./'})
       .then(reg=>{
         // After SW activates, prime the cache with the current page
@@ -14820,42 +14840,104 @@ window.inviteFriends = function() {
   </button>
 </div>
 
-<!-- ══ FIREBASE SDK — loaded last so it never blocks page render ══ -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<!-- ══ FIREBASE SDK — async so it never blocks page render or offline use ══ -->
 <script>
 (function(){
-  try {
-    if(!window.firebase || !firebase.apps) return;
-    if (firebase.apps.length) return;
-    firebase.initializeApp({
-      apiKey:            "AIzaSyAFr9Amc7C3YKY27P_RdQ-3Rb-cH1ReFoc",
-      authDomain:        "vikram-6e99b.firebaseapp.com",
-      databaseURL:       "https://vikram-6e99b-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId:         "vikram-6e99b",
-      storageBucket:     "vikram-6e99b.firebasestorage.app",
-      messagingSenderId: "198553115649",
-      appId:             "1:198553115649:web:081e794d5b68810556f400"
-    });
-
-    // Firebase is now ready — wire up the pair IIFE's functions via the bridge it exposed
-    if (window._fbPair) {
-      const p = window._fbPair;
-      const d = p.pairLoad();
-      if (d.myCode && d.partnerCode) {
-        p.pushMyCycle();                              // push own cycle to /cycles/<myCode>
-        p.subscribePartnerCycle(d.partnerCode);       // listen to /cycles/<partnerCode>
-        p.subscribeMsgs(d.myCode, d.partnerCode);     // listen to /moments/<roomKey>
-        console.log('[Vikram] Firebase pair subscriptions active');
-      }
+  // Only load Firebase if we're online — it's not needed for core calendar function
+  function loadFirebase(){
+    var scripts=[
+      'https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js',
+      'https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js',
+      'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js'
+    ];
+    var loaded=0;
+    function loadNext(){
+      if(loaded>=scripts.length) return;
+      var s=document.createElement('script');
+      s.src=scripts[loaded++];
+      s.async=true;
+      s.onload=function(){
+        if(loaded<scripts.length) loadNext();
+        else initFirebaseApp();
+      };
+      s.onerror=function(){ /* silently skip if offline */ };
+      document.head.appendChild(s);
     }
-  } catch(e) { console.warn('[Vikram] Firebase init failed:', e); }
+    loadNext();
+  }
+  function initFirebaseApp(){
+    // Inline the Firebase init block here after SDK loads
+    try {
+      if(!window.firebase || !firebase.apps) return;
+      if(firebase.apps.length) return;
+      firebase.initializeApp({
+        apiKey:            "AIzaSyAFr9Amc7C3YKY27P_RdQ-3Rb-cH1ReFoc",
+        authDomain:        "vikram-6e99b.firebaseapp.com",
+        databaseURL:       "https://vikram-6e99b-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId:         "vikram-6e99b",
+        storageBucket:     "vikram-6e99b.firebasestorage.app",
+        messagingSenderId: "198553115649",
+        appId:             "1:198553115649:web:081e794d5b68810556f400"
+      });
+      if(window._fbPair){
+        var p=window._fbPair;
+        var d=p.pairLoad();
+        if(d.myCode&&d.partnerCode){
+          p.pushMyCycle();
+          p.subscribePartnerCycle(d.partnerCode);
+          p.subscribeMsgs(d.myCode,d.partnerCode);
+        }
+      }
+      // Wire up Google Auth after Firebase is ready
+      if(firebase.auth){
+        function updateGoogleUI(user){
+          var btn=document.getElementById('googleSignInBtn');
+          var info=document.getElementById('googleUserInfo');
+          if(!btn||!info) return;
+          if(user){
+            btn.style.display='none'; info.style.display='block';
+            var av=document.getElementById('googleAvatar'); if(av) av.src=user.photoURL||'';
+            var dn=document.getElementById('googleDisplayName'); if(dn) dn.textContent=user.displayName||'';
+            var em=document.getElementById('googleEmail'); if(em) em.textContent=user.email||'';
+            var ha=document.getElementById('hdrProfileAvatar');
+            if(ha&&user.photoURL){ha.innerHTML='';ha.style.background='none';var img=document.createElement('img');img.src=user.photoURL;img.style.cssText='width:16px;height:16px;border-radius:50%;object-fit:cover;';ha.appendChild(img);}
+          } else {
+            btn.style.display='flex'; info.style.display='none';
+            var ha=document.getElementById('hdrProfileAvatar');
+            if(ha){ha.innerHTML='?';ha.style.background='';}
+          }
+        }
+        window.signInWithGoogle=function(){
+          if(typeof haptic==='function') haptic('medium');
+          firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())
+            .then(function(r){updateGoogleUI(r.user);if(typeof vikramToast==='function')vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));})
+            .catch(function(){if(typeof vikramToast==='function')vikramToast('❌ Sign-in failed. Try again.');});
+        };
+        window.signOutGoogle=function(){
+          if(typeof haptic==='function') haptic('light');
+          firebase.auth().signOut().then(function(){updateGoogleUI(null);if(typeof vikramToast==='function')vikramToast('👋 Signed out');});
+        };
+        firebase.auth().onAuthStateChanged(function(user){
+          updateGoogleUI(user);
+          if(typeof renderGcalCard==='function') renderGcalCard();
+        });
+      }
+    } catch(e){ console.warn('[Vikram] Firebase init failed:',e); }
+  }
+  // Load Firebase after page is interactive (doesn't block offline calendar)
+  if(document.readyState==='complete'||document.readyState==='interactive'){
+    setTimeout(loadFirebase, 100);
+  } else {
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(loadFirebase, 100); });
+  }
 })();
 </script>
+<!-- Firebase init moved into async loader above -->
 <script>
-// ── GOOGLE AUTH ────────────────────────────────────────────────
+// ── GOOGLE AUTH — now handled inside async Firebase loader above ────────────
 (function(){
+  // This block intentionally left minimal; auth wiring moved to loadFirebase()
+  if(false) { // placeholder to avoid removing the script tag structure
   if(!window.firebase || !firebase.auth) return;
   function updateGoogleUI(user){
     const btn  = document.getElementById('googleSignInBtn');
@@ -14922,15 +15004,7 @@ window.inviteFriends = function() {
     });
   };
 
-  // Restore UI on every page load
-  document.addEventListener('DOMContentLoaded', function(){
-    // Wait for Firebase auth to be ready
-    const unsub = firebase.auth().onAuthStateChanged(function(user){
-      updateGoogleUI(user);
-      // Also refresh the calendar sync card in settings if open
-      if(typeof renderGcalCard === 'function') renderGcalCard();
-    });
-  });
+  } // end if(false) placeholder
 })();
 </script>
 
