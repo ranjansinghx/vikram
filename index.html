@@ -11076,6 +11076,8 @@ _ric(()=>{
   updateNotifCard();
   updateNotifBadges();
   checkIncomingSharedProfile();
+  // Render notes list on startup so saved notes appear on the home tab
+  if(typeof window.notesLoad === 'function') window.notesLoad();
 });
 setTimeout(checkEventReminders, 2500);
 
@@ -12524,6 +12526,8 @@ function switchTab(tab) {
     const mainFab = document.querySelector('.fab');
     if(mainFab)     mainFab.style.display     = '';
     closeAll();
+    // Refresh notes list so saved notes appear after page load or tab switch
+    if(typeof window.notesLoad === 'function') window.notesLoad();
   } else if(tab === 'schedule') {
     if(mainContent) mainContent.style.display = 'none';
     const mmView0 = document.getElementById('mmView');
