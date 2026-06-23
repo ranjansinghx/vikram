@@ -9696,6 +9696,9 @@ let gcalClientId = localStorage.getItem('vikram_gcal_cid')  || '';
 
 // ── Firebase-based Google Calendar token (no Client ID needed) ──────────────
 async function gcalGetTokenViaFirebase(){
+  if(!window.firebase || !firebase.auth){
+    throw new Error('firebase_unavailable');
+  }
   return new Promise((resolve, reject) => {
     const user = firebase.auth().currentUser;
     if(!user){
@@ -9781,6 +9784,10 @@ function exportICS(){
 function gcalIsExpired(){return Date.now()>gcalTokenExp-60000;}
 
 async function gcalConnect(){
+  if(!window.firebase || !firebase.auth){
+    if(typeof vikramToast==='function') vikramToast('Google sign-in is unavailable in this build.');
+    return;
+  }
   // If already signed in via Firebase, just re-auth for calendar scope
   const fbUser = firebase.auth().currentUser;
   if(!fbUser){
@@ -9880,7 +9887,7 @@ function renderGcalCard(){
   const holCount=Object.keys(HOL).length;
   const isConn=gcalToken&&!gcalIsExpired();
   // Check if user is signed in via Firebase
-  const fbUser=firebase.auth().currentUser;
+  const fbUser=(window.firebase && firebase.auth) ? firebase.auth().currentUser : null;
 
   wrap.innerHTML=`
   <!-- Block 1: Export ICS -->
@@ -14714,6 +14721,7 @@ window.inviteFriends = function() {
 <script>
 (function(){
   try {
+    if(!window.firebase || !firebase.apps) return;
     if (firebase.apps.length) return;
     firebase.initializeApp({
       apiKey:            "AIzaSyAFr9Amc7C3YKY27P_RdQ-3Rb-cH1ReFoc",
@@ -14742,6 +14750,7 @@ window.inviteFriends = function() {
 <script>
 // ── GOOGLE AUTH ────────────────────────────────────────────────
 (function(){
+  if(!window.firebase || !firebase.auth) return;
   function updateGoogleUI(user){
     const btn  = document.getElementById('googleSignInBtn');
     const info = document.getElementById('googleUserInfo');
@@ -14818,375 +14827,6 @@ window.inviteFriends = function() {
   });
 })();
 </script>
-<script>
-(function(){
-  const BS_MONTHS = ['Baishakh','Jestha','Ashadh','Shrawan','Bhadra','Ashwin','Kartik','Mangsir','Poush','Magh','Falgun','Chaitra'];
-  const AD_MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-  function esc(s){
-    return String(s == null ? '' : s)
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;')
-      .replace(/'/g,'&#39;');
-  }
-  function readJSON(key, fallback){
-    try{ return JSON.parse(localStorage.getItem(key) || '') || fallback; }catch(e){ return fallback; }
-  }
-  function pad2(n){ return String(n).padStart(2, '0'); }
-
-  if(typeof window.dcRender !== 'function'){
-    window.dcOpenAdd = function(){
-      const name = prompt('Counter name');
-      if(!name) return;
-      const arr = readJSON('vikram_daycounters', []);
-      arr.push({ id: Date.now(), name: name.trim(), startTs: Date.now(), lastCheckin: null });
-      localStorage.setItem('vikram_daycounters', JSON.stringify(arr));
-      window.dcRender();
-      window.dcHeatmapRender();
-    };
-    window.dcRender = function(){
-      const list = document.getElementById('dcList');
-      if(!list) return;
-      const cnt = document.getElementById('dcListCount');
-      const lbl = document.getElementById('dcListLabel');
-      const totalEl = document.getElementById('dcStatTotal');
-      const bestEl = document.getElementById('dcStatBest');
-      const ringNum = document.getElementById('dcHeroRingNum');
-      const arr = readJSON('vikram_daycounters', []);
-      const todayKey = new Date().toISOString().slice(0,10);
-      const checkedToday = arr.filter(c => c.lastCheckin === todayKey).length;
-      const best = arr.reduce((m, c) => Math.max(m, Math.floor((Date.now() - (c.startTs || Date.now())) / 86400000)), 0);
-      if(cnt) cnt.textContent = String(arr.length);
-      if(lbl) lbl.style.display = arr.length ? 'flex' : 'none';
-      if(totalEl) totalEl.textContent = String(arr.length);
-      if(bestEl) bestEl.textContent = String(best);
-      if(ringNum) ringNum.textContent = `${checkedToday}/${arr.length}`;
-      if(!arr.length){
-        list.innerHTML = '<div style="margin:14px 18px;padding:16px;border-radius:16px;background:var(--card);color:var(--dsub);font-weight:700;">No counters yet. Tap + to add one.</div>';
-        return;
-      }
-      list.innerHTML = arr.map((c, idx) => {
-        const days = Math.max(0, Math.floor((Date.now() - (c.startTs || Date.now())) / 86400000));
-        const color = ['#3B82F6','#10B981','#F59E0B','#EF4444','#8B5CF6'][idx % 5];
-        return `<div style="margin:0 18px 10px;padding:14px;border-radius:18px;background:var(--card);border:1px solid var(--border);border-left:4px solid ${color};">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-            <div style="min-width:0;">
-              <div style="font-size:15px;font-weight:900;color:var(--htext);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(c.name || 'Counter')}</div>
-              <div style="font-size:12px;color:var(--dsub);font-weight:700;margin-top:2px;">${days} day${days === 1 ? '' : 's'} since start</div>
-            </div>
-            <div style="font-size:12px;font-weight:800;color:var(--dsub);">#${idx + 1}</div>
-          </div>
-        </div>`;
-      }).join('');
-    };
-    window.dcHeatmapRender = function(){
-      const grid = document.getElementById('dcHeatmapGrid');
-      if(!grid) return;
-      const log = readJSON('vikram_checkin_log', {});
-      const cells = [];
-      const today = new Date();
-      for(let i = 41; i >= 0; i--){
-        const d = new Date(today);
-        d.setDate(d.getDate() - i);
-        const key = `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
-        const count = log[key] || 0;
-        const bg = count >= 4 ? '#22c55e' : count >= 3 ? 'rgba(34,197,94,.78)' : count >= 2 ? 'rgba(34,197,94,.5)' : count >= 1 ? 'rgba(34,197,94,.25)' : 'var(--border)';
-        cells.push(`<div title="${key}: ${count}" style="width:14px;height:14px;border-radius:4px;background:${bg};"></div>`);
-      }
-      grid.innerHTML = `<div style="display:grid;grid-template-columns:repeat(7,14px);gap:4px;">${cells.join('')}</div>`;
-    };
-  }
-
-  if(typeof window.renderPomodoroSheet !== 'function'){
-    window.pomoState = window.pomoState || { running:false, phase:'focus', secondsLeft:25*60, workMins:25, breakMins:5, longBreakMins:15, timer:null };
-    window.pomoReset = function(){
-      const s = window.pomoState;
-      s.running = false;
-      s.phase = 'focus';
-      s.secondsLeft = (s.workMins || 25) * 60;
-      if(s.timer) clearInterval(s.timer);
-      window.renderPomodoroSheet();
-    };
-    window.pomoSkip = function(){
-      const s = window.pomoState;
-      s.phase = s.phase === 'focus' ? 'break' : 'focus';
-      s.secondsLeft = (s.phase === 'focus' ? s.workMins : s.breakMins) * 60;
-      window.renderPomodoroSheet();
-    };
-    window.pomoAdjust = function(key, delta){
-      const s = window.pomoState;
-      s[key] = Math.max(1, (s[key] || 0) + delta);
-      if(!s.running && s.phase === 'focus') s.secondsLeft = s.workMins * 60;
-      window.renderPomodoroSheet();
-    };
-    window.pomoToggle = function(){
-      const s = window.pomoState;
-      s.running = !s.running;
-      if(s.running){
-        if(s.timer) clearInterval(s.timer);
-        s.timer = setInterval(() => {
-          const cur = window.pomoState;
-          cur.secondsLeft = Math.max(0, cur.secondsLeft - 1);
-          const timeEl = document.getElementById('pomoTimeDisplay');
-          if(timeEl) timeEl.textContent = `${Math.floor(cur.secondsLeft/60)}:${pad2(cur.secondsLeft%60)}`;
-          if(cur.secondsLeft <= 0){
-            clearInterval(cur.timer);
-            cur.timer = null;
-            cur.running = false;
-            const btn = document.getElementById('pomoToggleBtn');
-            if(btn) btn.textContent = 'Start';
-          }
-        }, 1000);
-      } else if(s.timer){
-        clearInterval(s.timer);
-        s.timer = null;
-      }
-      window.renderPomodoroSheet();
-    };
-    window.renderPomodoroSheet = function(){
-      const body = document.getElementById('pomodoroBody');
-      if(!body) return;
-      const s = window.pomoState;
-      body.innerHTML = `
-        <div style="width:100%;max-width:520px;padding:20px 18px 34px;">
-          <div style="padding:18px;border-radius:18px;background:var(--card);border:1px solid var(--border);margin-bottom:14px;">
-            <div style="font-size:13px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.6px;">Pomodoro Focus Timer</div>
-            <div id="pomoTimeDisplay" style="font-size:54px;font-weight:900;line-height:1;margin:12px 0 10px;color:var(--htext);">${Math.floor(s.secondsLeft/60)}:${pad2(s.secondsLeft%60)}</div>
-            <div style="font-size:13px;font-weight:700;color:var(--dsub);margin-bottom:14px;">${s.phase === 'focus' ? 'Focus' : 'Break'}</div>
-            <div style="display:flex;gap:10px;">
-              <button id="pomoToggleBtn" style="flex:1;padding:12px;border:none;border-radius:14px;background:var(--tf);color:#fff;font-weight:900;">${s.running ? 'Pause' : 'Start'}</button>
-              <button id="pomoResetBtn" style="padding:12px 16px;border:none;border-radius:14px;background:var(--tgbg);color:var(--dtext);font-weight:900;">Reset</button>
-              <button id="pomoSkipBtn" style="padding:12px 16px;border:none;border-radius:14px;background:var(--tgbg);color:var(--dtext);font-weight:900;">Skip</button>
-            </div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-            <div style="padding:14px;border-radius:16px;background:var(--card);border:1px solid var(--border);">
-              <div style="font-size:12px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.5px;">Focus</div>
-              <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
-                <button id="pomoWorkMinus" style="width:34px;height:34px;border:none;border-radius:10px;background:var(--tgbg);">-</button>
-                <div style="font-size:24px;font-weight:900;color:var(--htext);min-width:40px;text-align:center;">${s.workMins}</div>
-                <button id="pomoWorkPlus" style="width:34px;height:34px;border:none;border-radius:10px;background:var(--tgbg);">+</button>
-              </div>
-            </div>
-            <div style="padding:14px;border-radius:16px;background:var(--card);border:1px solid var(--border);">
-              <div style="font-size:12px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.5px;">Break</div>
-              <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
-                <button id="pomoBreakMinus" style="width:34px;height:34px;border:none;border-radius:10px;background:var(--tgbg);">-</button>
-                <div style="font-size:24px;font-weight:900;color:var(--htext);min-width:40px;text-align:center;">${s.breakMins}</div>
-                <button id="pomoBreakPlus" style="width:34px;height:34px;border:none;border-radius:10px;background:var(--tgbg);">+</button>
-              </div>
-            </div>
-          </div>
-        </div>`;
-      document.getElementById('pomoToggleBtn')?.addEventListener('click', window.pomoToggle);
-      document.getElementById('pomoResetBtn')?.addEventListener('click', window.pomoReset);
-      document.getElementById('pomoSkipBtn')?.addEventListener('click', window.pomoSkip);
-      document.getElementById('pomoWorkMinus')?.addEventListener('click', () => window.pomoAdjust('workMins', -5));
-      document.getElementById('pomoWorkPlus')?.addEventListener('click', () => window.pomoAdjust('workMins', 5));
-      document.getElementById('pomoBreakMinus')?.addEventListener('click', () => window.pomoAdjust('breakMins', -1));
-      document.getElementById('pomoBreakPlus')?.addEventListener('click', () => window.pomoAdjust('breakMins', 1));
-    };
-  }
-
-  if(typeof window.renderConverterSheet !== 'function'){
-    window.renderConverterSheet = function(){
-      const body = document.getElementById('converterBody');
-      if(!body) return;
-      body.innerHTML = `
-        <div style="width:100%;max-width:640px;padding:18px;">
-          <div style="padding:18px;border-radius:18px;background:var(--card);border:1px solid var(--border);margin-bottom:14px;">
-            <div style="font-size:18px;font-weight:900;color:var(--htext);">Date Converter</div>
-            <div style="margin-top:6px;font-size:13px;color:var(--dsub);font-weight:700;">BS and AD conversions on one screen.</div>
-          </div>
-          <div style="padding:18px;border-radius:18px;background:var(--card);border:1px solid var(--border);margin-bottom:12px;">
-            <div style="font-size:12px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">BS to AD</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-              <input id="convBsY" type="number" min="2055" max="2086" placeholder="Year" style="padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--tgbg);color:var(--dtext);">
-              <input id="convBsM" type="number" min="1" max="12" placeholder="Month" style="padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--tgbg);color:var(--dtext);">
-              <input id="convBsD" type="number" min="1" max="32" placeholder="Day" style="padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--tgbg);color:var(--dtext);">
-            </div>
-            <button id="convBsBtn" style="margin-top:10px;width:100%;padding:12px;border:none;border-radius:12px;background:var(--tf);color:#fff;font-weight:900;">Convert to AD</button>
-            <div id="convBsOut" style="margin-top:10px;font-weight:700;color:var(--dtext);"></div>
-          </div>
-          <div style="padding:18px;border-radius:18px;background:var(--card);border:1px solid var(--border);">
-            <div style="font-size:12px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;">AD to BS</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-              <input id="convAdY" type="number" min="1998" max="2030" placeholder="Year" style="padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--tgbg);color:var(--dtext);">
-              <input id="convAdM" type="number" min="1" max="12" placeholder="Month" style="padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--tgbg);color:var(--dtext);">
-              <input id="convAdD" type="number" min="1" max="31" placeholder="Day" style="padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--tgbg);color:var(--dtext);">
-            </div>
-            <button id="convAdBtn" style="margin-top:10px;width:100%;padding:12px;border:none;border-radius:12px;background:var(--tf);color:#fff;font-weight:900;">Convert to BS</button>
-            <div id="convAdOut" style="margin-top:10px;font-weight:700;color:var(--dtext);"></div>
-          </div>
-        </div>`;
-      const now = new Date();
-      const bs = adToBs(now);
-      document.getElementById('convBsY').value = bs.y;
-      document.getElementById('convBsM').value = bs.m;
-      document.getElementById('convBsD').value = bs.d;
-      document.getElementById('convAdY').value = now.getFullYear();
-      document.getElementById('convAdM').value = now.getMonth() + 1;
-      document.getElementById('convAdD').value = now.getDate();
-      document.getElementById('convBsBtn')?.addEventListener('click', () => {
-        try{
-          const ad = bsToAd(+document.getElementById('convBsY').value, +document.getElementById('convBsM').value, +document.getElementById('convBsD').value);
-          document.getElementById('convBsOut').textContent = ad.toDateString();
-        }catch(e){
-          document.getElementById('convBsOut').textContent = 'Could not convert that BS date.';
-        }
-      });
-      document.getElementById('convAdBtn')?.addEventListener('click', () => {
-        try{
-          const bs2 = adToBs(new Date(+document.getElementById('convAdY').value, +document.getElementById('convAdM').value - 1, +document.getElementById('convAdD').value));
-          document.getElementById('convAdOut').textContent = `BS ${bs2.y}-${bs2.m}-${bs2.d}`;
-        }catch(e){
-          document.getElementById('convAdOut').textContent = 'Could not convert that AD date.';
-        }
-      });
-    };
-  }
-
-  if(typeof window.renderEchoSheet !== 'function'){
-    const KEY = 'vikram_echo_fallback';
-    window.renderEchoSheet = function(targetEl){
-      const body = targetEl || document.getElementById('echoBody');
-      if(!body) return;
-      const saved = readJSON(KEY, null);
-      if(saved){
-        body.innerHTML = `<div style="width:100%;max-width:560px;padding:28px 20px;">
-          <div style="padding:18px;border-radius:18px;background:var(--card);border:1px solid var(--border);">
-            <div style="font-size:12px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.6px;">Echo sealed</div>
-            <div style="font-size:28px;font-weight:900;color:var(--htext);margin-top:10px;">Sealed.</div>
-            <div style="margin-top:10px;color:var(--dtext);font-weight:700;line-height:1.5;white-space:pre-wrap;">${esc(saved.answer)}</div>
-            <div style="margin-top:10px;font-size:12px;color:var(--dsub);font-weight:700;">Return date: ${esc(saved.date || 'not set')}</div>
-          </div>
-        </div>`;
-        return;
-      }
-      body.innerHTML = `<div style="width:100%;max-width:560px;padding:28px 20px;">
-        <div style="padding:18px;border-radius:18px;background:var(--card);border:1px solid var(--border);">
-          <div style="font-size:12px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.6px;">Echo</div>
-          <div style="font-size:28px;font-weight:900;color:var(--htext);margin-top:10px;">Speak once. Listen later.</div>
-          <textarea id="echoAnswer" style="width:100%;min-height:160px;margin-top:12px;padding:14px;border-radius:14px;border:1px solid var(--border);background:var(--tgbg);color:var(--dtext);font:inherit;resize:vertical;" placeholder="Write a message to your future self"></textarea>
-          <input id="echoDate" type="date" style="width:100%;margin-top:10px;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--tgbg);color:var(--dtext);font:inherit;">
-          <button id="echoSealBtn" style="margin-top:10px;width:100%;padding:12px;border:none;border-radius:12px;background:var(--tf);color:#fff;font-weight:900;">Seal it</button>
-        </div>
-      </div>`;
-      document.getElementById('echoSealBtn')?.addEventListener('click', () => {
-        const answer = document.getElementById('echoAnswer').value.trim();
-        if(!answer) return;
-        const date = document.getElementById('echoDate').value || '';
-        localStorage.setItem(KEY, JSON.stringify({ answer, date, sealedAt: new Date().toISOString() }));
-        window.renderEchoSheet(targetEl);
-      });
-    };
-  }
-
-  if(typeof window.renderColorMatcherSheet !== 'function'){
-    const COLORS = [
-      {name:'Red', hex:'#E63946'},{name:'Orange', hex:'#FF8C42'},{name:'Yellow', hex:'#FFD60A'},
-      {name:'Green', hex:'#2DC653'},{name:'Blue', hex:'#3A86FF'},{name:'Purple', hex:'#9D4EDD'},
-      {name:'Pink', hex:'#F72585'},{name:'Teal', hex:'#00B4D8'},{name:'Lime', hex:'#70E000'}
-    ];
-    window.cmState = window.cmState || { running:false, score:0, streak:0, bestStreak:0, timeLeft:60, timer:null, target:null, options:[] };
-    window.cmStopGame = function(){
-      const s = window.cmState;
-      if(s.timer) clearInterval(s.timer);
-      s.running = false;
-      s.timer = null;
-    };
-    function cmPickNext(){
-      const s = window.cmState;
-      const pool = [...COLORS].sort(() => Math.random() - 0.5);
-      s.target = pool[0];
-      s.options = pool.slice(0, 6).sort(() => Math.random() - 0.5);
-    }
-    function cmDraw(){
-      const s = window.cmState;
-      const body = document.getElementById('cmBody');
-      if(!body) return;
-      const targetName = s.target ? s.target.name.toUpperCase() : '?';
-      body.innerHTML = `<div style="min-height:100%;padding:20px 16px 28px;display:flex;flex-direction:column;gap:14px;">
-        <div style="padding:18px;border-radius:18px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);">
-          <div style="display:flex;gap:10px;justify-content:space-between;">
-            <div><div style="font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.55);font-weight:800;">Score</div><div id="cmScore" style="font-size:22px;font-weight:900;color:#fff;">${s.score}</div></div>
-            <div><div style="font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.55);font-weight:800;">Time</div><div id="cmTime" style="font-size:22px;font-weight:900;color:#fff;">${s.timeLeft}</div></div>
-            <div><div style="font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.55);font-weight:800;">Streak</div><div id="cmStreak" style="font-size:22px;font-weight:900;color:#fff;">${s.streak}</div></div>
-          </div>
-        </div>
-        <div style="padding:18px;border-radius:18px;background:#0b0b10;border:1px solid rgba(255,255,255,.08);color:#fff;">
-          <div style="font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:rgba(255,255,255,.55);font-weight:800;">Match this</div>
-          <div id="cmTarget" style="margin-top:8px;font-size:28px;font-weight:900;">${targetName}</div>
-          <div style="margin-top:12px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
-            ${(s.options || []).map(c => `<button data-name="${esc(c.name)}" style="aspect-ratio:1;border:none;border-radius:14px;background:${c.hex};color:#fff;font-weight:900;box-shadow:0 8px 18px rgba(0,0,0,.2);">${esc(c.name)}</button>`).join('')}
-          </div>
-        </div>
-        <button id="cmStartBtn" style="padding:12px;border:none;border-radius:14px;background:linear-gradient(135deg,#111,#000);color:#fff;font-weight:900;">${s.running ? 'Restart' : 'Start game'}</button>
-      </div>`;
-      body.querySelectorAll('button[data-name]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          if(!s.running) return;
-          if(btn.dataset.name === s.target?.name){
-            s.score += 10;
-            s.streak += 1;
-            if(s.streak > s.bestStreak) s.bestStreak = s.streak;
-            cmPickNext();
-            cmDraw();
-          } else {
-            s.score = Math.max(0, s.score - 5);
-            s.streak = 0;
-            cmDraw();
-          }
-        });
-      });
-      document.getElementById('cmStartBtn')?.addEventListener('click', () => {
-        const s = window.cmState;
-        cmStopGame();
-        s.running = true;
-        s.score = 0;
-        s.streak = 0;
-        s.bestStreak = 0;
-        s.timeLeft = 60;
-        cmPickNext();
-        cmDraw();
-        s.timer = setInterval(() => {
-          s.timeLeft -= 1;
-          const timeEl = document.getElementById('cmTime');
-          if(timeEl) timeEl.textContent = String(s.timeLeft);
-          if(s.timeLeft <= 0){
-            cmStopGame();
-            const body = document.getElementById('cmBody');
-            if(body) body.insertAdjacentHTML('afterbegin', '<div style="margin-bottom:10px;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.06);color:#fff;font-weight:900;">Game over</div>');
-          }
-        }, 1000);
-      });
-    }
-    window.renderColorMatcherSheet = function(){
-      const s = window.cmState;
-      if(!s.target) cmPickNext();
-      cmDraw();
-    };
-  }
-})();
-</script>
-<script>
-(function(){
-  let _homeNavLastTap = 0;
-  window.handleHomeNavTap = function() {
-    const now = Date.now();
-    if (now - _homeNavLastTap < 400) {
-      _homeNavLastTap = 0;
-      if(typeof haptic === 'function') haptic('medium');
-      if(typeof vikramToast === 'function') vikramToast('🔄 Refreshing…');
-      setTimeout(() => location.reload(), 150);
-      return;
-    }
-    _homeNavLastTap = now;
-    if(typeof switchTab === 'function') switchTab('home');
-  };
-})();
-</script>
 </body>
 </html>
