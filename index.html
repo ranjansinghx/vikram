@@ -1987,8 +1987,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   top:0;left:50%;transform:translateX(-50%);
   width:390px;max-width:100vw;
   bottom:62px;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
+  overflow:hidden;
   z-index:50;
   background:var(--sv-bg,var(--app-bg));
 }
@@ -2042,10 +2041,22 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 /* Body */
 .sv-body{
   flex:1;
+  min-height:0;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
   padding:16px 14px 32px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
+  display:block;
+}
+.sv-body > .sv-group,
+.sv-body > .sv-group-label{
+  display:block;
+}
+.sv-group-label + .sv-group,
+.sv-body > .sv-group-label{
+  margin-top:6px;
+}
+.sv-body > .sv-group{
+  margin-bottom:2px;
 }
 
 /* Section group card */
@@ -2068,7 +2079,11 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   color:var(--dsub);
   text-transform:uppercase;letter-spacing:.9px;
   padding:0 16px;
-  margin:0 0 4px;
+  margin:14px 0 6px;
+  display:block;
+}
+.sv-body > .sv-group-label:first-child{
+  margin-top:0;
 }
 
 /* Row inside a group */
@@ -5204,6 +5219,16 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <button class="tgl on" id="tgDark" onclick="toggleDark()"></button>
       </div>
 
+      <!-- Haptic Feedback -->
+      <div class="sv-row">
+        <div class="sv-icon" style="background:rgba(140,100,220,.13);">📳</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Haptic Feedback</div>
+          <div class="sv-sub">Vibration on taps and interactions</div>
+        </div>
+        <button class="tgl on" id="tgHaptic" onclick="togHaptic(this)"></button>
+      </div>
+
       <!-- Language -->
       <div class="sv-row">
         <div class="sv-icon" style="background:rgba(56,180,100,.13);">🌐</div>
@@ -5221,7 +5246,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     </div><!-- /.sv-group -->
 
     <!-- CALENDAR -->
-    <div class="sv-group-label" style="margin-top:6px;">Calendar</div>
+    <div class="sv-group-label">Calendar</div>
     <div class="sv-group">
 
       <!-- First day of week -->
@@ -5267,6 +5292,26 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <button class="tgl on" id="tgHN" onclick="togSetting('holn',this)"></button>
       </div>
 
+      <!-- Tithi in cells -->
+      <div class="sv-row">
+        <div class="sv-icon" style="background:rgba(100,80,200,.12);">🌙</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Tithi in Calendar</div>
+          <div class="sv-sub">Show lunar day (tithi) in each cell</div>
+        </div>
+        <button class="tgl" id="tgTithi" onclick="togSetting('tithi',this)"></button>
+      </div>
+
+      <!-- Week numbers -->
+      <div class="sv-row">
+        <div class="sv-icon" style="background:rgba(60,140,220,.12);">🔢</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Week Numbers</div>
+          <div class="sv-sub">Show ISO week number on each row</div>
+        </div>
+        <button class="tgl" id="tgWeekNum" onclick="togSetting('weekNum',this)"></button>
+      </div>
+
       <!-- Event Reminders -->
       <div class="sv-row" id="notifCard">
         <div class="sv-icon" style="background:rgba(255,160,50,.13);">🔔</div>
@@ -5280,7 +5325,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     </div><!-- /.sv-group -->
 
     <!-- GOOGLE CALENDAR SYNC -->
-    <div class="sv-group-label" style="margin-top:6px;">Integrations</div>
+    <div class="sv-group-label">Integrations</div>
     <div class="sv-group">
       <div class="sv-row">
         <div class="sv-icon" style="background:rgba(66,133,244,.13);">📆</div>
@@ -5296,8 +5341,55 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       </div>
     </div>
 
+    <!-- DATA & PRIVACY -->
+    <div class="sv-group-label">Data &amp; Privacy</div>
+    <div class="sv-group">
+
+      <!-- Export Events -->
+      <div class="sv-row" style="cursor:pointer;" onclick="exportEvents()">
+        <div class="sv-icon" style="background:rgba(34,160,100,.13);">📤</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Export Events</div>
+          <div class="sv-sub">Download all events as JSON</div>
+        </div>
+        <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+
+      <!-- Import Events -->
+      <div class="sv-row" style="cursor:pointer;" onclick="document.getElementById('importEventsInput').click()">
+        <div class="sv-icon" style="background:rgba(60,120,220,.13);">📥</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Import Events</div>
+          <div class="sv-sub">Restore from a JSON backup file</div>
+        </div>
+        <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <input type="file" id="importEventsInput" accept=".json" style="display:none" onchange="importEvents(this)">
+
+      <!-- Clear Events -->
+      <div class="sv-row" style="cursor:pointer;" onclick="confirmClearEvents()">
+        <div class="sv-icon" style="background:rgba(220,60,60,.10);">🗑️</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl" style="color:#e53e3e;">Clear All Events</div>
+          <div class="sv-sub">Permanently delete all your events</div>
+        </div>
+        <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+
+      <!-- Reset App -->
+      <div class="sv-row" style="cursor:pointer;" onclick="confirmResetApp()">
+        <div class="sv-icon" style="background:rgba(180,60,60,.10);">⚠️</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl" style="color:#c53030;">Reset All App Data</div>
+          <div class="sv-sub">Wipe everything — events, notes, settings</div>
+        </div>
+        <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+
+    </div><!-- /.sv-group -->
+
     <!-- ABOUT -->
-    <div class="sv-group-label" style="margin-top:6px;">About</div>
+    <div class="sv-group-label">About</div>
     <div class="sv-group">
 
       <!-- App identity row -->
@@ -5319,6 +5411,16 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         </div>
         <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
+
+      <!-- Install App -->
+      <div class="sv-row" style="cursor:pointer;" id="svInstallRow" onclick="svInstallApp()">
+        <div class="sv-icon" style="background:rgba(80,80,200,.13);">⬇️</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Install App</div>
+          <div class="sv-sub" id="svInstallSub">Add Vikram to your home screen</div>
+        </div>
+        <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
 
       <!-- Invite Friends -->
       <div class="sv-row" style="cursor:pointer;" onclick="inviteFriends()">
@@ -15332,8 +15434,333 @@ window.inviteFriends = function() {
     });
   };
 
-  } // end if(false) placeholder
+<!-- ── Settings Extra: Confirm Dialog ── -->
+<div id="svConfirmModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:center;justify-content:center;">
+  <div id="svConfirmCard" style="background:var(--sheet-bg,#fff);border-radius:20px;padding:24px 22px 20px;width:320px;max-width:calc(100vw - 32px);box-shadow:0 8px 40px rgba(0,0,0,.22);border:1px solid rgba(0,0,0,.07);">
+    <div id="svConfirmIcon" style="font-size:34px;text-align:center;margin-bottom:10px;"></div>
+    <div id="svConfirmTitle" style="font-size:16px;font-weight:900;color:var(--dtext,#1a1a2e);text-align:center;margin-bottom:6px;"></div>
+    <div id="svConfirmMsg" style="font-size:12.5px;font-weight:600;color:var(--dsub,#666);text-align:center;line-height:1.55;margin-bottom:20px;"></div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="svConfirmCancel()" style="flex:1;padding:12px;border-radius:13px;border:none;background:rgba(0,0,0,.07);font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;color:var(--dtext,#333);">Cancel</button>
+      <button id="svConfirmOkBtn" onclick="svConfirmOk()" style="flex:1;padding:12px;border-radius:13px;border:none;background:linear-gradient(135deg,#e53e3e,#c53030);font-size:14px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;color:#fff;">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══ SETTINGS EXTRAS ══════════════════════════════════════════════════════════
+
+// ── Haptic toggle ─────────────────────────────────────────────────────────────
+(function(){
+  const stored = localStorage.getItem('vikram_haptic');
+  // Default ON; only false if explicitly disabled
+  window._hapticEnabled = stored === null ? true : stored === '1';
+  const tg = document.getElementById('tgHaptic');
+  if(tg) tg.classList.toggle('on', window._hapticEnabled);
+
+  // Patch haptic to respect the setting
+  const _origHaptic = window.haptic;
+  window.haptic = function(type){
+    if(!window._hapticEnabled) return;
+    if(_origHaptic) _origHaptic(type);
+  };
 })();
+
+window.togHaptic = function(btn){
+  window._hapticEnabled = !window._hapticEnabled;
+  btn.classList.toggle('on', window._hapticEnabled);
+  localStorage.setItem('vikram_haptic', window._hapticEnabled ? '1' : '0');
+  if(window._hapticEnabled) navigator.vibrate && navigator.vibrate(18);
+};
+
+// ── Tithi in cells ────────────────────────────────────────────────────────────
+(function(){
+  // Restore saved tithi & weekNum settings into cfg
+  try{
+    const stored = JSON.parse(localStorage.getItem('vikram_cfg')||'{}');
+    if(typeof stored.tithi === 'boolean')   cfg.tithi   = stored.tithi;
+    if(typeof stored.weekNum === 'boolean') cfg.weekNum = stored.weekNum;
+  }catch(e){}
+  if(cfg.tithi   === undefined) cfg.tithi   = false;
+  if(cfg.weekNum === undefined) cfg.weekNum = false;
+  document.getElementById('tgTithi')?.classList.toggle('on',   cfg.tithi);
+  document.getElementById('tgWeekNum')?.classList.toggle('on', cfg.weekNum);
+})();
+
+// Patch render() to add tithi + week-number support in cells
+// We do this by overriding the innerHTML injection after the grid is built
+const _origRender = window.render;
+window.render = function(){
+  if(typeof _origRender === 'function') _origRender.apply(this, arguments);
+  if(!cfg.tithi && !cfg.weekNum) return;
+  // Post-process cells: add tithi label and/or week-number column
+  const grid = document.getElementById('cgrid');
+  if(!grid) return;
+
+  const cells = grid.querySelectorAll('.cell.active');
+  cells.forEach(cell => {
+    // Extract BS date from onclick attr
+    const m = (cell.getAttribute('onclick')||'').match(/openDay\((\d+),(\d+),(\d+)\)/);
+    if(!m) return;
+    const [, cy, cm, cd] = m.map(Number);
+    // Tithi
+    if(cfg.tithi && typeof getTithi === 'function' && typeof bsToAd === 'function'){
+      if(!cell.querySelector('.cell-tithi')){
+        try{
+          const ad = bsToAd(cy, cm, cd);
+          const ti = getTithi(ad) - 1;
+          const PAKSHA_SHORT = ['S','S','S','S','S','S','S','S','S','S','S','S','S','S','S','K','K','K','K','K','K','K','K','K','K','K','K','K','K','K'];
+          const TITHI_NUM = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','P','1','2','3','4','5','6','7','8','9','10','11','12','13','14','A'];
+          if(ti >= 0 && ti < 30){
+            const tEl = document.createElement('div');
+            tEl.className = 'cell-tithi';
+            tEl.textContent = PAKSHA_SHORT[ti] + TITHI_NUM[ti];
+            cell.appendChild(tEl);
+          }
+        }catch(e){}
+      }
+    }
+  });
+
+  // Week numbers: inject as first cell of each row
+  if(cfg.weekNum){
+    const allCells = Array.from(grid.querySelectorAll('.cell, .cell.dim'));
+    const cols = 7;
+    // We need to count from grid start; get grid children
+    const children = Array.from(grid.children);
+    // Remove existing week-num elements
+    grid.querySelectorAll('.cell-weeknum').forEach(el => el.remove());
+    // Rebuild: inject a weeknum div before col 0 of each row
+    // Since we can't easily insert into the CSS grid without restructuring,
+    // overlay the week number on the first cell of each row instead
+    let col = 0;
+    children.forEach((cell, idx) => {
+      if(col === 0 && (cell.classList.contains('cell') || cell.classList.contains('dim'))){
+        // Find date for this cell
+        let ad = null;
+        const cellM = (cell.getAttribute('onclick')||'').match(/openDay\((\d+),(\d+),(\d+)\)/);
+        if(cellM && typeof bsToAd === 'function'){
+          try{ ad = bsToAd(+cellM[1], +cellM[2], +cellM[3]); }catch(e){}
+        }
+        if(ad){
+          // ISO week number
+          const d = new Date(Date.UTC(ad.getFullYear(), ad.getMonth(), ad.getDate()));
+          d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+          const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+          const wk = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+          const wkEl = document.createElement('div');
+          wkEl.className = 'cell-weeknum';
+          wkEl.textContent = 'W' + wk;
+          cell.insertBefore(wkEl, cell.firstChild);
+        }
+      }
+      col = (col + 1) % cols;
+    });
+  }
+};
+
+// ── Tithi & weeknum CSS ───────────────────────────────────────────────────────
+(function(){
+  const style = document.createElement('style');
+  style.textContent = `
+.cell-tithi{
+  position:absolute;bottom:2px;right:3px;
+  font-size:8px;font-weight:800;
+  color:rgba(100,80,200,.55);
+  font-family:'Space Mono',monospace;
+  letter-spacing:-.3px;
+  pointer-events:none;
+  line-height:1;
+}
+[data-theme=dark] .cell-tithi{ color:rgba(160,140,255,.55); }
+.cell-weeknum{
+  position:absolute;top:2px;left:2px;
+  font-size:7.5px;font-weight:800;
+  color:rgba(60,120,220,.45);
+  font-family:'Space Mono',monospace;
+  pointer-events:none;
+  line-height:1;
+}
+[data-theme=dark] .cell-weeknum{ color:rgba(100,160,255,.5); }
+.cell.active,.cell.dim{ position:relative; }
+`;
+  document.head.appendChild(style);
+})();
+
+// ── Install App shortcut from Settings ────────────────────────────────────────
+window.svInstallApp = function(){
+  haptic('light');
+  // If already installed as PWA
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if(isStandalone){
+    vikramToast && vikramToast('✅ App is already installed!');
+    return;
+  }
+  // Show the install banner
+  document.getElementById('installOverlay')?.classList.add('show');
+  document.getElementById('installBanner')?.classList.add('show');
+  // Update install sub in settings
+  const sub = document.getElementById('svInstallSub');
+  if(sub) sub.textContent = 'Install prompt shown below';
+};
+
+// Update install row based on PWA state
+(function(){
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  const sub = document.getElementById('svInstallSub');
+  const row = document.getElementById('svInstallRow');
+  if(isStandalone && sub){
+    sub.textContent = 'Already installed ✓';
+    if(row) row.style.opacity = '.5';
+  }
+})();
+
+// ── Confirm dialog ────────────────────────────────────────────────────────────
+let _svConfirmCallback = null;
+function svShowConfirm(icon, title, msg, okLabel, okColor, cb){
+  document.getElementById('svConfirmIcon').textContent   = icon;
+  document.getElementById('svConfirmTitle').textContent  = title;
+  document.getElementById('svConfirmMsg').textContent    = msg;
+  const okBtn = document.getElementById('svConfirmOkBtn');
+  okBtn.textContent = okLabel || 'Confirm';
+  okBtn.style.background = okColor || 'linear-gradient(135deg,#e53e3e,#c53030)';
+  _svConfirmCallback = cb;
+  const modal = document.getElementById('svConfirmModal');
+  modal.style.display = 'flex';
+  requestAnimationFrame(() => modal.style.opacity = '1');
+}
+window.svConfirmCancel = function(){
+  document.getElementById('svConfirmModal').style.display = 'none';
+  _svConfirmCallback = null;
+};
+window.svConfirmOk = function(){
+  document.getElementById('svConfirmModal').style.display = 'none';
+  if(_svConfirmCallback) _svConfirmCallback();
+  _svConfirmCallback = null;
+};
+
+// ── Export Events ─────────────────────────────────────────────────────────────
+window.exportEvents = function(){
+  haptic('light');
+  try{
+    const evts = JSON.parse(localStorage.getItem('vikram_events') || '[]');
+    if(!evts.length){
+      vikramToast && vikramToast('ℹ️ No events to export');
+      return;
+    }
+    const payload = JSON.stringify({ version:'vikram-1', exportedAt: new Date().toISOString(), events: evts }, null, 2);
+    const blob = new Blob([payload], { type:'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `vikram-events-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    vikramToast && vikramToast(`✅ ${evts.length} event${evts.length>1?'s':''} exported`);
+  }catch(e){
+    vikramToast && vikramToast('❌ Export failed');
+  }
+};
+
+// ── Import Events ─────────────────────────────────────────────────────────────
+window.importEvents = function(input){
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const data   = JSON.parse(e.target.result);
+      const evts   = data.events || (Array.isArray(data) ? data : null);
+      if(!evts || !evts.length){ vikramToast && vikramToast('⚠️ No events found in file'); return; }
+      svShowConfirm('📥','Import Events',
+        `Add ${evts.length} event${evts.length>1?'s':''} from this file? Existing events are kept.`,
+        'Import', 'linear-gradient(135deg,#3b82f6,#1d4ed8)',
+        function(){
+          const existing = JSON.parse(localStorage.getItem('vikram_events')||'[]');
+          // Merge, dedup by id if present
+          const ids = new Set(existing.map(ev=>ev.id).filter(Boolean));
+          const toAdd = evts.filter(ev => !ev.id || !ids.has(ev.id));
+          const merged = [...existing, ...toAdd];
+          merged.sort((a,b)=>(a.adMs||0)-(b.adMs||0));
+          localStorage.setItem('vikram_events', JSON.stringify(merged));
+          if(typeof userEvents !== 'undefined'){
+            userEvents.length = 0;
+            merged.forEach(ev => userEvents.push(ev));
+          }
+          typeof render === 'function' && render();
+          typeof renderUpcoming === 'function' && renderUpcoming();
+          vikramToast && vikramToast(`✅ ${toAdd.length} event${toAdd.length!==1?'s':''} imported`);
+        }
+      );
+    }catch(err){
+      vikramToast && vikramToast('❌ Invalid file format');
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+};
+
+// ── Clear All Events ──────────────────────────────────────────────────────────
+window.confirmClearEvents = function(){
+  haptic('light');
+  const cnt = JSON.parse(localStorage.getItem('vikram_events')||'[]').length;
+  if(!cnt){ vikramToast && vikramToast('ℹ️ No events to clear'); return; }
+  svShowConfirm('🗑️','Clear All Events',
+    `This will permanently delete all ${cnt} event${cnt>1?'s':''}. This cannot be undone.`,
+    'Delete All', 'linear-gradient(135deg,#e53e3e,#c53030)',
+    function(){
+      localStorage.removeItem('vikram_events');
+      if(typeof userEvents !== 'undefined'){ userEvents.length = 0; }
+      typeof render === 'function' && render();
+      typeof renderUpcoming === 'function' && renderUpcoming();
+      typeof renderSelectedDay === 'function' && renderSelectedDay();
+      haptic('success');
+      vikramToast && vikramToast('✅ All events cleared');
+    }
+  );
+};
+
+// ── Reset All App Data ────────────────────────────────────────────────────────
+window.confirmResetApp = function(){
+  haptic('light');
+  svShowConfirm('⚠️','Reset App Data',
+    'This will erase ALL data: events, notes, tasks, settings, profile, and cycle data. This cannot be undone.',
+    'Reset Everything', 'linear-gradient(135deg,#7f1d1d,#991b1b)',
+    function(){
+      // Keep only the installed flag so install prompt doesn't spam
+      const installed = localStorage.getItem('vikram_installed');
+      localStorage.clear();
+      if(installed) localStorage.setItem('vikram_installed', installed);
+      haptic('success');
+      vikramToast && vikramToast('✅ App reset — reloading…');
+      setTimeout(() => location.reload(), 1200);
+    }
+  );
+};
+
+// ── Sync toggle state on settings open ───────────────────────────────────────
+const _origSwitchTab = window.switchTab;
+window.switchTab = function(tab){
+  if(typeof _origSwitchTab === 'function') _origSwitchTab.apply(this, arguments);
+  if(tab === 'settings'){
+    // Sync haptic
+    document.getElementById('tgHaptic')?.classList.toggle('on', !!window._hapticEnabled);
+    // Sync tithi & weeknum
+    document.getElementById('tgTithi')?.classList.toggle('on',   !!cfg.tithi);
+    document.getElementById('tgWeekNum')?.classList.toggle('on', !!cfg.weekNum);
+    // Sync install row
+    const isStandalone2 = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    const sub2 = document.getElementById('svInstallSub');
+    const row2 = document.getElementById('svInstallRow');
+    if(isStandalone2 && sub2){
+      sub2.textContent = 'Already installed ✓';
+      if(row2) row2.style.opacity = '.5';
+    } else if(sub2){
+      sub2.textContent = 'Add Vikram to your home screen';
+      if(row2) row2.style.opacity = '';
+    }
+  }
+};
 </script>
 
 </body>
