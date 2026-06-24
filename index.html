@@ -956,10 +956,10 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 }
 .sheet.cycle-fullscreen .cycle-back{
   width:38px;height:38px;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.08);cursor:pointer;flex-shrink:0;transition:transform .12s,background .12s,box-shadow .12s;
+  background:transparent;cursor:pointer;flex-shrink:0;transition:transform .12s,opacity .12s;
 }
-.sheet.cycle-fullscreen .cycle-back:hover{transform:translateX(-1px) scale(1.02);background:rgba(255,255,255,.12);box-shadow:0 8px 18px rgba(0,0,0,.08);}
-.sheet.cycle-fullscreen .cycle-back svg{width:18px;height:18px;stroke:var(--sheet-text);stroke-width:2.5;fill:none;}
+.sheet.cycle-fullscreen .cycle-back:hover{transform:translateX(-1px);opacity:.7;}
+.sheet.cycle-fullscreen .cycle-back svg{width:18px;height:18px;stroke:var(--sheet-text);stroke-width:2;fill:none;}
 .sheet.cycle-fullscreen .cycle-title-wrap{min-width:0;flex:1;}
 .sheet.cycle-fullscreen .cycle-title{font-size:18px;font-weight:900;color:var(--sheet-text);line-height:1.05;letter-spacing:-.2px;}
 .sheet.cycle-fullscreen .cycle-sub{font-size:12px;font-weight:700;color:var(--sheet-muted);margin-top:3px;}
@@ -1101,10 +1101,10 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .notes-view{display:flex;flex-direction:column;}
 .notes-back-btn{
   width:38px;height:38px;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  background:var(--chip);color:var(--htext);cursor:pointer;flex-shrink:0;
-  transition:transform .12s,background .12s;
+  background:transparent;color:var(--htext);cursor:pointer;flex-shrink:0;
+  transition:transform .12s,opacity .12s;
 }
-.notes-back-btn:hover{transform:translateY(-1px);}
+.notes-back-btn:hover{transform:translateX(-1px);opacity:.7;}
 .notes-back-btn:active{transform:scale(.92);}
 .notes-delete-btn{
   width:38px;height:38px;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;
@@ -1913,13 +1913,13 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 }
 [data-theme=dark] .ntr-editor-bar{ background:var(--card);border-color:rgba(255,255,255,.07); }
 .ntr-back-btn{
-  width:34px;height:34px;border:none;border-radius:10px;
+  width:34px;height:34px;border:none;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  background:rgba(99,102,241,.09);color:#6366f1;cursor:pointer;flex-shrink:0;
-  transition:background .12s,transform .12s;
+  background:transparent;color:var(--htext);cursor:pointer;flex-shrink:0;
+  transition:transform .12s,opacity .12s;
 }
-[data-theme=dark] .ntr-back-btn{ background:rgba(99,102,241,.14);color:#a5b4fc; }
-.ntr-back-btn:hover{ background:rgba(99,102,241,.16); }
+[data-theme=dark] .ntr-back-btn{ background:transparent;color:var(--htext); }
+.ntr-back-btn:hover{ transform:translateX(-1px);opacity:.7; }
 .ntr-back-btn:active{ transform:scale(.9); }
 .ntr-title-input{
   flex:1;min-width:0;border:none;background:transparent;outline:none;
@@ -4676,7 +4676,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
   <div class="ccard">
     <div class="nav">
-      <button class="nbtn" onclick="prevMonth()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <button class="nbtn" onclick="prevMonth()"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
       <div class="navtxt">
         <div class="nlbl ne" id="navlbl"></div>
         <div class="nsub" id="navsub"></div>
@@ -4701,7 +4701,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   <!-- ══ MULTI-MONTH (QUARTERLY) VIEW ══ -->
   <div id="mmView" style="display:none;margin:0 8px 10px;animation:mmFadeIn .22s cubic-bezier(.22,.85,.25,1);">
     <div class="mm-nav">
-      <button class="nbtn" onclick="mmPrev()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <button class="nbtn" onclick="mmPrev()"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
       <div class="mm-nav-label" id="mmNavLabel"></div>
       <button class="nbtn" onclick="mmNext()"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
@@ -4769,7 +4769,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <div class="tasks-view" id="tasksEditorView" style="display:none;">
           <div class="dc-page-header">
             <button class="notes-back-btn" onclick="taskBackToList()" aria-label="Back">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
             </button>
             <div style="flex:1;font-family:Nunito,sans-serif;font-size:15px;font-weight:900;color:var(--dtext);">Edit Task</div>
             <button class="notes-delete-btn" onclick="taskDeleteCurrent()" aria-label="Delete task">
@@ -4833,7 +4833,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <!-- Editor top bar -->
         <div class="ntr-editor-bar">
           <button class="ntr-back-btn" onclick="notesBackToList()" aria-label="Back">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
           </button>
           <input class="notes-title-input ntr-title-input" id="notesTitleInput" placeholder="Untitled" maxlength="80">
           <div style="display:flex;align-items:center;gap:6px;">
@@ -4872,7 +4872,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <div class="sheet cycle-fullscreen" id="echoSheet" style="padding-bottom:0;">
   <div class="cycle-head" style="background:linear-gradient(135deg,rgba(200,146,58,.18),rgba(168,100,30,.10),rgba(120,80,20,.07));">
     <button class="cycle-back" onclick="closeAll()" aria-label="Back">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
     <div class="cycle-title-wrap">
       <div class="cycle-title">🪞 Echo</div>
@@ -4886,7 +4886,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <div class="sheet cycle-fullscreen" id="colorMatcherSheet" style="padding-bottom:0;">
   <div class="cycle-head" style="background:linear-gradient(135deg,rgba(58,134,255,.18),rgba(114,9,183,.12),rgba(255,60,120,.07));">
     <button class="cycle-back" onclick="closeAll()" aria-label="Back">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
     <div class="cycle-title-wrap">
       <div class="cycle-title">🎨 Color Matcher</div>
@@ -4902,7 +4902,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <div class="sheet cycle-fullscreen" id="pomodoroSheet" style="padding-bottom:0;">
   <div class="cycle-head" style="background:linear-gradient(135deg,rgba(22,163,74,.18),rgba(15,118,61,.12),rgba(34,197,94,.06));">
     <button class="cycle-back" onclick="closeAll()" aria-label="Back">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
     <div class="cycle-title-wrap">
       <div class="cycle-title">🍅 Pomodoro Focus Timer</div>
@@ -4916,7 +4916,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <div class="sheet cycle-fullscreen" id="converterSheet" style="padding-bottom:0;">
   <div class="cycle-head" style="background:linear-gradient(135deg,rgba(60,60,70,.22),rgba(26,26,26,.14),rgba(40,40,48,.08));">
     <button class="cycle-back" onclick="closeAll()" aria-label="Back">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
     <div class="cycle-title-wrap">
       <div class="cycle-title">🗓 Date Converter</div>
@@ -4995,8 +4995,8 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <!-- SETTINGS SHEET -->
 <div id="settingsView">
   <div class="sv-header">
-    <button onclick="switchTab('home')" style="width:34px;height:34px;border:none;border-radius:50%;background:var(--tgbg);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;" aria-label="Back">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--htext)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    <button onclick="switchTab('home')" style="width:34px;height:34px;border:none;border-radius:50%;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;" aria-label="Back">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--htext)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
     <div class="sv-header-title">Settings</div>
   </div>
@@ -5259,7 +5259,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   <div class="shandle"></div>
   <div class="stitle" id="mpTitle">Select Month</div>
   <div class="mp-yr">
-    <button class="mp-arr" onclick="mpPrevYear()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <button class="mp-arr" onclick="mpPrevYear()"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
     <span class="mp-yr-lbl" id="mpYrLbl"></span>
     <button class="mp-arr" onclick="mpNextYear()"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
   </div>
@@ -6959,7 +6959,7 @@ function renderWeekView(){
 
   weekView.innerHTML=`
     <div class="wv-nav">
-      <button class="wv-nav-btn" onclick="weekViewOffset--;renderWeekView()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <button class="wv-nav-btn" onclick="weekViewOffset--;renderWeekView()"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
       <div style="text-align:center;">
         <div class="wv-nav-title">${weekLabel}</div>
         <div class="wv-nav-sub">${bsLabel}</div>
@@ -7201,7 +7201,7 @@ function renderDayView(){
 
   dayView.innerHTML = `
     <div class="dv-nav">
-      <button class="dv-nav-btn" onclick="dayViewOffset--;renderDayView()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <button class="dv-nav-btn" onclick="dayViewOffset--;renderDayView()"><svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
       <div class="dv-nav-center">
         <div class="dv-nav-title">${isToday?'Today':adLabel.split(',')[0]+','+adLabel.split(',').slice(1).join(',')}</div>
         <div class="dv-nav-sub">${bsLabel}</div>
