@@ -1,14 +1,14 @@
 {
   "name": "Vikram — Nepali Calendar",
   "short_name": "Vikram",
-  "description": "Beautiful Nepali Patro · BS 2083 · Public holidays, events, tithi and more.",
-  "version": "2.0.0",
+  "description": "Beautiful Nepali Patro · BS 2083–2084 · Public holidays, events, tithi and more.",
+  "version": "2.2.0",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#11111b",
+  "theme_color": "#11111b",
   "lang": "ne",
   "categories": ["productivity", "utilities"],
   "icons": [
@@ -28,6 +28,16 @@
       "src": "./icons/apple-touch-icon.png",
       "sizes": "180x180",
       "type": "image/png"
+    },
+    {
+      "src": "./icons/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/favicon-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
     }
   ],
   "shortcuts": [
@@ -37,5 +47,6 @@
       "description": "Jump to today's date",
       "url": "./"
     }
-  ]
+  ],
+  "prefer_related_applications": false
 }

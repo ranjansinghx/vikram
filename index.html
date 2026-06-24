@@ -5399,7 +5399,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
           <div class="sv-lbl" style="font-size:14px;">Vikram</div>
           <div class="sv-sub">Nepali Calendar · BS 2083</div>
         </div>
-        <span class="sv-version-badge">v2.1</span>
+        <span class="sv-version-badge">v2.2</span>
       </div>
 
       <!-- Help & Feedback -->
@@ -11480,8 +11480,8 @@ setTimeout(checkEventReminders, 2500);
   const manifest={
     name:'Vikram',
     short_name:'Vikram',
-    description:'Beautiful Nepali Patro BS 2083',
-    version:'2.0.0',
+    description:'Beautiful Nepali Patro BS 2083–2084',
+    version:'2.2.0',
     start_url:location.href,
     display:'standalone',
     orientation:'portrait',
@@ -11495,7 +11495,7 @@ setTimeout(checkEventReminders, 2500);
   // 2. Register service worker via blob — full offline support
   if(location.protocol !== 'file:' && 'serviceWorker' in navigator){
     const sw=`
-const CACHE='vikram-v4';
+const CACHE='vikram-v5';
 const PAGE_URL=self.location.href.split('?')[0];
 
 // Install: pre-cache the app page
@@ -11566,7 +11566,9 @@ self.addEventListener('fetch',e=>{
 
 // Push notifications
 self.addEventListener('message',e=>{
-  if(e.data&&e.data.type==='NOTIFY'){
+  if(!e.data)return;
+  if(e.data.type==='SKIP_WAITING'){self.skipWaiting();return;}
+  if(e.data.type==='NOTIFY'){
     const{title,body,icon,badge,tag,vibrate,requireInteraction}=e.data;
     self.registration.showNotification(title,{body,icon,badge,tag,vibrate,requireInteraction});
   }
@@ -11579,7 +11581,7 @@ self.addEventListener('message',e=>{
       .then(reg=>{
         // After SW activates, prime the cache with the current page
         const primeCache=()=>{
-          caches.open('vikram-v4').then(c=>{
+          caches.open('vikram-v5').then(c=>{
             // Cache the page itself
             c.add(window.location.href).catch(()=>{});
             // Cache Google Fonts stylesheet
