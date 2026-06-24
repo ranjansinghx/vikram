@@ -2042,10 +2042,12 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .sv-body{
   flex:1;
   min-height:0;
-  overflow-y:auto;
+  overflow-y:scroll;
   -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
   padding:16px 14px 32px;
   display:block;
+  height:0; /* forces flex child to respect flex:1 and scroll instead of expanding */
 }
 .sv-body > .sv-group,
 .sv-body > .sv-group-label{
@@ -6213,15 +6215,17 @@ const TPAKSHA=['Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','S
 // ══ STATE ══
 // UTC noon – safe anchor: .getDate() gives the same calendar day in every timezone (UTC-12 to UTC+14)
 const REF=new Date(Date.UTC(2026,3,14,12,0,0)); // Baishakh 1, 2083 = Apr 14, 2026
-let cfg={greg:true,hol:true,holn:true,fd:1};
+let cfg={greg:true,hol:true,holn:true,fd:1,tithi:false,weekNum:false};
 (function loadCfg(){
   try{
     const stored=JSON.parse(localStorage.getItem('vikram_cfg')||'null');
     if(stored&&typeof stored==='object'){
-      if(typeof stored.greg==='boolean') cfg.greg=stored.greg;
-      if(typeof stored.hol==='boolean')  cfg.hol=stored.hol;
-      if(typeof stored.holn==='boolean') cfg.holn=stored.holn;
-      if(typeof stored.fd==='number')    cfg.fd=stored.fd;
+      if(typeof stored.greg==='boolean')    cfg.greg=stored.greg;
+      if(typeof stored.hol==='boolean')     cfg.hol=stored.hol;
+      if(typeof stored.holn==='boolean')    cfg.holn=stored.holn;
+      if(typeof stored.fd==='number')       cfg.fd=stored.fd;
+      if(typeof stored.tithi==='boolean')   cfg.tithi=stored.tithi;
+      if(typeof stored.weekNum==='boolean') cfg.weekNum=stored.weekNum;
     }
   }catch(e){}
 })();
@@ -15438,6 +15442,10 @@ window.inviteFriends = function() {
       if(typeof vikramToast==='function') vikramToast('👋 Signed out');
     });
   };
+
+  } // end if(false)
+})();
+</script>
 
 <!-- ── Settings Extra: Confirm Dialog ── -->
 <div id="svConfirmModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);align-items:center;justify-content:center;">
