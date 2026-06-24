@@ -14034,30 +14034,37 @@ window.ntAddCurrent = function(){
 
 <script>
 (function(){
-  const STORAGE_KEY = 'vikram_pwa_prompt_dismissed';
+  const KEY_SEEN    = 'vikram_pwa_seen';      // set after first visit
+  const KEY_DONE    = 'vikram_pwa_done';      // set after install or permanent dismiss
   let deferredPrompt = null;
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
   const isInStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 
-  // Don't show if already installed or dismissed within 7 days
+  // Only show on the very first visit, and never again once done
   function shouldShow(){
     if(isInStandalone) return false;
     try {
-      const ts = localStorage.getItem(STORAGE_KEY);
-      if(ts && (Date.now() - parseInt(ts)) < 7 * 24 * 60 * 60 * 1000) return false;
+      if(localStorage.getItem(KEY_DONE)) return false;  // installed or permanently dismissed
+      if(localStorage.getItem(KEY_SEEN)) return false;  // already seen on a previous visit
     } catch(e){}
-    return true;
+    return true; // first ever visit
+  }
+
+  // Mark this visit so the prompt won't re-appear on the next page load
+  function markSeen(){
+    try{ localStorage.setItem(KEY_SEEN, '1'); }catch(e){}
   }
 
   function openCard(){
-    const ov = document.getElementById('pwaInstallOverlay');
+    const ov   = document.getElementById('pwaInstallOverlay');
     const card = document.getElementById('pwaInstallCard');
     if(!ov || !card) return;
+    markSeen(); // record that we showed the prompt once
     if(isIOS){
       const hint = document.getElementById('pwaIosHint');
-      const btn = document.getElementById('pwaInstallBtn');
+      const btn  = document.getElementById('pwaInstallBtn');
       if(hint) hint.style.display = 'block';
-      if(btn) btn.style.display = 'none'; // Native install not available on iOS
+      if(btn)  btn.style.display  = 'none';
     }
     ov.style.display = 'flex';
     requestAnimationFrame(function(){
@@ -14078,11 +14085,12 @@ window.ntAddCurrent = function(){
     }, 400);
   }
 
+  // "Not now" — dismissed for this session; won't show again (first-visit guard handles it)
   window.pwaDismiss = function(){
-    try{ localStorage.setItem(STORAGE_KEY, String(Date.now())); }catch(e){}
     closeCard();
   };
 
+  // "Install App" — trigger the browser's native install prompt
   window.pwaInstall = function(){
     if(!deferredPrompt) return;
     deferredPrompt.prompt();
@@ -14090,26 +14098,32 @@ window.ntAddCurrent = function(){
       deferredPrompt = null;
       closeCard();
       if(result.outcome === 'accepted'){
-        try{ localStorage.setItem(STORAGE_KEY, String(Date.now())); }catch(e){}
+        try{ localStorage.setItem(KEY_DONE, '1'); }catch(e){} // never show again
       }
     });
   };
 
-  // Tap overlay background to dismiss
+  // Hide permanently once the browser confirms the app was installed
+  window.addEventListener('appinstalled', function(){
+    try{ localStorage.setItem(KEY_DONE, '1'); }catch(e){}
+    closeCard();
+  });
+
+  // Tap overlay background → dismiss
   document.getElementById('pwaInstallOverlay').addEventListener('click', function(e){
     if(e.target === this) window.pwaDismiss();
   });
 
-  // Chrome / Android — capture the install event
+  // Chrome / Android — capture the native install event (fires only when installable)
   window.addEventListener('beforeinstallprompt', function(e){
     e.preventDefault();
     deferredPrompt = e;
     if(shouldShow()){
-      setTimeout(openCard, 1800);
+      setTimeout(openCard, 1800); // small delay so the app renders first
     }
   });
 
-  // iOS Safari — no beforeinstallprompt, show manual instructions
+  // iOS Safari — no beforeinstallprompt; show manual "Add to Home Screen" instructions
   if(isIOS && shouldShow()){
     setTimeout(openCard, 1800);
   }
