@@ -1979,6 +1979,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     linear-gradient(180deg,#0d0f16 0%,#111320 50%,#0d0f16 100%);
 }
 /* ── SETTINGS TAB VIEW ── */
+/* ══ SETTINGS VIEW — redesigned ══ */
 #settingsView{
   display:none;
   flex-direction:column;
@@ -1989,28 +1990,182 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   z-index:50;
-  background:var(--app-bg);
+  background:var(--sv-bg,var(--app-bg));
 }
 [data-theme="dark"] #settingsView{
-  background:linear-gradient(180deg,#0d0f16 0%,#111320 50%,#0d0f16 100%);
+  --sv-bg:linear-gradient(160deg,#0b0d14 0%,#0f1120 55%,#0b0d14 100%);
+  background:var(--sv-bg);
 }
 #settingsView.active{ display:flex; }
+
+/* Header */
 .sv-header{
-  display:flex;align-items:center;gap:12px;
-  padding:18px 18px 14px;
-  border-bottom:1px solid var(--sbdr);
-  background:var(--bg);
+  display:flex;align-items:center;gap:10px;
+  padding:16px 16px 14px;
   flex-shrink:0;
+  position:sticky;top:0;z-index:10;
+  align-self:stretch;
+  background:rgba(236,238,248,.92);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(0,0,0,.07);
 }
+[data-theme="dark"] .sv-header{
+  background:rgba(11,13,20,.92);
+  border-bottom-color:rgba(255,255,255,.07);
+}
+.sv-back-btn{
+  width:32px;height:32px;border:none;border-radius:50%;
+  background:rgba(0,0,0,.06);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;transition:background .18s;
+}
+[data-theme="dark"] .sv-back-btn{ background:rgba(255,255,255,.08); }
+.sv-back-btn:hover{ background:rgba(0,0,0,.12); }
+[data-theme="dark"] .sv-back-btn:hover{ background:rgba(255,255,255,.14); }
 .sv-header-title{
-  font-size:18px;font-weight:900;color:var(--htext);letter-spacing:-.3px;
+  font-size:17px;font-weight:900;color:var(--htext);letter-spacing:-.25px;
   flex:1;
 }
+.sv-header-icon{
+  width:32px;height:32px;border-radius:10px;
+  background:linear-gradient(135deg,#1a1a1a,#3a3a3a);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  box-shadow:0 3px 10px rgba(0,0,0,.2);
+}
+[data-theme="dark"] .sv-header-icon{
+  background:linear-gradient(135deg,#3a3d58,#252840);
+  box-shadow:0 3px 12px rgba(0,0,0,.38);
+}
+
+/* Body */
 .sv-body{
   flex:1;
-  padding:0 0 24px;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
+  padding:16px 14px 32px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+/* Section group card */
+.sv-group{
+  background:rgba(255,255,255,.82);
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 2px 12px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.04);
+  border:1px solid rgba(0,0,0,.05);
+}
+[data-theme="dark"] .sv-group{
+  background:rgba(255,255,255,.038);
+  border-color:rgba(255,255,255,.07);
+  box-shadow:0 2px 14px rgba(0,0,0,.28);
+}
+
+/* Section label */
+.sv-group-label{
+  font-size:10.5px;font-weight:800;
+  color:var(--dsub);
+  text-transform:uppercase;letter-spacing:.9px;
+  padding:0 16px;
+  margin:0 0 4px;
+}
+
+/* Row inside a group */
+.sv-row{
+  display:flex;align-items:center;
+  padding:12px 16px;
+  border-bottom:1px solid rgba(0,0,0,.055);
+  gap:12px;
+  transition:background .15s;
+  text-decoration:none;
+  color:inherit;
+  -webkit-tap-highlight-color:transparent;
+}
+[data-theme="dark"] .sv-row{
+  border-bottom-color:rgba(255,255,255,.065);
+}
+.sv-row:last-child{ border-bottom:none; }
+.sv-row:active{ background:rgba(0,0,0,.04); }
+[data-theme="dark"] .sv-row:active{ background:rgba(255,255,255,.05); }
+.sv-row > .tgl,
+.sv-row > .sv-version-badge,
+.sv-row > svg{ margin-left:auto; flex-shrink:0; }
+.sv-row > .sv-chips{ margin-left:auto; flex-shrink:0; }
+
+/* Row icon badge */
+.sv-icon{
+  width:32px;height:32px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+  transition:background .28s;
+}
+
+/* Row text block */
+.sv-row-text{ flex:1;min-width:0; }
+.sv-lbl{
+  font-size:13.5px;font-weight:700;
+  color:var(--dtext);line-height:1.2;
+}
+.sv-sub{
+  font-size:11px;font-weight:600;
+  color:var(--dsub);margin-top:2px;line-height:1.35;
+}
+
+/* Row right-side controls */
+.sv-row-right{ display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto; }
+
+/* First day of week special block */
+.sv-fdow{
+  padding:12px 16px 14px;
+  border-bottom:1px solid rgba(0,0,0,.055);
+}
+[data-theme="dark"] .sv-fdow{
+  border-bottom-color:rgba(255,255,255,.065);
+}
+
+/* Version badge */
+.sv-version-badge{
+  font-size:11.5px;font-weight:800;
+  color:var(--dsub);
+  background:rgba(0,0,0,.06);
+  padding:3px 8px;border-radius:20px;
+  letter-spacing:.2px;
+}
+[data-theme="dark"] .sv-version-badge{
+  background:rgba(255,255,255,.09);
+}
+
+/* Chevron for tappable rows */
+.sv-chevron{ opacity:.35; flex-shrink:0; }
+
+/* Lang chips inside settings */
+.sv-chips{ display:flex;gap:5px; }
+.sv-chip{
+  padding:4px 11px;border-radius:14px;
+  font-size:11.5px;font-weight:800;
+  background:rgba(0,0,0,.07);
+  color:var(--dsub);
+  border:none;cursor:pointer;
+  transition:all .18s;
+  font-family:'Nunito',sans-serif;
+}
+[data-theme="dark"] .sv-chip{ background:rgba(255,255,255,.1); }
+.sv-chip.on{
+  background:var(--tgon);color:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.22);
+}
+
+/* About section app icon */
+.sv-app-icon{
+  width:40px;height:40px;border-radius:11px;
+  background:linear-gradient(135deg,#1a1a1a,#000);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+  box-shadow:0 4px 14px rgba(0,0,0,.25);
+}
+[data-theme="dark"] .sv-app-icon{
+  background:linear-gradient(135deg,#3a3d58,#1e2038);
 }
 .sel-card{display:none;}
 .sel-empty{display:none;}
@@ -2036,7 +2191,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .mp-cell.is-view.is-today{border-color:rgba(255,255,255,.5);color:#fff;}
 
 /* ── GOOGLE CALENDAR SYNC ── */
-.gcal-wrap{margin-top:6px;display:flex;flex-direction:column;gap:10px;}
+.gcal-wrap{margin-top:0;display:flex;flex-direction:column;gap:10px;}
 .gcal-block{background:var(--tgbg);border-radius:14px;padding:14px;}
 .gcal-block-title{font-size:12px;font-weight:800;color:var(--dtext);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
 .gcal-block-sub{font-size:11px;color:var(--dsub);font-weight:600;margin-bottom:10px;line-height:1.5;}
@@ -4994,121 +5149,163 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
 <!-- SETTINGS SHEET -->
 <div id="settingsView">
+
+  <!-- ── Header ── -->
   <div class="sv-header">
-    <button onclick="switchTab('home')" style="width:34px;height:34px;border:none;border-radius:50%;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;" aria-label="Back">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--htext)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    <button class="sv-back-btn" onclick="switchTab('home')" aria-label="Back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--htext)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
     <div class="sv-header-title">Settings</div>
+    <div class="sv-header-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </div>
   </div>
+
+  <!-- ── Body ── -->
   <div class="sv-body">
-  <div class="sscroll" style="max-height:none;overflow-y:visible;">
-    <div class="ssec">
-      <div class="ssect">Appearance & Language</div>
-      <!-- Dark / Light mode -->
-      <div class="srow">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div id="sAppearIcon" style="width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(80,90,180,.13);transition:background .28s;">🌙</div>
-          <div>
-            <div class="slbl" id="sAppearLbl">Dark Mode</div>
-            <div class="ssub" id="sAppearSub">Currently using dark theme</div>
-          </div>
+
+    <!-- APPEARANCE & LANGUAGE -->
+    <div class="sv-group-label">Appearance</div>
+    <div class="sv-group">
+
+      <!-- Theme -->
+      <div class="sv-row">
+        <div class="sv-icon" id="sAppearIcon" style="background:rgba(80,90,180,.13);">🌙</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl" id="sAppearLbl">Dark Mode</div>
+          <div class="sv-sub" id="sAppearSub">Currently using dark theme</div>
         </div>
         <button class="tgl on" id="tgDark" onclick="toggleDark()"></button>
       </div>
+
       <!-- Language -->
-      <div class="srow">
-        <div>
-          <div class="slbl">Language</div>
-          <div class="ssub" id="sLangSub">Currently English</div>
+      <div class="sv-row">
+        <div class="sv-icon" style="background:rgba(56,180,100,.13);">🌐</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Language</div>
+          <div class="sv-sub" id="sLangSub">Currently English</div>
         </div>
-        <div class="chips" style="margin-top:0;">
-          <button class="chip on" id="chipEN" onclick="setLang('en')">EN</button>
-          <button class="chip" id="chipNE" onclick="setLang('ne')">NE</button>
+        <div class="sv-chips">
+          <button class="sv-chip on" id="chipEN" onclick="setLang('en')">EN</button>
+          <button class="sv-chip" id="chipNE" onclick="setLang('ne')">NE</button>
         </div>
       </div>
-      <!-- Notifications -->
-      <div class="srow" id="notifCard">
-        <div>
-          <div class="slbl" id="notifLbl">Event Reminders</div>
-          <div class="ssub" id="notifSub">Notified at 6 AM on event day</div>
+
+
+    </div><!-- /.sv-group -->
+
+    <!-- CALENDAR -->
+    <div class="sv-group-label" style="margin-top:6px;">Calendar</div>
+    <div class="sv-group">
+
+      <!-- First day of week -->
+      <div class="sv-fdow">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <div class="sv-icon" style="background:rgba(100,140,255,.13);">📅</div>
+          <div class="sv-lbl">First Day of Week</div>
         </div>
-        <button class="tgl" id="notifTgl" onclick="handleNotifToggle()"></button>
+        <div style="display:flex;gap:6px;padding-left:44px;">
+          <button class="sv-chip" onclick="setFD(0,this)">Sunday</button>
+          <button class="sv-chip on" onclick="setFD(1,this)">Monday</button>
+          <button class="sv-chip" onclick="setFD(6,this)">Saturday</button>
+        </div>
       </div>
-    </div>
-    <div class="ssec">
-      <div class="ssect">First Day of Week</div>
-      <div class="chips">
-        <button class="chip" onclick="setFD(0,this)">Sunday</button>
-        <button class="chip on" onclick="setFD(1,this)">Monday</button>
-        <button class="chip" onclick="setFD(6,this)">Saturday</button>
-      </div>
-    </div>
-    <div class="ssec">
-      <div class="ssect">Display</div>
-      <div class="srow">
-        <div><div class="slbl">Gregorian Dates</div><div class="ssub">Show AD day numbers in cells</div></div>
+
+      <!-- Gregorian dates -->
+      <div class="sv-row">
+        <div class="sv-icon" style="background:rgba(120,100,220,.13);">🔢</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Gregorian Dates</div>
+          <div class="sv-sub">Show AD numbers in calendar cells</div>
+        </div>
         <button class="tgl on" id="tgG" onclick="togSetting('greg',this)"></button>
       </div>
-      <div class="srow">
-        <div><div class="slbl">Show Public Holidays</div><div class="ssub">Highlight holidays in red</div></div>
+
+      <!-- Public holidays -->
+      <div class="sv-row">
+        <div class="sv-icon" style="background:rgba(220,60,60,.1);">🎉</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Public Holidays</div>
+          <div class="sv-sub">Highlight holidays in red</div>
+        </div>
         <button class="tgl on" id="tgH" onclick="togSetting('hol',this)"></button>
       </div>
-      <div class="srow">
-        <div><div class="slbl">Show Holiday Names</div><div class="ssub">Display holiday name in day details</div></div>
+
+      <!-- Holiday names -->
+      <div class="sv-row">
+        <div class="sv-icon" style="background:rgba(220,60,60,.07);">🏷️</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Holiday Names</div>
+          <div class="sv-sub">Show name label in day details</div>
+        </div>
         <button class="tgl on" id="tgHN" onclick="togSetting('holn',this)"></button>
       </div>
 
-    </div>
-    <div class="ssec">
-      <div class="ssect">🗓️ Google Calendar Sync</div>
-      <div class="gcal-wrap" id="gcalWrap">
-        <!-- Rendered by renderGcalCard() -->
-      </div>
-    </div>
-    <div class="ssec">
-      <div class="ssect">📱 Home Screen Widget</div>
-      <div class="widget-card">
-        <div class="widget-preview-row">
-          <canvas class="widget-thumb" id="widgetThumb" width="120" height="134" style="width:120px;height:134px;"></canvas>
-          <div>
-            <div class="widget-info-title">Monthly Calendar Widget</div>
-            <div class="widget-info-sub">Download a high-res calendar image. Add it as a <b>Photo Widget</b> on your home screen — no app install needed.</div>
-          </div>
+      <!-- Event Reminders -->
+      <div class="sv-row" id="notifCard">
+        <div class="sv-icon" style="background:rgba(255,160,50,.13);">🔔</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl" id="notifLbl">Event Reminders</div>
+          <div class="sv-sub" id="notifSub">Notified at 6 AM on event day</div>
         </div>
-        <button class="widget-dl-btn" onclick="downloadWidget()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Download Widget Image
-        </button>
-        <div class="widget-os-tabs">
-          <button class="widget-os-tab on" id="wTabiOS"  onclick="switchWidgetTab('ios')"> iOS (iPhone)</button>
-          <button class="widget-os-tab"    id="wTabDroid" onclick="switchWidgetTab('android')">🤖 Android</button>
-        </div>
-        <div class="widget-steps" id="widgetSteps"></div>
-      </div>
-    </div>
-    <div class="ssec">
-      <div class="ssect">About</div>
-      <div class="srow">
-        <div class="slbl">Vikram</div>
-        <div style="font-size:12.5px;color:var(--dsub);font-weight:700;">v2.1 · BS 2083</div>
-      </div>
-      <a class="srow" style="cursor:pointer;text-decoration:none;color:inherit;" href="mailto:ranzansingh29@gmail.com?subject=Vikram%20Calendar%20%E2%80%94%20Help%20%26%20Feedback&amp;body=Hi%20Ranjan%2C%0A%0A" onclick="openHelpFeedback(event)">
-        <div>
-          <div class="slbl">Help &amp; Feedback</div>
-          <div class="ssub">Send us a message</div>
-        </div>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      </a>
-      <div class="srow" style="cursor:pointer;" onclick="inviteFriends()">
-        <div>
-          <div class="slbl">Invite Friends</div>
-          <div class="ssub">Share Vikram with someone</div>
-        </div>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <button class="tgl" id="notifTgl" onclick="handleNotifToggle()"></button>
       </div>
 
+    </div><!-- /.sv-group -->
+
+    <!-- GOOGLE CALENDAR SYNC -->
+    <div class="sv-group-label" style="margin-top:6px;">Integrations</div>
+    <div class="sv-group">
+      <div class="sv-row">
+        <div class="sv-icon" style="background:rgba(66,133,244,.13);">📆</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Google Calendar Sync</div>
+          <div class="sv-sub">Connect your Google Calendar</div>
+        </div>
+      </div>
+      <div style="padding:0 16px 14px;">
+        <div class="gcal-wrap" id="gcalWrap">
+          <!-- Rendered by renderGcalCard() -->
+        </div>
+      </div>
     </div>
-  </div><!-- /.sscroll -->
+
+    <!-- ABOUT -->
+    <div class="sv-group-label" style="margin-top:6px;">About</div>
+    <div class="sv-group">
+
+      <!-- App identity row -->
+      <div class="sv-row" style="padding:14px 16px;">
+        <div class="sv-app-icon">📅</div>
+        <div class="sv-row-text" style="padding-left:4px;">
+          <div class="sv-lbl" style="font-size:14px;">Vikram</div>
+          <div class="sv-sub">Nepali Calendar · BS 2083</div>
+        </div>
+        <span class="sv-version-badge">v2.1</span>
+      </div>
+
+      <!-- Help & Feedback -->
+      <a class="sv-row" style="cursor:pointer;text-decoration:none;" href="mailto:ranzansingh29@gmail.com?subject=Vikram%20Calendar%20%E2%80%94%20Help%20%26%20Feedback&amp;body=Hi%20Ranjan%2C%0A%0A" onclick="openHelpFeedback(event)">
+        <div class="sv-icon" style="background:rgba(56,180,100,.13);">💬</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Help &amp; Feedback</div>
+          <div class="sv-sub">Send us a message</div>
+        </div>
+        <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+
+      <!-- Invite Friends -->
+      <div class="sv-row" style="cursor:pointer;" onclick="inviteFriends()">
+        <div class="sv-icon" style="background:rgba(255,160,50,.13);">🎁</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Invite Friends</div>
+          <div class="sv-sub">Share Vikram with someone</div>
+        </div>
+        <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+
+    </div><!-- /.sv-group -->
+
   </div><!-- /.sv-body -->
 </div><!-- /#settingsView -->
 
@@ -7967,7 +8164,7 @@ function togSetting(k,btn){
 function setFD(v,btn){
   haptic('light');
   cfg.fd=v;
-  document.querySelectorAll('#settingsSheet .chip').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('#settingsView .sv-chip').forEach(c=>c.classList.remove('on'));
   btn.classList.add('on');render();
 }
 
