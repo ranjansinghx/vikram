@@ -1978,6 +1978,40 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
     radial-gradient(ellipse 70% 28% at 50% 0%, rgba(99,102,241,.08), transparent 55%),
     linear-gradient(180deg,#0d0f16 0%,#111320 50%,#0d0f16 100%);
 }
+/* ── SETTINGS TAB VIEW ── */
+#settingsView{
+  display:none;
+  flex-direction:column;
+  position:fixed;
+  top:0;left:50%;transform:translateX(-50%);
+  width:390px;max-width:100vw;
+  bottom:62px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  z-index:50;
+  background:var(--app-bg);
+}
+[data-theme="dark"] #settingsView{
+  background:linear-gradient(180deg,#0d0f16 0%,#111320 50%,#0d0f16 100%);
+}
+#settingsView.active{ display:flex; }
+.sv-header{
+  display:flex;align-items:center;gap:12px;
+  padding:18px 18px 14px;
+  border-bottom:1px solid var(--sbdr);
+  background:var(--bg);
+  flex-shrink:0;
+}
+.sv-header-title{
+  font-size:18px;font-weight:900;color:var(--htext);letter-spacing:-.3px;
+  flex:1;
+}
+.sv-body{
+  flex:1;
+  padding:0 0 24px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
 .sel-card{display:none;}
 .sel-empty{display:none;}
 .up-tabs{display:none;}
@@ -2396,6 +2430,9 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .notif-card.denied{border-color:#f44336;background:rgba(244,67,54,.07);}
 [data-theme=dark] .notif-card.granted{background:rgba(76,175,80,.12);}
 [data-theme=dark] .notif-card.denied{background:rgba(244,67,54,.12);}
+/* Notification srow tint states (used in settings) */
+.srow.notif-granted{border-left:3px solid #4CAF50;}
+.srow.notif-denied{border-left:3px solid #f44336;opacity:.75;}
 .notif-bell{font-size:22px;flex-shrink:0;}
 .notif-info{flex:1;min-width:0;}
 .notif-lbl{font-size:13px;font-weight:800;color:var(--dtext);line-height:1.2;}
@@ -4956,10 +4993,15 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 </div>
 
 <!-- SETTINGS SHEET -->
-<div class="sheet" id="settingsSheet">
-  <div class="shandle"></div>
-  <div class="stitle">⚙️ Settings</div>
-  <div class="sscroll">
+<div id="settingsView">
+  <div class="sv-header">
+    <button onclick="switchTab('home')" style="width:34px;height:34px;border:none;border-radius:50%;background:var(--tgbg);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;" aria-label="Back">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--htext)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="sv-header-title">Settings</div>
+  </div>
+  <div class="sv-body">
+  <div class="sscroll" style="max-height:none;overflow-y:visible;">
     <div class="ssec">
       <div class="ssect">Appearance & Language</div>
       <!-- Dark / Light mode -->
@@ -4984,6 +5026,22 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
           <button class="chip" id="chipNE" onclick="setLang('ne')">NE</button>
         </div>
       </div>
+      <!-- Notifications -->
+      <div class="srow" id="notifCard">
+        <div>
+          <div class="slbl" id="notifLbl">Event Reminders</div>
+          <div class="ssub" id="notifSub">Notified at 6 AM on event day</div>
+        </div>
+        <button class="tgl" id="notifTgl" onclick="handleNotifToggle()"></button>
+      </div>
+    </div>
+    <div class="ssec">
+      <div class="ssect">First Day of Week</div>
+      <div class="chips">
+        <button class="chip" onclick="setFD(0,this)">Sunday</button>
+        <button class="chip on" onclick="setFD(1,this)">Monday</button>
+        <button class="chip" onclick="setFD(6,this)">Saturday</button>
+      </div>
     </div>
     <div class="ssec">
       <div class="ssect">Display</div>
@@ -5000,14 +5058,6 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <button class="tgl on" id="tgHN" onclick="togSetting('holn',this)"></button>
       </div>
 
-    </div>
-    <div class="ssec">
-      <div class="ssect">First Day of Week</div>
-      <div class="chips">
-        <button class="chip" onclick="setFD(0,this)">Sunday</button>
-        <button class="chip on" onclick="setFD(1,this)">Monday</button>
-        <button class="chip" onclick="setFD(6,this)">Saturday</button>
-      </div>
     </div>
     <div class="ssec">
       <div class="ssect">🗓️ Google Calendar Sync</div>
@@ -5058,8 +5108,9 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       </div>
 
     </div>
-  </div>
-</div>
+  </div><!-- /.sscroll -->
+  </div><!-- /.sv-body -->
+</div><!-- /#settingsView -->
 
 <!-- PROFILE SHEET -->
 <div class="sheet" id="profileSheet">
@@ -5323,15 +5374,6 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
       <!-- Toggles row -->
       <div class="ae-toggles">
-        <!-- Notification -->
-        <div class="ae-toggle-card" id="notifCard">
-          <div class="ae-toggle-icon" id="notifBell">🔔</div>
-          <div class="ae-toggle-info">
-            <div class="ae-toggle-label" id="notifLbl">Reminders</div>
-            <div class="ae-toggle-sub" id="notifSub">6 AM on event day</div>
-          </div>
-          <button class="tgl" id="notifTgl" onclick="handleNotifToggle()"></button>
-        </div>
         <!-- Recurrence -->
         <div class="ae-toggle-card" id="recurToggleCard">
           <div class="ae-toggle-icon">🔁</div>
@@ -7843,7 +7885,9 @@ function openDay(bY,bM,bD){
 function closeAll(){
   haptic('light');
   document.getElementById('ov').classList.remove('open');
-  ['settingsSheet','langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet','profileSheet','sharedProfileSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+  ['langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet','profileSheet','sharedProfileSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+  // Also deactivate settings tab view if open
+  document.getElementById('settingsView')?.classList.remove('active');
   // Stop color matcher game if running
   if(window.cmState && window.cmState.running) window.cmStopGame && window.cmStopGame();
   // Pause pomodoro timer if running (don't stop — just pause so state persists)
@@ -8159,9 +8203,13 @@ function openSheet(t){
     switchTab('notes');
     return;
   }
+  if(t==='settings'){
+    switchTab('settings');
+    return;
+  }
   closeAll();
   document.getElementById('ov').classList.add('open');
-  const ids={settings:'settingsSheet',lang:'langSheet',add:'addSheet',echo:'echoSheet',colorMatcher:'colorMatcherSheet',pomodoro:'pomodoroSheet',converter:'converterSheet',profile:'profileSheet',sharedProfile:'sharedProfileSheet'};
+  const ids={lang:'langSheet',add:'addSheet',echo:'echoSheet',colorMatcher:'colorMatcherSheet',pomodoro:'pomodoroSheet',converter:'converterSheet',profile:'profileSheet',sharedProfile:'sharedProfileSheet'};
   const sheet=document.getElementById(ids[t]);
   sheet?.classList.add('open');
   if(t==='echo'){
@@ -8184,7 +8232,7 @@ function openSheet(t){
     document.querySelector('.phone')?.classList.add('cycle-dim');
     if(window.tasksShowList) window.tasksShowList();
   }
-  if(t==='settings'){ renderGcalCard(); renderWidgetThumb(); renderWidgetSteps(); if(typeof window.calcBsAge==='function') { /* already initialised via DOM ready */ } }
+  if(t==='settings'){ /* handled by switchTab('settings') */ }
   if(t==='add'){
     // Default date = today BS
     setEventRange(TODAYBS.y, TODAYBS.m, TODAYBS.d);
@@ -8356,18 +8404,16 @@ async function showNotif(title,body,tag='vikram'){
 
 function updateNotifCard(){
   const card=document.getElementById('notifCard');
-  const bell=document.getElementById('notifBell');
   const lbl =document.getElementById('notifLbl');
   const sub =document.getElementById('notifSub');
   const tgl =document.getElementById('notifTgl');
   if(!card) return;
   if(!('Notification' in window)){card.style.display='none';return;}
+  card.style.display='';
 
   const perm  =Notification.permission;
   const active=perm==='granted'&&notifEnabled;
 
-  card.className='notif-card'+(active?' granted':perm==='denied'?' denied':'');
-  bell.textContent=active?'🔔':'🔕';
   if(tgl){ tgl.classList.toggle('on',active); tgl.disabled=perm==='denied'; tgl.style.opacity=perm==='denied'?'.4':'1'; }
 
   if(perm==='denied'){
@@ -12487,7 +12533,7 @@ function switchTab(tab) {
   if(tab !== 'notes' && typeof window.notesFlushSave === 'function') window.notesFlushSave();
   if(tab !== 'notes' && typeof window.tasksFlushSave === 'function') window.tasksFlushSave();
   resetHomeSubViews();
-  ['home','schedule','cycle','counter','notes'].forEach(t => {
+  ['home','schedule','cycle','counter','notes','settings'].forEach(t => {
     const id = 'bnav' + t.charAt(0).toUpperCase() + t.slice(1);
     const btn = document.getElementById(id);
     if(btn) btn.classList.toggle('active', t === tab);
@@ -12502,6 +12548,7 @@ function switchTab(tab) {
   const dcFab       = document.getElementById('dcFab');
   const notesView   = document.getElementById('notesView');
   const schedView   = document.getElementById('scheduleView');
+  const settingsView= document.getElementById('settingsView');
   const tabAll      = document.getElementById('tabAll');
 
   if(tab === 'home') {
@@ -12521,6 +12568,7 @@ function switchTab(tab) {
     if(cycleView)   cycleView.classList.remove('active');
     if(notesView)   notesView.classList.remove('active');
     if(schedView)   schedView.style.display   = 'none';
+    if(settingsView)settingsView.classList.remove('active');
     scheduleActive = false;
     if(dcFab)       dcFab.style.display       = 'none';
     const mainFab = document.querySelector('.fab');
@@ -12538,6 +12586,7 @@ function switchTab(tab) {
     if(dcView)      dcView.classList.remove('active');
     if(cycleView)   cycleView.classList.remove('active');
     if(notesView)   notesView.classList.remove('active');
+    if(settingsView)settingsView.classList.remove('active');
     if(dcFab)       dcFab.style.display       = 'none';
     const mainFab = document.querySelector('.fab');
     if(mainFab)     mainFab.style.display     = 'none';
@@ -12555,6 +12604,7 @@ function switchTab(tab) {
     if(cycleView)   cycleView.classList.add('active');
     if(notesView)   notesView.classList.remove('active');
     if(schedView)   schedView.style.display   = 'none';
+    if(settingsView)settingsView.classList.remove('active');
     scheduleActive = false;
     if(dcFab)       dcFab.style.display       = 'none';
     const mainFab = document.querySelector('.fab');
@@ -12572,6 +12622,7 @@ function switchTab(tab) {
     if(dcView)      dcView.classList.add('active');
     if(notesView)   notesView.classList.remove('active');
     if(schedView)   schedView.style.display   = 'none';
+    if(settingsView)settingsView.classList.remove('active');
     scheduleActive = false;
     if(dcFab)       dcFab.style.display       = 'flex';
     const mainFab = document.querySelector('.fab');
@@ -12589,6 +12640,7 @@ function switchTab(tab) {
     if(dcView)      dcView.classList.remove('active');
     if(cycleView)   cycleView.classList.remove('active');
     if(schedView)   schedView.style.display   = 'none';
+    if(settingsView)settingsView.classList.remove('active');
     scheduleActive = false;
     if(dcFab)       dcFab.style.display       = 'none';
     const mainFab = document.querySelector('.fab');
@@ -12597,6 +12649,30 @@ function switchTab(tab) {
     if(notesView)   notesView.classList.add('active');
     // Restore whichever segment was active; default to notes
     ntSwitchSeg(window._ntActiveSeg || 'notes', true);
+  } else if(tab === 'settings') {
+    if(mainContent) mainContent.style.display = 'none';
+    const mmView5 = document.getElementById('mmView');
+    if(mmView5) mmView5.style.display = 'none';
+    if(upcoming)    upcoming.style.display    = 'none';
+    if(modebar)     modebar.style.display     = 'none';
+    if(hdr)         hdr.style.display         = 'none';
+    if(dcView)      dcView.classList.remove('active');
+    if(cycleView)   cycleView.classList.remove('active');
+    if(notesView)   notesView.classList.remove('active');
+    if(schedView)   schedView.style.display   = 'none';
+    scheduleActive = false;
+    if(dcFab)       dcFab.style.display       = 'none';
+    const mainFab2 = document.querySelector('.fab');
+    if(mainFab2)    mainFab2.style.display    = 'none';
+    // close any open sheets/overlay before showing settings view
+    document.getElementById('ov').classList.remove('open');
+    ['langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet','profileSheet','sharedProfileSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+    if(settingsView)settingsView.classList.add('active');
+    // render dynamic settings content
+    if(typeof renderGcalCard === 'function') renderGcalCard();
+    if(typeof renderWidgetThumb === 'function') renderWidgetThumb();
+    if(typeof renderWidgetSteps === 'function') renderWidgetSteps();
+    if(typeof updateNotifCard === 'function') updateNotifCard();
   }
 }
 
