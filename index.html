@@ -955,11 +955,11 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   box-shadow:0 10px 24px rgba(0,0,0,.08);
 }
 .sheet.cycle-fullscreen .cycle-back{
-  width:38px;height:38px;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  width:60px;height:60px;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;
   background:transparent;cursor:pointer;flex-shrink:0;transition:transform .12s,opacity .12s;
 }
 .sheet.cycle-fullscreen .cycle-back:hover{transform:translateX(-1px);opacity:.7;}
-.sheet.cycle-fullscreen .cycle-back svg{width:18px;height:18px;stroke:var(--sheet-text);stroke-width:2;fill:none;}
+.sheet.cycle-fullscreen .cycle-back svg{width:30px;height:30px;stroke:var(--sheet-text);stroke-width:2;fill:none;}
 .sheet.cycle-fullscreen .cycle-title-wrap{min-width:0;flex:1;}
 .sheet.cycle-fullscreen .cycle-title{font-size:18px;font-weight:900;color:var(--sheet-text);line-height:1.05;letter-spacing:-.2px;}
 .sheet.cycle-fullscreen .cycle-sub{font-size:12px;font-weight:700;color:var(--sheet-muted);margin-top:3px;}
@@ -1100,7 +1100,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 /* ── NOTES TAB (list + editor) ── */
 .notes-view{display:flex;flex-direction:column;}
 .notes-back-btn{
-  width:38px;height:38px;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  width:60px;height:60px;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;
   background:transparent;color:var(--htext);cursor:pointer;flex-shrink:0;
   transition:transform .12s,opacity .12s;
 }
@@ -1913,7 +1913,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 }
 [data-theme=dark] .ntr-editor-bar{ background:var(--card);border-color:rgba(255,255,255,.07); }
 .ntr-back-btn{
-  width:34px;height:34px;border:none;border-radius:50%;
+  width:60px;height:60px;border:none;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   background:transparent;color:var(--htext);cursor:pointer;flex-shrink:0;
   transition:transform .12s,opacity .12s;
@@ -4769,7 +4769,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <div class="tasks-view" id="tasksEditorView" style="display:none;">
           <div class="dc-page-header">
             <button class="notes-back-btn" onclick="taskBackToList()" aria-label="Back">
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
             </button>
             <div style="flex:1;font-family:Nunito,sans-serif;font-size:15px;font-weight:900;color:var(--dtext);">Edit Task</div>
             <button class="notes-delete-btn" onclick="taskDeleteCurrent()" aria-label="Delete task">
@@ -4833,7 +4833,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <!-- Editor top bar -->
         <div class="ntr-editor-bar">
           <button class="ntr-back-btn" onclick="notesBackToList()" aria-label="Back">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
           </button>
           <input class="notes-title-input ntr-title-input" id="notesTitleInput" placeholder="Untitled" maxlength="80">
           <div style="display:flex;align-items:center;gap:6px;">
@@ -4995,8 +4995,8 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <!-- SETTINGS SHEET -->
 <div id="settingsView">
   <div class="sv-header">
-    <button onclick="switchTab('home')" style="width:34px;height:34px;border:none;border-radius:50%;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;" aria-label="Back">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--htext)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    <button onclick="switchTab('home')" style="width:60px;height:60px;border:none;border-radius:50%;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;" aria-label="Back">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="var(--htext)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
     <div class="sv-header-title">Settings</div>
   </div>
