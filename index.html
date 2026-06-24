@@ -11607,7 +11607,8 @@ self.addEventListener('message',e=>{
   const isAndroid=/android/i.test(navigator.userAgent);
   const isSafari=/^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-  let deferredPrompt=null;
+  window._vikramDeferredPrompt=null;
+  let deferredPrompt=null; // kept for local closure use
 
   // Detect browser type for tailored install instructions
   const isFirefox=/firefox/i.test(navigator.userAgent);
@@ -11616,7 +11617,7 @@ self.addEventListener('message',e=>{
   const isChrome=!isFirefox&&!isSafari&&/chrome/i.test(navigator.userAgent);
 
   // 4. Set banner copy based on platform
-  function setBannerContent(){
+  window.setBannerContent = function setBannerContent(){
     const steps=document.getElementById('ibSteps');
     const btn=document.getElementById('ibInstallBtn');
     if(deferredPrompt){
@@ -11673,6 +11674,7 @@ self.addEventListener('message',e=>{
   window.addEventListener('beforeinstallprompt',e=>{
     e.preventDefault();
     deferredPrompt=e;
+    window._vikramDeferredPrompt=e;
     // If banner is already showing, refresh the button to the native prompt
     setBannerContent();
   });
@@ -11698,6 +11700,7 @@ self.addEventListener('message',e=>{
           localStorage.setItem('vikram_installed','1');
         }
         deferredPrompt=null;
+        window._vikramDeferredPrompt=null;
       });
     } else {
       dismissBanner();
@@ -15590,18 +15593,38 @@ window.render = function(){
 // ── Install App shortcut from Settings ────────────────────────────────────────
 window.svInstallApp = function(){
   haptic('light');
-  // If already installed as PWA
+
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
   if(isStandalone){
     vikramToast && vikramToast('✅ App is already installed!');
     return;
   }
-  // Show the install banner
-  document.getElementById('installOverlay')?.classList.add('show');
-  document.getElementById('installBanner')?.classList.add('show');
-  // Update install sub in settings
-  const sub = document.getElementById('svInstallSub');
-  if(sub) sub.textContent = 'Install prompt shown below';
+
+  // Native install prompt available — trigger it directly, no banner needed
+  const prompt = window._vikramDeferredPrompt;
+  if(prompt){
+    prompt.prompt();
+    prompt.userChoice.then(r=>{
+      if(r.outcome==='accepted'){
+        localStorage.setItem('vikram_installed','1');
+        const sub = document.getElementById('svInstallSub');
+        if(sub) sub.textContent = 'Already installed ✓';
+        const row = document.getElementById('svInstallRow');
+        if(row) row.style.opacity = '.5';
+        vikramToast && vikramToast('✅ App installed!');
+      }
+      window._vikramDeferredPrompt = null;
+    });
+    return;
+  }
+
+  // No native prompt — navigate to home then show the banner with instructions
+  switchTab('home');
+  setTimeout(()=>{
+    document.getElementById('installOverlay')?.classList.add('show');
+    document.getElementById('installBanner')?.classList.add('show');
+    if(typeof setBannerContent === 'function') setBannerContent();
+  }, 120);
 };
 
 // Update install row based on PWA state
