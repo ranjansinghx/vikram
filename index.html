@@ -295,6 +295,25 @@ body, .ne, [class*="splash"] {
   background: rgba(255,255,255,.03);
   border-color: rgba(255,255,255,.06);
 }
+
+/* ── Changelog sheet entries ── */
+
+
+/* ── Privacy policy blocks ── */
+
+
+/* ── Storage breakdown chips ── */
+.cl-entry{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--sbdr);}
+.cl-entry:last-child{border-bottom:none;}
+.cl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.cl-title{font-size:13.5px;font-weight:800;color:var(--dtext);line-height:1.3;}
+.cl-sub{font-size:11.5px;font-weight:600;color:var(--dsub);margin-top:2px;line-height:1.45;}
+.privacy-block{margin-bottom:16px;}
+.privacy-h{font-size:13.5px;font-weight:900;color:var(--dtext);margin-bottom:5px;}
+.privacy-p{font-size:12.5px;font-weight:600;color:var(--dsub);line-height:1.6;}
+.stor-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:12px;font-size:10.5px;font-weight:700;background:var(--tgbg);color:var(--dsub);}
+.stor-chip span{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0;}
+
 /* Smooth theme transition */
 html, body, .phone, .hdr, .hdrbar, .ccard, .cell, .sheet, .dmodal, .fab, .ov {
   transition-property: background, background-color, border-color, color, box-shadow;
@@ -5005,7 +5024,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 </div>
 
 
-<div class="ov" id="ov" onclick="closeAll()"></div>
+<div class="ov" id="ov" onclick="(function(ov){var o=ov.dataset.sheetOrigin;if(o==='changelogSheet'||o==='privacySheet'){document.getElementById(o).classList.remove('open');ov.classList.remove('open');delete ov.dataset.sheetOrigin;}else{closeAll();}})(this)"></div>
 
 <!-- DAY MODAL -->
 <div class="dmodal" id="dmodal">
@@ -5082,6 +5101,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         </div>
         <button class="tgl on" id="tgHaptic" onclick="togHaptic(this)"></button>
       </div>
+
 
       <!-- Language -->
       <div class="sv-row">
@@ -5230,6 +5250,44 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
 
+      <!-- Clear Notes -->
+      <div class="sv-row" style="cursor:pointer;" onclick="confirmClearNotes()">
+        <div class="sv-icon" style="background:rgba(220,60,60,.10);">📝</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl" style="color:#e53e3e;">Clear All Notes</div>
+          <div class="sv-sub">Permanently delete all your notes</div>
+        </div>
+        <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+
+      <!-- Clear Tasks -->
+      <div class="sv-row" style="cursor:pointer;" onclick="confirmClearTasks()">
+        <div class="sv-icon" style="background:rgba(220,60,60,.10);">✅</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl" style="color:#e53e3e;">Clear All Tasks</div>
+          <div class="sv-sub">Permanently delete all your tasks</div>
+        </div>
+        <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+
+      <!-- Storage Usage -->
+      <div class="sv-row" id="svStorageRow" style="cursor:default;flex-direction:column;align-items:flex-start;gap:8px;padding:12px 16px;">
+        <div style="display:flex;align-items:center;gap:12px;width:100%;">
+          <div class="sv-icon" style="background:rgba(100,120,220,.13);flex-shrink:0;">💾</div>
+          <div class="sv-row-text" style="flex:1;">
+            <div class="sv-lbl">Storage Usage</div>
+            <div class="sv-sub" id="svStorageSub">Calculating…</div>
+          </div>
+          <span id="svStoragePct" style="font-size:13px;font-weight:800;color:var(--dtext);white-space:nowrap;">—</span>
+        </div>
+        <div style="width:100%;padding-left:0;">
+          <div style="width:100%;height:6px;background:var(--tgbg);border-radius:99px;overflow:hidden;margin-top:2px;">
+            <div id="svStorageBar" style="height:100%;border-radius:99px;background:linear-gradient(90deg,#3b82f6,#6366f1);width:0%;transition:width .4s ease;"></div>
+          </div>
+          <div id="svStorageBreakdown" style="display:flex;gap:10px;margin-top:7px;flex-wrap:wrap;"></div>
+        </div>
+      </div>
+
       <!-- Reset App -->
       <div class="sv-row" style="cursor:pointer;" onclick="confirmResetApp()">
         <div class="sv-icon" style="background:rgba(180,60,60,.10);">⚠️</div>
@@ -5282,6 +5340,26 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <div class="sv-row-text">
           <div class="sv-lbl">Invite Friends</div>
           <div class="sv-sub">Share Vikram with someone</div>
+        </div>
+        <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+
+      <!-- What's New / Changelog -->
+      <div class="sv-row" style="cursor:pointer;" onclick="openChangelog()">
+        <div class="sv-icon" style="background:rgba(100,200,120,.13);">🎉</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">What's New</div>
+          <div class="sv-sub">See recent updates &amp; changes</div>
+        </div>
+        <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+
+      <!-- Privacy Policy -->
+      <div class="sv-row" style="cursor:pointer;" onclick="openPrivacyPolicy()">
+        <div class="sv-icon" style="background:rgba(180,140,255,.13);">🔒</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Privacy Policy</div>
+          <div class="sv-sub">How we handle your data</div>
         </div>
         <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
@@ -8171,7 +8249,7 @@ function openDay(bY,bM,bD){
 function closeAll(){
   haptic('light');
   document.getElementById('ov').classList.remove('open');
-  ['langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet','profileSheet','sharedProfileSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+  ['langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet','profileSheet','sharedProfileSheet','changelogSheet','privacySheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
   // Also deactivate settings tab view if open
   document.getElementById('settingsView')?.classList.remove('active');
   // Stop color matcher game if running
@@ -13064,7 +13142,7 @@ function switchTab(tab) {
     if(mainFab2)    mainFab2.style.display    = 'none';
     // close any open sheets/overlay before showing settings view
     document.getElementById('ov').classList.remove('open');
-    ['langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet','profileSheet','sharedProfileSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+    ['langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet','profileSheet','sharedProfileSheet','changelogSheet','privacySheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
     _currentTab = 'settings';
     if(settingsView)settingsView.classList.add('active');
     // render dynamic settings content
@@ -15752,30 +15830,220 @@ window.confirmResetApp = function(){
   );
 };
 
-// ── Sync toggle state on settings open ───────────────────────────────────────
-const _origSwitchTab = window.switchTab;
-window.switchTab = function(tab){
-  if(typeof _origSwitchTab === 'function') _origSwitchTab.apply(this, arguments);
-  if(tab === 'settings'){
-    // Sync haptic
-    document.getElementById('tgHaptic')?.classList.toggle('on', !!window._hapticEnabled);
-    // Sync tithi & weeknum
-    document.getElementById('tgTithi')?.classList.toggle('on',   !!cfg.tithi);
-    document.getElementById('tgWeekNum')?.classList.toggle('on', !!cfg.weekNum);
-    // Sync install row
-    const isStandalone2 = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-    const sub2 = document.getElementById('svInstallSub');
-    const row2 = document.getElementById('svInstallRow');
-    if(isStandalone2 && sub2){
-      sub2.textContent = 'Already installed ✓';
-      if(row2) row2.style.opacity = '.5';
-    } else if(sub2){
-      sub2.textContent = 'Add Vikram to your home screen';
-      if(row2) row2.style.opacity = '';
+
+// ── Clear All Notes ───────────────────────────────────────────────────────────
+window.confirmClearNotes = function(){
+  haptic('light');
+  const raw = localStorage.getItem('vikram_notes_v2') || localStorage.getItem('vikram_notes_html') || '[]';
+  let cnt = 0;
+  try{ const parsed = JSON.parse(raw); cnt = Array.isArray(parsed) ? parsed.length : 0; }catch(e){ cnt = raw.length > 2 ? 1 : 0; }
+  if(!cnt){ vikramToast && vikramToast('ℹ️ No notes to clear'); return; }
+  svShowConfirm('📝','Clear All Notes',
+    `This will permanently delete all ${cnt} note${cnt>1?'s':''}. This cannot be undone.`,
+    'Delete All', 'linear-gradient(135deg,#e53e3e,#c53030)',
+    function(){
+      localStorage.removeItem('vikram_notes_v2');
+      localStorage.removeItem('vikram_notes_html');
+      haptic('success');
+      vikramToast && vikramToast('✅ All notes cleared');
+      svRefreshStorage();
     }
-  }
+  );
 };
+
+// ── Clear All Tasks ───────────────────────────────────────────────────────────
+window.confirmClearTasks = function(){
+  haptic('light');
+  let cnt = 0;
+  try{ cnt = JSON.parse(localStorage.getItem('vikram_tasks_v1')||'[]').length; }catch(e){}
+  if(!cnt){ vikramToast && vikramToast('ℹ️ No tasks to clear'); return; }
+  svShowConfirm('✅','Clear All Tasks',
+    `This will permanently delete all ${cnt} task${cnt>1?'s':''}. This cannot be undone.`,
+    'Delete All', 'linear-gradient(135deg,#e53e3e,#c53030)',
+    function(){
+      localStorage.removeItem('vikram_tasks_v1');
+      haptic('success');
+      vikramToast && vikramToast('✅ All tasks cleared');
+      svRefreshStorage();
+    }
+  );
+};
+
+// ── Open Changelog Sheet ──────────────────────────────────────────────────────
+window.openChangelog = function(){
+  haptic('light');
+  const sheet = document.getElementById('changelogSheet');
+  if(!sheet) return;
+  sheet.classList.add('open');
+  const ov = document.getElementById('ov');
+  if(ov){ ov.classList.add('open'); ov.dataset.sheetOrigin = 'changelogSheet'; }
+};
+
+// ── Open Privacy Policy Sheet ─────────────────────────────────────────────────
+window.openPrivacyPolicy = function(){
+  haptic('light');
+  const sheet = document.getElementById('privacySheet');
+  if(!sheet) return;
+  sheet.classList.add('open');
+  const ov = document.getElementById('ov');
+  if(ov){ ov.classList.add('open'); ov.dataset.sheetOrigin = 'privacySheet'; }
+};
+
+// ── Storage Usage ─────────────────────────────────────────────────────────────
+function svCalcStorage(){
+  const QUOTA = 5 * 1024 * 1024; // 5 MB nominal localStorage quota
+  let total = 0;
+  const breakdown = [];
+  const groups = [
+    { key:'vikram_events',     label:'Events',   color:'#3b82f6' },
+    { key:'vikram_notes_v2',   label:'Notes',    color:'#10b981' },
+    { key:'vikram_notes_html', label:'Notes',    color:'#10b981' },
+    { key:'vikram_tasks_v1',   label:'Tasks',    color:'#f59e0b' },
+    { key:'vikram_cfg',        label:'Settings', color:'#8b5cf6' },
+    { key:'vikram_theme',      label:'Settings', color:'#8b5cf6' },
+    { key:'vikram_profile',    label:'Profile',  color:'#ec4899' },
+    { key:'vikram_cycle',      label:'Cycle',    color:'#ef4444' },
+  ];
+  const groupTotals = {};
+  const groupColors = {};
+  let other = 0;
+  try{
+    for(let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      const v = localStorage.getItem(k) || '';
+      const bytes = (k.length + v.length) * 2; // UTF-16 approx
+      total += bytes;
+      const grp = groups.find(g=>g.key===k);
+      if(grp){
+        groupTotals[grp.label] = (groupTotals[grp.label]||0) + bytes;
+        groupColors[grp.label] = grp.color;
+      } else {
+        other += bytes;
+      }
+    }
+  }catch(e){}
+  if(other>0){ groupTotals['Other']= other; groupColors['Other']='#9ca3af'; }
+  return { total, quota:QUOTA, groupTotals, groupColors };
+}
+
+function svRefreshStorage(){
+  const { total, quota, groupTotals, groupColors } = svCalcStorage();
+  const pct = Math.min(100, Math.round(total/quota*100));
+  const fmt = b => b < 1024 ? b+'B' : b<1024*1024 ? (b/1024).toFixed(1)+'KB' : (b/(1024*1024)).toFixed(2)+'MB';
+  const sub = document.getElementById('svStorageSub');
+  const pctEl = document.getElementById('svStoragePct');
+  const bar = document.getElementById('svStorageBar');
+  const bd = document.getElementById('svStorageBreakdown');
+  if(sub) sub.textContent = `${fmt(total)} used of ~5 MB`;
+  if(pctEl) pctEl.textContent = pct+'%';
+  if(bar){
+    bar.style.width = pct+'%';
+    bar.style.background = pct>80 ? 'linear-gradient(90deg,#ef4444,#dc2626)' : pct>60 ? 'linear-gradient(90deg,#f59e0b,#d97706)' : 'linear-gradient(90deg,#3b82f6,#6366f1)';
+  }
+  if(bd){
+    bd.innerHTML = Object.keys(groupTotals).map(label=>{
+      if(!groupTotals[label]) return '';
+      return `<span class="stor-chip"><span style="background:${groupColors[label]};"></span>${label} ${fmt(groupTotals[label])}</span>`;
+    }).join('');
+  }
+}
+
+// Init storage on first render
+(function(){ setTimeout(svRefreshStorage, 300); })();
+
+// ── Sync toggle state on settings open ───────────────────────────────────────
+(function(){
+  const _base = window.switchTab;
+  window.switchTab = function(tab){
+    if(typeof _base === 'function') _base.apply(this, arguments);
+    if(tab === 'settings'){
+      // Sync haptic
+      document.getElementById('tgHaptic')?.classList.toggle('on', !!window._hapticEnabled);
+      // Sync tithi & weeknum
+      document.getElementById('tgTithi')?.classList.toggle('on',   !!cfg.tithi);
+      document.getElementById('tgWeekNum')?.classList.toggle('on', !!cfg.weekNum);
+      // Sync install row
+      const isStandalone2 = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      const sub2 = document.getElementById('svInstallSub');
+      const row2 = document.getElementById('svInstallRow');
+      if(isStandalone2 && sub2){
+        sub2.textContent = 'Already installed ✓';
+        if(row2) row2.style.opacity = '.5';
+      } else if(sub2){
+        sub2.textContent = 'Add Vikram to your home screen';
+        if(row2) row2.style.opacity = '';
+      }
+      // Refresh storage
+      setTimeout(svRefreshStorage, 80);
+    }
+  };
+})();
 </script>
+
+
+
+<!-- ── CHANGELOG SHEET ─────────────────────────────────────────────────────── -->
+<div class="sheet" id="changelogSheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle">🎉 What's New</div>
+  <div class="sscroll" style="padding-bottom:32px;">
+    <div class="ssec">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <span style="font-size:22px;font-weight:900;color:var(--dtext);">v2.2</span>
+        <span style="font-size:11px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:3px 9px;border-radius:20px;">Latest</span>
+      </div>
+      <div class="cl-entry">
+        <div class="cl-dot" style="background:#10b981;"></div>
+        <div><div class="cl-title">Storage Usage Indicator</div><div class="cl-sub">See how much local storage Vikram is using, right in Settings.</div></div>
+      </div>
+      <div class="cl-entry">
+        <div class="cl-dot" style="background:#f59e0b;"></div>
+        <div><div class="cl-title">Clear Notes &amp; Tasks Separately</div><div class="cl-sub">Privacy section now lets you wipe notes or tasks independently.</div></div>
+      </div>
+      <div class="cl-entry">
+        <div class="cl-dot" style="background:#8b5cf6;"></div>
+        <div><div class="cl-title">Privacy Policy &amp; Changelog</div><div class="cl-sub">Access app policies and release history from the About section.</div></div>
+      </div>
+    </div>
+    <div style="padding:0 16px 8px;">
+      <button class="ebtn" onclick="document.getElementById('changelogSheet').classList.remove('open');document.getElementById('ov').classList.remove('open');">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── PRIVACY POLICY SHEET ────────────────────────────────────────────────── -->
+<div class="sheet" id="privacySheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle">🔒 Privacy Policy</div>
+  <div class="sscroll" style="padding-bottom:32px;">
+    <div class="ssec">
+      <div class="privacy-block">
+        <div class="privacy-h">Your Data Stays on Your Device</div>
+        <div class="privacy-p">Vikram stores all your data — events, notes, tasks, cycle records, and settings — exclusively in your browser's <strong>localStorage</strong>. Nothing is sent to any server. No account is required to use the app.</div>
+      </div>
+      <div class="privacy-block">
+        <div class="privacy-h">Google Sign-In (Optional)</div>
+        <div class="privacy-p">If you choose to sign in with Google, Vikram requests read-only access to your Google Calendar so you can view those events alongside the Nepali calendar. Your Google credentials are handled entirely by Google's secure OAuth flow — Vikram never sees your password.</div>
+      </div>
+      <div class="privacy-block">
+        <div class="privacy-h">No Tracking, No Ads</div>
+        <div class="privacy-p">Vikram does not use analytics, advertising SDKs, or any third-party tracking. There are no cookies beyond what your browser sets for localStorage.</div>
+      </div>
+      <div class="privacy-block">
+        <div class="privacy-h">Push Notifications</div>
+        <div class="privacy-p">If you enable event reminders, your browser may request notification permission. Notification payloads are generated locally — no data leaves your device.</div>
+      </div>
+      <div class="privacy-block">
+        <div class="privacy-h">Deleting Your Data</div>
+        <div class="privacy-p">You can delete your data at any time via Settings → Data &amp; Privacy. "Reset All App Data" removes everything Vikram has stored locally. You can also clear notes, tasks, or events individually.</div>
+      </div>
+      <div style="font-size:10.5px;color:var(--dsub);margin-top:18px;text-align:center;">Last updated · June 2025</div>
+    </div>
+    <div style="padding:0 16px 8px;">
+      <button class="ebtn" onclick="document.getElementById('privacySheet').classList.remove('open');document.getElementById('ov').classList.remove('open');">Close</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
