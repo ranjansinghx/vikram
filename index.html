@@ -856,15 +856,15 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
 
 /* ── CELLS ── */
-.cell{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:5px 2px 4px;min-height:58px;cursor:pointer;border-radius:17px;position:relative;transition:transform .15s,background .15s,box-shadow .15s;overflow:hidden;}
+.cell{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 2px 3px;min-height:58px;cursor:pointer;border-radius:17px;position:relative;transition:transform .15s,background .15s,box-shadow .15s;overflow:hidden;}
 .cell.active{background:transparent;box-shadow:none;}
 .cell.active:hover{background:transparent;transform:translateY(-1px);}
 .cell.hol,.cell.wk{background:var(--cell-special-bg);box-shadow:0 2px 7px rgba(114,90,200,.03),inset 0 0 0 1px rgba(255,255,255,.76);}
 .cell.hol:hover,.cell.wk:hover{background:var(--cell-special-hover);}
 .cell.sel{background:var(--today-grad);box-shadow:inset 0 1px 0 rgba(255,255,255,.2);}
 .cell.sel:hover{transform:translateY(-1px);}
-.ndate{font-size:18px;font-weight:800;color:var(--cell-text);line-height:1.02;letter-spacing:.1px;}
-.gdate{font-size:10px;font-weight:700;color:var(--cell-muted);margin-top:1px;}
+.ndate{font-size:18px;font-weight:800;color:var(--cell-text);line-height:1;letter-spacing:.1px;}
+.gdate{font-size:9.5px;font-weight:700;color:var(--cell-muted);margin-top:0px;line-height:1.1;}
 .cell-dots{display:none;}
 .hdot{display:none;}
 .evt-dot{display:none;}
@@ -2571,63 +2571,6 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .pair-moment-send svg{width:16px;height:16px;stroke:#fff;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;}
 
 /* ── INSTALL BANNER ── */
-.install-overlay{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.45);backdrop-filter:blur(2px);
-  z-index:199;animation:fadeInOverlay .3s ease;
-}
-.install-overlay.show{display:block;}
-@keyframes fadeInOverlay{from{opacity:0}to{opacity:1}}
-
-.install-banner{
-  position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(110%);
-  width:390px;max-width:100vw;
-  background:#fff;border-radius:24px 24px 0 0;
-  box-shadow:0 -8px 40px rgba(80,70,170,.22);
-  z-index:200;padding:0 0 36px;
-  transition:transform .4s cubic-bezier(.32,.72,0,1);
-}
-.install-banner.show{transform:translateX(-50%) translateY(0);}
-[data-theme=dark] .install-banner{background:#1e1e38;}
-
-/* On wider screens: show as a centered modal dialog instead of bottom sheet */
-@media(min-width:600px){
-  .install-banner{
-    bottom:auto;top:50%;left:50%;
-    transform:translate(-50%,-50%) scale(.92);
-    border-radius:24px;
-    width:420px;max-width:calc(100vw - 40px);
-    padding:0 0 28px;
-    opacity:0;
-    transition:transform .35s cubic-bezier(.32,.72,0,1), opacity .35s ease;
-  }
-  .install-banner.show{
-    transform:translate(-50%,-50%) scale(1);
-    opacity:1;
-  }
-}
-.ib-handle{width:38px;height:4px;background:#ddd;border-radius:2px;margin:12px auto 0;}
-[data-theme=dark] .ib-handle{background:#3a3c58;}
-.ib-body{padding:18px 24px 0;}
-.ib-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
-.ib-icon{width:58px;height:58px;border-radius:16px;background:linear-gradient(135deg,#1a1a1a,#000000);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;box-shadow:0 4px 16px rgba(60,60,70,.4);}
-.ib-info{flex:1;}
-.ib-app-name{font-size:17px;font-weight:900;color:#1a1a2e;}
-[data-theme=dark] .ib-app-name{color:#e8e8ff;}
-.ib-app-sub{font-size:12.5px;color:#888;font-weight:600;margin-top:2px;}
-.ib-steps{background:#F5F5FF;border-radius:14px;padding:12px 14px;margin-bottom:16px;font-size:12.5px;color:#555;font-weight:600;line-height:1.8;}
-[data-theme=dark] .ib-steps{background:#2a2a48;color:#aaa;}
-.ib-steps b{color:#1a1a1a;}
-[data-theme=dark] .ib-steps b{color:#fff;}
-.ib-btn-row{display:flex;gap:10px;}
-.ib-install{flex:1;padding:13px;border-radius:14px;background:linear-gradient(135deg,#1a1a1a,#000000);border:none;color:#fff;font-size:15px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(60,60,70,.35);transition:opacity .2s;}
-.ib-install:hover{opacity:.9;}
-.ib-later{padding:13px 18px;border-radius:14px;background:#F0F0F8;border:none;color:#888;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:background .2s;}
-[data-theme=dark] .ib-later{background:#2a2a48;color:#6b6d8a;}
-.ib-later:hover{background:#e8e8f5;}
-.ib-dismiss{position:absolute;top:14px;right:16px;width:28px;height:28px;border:none;background:#f0f0f8;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:#888;}
-[data-theme=dark] .ib-dismiss{background:#2a2a48;color:#6b6d8a;}
-
 /* ── NOTIFICATION PERMISSION CARD ── */
 .notif-card{display:flex;align-items:center;gap:12px;background:var(--tgbg);border-radius:13px;padding:12px 14px;margin-bottom:12px;border:1.5px solid var(--border);transition:border-color .3s,background .3s;}
 .notif-card.granted{border-color:#4CAF50;background:rgba(76,175,80,.07);}
@@ -4831,30 +4774,6 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 })();
 </script>
 
-<!-- INSTALL BANNER -->
-<div class="install-overlay" id="installOverlay" onclick="dismissBanner()"></div>
-<div class="install-banner" id="installBanner">
-  <div class="ib-handle"></div>
-  <button class="ib-dismiss" onclick="dismissBanner()">✕</button>
-  <div class="ib-body">
-    <div class="ib-row">
-      <div class="ib-icon" style="background:#000;padding:0;overflow:hidden;">
-    <svg viewBox="0 0 100 100" width="58" height="58" xmlns="http://www.w3.org/2000/svg">
-      <text x="50" y="50" text-anchor="middle" dominant-baseline="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="42" fill="#fff">29</text>
-    </svg>
-  </div>
-      <div class="ib-info">
-        <div class="ib-app-name">Vikram</div>
-        <div class="ib-app-sub">Nepali Patro · Free Forever</div>
-      </div>
-    </div>
-    <div class="ib-steps" id="ibSteps"></div>
-    <div class="ib-btn-row">
-      <button class="ib-install" id="ibInstallBtn" onclick="triggerInstall()">⬇ Install App</button>
-      <button class="ib-later" onclick="dismissBanner()">Later</button>
-    </div>
-  </div>
-</div>
 
 <div class="phone">
   <div class="hdr">
@@ -6274,6 +6193,27 @@ function render(){
   const ord=[];for(let i=0;i<7;i++)ord.push((cfg.fd+i)%7);
   document.getElementById('dhdrs').innerHTML=ord.map(i=>`<div class="dhdr${i===0||i===6?' wk':''}">${dn[i]}</div>`).join('');
 
+  const PAKSHA_SHORT = ['S','S','S','S','S','S','S','S','S','S','S','S','S','S','S','K','K','K','K','K','K','K','K','K','K','K','K','K','K','K'];
+  const TITHI_NUM    = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','P','1','2','3','4','5','6','7','8','9','10','11','12','13','14','A'];
+
+  function getWeekNum(ad){
+    const d = new Date(Date.UTC(ad.getFullYear(), ad.getMonth(), ad.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  }
+
+  function getTithiLabel(ad){
+    try{
+      const ti = getTithi(ad) - 1;
+      if(ti >= 0 && ti < 30) return PAKSHA_SHORT[ti] + TITHI_NUM[ti];
+    }catch(e){}
+    return '';
+  }
+
+  let html='';
+  let col=0;
+
   const sAD=bsStart(vY,vM);
   const sDow=(sAD.getDay()-cfg.fd+7)%7;
   const dims=BS[vY]?.[vM-1]??30;
@@ -6281,18 +6221,23 @@ function render(){
   const nM=vM===12?1:vM+1,nY=vM===12?vY+1:vY;
   let tot=sDow+dims;if(tot%7!==0)tot+=7-tot%7;
 
-  let html='';
   for(let i=0;i<tot;i++){
-    const col=(cfg.fd+(i%7))%7,wk=col===0||col===6;
+    const gridCol=(cfg.fd+(i%7))%7,wk=gridCol===0||gridCol===6;
+    const isRowStart = (i % 7 === 0);
+
     if(i<sDow){
       const nd=pDims-sDow+i+1,ad=new Date(sAD);ad.setDate(ad.getDate()-(sDow-i));
+      const wnHtml = (cfg.weekNum && isRowStart) ? `<div class="cell-weeknum">W${getWeekNum(ad)}</div>` : '';
+      const tiHtml = cfg.tithi ? `<div class="cell-tithi">${getTithiLabel(ad)}</div>` : '';
       html+=`<div class="cell dim${wk?' wk':''}" onclick="openDay(${pY},${pM},${nd})">
-        <div class="ndate">${ns(nd)}</div>${cfg.greg?`<div class="gdate">${ad.getDate()}</div>`:''}
+        ${wnHtml}<div class="ndate">${ns(nd)}</div>${cfg.greg?`<div class="gdate">${ad.getDate()}</div>`:''}${tiHtml}
         <div class="hdot"></div></div>`;
     } else if(i>=sDow+dims){
       const nd=i-sDow-dims+1,ad=new Date(sAD);ad.setDate(ad.getDate()+(i-sDow));
+      const wnHtml = (cfg.weekNum && isRowStart) ? `<div class="cell-weeknum">W${getWeekNum(ad)}</div>` : '';
+      const tiHtml = cfg.tithi ? `<div class="cell-tithi">${getTithiLabel(ad)}</div>` : '';
       html+=`<div class="cell dim${wk?' wk':''}" onclick="openDay(${nY},${nM},${nd})">
-        <div class="ndate">${ns(nd)}</div>${cfg.greg?`<div class="gdate">${ad.getDate()}</div>`:''}
+        ${wnHtml}<div class="ndate">${ns(nd)}</div>${cfg.greg?`<div class="gdate">${ad.getDate()}</div>`:''}${tiHtml}
         <div class="hdot"></div></div>`;
     } else {
       const nd=i-sDow+1,ad=new Date(sAD);ad.setDate(ad.getDate()+nd-1);
@@ -6335,9 +6280,13 @@ function render(){
       let chipsHtml=visChips.join('');
       if(extraChips>0) chipsHtml+=`<div class="cell-chip cell-chip-more">+${extraChips}</div>`;
 
+      const wnHtml = (cfg.weekNum && isRowStart) ? `<div class="cell-weeknum">W${getWeekNum(ad)}</div>` : '';
+      const tiHtml = cfg.tithi ? `<div class="cell-tithi">${getTithiLabel(ad)}</div>` : '';
+
       html+=`<div class="${cls}" onclick="openDay(${vY},${vM},${nd})">
-        <div class="ndate ne">${ns(nd)}</div>
+        ${wnHtml}<div class="ndate ne">${ns(nd)}</div>
         ${cfg.greg?`<div class="gdate">${ad.getDate()}</div>`:''}
+        ${tiHtml}
         ${chipsHtml?`<div class="cell-chips">${chipsHtml}</div>`:''}
       </div>`;
     }
@@ -11557,116 +11506,28 @@ self.addEventListener('message',e=>{
   const isStandalone=
     window.matchMedia('(display-mode: standalone)').matches||
     window.navigator.standalone===true;
-  if(isStandalone) return; // Already installed — never show banner
-
-  const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isAndroid=/android/i.test(navigator.userAgent);
-  const isSafari=/^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
   window._vikramDeferredPrompt=null;
-  let deferredPrompt=null; // kept for local closure use
+  let deferredPrompt=null;
 
-  // Detect browser type for tailored install instructions
-  const isFirefox=/firefox/i.test(navigator.userAgent);
-  const isEdge=/edg\//i.test(navigator.userAgent);
-  const isSamsungBrowser=/samsungbrowser/i.test(navigator.userAgent);
-  const isChrome=!isFirefox&&!isSafari&&/chrome/i.test(navigator.userAgent);
-
-  // 4a. Dismiss helper — defined first so setBannerContent can reference it
-  window.dismissBanner=function(){
-    document.getElementById('installOverlay').classList.remove('show');
-    document.getElementById('installBanner').classList.remove('show');
-    // Does NOT set vikram_installed — will re-show next visit
-  };
-
-  // 4. Set banner copy based on platform
-  window.setBannerContent = function setBannerContent(){
-    const steps=document.getElementById('ibSteps');
-    const btn=document.getElementById('ibInstallBtn');
-    if(deferredPrompt){
-      // Chrome/Edge on Android or desktop — native install available
-      steps.innerHTML=
-        `Install <b>Vikram</b> for <b>quick access</b>,`+
-        ` offline support, and a full-screen experience — no App Store needed!`;
-      btn.textContent='⬇ Install App';
-      btn.onclick=triggerInstall;
-    } else if(isIOS && isSafari){
-      steps.innerHTML=
-        `Tap <b>Share</b> <span style="font-size:15px;">⎙</span> at the bottom of Safari,`+
-        ` then choose <b>"Add to Home Screen"</b> to install Vikram.`;
-      btn.textContent='Got it ✓';
-      btn.onclick=dismissBanner;
-    } else if(isFirefox){
-      steps.innerHTML=
-        `In Firefox open the <b>⋮ menu</b> and tap`+
-        ` <b>"Install"</b> or <b>"Add to Home Screen"</b> to install Vikram.`;
-      btn.textContent='Got it ✓';
-      btn.onclick=dismissBanner;
-    } else if(isEdge){
-      steps.innerHTML=
-        `In Edge tap the <b>… menu → Apps → Install this site as an app</b>`+
-        ` for fast, offline access to Vikram.`;
-      btn.textContent='Got it ✓';
-      btn.onclick=dismissBanner;
-    } else if(isSamsungBrowser){
-      steps.innerHTML=
-        `Tap the <b>⋮ menu → Add page to → Home screen</b>`+
-        ` to install Vikram on your device.`;
-      btn.textContent='Got it ✓';
-      btn.onclick=dismissBanner;
-    } else {
-      // Generic Chrome / others
-      steps.innerHTML=
-        `In Chrome tap the <b>⋮ menu → Add to Home Screen</b>`+
-        ` (or look for <b>"Install app"</b> in the address bar) for fast, offline access.`;
-      btn.textContent='Got it ✓';
-      btn.onclick=dismissBanner;
-    }
-  }
-
-  // 5. Show banner with overlay (delayed so app renders first)
-  function showBanner(){
-    setBannerContent();
-    setTimeout(()=>{
-      document.getElementById('installOverlay').classList.add('show');
-      document.getElementById('installBanner').classList.add('show');
-    },1200);
-  }
-
-  // 6. Capture Chrome's native install prompt — update button live
+  // Capture Chrome's native install prompt for svInstallApp to use
   window.addEventListener('beforeinstallprompt',e=>{
     e.preventDefault();
     deferredPrompt=e;
     window._vikramDeferredPrompt=e;
-    // If banner is already showing, refresh the button to the native prompt
-    setBannerContent();
   });
 
-  // 7. Hide permanently when actually installed
-  window.addEventListener('appinstalled',()=>{
-    document.getElementById('installOverlay').classList.remove('show');
-    document.getElementById('installBanner').classList.remove('show');
-    localStorage.setItem('vikram_installed','1');
-  });
-
-  // 8. Always show on every visit unless already installed as PWA
-  if(!localStorage.getItem('vikram_installed')) showBanner();
-
-  // Expose helpers to global scope
+  // Stub helpers so any remaining references don't throw
+  window.dismissBanner=function(){};
+  window.setBannerContent=function(){};
   window.triggerInstall=function(){
     if(deferredPrompt){
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then(r=>{
-        if(r.outcome==='accepted'){
-          document.getElementById('installOverlay').classList.remove('show');
-          document.getElementById('installBanner').classList.remove('show');
-          localStorage.setItem('vikram_installed','1');
-        }
+        if(r.outcome==='accepted') localStorage.setItem('vikram_installed','1');
         deferredPrompt=null;
         window._vikramDeferredPrompt=null;
       });
-    } else {
-      dismissBanner();
     }
   };
 })();
@@ -15459,101 +15320,36 @@ window.togHaptic = function(btn){
   document.getElementById('tgWeekNum')?.classList.toggle('on', cfg.weekNum);
 })();
 
-// Patch render() to add tithi + week-number support in cells
-// We do this by overriding the innerHTML injection after the grid is built
+// Tithi and week numbers are now rendered directly in render() above.
 const _origRender2 = window.render;
 window.render = function(){
   if(typeof _origRender2 === 'function') _origRender2.apply(this, arguments);
-  if(!cfg.tithi && !cfg.weekNum) return;
-  // Post-process cells: add tithi label and/or week-number column
-  const grid = document.getElementById('cgrid');
-  if(!grid) return;
-
-  const cells = grid.querySelectorAll('.cell.active');
-  cells.forEach(cell => {
-    // Extract BS date from onclick attr
-    const m = (cell.getAttribute('onclick')||'').match(/openDay\((\d+),(\d+),(\d+)\)/);
-    if(!m) return;
-    const [, cy, cm, cd] = m.map(Number);
-    // Tithi
-    if(cfg.tithi && typeof getTithi === 'function' && typeof bsToAd === 'function'){
-      if(!cell.querySelector('.cell-tithi')){
-        try{
-          const ad = bsToAd(cy, cm, cd);
-          const ti = getTithi(ad) - 1;
-          const PAKSHA_SHORT = ['S','S','S','S','S','S','S','S','S','S','S','S','S','S','S','K','K','K','K','K','K','K','K','K','K','K','K','K','K','K'];
-          const TITHI_NUM = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','P','1','2','3','4','5','6','7','8','9','10','11','12','13','14','A'];
-          if(ti >= 0 && ti < 30){
-            const tEl = document.createElement('div');
-            tEl.className = 'cell-tithi';
-            tEl.textContent = PAKSHA_SHORT[ti] + TITHI_NUM[ti];
-            cell.appendChild(tEl);
-          }
-        }catch(e){}
-      }
-    }
-  });
-
-  // Week numbers: inject as first cell of each row
-  if(cfg.weekNum){
-    const allCells = Array.from(grid.querySelectorAll('.cell, .cell.dim'));
-    const cols = 7;
-    // We need to count from grid start; get grid children
-    const children = Array.from(grid.children);
-    // Remove existing week-num elements
-    grid.querySelectorAll('.cell-weeknum').forEach(el => el.remove());
-    // Rebuild: inject a weeknum div before col 0 of each row
-    // Since we can't easily insert into the CSS grid without restructuring,
-    // overlay the week number on the first cell of each row instead
-    let col = 0;
-    children.forEach((cell, idx) => {
-      if(col === 0 && (cell.classList.contains('cell') || cell.classList.contains('dim'))){
-        // Find date for this cell
-        let ad = null;
-        const cellM = (cell.getAttribute('onclick')||'').match(/openDay\((\d+),(\d+),(\d+)\)/);
-        if(cellM && typeof bsToAd === 'function'){
-          try{ ad = bsToAd(+cellM[1], +cellM[2], +cellM[3]); }catch(e){}
-        }
-        if(ad){
-          // ISO week number
-          const d = new Date(Date.UTC(ad.getFullYear(), ad.getMonth(), ad.getDate()));
-          d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
-          const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-          const wk = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-          const wkEl = document.createElement('div');
-          wkEl.className = 'cell-weeknum';
-          wkEl.textContent = 'W' + wk;
-          cell.insertBefore(wkEl, cell.firstChild);
-        }
-      }
-      col = (col + 1) % cols;
-    });
-  }
 };
 
 // ── Tithi & weeknum CSS ───────────────────────────────────────────────────────
 (function(){
   const style = document.createElement('style');
   style.textContent = `
+.cell-weeknum{
+  font-size:6px;font-weight:900;
+  color:rgba(60,120,220,.55);
+  font-family:'Space Mono',monospace;
+  pointer-events:none;
+  line-height:1;
+  letter-spacing:.3px;
+  margin-bottom:0px;
+}
+[data-theme=dark] .cell-weeknum{ color:rgba(120,170,255,.6); }
 .cell-tithi{
-  position:absolute;bottom:2px;right:3px;
-  font-size:8px;font-weight:800;
+  font-size:6.5px;font-weight:900;
   color:rgba(100,80,200,.55);
   font-family:'Space Mono',monospace;
-  letter-spacing:-.3px;
+  letter-spacing:.1px;
   pointer-events:none;
   line-height:1;
+  margin-top:1px;
 }
-[data-theme=dark] .cell-tithi{ color:rgba(160,140,255,.55); }
-.cell-weeknum{
-  position:absolute;top:2px;left:2px;
-  font-size:7.5px;font-weight:800;
-  color:rgba(60,120,220,.45);
-  font-family:'Space Mono',monospace;
-  pointer-events:none;
-  line-height:1;
-}
-[data-theme=dark] .cell-weeknum{ color:rgba(100,160,255,.5); }
+[data-theme=dark] .cell-tithi{ color:rgba(160,140,255,.6); }
 .cell.active,.cell.dim{ position:relative; }
 `;
   document.head.appendChild(style);
@@ -15587,13 +15383,8 @@ window.svInstallApp = function(){
     return;
   }
 
-  // No native prompt — navigate to home then show the banner with instructions
-  switchTab('home');
-  setTimeout(()=>{
-    document.getElementById('installOverlay')?.classList.add('show');
-    document.getElementById('installBanner')?.classList.add('show');
-    if(typeof setBannerContent === 'function') setBannerContent();
-  }, 120);
+  // No native prompt available — nothing to show
+  vikramToast && vikramToast('⚠️ Install not available in this browser. Try Chrome or Safari.');
 };
 
 // Update install row based on PWA state
