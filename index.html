@@ -4991,78 +4991,6 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     </div>
   </div>
 
-  <!-- ══ NOTES INLINE SECTION ══ -->
-  <div id="notesInlineSection" style="padding:12px 0 24px;margin-top:0;">
-
-    <!-- ── Notes Header Bar ── -->
-    <div id="ntSegmentHeader" class="ntr-header">
-      <div class="ntr-header-left">
-        <div class="ntr-quill-icon">
-          <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 3C20 3 16 5 12 12C8 19 4 21 4 21"/><path d="M4 21l2-6"/><path d="M4 21l6-2"/></svg>
-        </div>
-        <div>
-          <div class="ntr-header-title" id="ntHeroTitle">Notes</div>
-          <div class="ntr-header-sub" id="ntHeroSub">Your personal space</div>
-        </div>
-      </div>
-      <button class="ntr-add-btn" id="ntAddBtn" onclick="ntAddCurrent()" aria-label="New note">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        <span>New</span>
-      </button>
-    </div>
-
-    <!-- ── Notes List + Editor Panel ── -->
-    <div id="ntNotesPanel">
-
-      <!-- List view -->
-      <div class="notes-view" id="notesListView">
-        <div id="notesListItems" class="ntr-list-wrap"></div>
-        <div class="notes-empty ntr-empty" id="notesEmpty">
-          <div class="ntr-empty-ring">
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 3C20 3 16 5 12 12C8 19 4 21 4 21"/><path d="M4 21l2-6"/><path d="M4 21l6-2"/></svg>
-          </div>
-          <div class="notes-empty-title">Nothing written yet</div>
-          <div class="notes-empty-sub">Tap <strong>New</strong> to capture a thought, list, or reminder.</div>
-        </div>
-      </div>
-
-      <!-- Editor view -->
-      <div class="notes-view ntr-editor-wrap" id="notesEditorView" style="display:none;">
-        <!-- Editor top bar -->
-        <div class="ntr-editor-bar">
-          <button class="ntr-back-btn" onclick="notesBackToList()" aria-label="Back">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-          </button>
-          <input class="notes-title-input ntr-title-input" id="notesTitleInput" placeholder="Untitled" maxlength="80">
-          <div style="display:flex;align-items:center;gap:6px;">
-            <div class="notes-save-dot" id="notesSaveDot" title="Saved"></div>
-            <button class="ntr-del-btn" onclick="notesDeleteCurrent()" aria-label="Delete note">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-            </button>
-          </div>
-        </div>
-        <!-- Formatting toolbar -->
-        <div class="notes-toolbar ntr-toolbar">
-          <button class="notes-fmt-btn" data-cmd="bold" title="Bold" onclick="notesFmt('bold')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg></button>
-          <button class="notes-fmt-btn" data-cmd="italic" title="Italic" onclick="notesFmt('italic')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="notes-fmt-btn" data-cmd="underline" title="Underline" onclick="notesFmt('underline')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"/><line x1="4" y1="21" x2="20" y2="21"/></svg></button>
-          <button class="notes-fmt-btn" data-cmd="strikeThrough" title="Strikethrough" onclick="notesFmt('strikeThrough')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><path d="M16 6c0-1.6-1.8-3-4-3s-4 1.4-4 3c0 2 2 2.5 4 3"/><path d="M8 18c0 1.6 1.8 3 4 3s4-1.4 4-3"/></svg></button>
-          <button class="notes-fmt-btn" data-cmd="hiliteColor" title="Highlight" onclick="notesHighlight()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7L4 19h3l1.5-4h7L17 19h3L15 7z"/><line x1="6.5" y1="13" x2="17.5" y2="13"/></svg></button>
-          <div class="notes-fmt-sep"></div>
-          <button class="notes-fmt-btn" data-cmd="formatBlock-h3" title="Heading" onclick="notesFmt('formatBlock','H3')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16"/><path d="M4 5v14"/><path d="M12 5v14"/></svg></button>
-          <div class="notes-fmt-sep"></div>
-          <button class="notes-fmt-btn" data-cmd="insertUnorderedList" title="Bullet list" onclick="notesFmt('insertUnorderedList')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/></svg></button>
-          <button class="notes-fmt-btn" data-cmd="insertOrderedList" title="Numbered list" onclick="notesFmt('insertOrderedList')"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></button>
-          <div class="notes-fmt-sep"></div>
-          <button class="notes-fmt-btn notes-clear-btn" title="Clear note" onclick="notesClear()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>
-          <button class="notes-fmt-btn" id="notesPinBtn" title="Pin note" onclick="notesTogglePin()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 6.4L21 9l-5 4.8 1.2 6.7L12 17l-5.2 3.5L8 13.8 3 9l6.6-.6z"/></svg></button>
-        </div>
-        <!-- Writing area -->
-        <div class="notes-editor ntr-editor" id="notesEditor" contenteditable="true" spellcheck="true" data-placeholder="Start writing…"></div>
-      </div>
-
-    </div>
-  </div>
 
 </div>
 
@@ -6865,14 +6793,12 @@ function toggleWeekView(){
     weekView.style.flexDirection = 'column';
     renderWeekView();
     if(upcoming) upcoming.style.display='none';
-    const ni=document.getElementById('notesInlineSection'); if(ni) ni.style.display='none';
   } else {
     btn.classList.remove('on');
     tabAll.classList.add('on');
     if(ccard) ccard.style.display='';
     weekView.style.display = 'none';
     if(upcoming) upcoming.style.display='';
-    const ni=document.getElementById('notesInlineSection'); if(ni) ni.style.display='';
     wvStopNowLineTimer();
     render();
   }
@@ -6921,7 +6847,6 @@ function toggleMonthTab(){
     tabAll.classList.remove('on');
     if(ccard) ccard.style.display='none';
     if(upcoming) upcoming.style.display='none';
-    const ni=document.getElementById('notesInlineSection'); if(ni) ni.style.display='none';
     if(monthTabView){
       monthTabView.style.display='block';
       renderMonthTabView();
@@ -6932,7 +6857,6 @@ function toggleMonthTab(){
     if(ccard) ccard.style.display='';
     if(monthTabView) monthTabView.style.display='none';
     if(upcoming) upcoming.style.display='';
-    const ni=document.getElementById('notesInlineSection'); if(ni) ni.style.display='';
     render();
   }
 }
@@ -7375,14 +7299,12 @@ function toggleDayView(){
     dayView.style.flexDirection = 'column';
     renderDayView();
     if(upcoming) upcoming.style.display='none';
-    const ni=document.getElementById('notesInlineSection'); if(ni) ni.style.display='none';
   } else {
     btn.classList.remove('on');
     tabAll.classList.add('on');
     if(ccard) ccard.style.display='';
     dayView.style.display = 'none';
     if(upcoming) upcoming.style.display='';
-    const ni=document.getElementById('notesInlineSection'); if(ni) ni.style.display='';
     dvStopNowLineTimer();
     render();
   }
@@ -11449,8 +11371,6 @@ _ric(()=>{
   updateNotifCard();
   updateNotifBadges();
   checkIncomingSharedProfile();
-  // Render notes list on startup so saved notes appear on the home tab
-  if(typeof window.notesLoad === 'function') window.notesLoad();
 });
 setTimeout(checkEventReminders, 2500);
 
