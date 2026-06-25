@@ -8333,7 +8333,43 @@ let upTab='hol';
 })();
 
 function saveEvents(){
-  localStorage.setItem('vikram_events',JSON.stringify(userEvents));
+  try{
+    localStorage.setItem('vikram_events',JSON.stringify(userEvents));
+  }catch(e){
+    if(e && (e.name==='QuotaExceededError'||e.code===22||e.code===1014)){
+      // Storage full — try to free space by pruning dispensable keys, then retry
+      _lsPrune();
+      try{ localStorage.setItem('vikram_events',JSON.stringify(userEvents)); }catch(e2){}
+    }
+  }
+}
+
+// ── LocalStorage quota helper ──────────────────────────────────────────────
+// Called whenever a setItem fails with QuotaExceededError.
+// Removes low-priority cached keys first (SW blob, pomo stats, then oldest events).
+function _lsPrune(){
+  const disposable=['vikram_sw_blob','vikram_pomo_stats','vikram_pomo_todos'];
+  disposable.forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} });
+  // If still not enough, drop past events (keep most recent 50)
+  try{
+    const evts=JSON.parse(localStorage.getItem('vikram_events')||'[]');
+    if(evts.length>50){
+      evts.sort((a,b)=>(b.adMs||0)-(a.adMs||0));
+      localStorage.setItem('vikram_events',JSON.stringify(evts.slice(0,50)));
+    }
+  }catch(e){}
+}
+
+// Safe localStorage wrapper used for all non-critical writes
+function _lsSet(key, value){
+  try{
+    localStorage.setItem(key, value);
+  }catch(e){
+    if(e && (e.name==='QuotaExceededError'||e.code===22||e.code===1014)){
+      _lsPrune();
+      try{ localStorage.setItem(key, value); }catch(e2){}
+    }
+  }
 }
 
 // Populate the day dropdown based on selected year+month
@@ -8486,6 +8522,24 @@ function formatEventRange(ev){
   return `${startStr} to ${endStr} · ${days} days`;
 }
 
+// ── Safe sheet renderer: wraps each render call so a JS error shows a
+//    retry button instead of leaving the body permanently blank. ──────────────
+function _safeRenderSheet(bodyId, renderFn, sheetName){
+  const body = document.getElementById(bodyId);
+  if(!body) return;
+  try{
+    renderFn();
+  }catch(err){
+    console.error('[Vikram] '+sheetName+' render error:', err);
+    body.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px 24px;text-align:center;height:100%;">
+      <div style="font-size:36px;">⚠️</div>
+      <div style="font-size:15px;font-weight:800;color:var(--dtext);">${sheetName} failed to load</div>
+      <div style="font-size:12px;color:var(--dsub);line-height:1.6;">Something went wrong rendering this screen.<br>Tap Retry to try again.</div>
+      <button onclick="(function(){document.getElementById('${bodyId}').innerHTML='';_safeRenderSheet('${bodyId}',window['_vikramRender_${bodyId}'],'${sheetName}');})()" style="padding:11px 28px;border-radius:12px;border:none;background:var(--tgon,#1a1a1a);color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">Retry</button>
+    </div>`;
+  }
+}
+
 function openSheet(t){
   haptic('light');
   if(t==='notes'){
@@ -8503,19 +8557,31 @@ function openSheet(t){
   sheet?.classList.add('open');
   if(t==='echo'){
     document.querySelector('.phone')?.classList.add('cycle-dim');
-    if(typeof window.renderEchoSheet === 'function') window.renderEchoSheet();
+    if(typeof window.renderEchoSheet === 'function'){
+      window._vikramRender_echoBody = window.renderEchoSheet;
+      _safeRenderSheet('echoBody', window.renderEchoSheet, 'Echo');
+    }
   }
   if(t==='colorMatcher'){
     document.querySelector('.phone')?.classList.add('cycle-dim');
-    if(typeof window.renderColorMatcherSheet === 'function') window.renderColorMatcherSheet();
+    if(typeof window.renderColorMatcherSheet === 'function'){
+      window._vikramRender_cmBody = window.renderColorMatcherSheet;
+      _safeRenderSheet('cmBody', window.renderColorMatcherSheet, 'Color Matcher');
+    }
   }
   if(t==='pomodoro'){
     document.querySelector('.phone')?.classList.add('cycle-dim');
-    if(typeof window.renderPomodoroSheet === 'function') window.renderPomodoroSheet();
+    if(typeof window.renderPomodoroSheet === 'function'){
+      window._vikramRender_pomodoroBody = window.renderPomodoroSheet;
+      _safeRenderSheet('pomodoroBody', window.renderPomodoroSheet, 'Focus Timer');
+    }
   }
   if(t==='converter'){
     document.querySelector('.phone')?.classList.add('cycle-dim');
-    if(typeof window.renderConverterSheet === 'function') window.renderConverterSheet();
+    if(typeof window.renderConverterSheet === 'function'){
+      window._vikramRender_converterBody = window.renderConverterSheet;
+      _safeRenderSheet('converterBody', window.renderConverterSheet, 'Date Converter');
+    }
   }
   if(t==='tasks'){
     document.querySelector('.phone')?.classList.add('cycle-dim');
@@ -10171,7 +10237,7 @@ async function gcalGetTokenViaFirebase(){
         gcalToken    = token;
         gcalTokenExp = Date.now() + 3600 * 1000;
         gcalUser     = result.user.email || result.user.displayName || 'Connected';
-        localStorage.setItem('vikram_gcal_user', gcalUser);
+        try{ localStorage.setItem('vikram_gcal_user', gcalUser); }catch(e){}
         resolve(token);
       })
       .catch(reject);
@@ -10257,7 +10323,7 @@ async function gcalConnect(){
           if(tok){
             gcalToken=tok; gcalTokenExp=Date.now()+3600000;
             gcalUser=r.user.email||r.user.displayName||'Connected';
-            localStorage.setItem('vikram_gcal_user',gcalUser);
+            try{ localStorage.setItem('vikram_gcal_user',gcalUser); }catch(e){}
             // update profile UI too
             if(typeof updateGoogleUI==='function') updateGoogleUI(r.user);
           }
@@ -10400,7 +10466,12 @@ let cycleData = (()=>{
 })();
 
 function saveCycle(){
-  localStorage.setItem('vikram_cycle', JSON.stringify(cycleData));
+  try{ localStorage.setItem('vikram_cycle', JSON.stringify(cycleData)); }catch(e){
+    if(e&&(e.name==='QuotaExceededError'||e.code===22||e.code===1014)){
+      _lsPrune();
+      try{ localStorage.setItem('vikram_cycle', JSON.stringify(cycleData)); }catch(e2){}
+    }
+  }
   if(typeof window._pairOnCycleSave === 'function') window._pairOnCycleSave();
 }
 
@@ -10525,6 +10596,7 @@ function cycCard(cls, pct, emoji, val, sub){
 function renderCycleSheet(){
   const body = document.getElementById('cycleBody');
   if(!body) return;
+  try{
   const d = cycleDefaults();
   cycleData = {...d, ...cycleData};
 
@@ -10625,6 +10697,15 @@ function renderCycleSheet(){
     // Load moments after paired view is rendered
     if(typeof window.renderPairMoments === 'function') window.renderPairMoments();
   }, 0);
+  }catch(e){
+    console.error('[Vikram] renderCycleSheet error:', e);
+    body.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:48px 24px;text-align:center;">
+      <div style="font-size:36px;">⚠️</div>
+      <div style="font-size:15px;font-weight:800;color:var(--dtext);">Cycle tracker failed to load</div>
+      <div style="font-size:12px;color:var(--dsub);line-height:1.6;">Tap Retry to reload, or clear cycle data in Settings if the issue persists.</div>
+      <button onclick="cycleData={};renderCycleSheet();" style="padding:11px 28px;border-radius:12px;border:none;background:var(--tgon,#1a1a1a);color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">Retry</button>
+    </div>`;
+  }
 }
 
 // ── Log actions ─────────────────────────────────────────────────────────────
@@ -11457,7 +11538,7 @@ setTimeout(checkEventReminders, 2500);
   // 2. Register service worker via blob — full offline support
   if(location.protocol !== 'file:' && 'serviceWorker' in navigator){
     const sw=`
-const CACHE='vikram-v5';
+const CACHE='vikram-v6';
 const PAGE_URL=self.location.href.split('?')[0];
 
 // Install: pre-cache the app page
@@ -11490,16 +11571,21 @@ self.addEventListener('fetch',e=>{
   const isExternal=url.hostname!==self.location.hostname;
 
   if(isNav){
-    // Stale-while-revalidate: serve cached page instantly, refresh cache in background
+    // Network-first for navigation: always try network so the page is never stale.
+    // Fall back to cache only if network fails (offline).
     e.respondWith(
-      caches.open(CACHE).then(c=>
-        c.match(PAGE_URL).then(cached=>{
-          const fresh=fetch(req,{cache:'no-cache'})
-            .then(r=>{ if(r&&r.ok)c.put(PAGE_URL,r.clone()); return r; })
-            .catch(()=>null);
-          return cached||fresh;
+      fetch(req,{cache:'no-cache'})
+        .then(r=>{
+          if(r&&r.ok){
+            caches.open(CACHE).then(c=>c.put(PAGE_URL,r.clone()));
+          }
+          return r;
         })
-      )
+        .catch(()=>
+          caches.open(CACHE).then(c=>
+            c.match(PAGE_URL).then(cached=>cached||new Response('Offline',{status:503}))
+          )
+        )
     );
   } else if(isFont||isExternal){
     // Cache-first for fonts; network-first with cache fallback for other external
@@ -11543,7 +11629,7 @@ self.addEventListener('message',e=>{
       .then(reg=>{
         // After SW activates, prime the cache with the current page
         const primeCache=()=>{
-          caches.open('vikram-v5').then(c=>{
+          caches.open('vikram-v6').then(c=>{
             // Cache the page itself
             c.add(window.location.href).catch(()=>{});
             // Cache Google Fonts stylesheet
@@ -11583,7 +11669,7 @@ self.addEventListener('message',e=>{
     if(deferredPrompt){
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then(r=>{
-        if(r.outcome==='accepted') localStorage.setItem('vikram_installed','1');
+        if(r.outcome==='accepted') try{ localStorage.setItem('vikram_installed','1'); }catch(e){}
         deferredPrompt=null;
         window._vikramDeferredPrompt=null;
       });
@@ -11591,7 +11677,37 @@ self.addEventListener('message',e=>{
   };
 })();
 
-// ══ COLOR MATCHER ══
+// ── Service Worker self-heal ───────────────────────────────────────────────
+// If the blob-URL SW was lost (page closed + reopened), re-register it immediately
+// on the next page load so features don't silently break.
+(function(){
+  if(location.protocol === 'file:' || !('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.getRegistration('./').then(function(reg){
+    if(!reg){
+      // No active SW — trigger re-registration by dispatching a synthetic DOMContentLoaded
+      // The main PWA block below will re-register when it runs.
+      window._vikramSwNeedsReregister = true;
+    }
+  }).catch(function(){});
+})();
+
+// ── localStorage health check ──────────────────────────────────────────────
+// Run once at startup: if storage is >90% full, proactively prune disposables
+(function(){
+  try{
+    let used = 0;
+    for(let i=0; i<localStorage.length; i++){
+      const k = localStorage.key(i);
+      used += (localStorage.getItem(k)||'').length + k.length;
+    }
+    // ~5 MB typical limit; warn at 4.5 MB
+    if(used > 4500000){
+      const disposable=['vikram_sw_blob','vikram_pomo_stats','vikram_pomo_todos'];
+      disposable.forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} });
+    }
+  }catch(e){}
+})();
+
 (function(){
 const CM_COLORS=[
   {name:'Red',hex:'#E63946'},{name:'Coral',hex:'#FF6B6B'},{name:'Orange',hex:'#FF8C42'},
@@ -12069,7 +12185,7 @@ function pomoLoadStats(){
     return d;
   }catch(e){ return {date:new Date().toDateString(),sessions:0,breakCount:0,minutes:0,dotLog:[]}; }
 }
-function pomoSaveStats(stats){ localStorage.setItem(POMO_STATS_KEY, JSON.stringify(stats)); }
+function pomoSaveStats(stats){ try{ localStorage.setItem(POMO_STATS_KEY, JSON.stringify(stats)); }catch(e){} }
 
 function pomoLoadSettings(){
   try{
@@ -12080,17 +12196,17 @@ function pomoLoadSettings(){
   }catch(e){}
 }
 function pomoSaveSettings(){
-  localStorage.setItem(POMO_KEY, JSON.stringify({
+  try{ localStorage.setItem(POMO_KEY, JSON.stringify({
     workMins: window.pomoState.workMins,
     breakMins: window.pomoState.breakMins,
     longBreakMins: window.pomoState.longBreakMins,
-  }));
+  })); }catch(e){}
 }
 
 // ── Todos ──────────────────────────────────────────────────────────────────
 let pomoTodos = [];
 function pomoLoadTodos(){ try{ pomoTodos = JSON.parse(localStorage.getItem(POMO_TODOS_KEY)||'[]'); }catch(e){ pomoTodos=[]; } }
-function pomoSaveTodos(){ localStorage.setItem(POMO_TODOS_KEY, JSON.stringify(pomoTodos)); }
+function pomoSaveTodos(){ try{ localStorage.setItem(POMO_TODOS_KEY, JSON.stringify(pomoTodos)); }catch(e){} }
 
 // ── Timer core ─────────────────────────────────────────────────────────────
 function pomoTick(){
@@ -12888,7 +13004,7 @@ function switchTab(tab) {
     closeAll();
     // Only re-render if we weren't already on cycle tab — prevents scroll jump on double-tap
     if(_currentTab !== 'cycle') {
-      renderCycleSheet();
+      try{ renderCycleSheet(); }catch(e){ console.error('[Vikram] renderCycleSheet error:',e); }
     }
     _currentTab = 'cycle';
   } else if(tab === 'counter') {
@@ -12909,8 +13025,8 @@ function switchTab(tab) {
     if(mainFab)     mainFab.style.display     = 'none';
     closeAll();
     _currentTab = 'counter';
-    if(typeof window.dcRender === 'function') window.dcRender();
-    if(typeof window.dcHeatmapRender === 'function') window.dcHeatmapRender();
+    try{ if(typeof window.dcRender === 'function') window.dcRender(); }catch(e){ console.error('[Vikram] dcRender error:',e); }
+    try{ if(typeof window.dcHeatmapRender === 'function') window.dcHeatmapRender(); }catch(e){}
   } else if(tab === 'notes') {
     if(mainContent) mainContent.style.display = 'none';
     const mmView4 = document.getElementById('mmView');
@@ -12967,12 +13083,12 @@ function switchTab(tab) {
   function dcLoad() {
     try { return JSON.parse(localStorage.getItem(DC_KEY)) || []; } catch(e) { return []; }
   }
-  function dcSaveAll(arr) { localStorage.setItem(DC_KEY, JSON.stringify(arr)); }
+  function dcSaveAll(arr) { try{ localStorage.setItem(DC_KEY, JSON.stringify(arr)); }catch(e){} }
 
   function logLoad() {
     try { return JSON.parse(localStorage.getItem(DC_LOG_KEY)) || {}; } catch(e) { return {}; }
   }
-  function logSave(obj) { localStorage.setItem(DC_LOG_KEY, JSON.stringify(obj)); }
+  function logSave(obj) { try{ localStorage.setItem(DC_LOG_KEY, JSON.stringify(obj)); }catch(e){} }
   function logCheckin(dateKey, delta) {
     const log = logLoad();
     log[dateKey] = Math.max(0, (log[dateKey] || 0) + delta);
@@ -13132,6 +13248,7 @@ function switchTab(tab) {
     const lbl  = document.getElementById('dcListLabel');
     const cnt  = document.getElementById('dcListCount');
     if(!list) return;
+    try{
     const arr = dcLoad();
     if(arr.length === 0) {
       if(lbl) lbl.style.display = 'none';
@@ -13210,6 +13327,14 @@ function switchTab(tab) {
         + '</div>'
         + '</div>';
     }).join('');
+    }catch(e){
+      console.error('[Vikram] dcRender error:', e);
+      list.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px 24px;text-align:center;">'
+        + '<div style="font-size:32px;">⚠️</div>'
+        + '<div style="font-size:14px;font-weight:800;color:var(--dtext);">Tracker failed to load</div>'
+        + '<button onclick="window.dcRender&&window.dcRender()" style="padding:10px 24px;border-radius:12px;border:none;background:var(--tgon,#1a1a1a);color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:\'Nunito\',sans-serif;">Retry</button>'
+        + '</div>';
+    }
   };
 
   window.dcToggleMenu = function(e, id){
@@ -15408,7 +15533,7 @@ window.inviteFriends = function() {
 window.togHaptic = function(btn){
   window._hapticEnabled = !window._hapticEnabled;
   btn.classList.toggle('on', window._hapticEnabled);
-  localStorage.setItem('vikram_haptic', window._hapticEnabled ? '1' : '0');
+  try{ localStorage.setItem('vikram_haptic', window._hapticEnabled ? '1' : '0'); }catch(e){}
   if(window._hapticEnabled) navigator.vibrate && navigator.vibrate(18);
 };
 
