@@ -5667,6 +5667,65 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   <div id="cycleBody"><!-- rendered by renderCycleSheet() --></div>
 </div>
 
+<!-- ══ NOTES TAB VIEW ══ -->
+<div class="daycounter-view" id="notesView">
+
+  <!-- ── List view ── -->
+  <div id="notesListView" style="display:flex;flex-direction:column;flex:1;">
+    <!-- Header row -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 18px 10px;flex-shrink:0;">
+      <div style="font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;color:var(--htext);letter-spacing:-.4px;">📝 Notes</div>
+      <button onclick="notesCreate()" style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border:none;border-radius:13px;background:rgba(99,102,241,.12);color:#6366f1;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:background .15s,transform .12s;border:1.5px solid rgba(99,102,241,.22);" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform=''" ontouchend="this.style.transform=''">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Note
+      </button>
+    </div>
+    <!-- Notes list -->
+    <div class="ntr-list-wrap">
+      <div id="notesListItems"></div>
+      <div class="ntr-empty" id="notesEmpty">
+        <div class="ntr-empty-ring">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div class="notes-empty-title">No notes yet</div>
+        <div class="notes-empty-sub">Tap <strong>+ New Note</strong> to write something.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Editor view ── -->
+  <div id="notesEditorView" style="display:none;flex-direction:column;flex:1;" class="ntr-editor-wrap">
+    <!-- Top bar: back + title + delete -->
+    <div class="ntr-editor-bar">
+      <button class="ntr-back-btn" onclick="notesBackToList()" aria-label="Back">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      </button>
+      <input class="ntr-title-input" id="notesTitleInput" placeholder="Title" maxlength="120" autocomplete="off">
+      <div id="notesSaveDot" class="notes-save-dot"></div>
+      <button class="notes-fmt-btn pin-btn" id="notesPinBtn" onclick="notesTogglePin()" title="Pin note" style="margin-left:2px;">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
+      </button>
+      <button class="ntr-del-btn" onclick="notesDeleteCurrent()" aria-label="Delete note">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </button>
+    </div>
+    <!-- Formatting toolbar -->
+    <div class="ntr-toolbar" style="display:flex;align-items:center;flex-wrap:wrap;gap:2px;">
+      <button class="notes-fmt-btn" data-cmd="bold" onclick="notesFmt('bold')" title="Bold"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg></button>
+      <button class="notes-fmt-btn" data-cmd="italic" onclick="notesFmt('italic')" title="Italic"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg></button>
+      <button class="notes-fmt-btn" data-cmd="underline" onclick="notesFmt('underline')" title="Underline"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" y1="20" x2="20" y2="20"/></svg></button>
+      <div class="notes-fmt-sep"></div>
+      <button class="notes-fmt-btn" data-cmd="insertUnorderedList" onclick="notesFmt('insertUnorderedList')" title="Bullet list"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4" cy="6" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.5" fill="currentColor" stroke="none"/></svg></button>
+      <button class="notes-fmt-btn" data-cmd="insertOrderedList" onclick="notesFmt('insertOrderedList')" title="Numbered list"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></button>
+      <div class="notes-fmt-sep notes-clear-btn"></div>
+      <button class="notes-fmt-btn" onclick="notesClear()" title="Clear content"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg></button>
+    </div>
+    <!-- Editable content area -->
+    <div class="ntr-editor" id="notesEditor" contenteditable="true" data-placeholder="Start writing…"></div>
+  </div>
+
+</div>
+
 <!-- CLEAR CYCLE DATA CONFIRM MODAL -->
 <div class="dc-modal-overlay" id="cyResetConfirmOverlay" onclick="cyResetConfirmClose(event)">
   <div class="dc-modal" style="text-align:center">
@@ -12739,6 +12798,7 @@ function resetHomeSubViews(){
   if(mmView) mmView.style.display = 'none';
 }
 
+let _currentTab = 'home';
 function switchTab(tab) {
   if(!window._vikramRestoring) haptic('light');
   try { window.localStorage.setItem('vikram_active_tab', tab); } catch(e) {}
@@ -12786,6 +12846,7 @@ function switchTab(tab) {
     const mainFab = document.querySelector('.fab');
     if(mainFab)     mainFab.style.display     = '';
     closeAll();
+    _currentTab = 'home';
     // Refresh notes list so saved notes appear after page load or tab switch
     if(typeof window.notesLoad === 'function') window.notesLoad();
     // Re-measure and restore calendar height now that cells are visible again
@@ -12806,6 +12867,7 @@ function switchTab(tab) {
     if(mainFab)     mainFab.style.display     = 'none';
     closeAll();
     scheduleActive = true;
+    _currentTab = 'schedule';
     if(schedView){ schedView.style.display = ''; renderScheduleView(); }
   } else if(tab === 'cycle') {
     if(mainContent) mainContent.style.display = 'none';
@@ -12824,7 +12886,11 @@ function switchTab(tab) {
     const mainFab = document.querySelector('.fab');
     if(mainFab)     mainFab.style.display     = 'none';
     closeAll();
-    renderCycleSheet();
+    // Only re-render if we weren't already on cycle tab — prevents scroll jump on double-tap
+    if(_currentTab !== 'cycle') {
+      renderCycleSheet();
+    }
+    _currentTab = 'cycle';
   } else if(tab === 'counter') {
     if(mainContent) mainContent.style.display = 'none';
     const mmView3 = document.getElementById('mmView');
@@ -12842,6 +12908,7 @@ function switchTab(tab) {
     const mainFab = document.querySelector('.fab');
     if(mainFab)     mainFab.style.display     = 'none';
     closeAll();
+    _currentTab = 'counter';
     if(typeof window.dcRender === 'function') window.dcRender();
     if(typeof window.dcHeatmapRender === 'function') window.dcHeatmapRender();
   } else if(tab === 'notes') {
@@ -12860,6 +12927,7 @@ function switchTab(tab) {
     const mainFab = document.querySelector('.fab');
     if(mainFab)     mainFab.style.display     = 'none';
     closeAll();
+    _currentTab = 'notes';
     if(notesView)   notesView.classList.add('active');
     // Restore whichever segment was active; default to notes
     ntSwitchSeg(window._ntActiveSeg || 'notes', true);
@@ -12881,6 +12949,7 @@ function switchTab(tab) {
     // close any open sheets/overlay before showing settings view
     document.getElementById('ov').classList.remove('open');
     ['langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet','profileSheet','sharedProfileSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+    _currentTab = 'settings';
     if(settingsView)settingsView.classList.add('active');
     // render dynamic settings content
     if(typeof renderGcalCard === 'function') renderGcalCard();
@@ -14051,18 +14120,15 @@ window.ntAddCurrent = function(){
 
 <script>
 (function(){
-  const STORAGE_KEY = 'vikram_pwa_prompt_dismissed';
+  const INSTALLED_KEY = 'vikram_installed';
   let deferredPrompt = null;
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
   const isInStandalone = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 
-  // Don't show if already installed or dismissed within 7 days
+  // Only skip if already installed — show every visit otherwise
   function shouldShow(){
     if(isInStandalone) return false;
-    try {
-      const ts = localStorage.getItem(STORAGE_KEY);
-      if(ts && (Date.now() - parseInt(ts)) < 7 * 24 * 60 * 60 * 1000) return false;
-    } catch(e){}
+    try{ if(localStorage.getItem(INSTALLED_KEY) === '1') return false; }catch(e){}
     return true;
   }
 
@@ -14095,8 +14161,8 @@ window.ntAddCurrent = function(){
     }, 400);
   }
 
+  // "Not now" — just closes for this session, no cooldown saved
   window.pwaDismiss = function(){
-    try{ localStorage.setItem(STORAGE_KEY, String(Date.now())); }catch(e){}
     closeCard();
   };
 
@@ -14105,14 +14171,18 @@ window.ntAddCurrent = function(){
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then(function(result){
       deferredPrompt = null;
-      closeCard();
       if(result.outcome === 'accepted'){
-        try{ localStorage.setItem(STORAGE_KEY, String(Date.now())); }catch(e){}
+        // Mark as installed so we never show the popup again
+        try{ localStorage.setItem(INSTALLED_KEY, '1'); }catch(e){}
+        closeCard();
+      } else {
+        // User declined the OS prompt — close card, will show again next visit
+        closeCard();
       }
     });
   };
 
-  // Tap overlay background to dismiss
+  // Tap overlay background to dismiss (session-only, same as "Not now")
   document.getElementById('pwaInstallOverlay').addEventListener('click', function(e){
     if(e.target === this) window.pwaDismiss();
   });
