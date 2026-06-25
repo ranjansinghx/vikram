@@ -715,6 +715,8 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
 .cal-clip{
   overflow:hidden;
+  clip-path:inset(0);
+  contain:paint;
   will-change:height;
 }
 #cgrid{
@@ -800,14 +802,19 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   60% {opacity:1;transform:scale(1.03) translateY(-2px);}
   100%{opacity:1;transform:scale(1)   translateY(0);}
 }
-/* Cells fold away during collapse — row drops down */
-@keyframes cellFold{
+@keyframes cellFoldDown{
   0%  {opacity:1;transform:scale(1)   translateY(0);}
   40% {opacity:.6;transform:scale(.97) translateY(4px);}
   100%{opacity:0;transform:scale(.86) translateY(12px);}
 }
+@keyframes cellFoldUp{
+  0%  {opacity:1;transform:scale(1)   translateY(0);}
+  40% {opacity:.6;transform:scale(.97) translateY(-4px);}
+  100%{opacity:0;transform:scale(.86) translateY(-12px);}
+}
 .cal-cell-anim        {animation:cellReveal .32s cubic-bezier(.34,1.3,.64,1) both;}
-.cal-cell-anim-out    {animation:cellFold   .22s cubic-bezier(.4,0,1,1) both;}
+.cal-cell-anim-out    {animation:cellFoldDown .22s cubic-bezier(.4,0,1,1) both;}
+.cal-cell-anim-out-up {animation:cellFoldUp   .22s cubic-bezier(.4,0,1,1) both;}
 
 /* Live drag: non-active rows dim proportionally (set via JS) */
 .cgrid .cell[data-row-dim]{
@@ -7758,6 +7765,10 @@ function applyCalHeight(animate, velocity){
   const ccard = document.querySelector('.ccard');
   const lbl   = document.getElementById('calHandleLabel');
   if(!clip||!grid) return;
+  // If the calendar isn't visible (e.g. settings tab is open), cells report
+  // offsetHeight=0 which would corrupt the stored clip height — skip entirely.
+  const firstCell = grid.querySelector('.cell');
+  if(firstCell && firstCell.offsetHeight === 0) return;
 
   const { collapsedH, expandedH, collapsedOffset, totalRows } = getCalHeights();
   const targetH      = calExpanded ? expandedH  : collapsedH;
@@ -7796,17 +7807,16 @@ function applyCalHeight(animate, velocity){
       const currentRow = getCurrentWeekRow();
 
       if(calExpanded){
-        // Reveal: rows cascade downward from the active row outward
+        // Expanding: make all cells visible again then animate them in
         cells.forEach((c, i)=>{
           const row = Math.floor(i / 7);
-          if(row === currentRow) return; // active row already visible, skip
-          c.classList.remove('cal-cell-anim-out');
+          c.style.visibility = '';
+          if(row === currentRow) return;
+          c.classList.remove('cal-cell-anim-out','cal-cell-anim-out-up');
           c.style.animation = 'none';
           requestAnimationFrame(()=>{
             c.style.animation = '';
             c.classList.add('cal-cell-anim');
-            // Rows above active week stagger upward from closest to farthest
-            // Rows below active week stagger downward from closest to farthest
             const dist = Math.abs(row - currentRow);
             c.style.animationDelay = `${dist * 38}ms`;
             c.addEventListener('animationend',()=>{
@@ -7816,21 +7826,25 @@ function applyCalHeight(animate, velocity){
           });
         });
       } else {
-        // Fold: rows that are NOT the active row cascade away
+        // Collapsing: immediately hide non-current-row cells so their
+        // backgrounds never bleed into the visible row during the clip animation
         cells.forEach((c, i)=>{
           const row = Math.floor(i / 7);
           if(row === currentRow) return;
-          c.classList.remove('cal-cell-anim');
-          c.classList.add('cal-cell-anim-out');
-          const dist = Math.abs(row - currentRow);
-          // Farthest rows fold first so the shrink looks intentional
-          c.style.animationDelay = `${Math.max(0, (2 - dist) * 20)}ms`;
-          c.addEventListener('animationend',()=>{
-            c.classList.remove('cal-cell-anim-out');
-            c.style.animationDelay = '';
-          },{once:true});
+          c.classList.remove('cal-cell-anim','cal-cell-anim-out','cal-cell-anim-out-up');
+          c.style.visibility = 'hidden';
         });
       }
+    });
+  } else {
+    // No animation — sync visibility to match collapsed/expanded state
+    requestAnimationFrame(()=>{
+      const cells = grid.querySelectorAll('.cell');
+      const currentRow = getCurrentWeekRow();
+      cells.forEach((c, i)=>{
+        const row = Math.floor(i / 7);
+        c.style.visibility = (!calExpanded && row !== currentRow) ? 'hidden' : '';
+      });
     });
   }
 }
@@ -7877,7 +7891,9 @@ function spawnRipple(rect){
 const _origRender = render;
 render = function(){
   _origRender();
-  requestAnimationFrame(()=>{ applyCalHeight(false); });
+  // Double rAF: first frame lets _origRender2 post-process the DOM (tithi/weekNum),
+  // second frame ensures the browser has reflowed those changes before we measure heights
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ applyCalHeight(false); }); });
 };
 
 // ── Live-drag swipe system ──
@@ -7983,6 +7999,19 @@ render = function(){
     const clip = getClip(); const grid = getGrid(); const card = getCard();
     if(clip) clip.style.height          = liveH + 'px';
     if(grid) grid.style.transform       = `translateY(${liveOffset}px)`;
+
+    // Hide non-current-row cells as soon as we start collapsing so their
+    // backgrounds never bleed into the visible row
+    if(grid){
+      const currentRow = getCurrentWeekRow();
+      const collapsing = frac < startFraction;
+      grid.querySelectorAll('.cell').forEach((c, i)=>{
+        const row = Math.floor(i / 7);
+        if(row === currentRow){ c.style.visibility = ''; return; }
+        c.style.visibility = collapsing ? 'hidden' : '';
+      });
+    }
+
     if(card){ card.classList.add('swiping'); }
 
     // Live progress bar — shows how far through the swipe gesture you are
@@ -8202,7 +8231,10 @@ function setLang(l){
   document.getElementById('chkEN').classList.toggle('on',l==='en');
   document.getElementById('chkNE').classList.toggle('on',l==='ne');
   localStorage.setItem('vikram_lang',l);
-  closeAll();render();renderUpcoming();renderSelectedDay();
+  // Only close the lang sheet (not the whole settings view)
+  document.getElementById('langSheet')?.classList.remove('open');
+  document.getElementById('ov')?.classList.remove('open');
+  render();renderUpcoming();renderSelectedDay();
 }
 
 // ══ SETTINGS ══
@@ -8216,7 +8248,7 @@ function togSetting(k,btn){
 function setFD(v,btn){
   haptic('light');
   cfg.fd=v;
-  document.querySelectorAll('#settingsView .sv-chip').forEach(c=>c.classList.remove('on'));
+  btn.parentElement.querySelectorAll('.sv-chip').forEach(c=>c.classList.remove('on'));
   btn.classList.add('on');render();
 }
 
@@ -12859,6 +12891,8 @@ function switchTab(tab) {
     closeAll();
     // Refresh notes list so saved notes appear after page load or tab switch
     if(typeof window.notesLoad === 'function') window.notesLoad();
+    // Re-measure and restore calendar height now that cells are visible again
+    requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ applyCalHeight(false); }); });
   } else if(tab === 'schedule') {
     if(mainContent) mainContent.style.display = 'none';
     const mmView0 = document.getElementById('mmView');
