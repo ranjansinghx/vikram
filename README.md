@@ -1,4 +1,4 @@
-# Vikram 🇳🇵 — Nepali Calendar
+# Vikram  — Nepali Calendar
 
 A beautiful, offline-capable Nepali Patro (Bikram Sambat calendar) web app built as a Progressive Web App (PWA).
 
