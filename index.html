@@ -5093,6 +5093,39 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       </div>
     </div><!-- /.sv-group -->
 
+    <!-- ACCOUNT -->
+    <div class="sv-group-label">Account</div>
+    <div class="sv-group">
+
+      <!-- Google Sign-In -->
+      <div id="googleAuthSec">
+        <button id="googleSignInBtn" onclick="signInWithGoogle()" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px 16px;border-radius:14px;border:none;background:transparent;color:var(--dtext);font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:opacity .2s;" onmouseenter="this.style.opacity='.7'" onmouseleave="this.style.opacity='1'">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+          Continue with Google
+        </button>
+        <div id="googleUserInfo" style="display:none;padding:12px 16px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <img id="googleAvatar" src="" width="36" height="36" style="border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.15);flex-shrink:0;">
+            <div style="flex:1;min-width:0;">
+              <div id="googleDisplayName" style="font-weight:900;font-size:14px;color:var(--dtext);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+              <div id="googleEmail" style="font-size:11.5px;color:var(--dsub);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+            </div>
+            <button onclick="signOutGoogle()" style="flex-shrink:0;padding:5px 12px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--dsub);font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:opacity .2s;" onmouseenter="this.style.opacity='.7'" onmouseleave="this.style.opacity='1'">Sign out</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cloud Sync -->
+      <div class="sv-row" id="cloudSyncSec" style="border-top:1px solid var(--border);">
+        <div class="sv-icon" style="background:rgba(34,197,94,.12);">☁️</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Cloud Sync</div>
+          <div class="sv-sub" id="cloudSyncStatus">Sign in with Google to sync across devices</div>
+        </div>
+      </div>
+
+    </div><!-- /.sv-group -->
+
     <!-- APPEARANCE & LANGUAGE -->
     <div class="sv-group-label">Appearance</div>
     <div class="sv-group">
@@ -5467,29 +5500,6 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
             <button onclick="profileCancelBdayEdit()" style="padding:7px 16px;border-radius:10px;border:none;background:var(--tgbg);color:var(--dtext);font-size:12.5px;font-weight:800;cursor:pointer;font-family:inherit;">Cancel</button>
           </div>
           <button onclick="profileRemoveBday()" id="profileBdayRemoveBtn" style="display:none;background:none;border:none;color:var(--wknd);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;padding:2px 4px;">Remove birthday</button>
-        </div>
-      </div>
-    </div>
-    <!-- Google Sign-In -->
-    <div class="ssec" id="googleAuthSec">
-      <button id="googleSignInBtn" onclick="signInWithGoogle()" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px 16px;border-radius:14px;border:1px solid var(--sheet-border);background:var(--card);color:var(--sheet-text);font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.07);transition:opacity .2s;" onmouseenter="this.style.opacity='.82'" onmouseleave="this.style.opacity='1'">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
-        Continue with Google
-      </button>
-      <div id="googleUserInfo" style="display:none;padding:14px;border-radius:14px;background:var(--tgbg);text-align:center;">
-        <img id="googleAvatar" src="" width="52" height="52" style="border-radius:50%;margin-bottom:8px;box-shadow:0 4px 12px rgba(0,0,0,.15);">
-        <div id="googleDisplayName" style="font-weight:900;font-size:14px;color:var(--sheet-text);line-height:1.3;"></div>
-        <div id="googleEmail" style="font-size:11.5px;color:var(--sheet-muted);margin-bottom:10px;margin-top:2px;"></div>
-        <button onclick="signOutGoogle()" style="padding:6px 16px;border-radius:10px;border:1px solid var(--sheet-border);background:transparent;color:var(--sheet-muted);font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:opacity .2s;" onmouseenter="this.style.opacity='.7'" onmouseleave="this.style.opacity='1'">Sign out</button>
-      </div>
-    </div>
-    <!-- Cloud Sync Status -->
-    <div class="ssec" id="cloudSyncSec">
-      <div class="srow" style="pointer-events:none;">
-        <div class="sv-icon" style="background:rgba(34,197,94,.12);">☁️</div>
-        <div class="sv-row-text">
-          <div class="sv-lbl">Cloud Sync</div>
-          <div class="sv-sub" id="cloudSyncStatus" style="font-size:11.5px;color:var(--dsub);">Sign in with Google to sync across devices</div>
         </div>
       </div>
     </div>
@@ -8442,7 +8452,9 @@ function setFD(v,btn){
   haptic('light');
   cfg.fd=v;
   btn.parentElement.querySelectorAll('.sv-chip').forEach(c=>c.classList.remove('on'));
-  btn.classList.add('on');render();
+  btn.classList.add('on');
+  try{ localStorage.setItem('vikram_cfg',JSON.stringify(cfg)); }catch(e){}
+  render();
 }
 
 // ══ CONVERTER ══
@@ -11703,6 +11715,11 @@ if(savedLang==='ne') setLang('ne');
   Object.entries(map).forEach(([k,id])=>{
     const el=document.getElementById(id);
     if(el) el.classList.toggle('on',!!cfg[k]);
+  });
+  // Sync first-day-of-week chip buttons
+  document.querySelectorAll('.sv-fdow .sv-chip').forEach(btn=>{
+    const v=parseInt(btn.getAttribute('onclick').match(/setFD\((\d+)/)?.[1]??'-1',10);
+    btn.classList.toggle('on', v===cfg.fd);
   });
 })();
 render();
