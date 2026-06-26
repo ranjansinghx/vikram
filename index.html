@@ -10967,20 +10967,18 @@ function cyResetConfirmYes(){
 (function(){
   const PAIR_KEY = 'vikram_pair_v1';
   // ── Firebase refs ─────────────────────────────────────────────────────────
-  let _db = null;
   let _cycleRef = null;   // /cycles/<myCode>
   let _msgsRef  = null;   // /moments/<roomKey>
   let _msgsListener = null;
   let _partnerCycleListener = null;
 
   function db(){
-    if(_db) return _db;
-    try{ _db = firebase.database(); return _db; }
+    try{ return firebase.database(); }
     catch(e){ return null; }
   }
 
   function fbReady(){
-    try{ return !!(window.firebase && firebase.apps && firebase.apps.length); }
+    try{ return !!(window.firebase && firebase.apps && firebase.apps.length && firebase.database); }
     catch(e){ return false; }
   }
 
@@ -15728,16 +15726,19 @@ window.inviteFriends = function() {
     // Inline the Firebase init block here after SDK loads
     try {
       if(!window.firebase || !firebase.apps) return;
-      if(firebase.apps.length) return;
-      firebase.initializeApp({
-        apiKey:            "AIzaSyAFr9Amc7C3YKY27P_RdQ-3Rb-cH1ReFoc",
-        authDomain:        "vikram-6e99b.firebaseapp.com",
-        databaseURL:       "https://vikram-6e99b-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId:         "vikram-6e99b",
-        storageBucket:     "vikram-6e99b.firebasestorage.app",
-        messagingSenderId: "198553115649",
-        appId:             "1:198553115649:web:081e794d5b68810556f400"
-      });
+      // Only call initializeApp if not already initialized
+      if(!firebase.apps.length){
+        firebase.initializeApp({
+          apiKey:            "AIzaSyAFr9Amc7C3YKY27P_RdQ-3Rb-cH1ReFoc",
+          authDomain:        "vikram-6e99b.firebaseapp.com",
+          databaseURL:       "https://vikram-6e99b-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId:         "vikram-6e99b",
+          storageBucket:     "vikram-6e99b.firebasestorage.app",
+          messagingSenderId: "198553115649",
+          appId:             "1:198553115649:web:081e794d5b68810556f400"
+        });
+      }
+      // Always wire pair sync — runs every time Firebase SDK finishes loading
       if(window._fbPair){
         var p=window._fbPair;
         var d=p.pairLoad();
