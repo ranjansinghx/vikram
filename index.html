@@ -5026,7 +5026,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 </div>
 
 
-<div class="ov" id="ov" onclick="(function(ov){var o=ov.dataset.sheetOrigin;if(o==='changelogSheet'||o==='privacySheet'){document.getElementById(o).classList.remove('open');ov.classList.remove('open');delete ov.dataset.sheetOrigin;}else{closeAll();}})(this)"></div>
+<div class="ov" id="ov" onclick="(function(ov){var o=ov.dataset.sheetOrigin;if(o==='changelogSheet'||o==='privacySheet'){document.getElementById(o).classList.remove('open');ov.classList.remove('open');delete ov.dataset.sheetOrigin;}else{var sv=document.getElementById('settingsView');var wasActive=sv&&sv.classList.contains('active');closeAll();if(wasActive)sv.classList.add('active');}})(this)"></div>
 
 <!-- DAY MODAL -->
 <div class="dmodal" id="dmodal">
@@ -5079,6 +5079,19 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
   <!-- ── Body ── -->
   <div class="sv-body">
+
+    <!-- PROFILE -->
+    <div class="sv-group-label">Profile</div>
+    <div class="sv-group">
+      <div class="sv-row" style="cursor:pointer;" onclick="openSheet('profile')">
+        <div id="svProfileAvatar" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;letter-spacing:-0.5px;flex-shrink:0;">?</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl" id="svProfileName">Your Name</div>
+          <div class="sv-sub" id="svProfileSub">Edit profile, birthday &amp; more</div>
+        </div>
+        <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div><!-- /.sv-group -->
 
     <!-- APPEARANCE & LANGUAGE -->
     <div class="sv-group-label">Appearance</div>
@@ -5193,10 +5206,31 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <div class="sv-icon" style="background:rgba(255,160,50,.13);">🔔</div>
         <div class="sv-row-text">
           <div class="sv-lbl" id="notifLbl">Event Reminders</div>
-          <div class="sv-sub" id="notifSub">Notified at 6 AM on event day</div>
+          <div class="sv-sub" id="notifSub">30 min · 2 hr · 1 day before events</div>
         </div>
         <button class="tgl" id="notifTgl" onclick="handleNotifToggle()"></button>
       </div>
+
+    </div><!-- /.sv-group -->
+
+    <!-- BIRTHDAY TRACKER -->
+    <div class="sv-group-label">Birthday Tracker</div>
+    <div class="sv-group">
+
+      <!-- Add birthday row -->
+      <div class="sv-row" style="cursor:pointer;" onclick="bdtOpenAdd()">
+        <div class="sv-icon" style="background:rgba(109,76,255,.18);display:flex;align-items:center;justify-content:center;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(109,76,255,.9)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Add Contact Birthday</div>
+          <div class="sv-sub" id="bdtSubText">No birthdays saved yet</div>
+        </div>
+        <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+
+      <!-- Birthday list -->
+      <div id="bdtList" style="padding:0;"></div>
 
     </div><!-- /.sv-group -->
 
@@ -5374,7 +5408,12 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <!-- PROFILE SHEET -->
 <div class="sheet" id="profileSheet">
   <div class="shandle"></div>
-  <div class="stitle">👤 Profile</div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>👤 Profile</span>
+    <button class="ae-close" onclick="document.getElementById('profileSheet').classList.remove('open');document.getElementById('ov').classList.remove('open');" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
   <div class="sscroll">
     <div class="ssec">
       <!-- Avatar + name display -->
@@ -8251,7 +8290,7 @@ function openDay(bY,bM,bD){
 function closeAll(){
   haptic('light');
   document.getElementById('ov').classList.remove('open');
-  ['langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet','profileSheet','sharedProfileSheet','changelogSheet','privacySheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+  ['langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet','profileSheet','sharedProfileSheet','changelogSheet','privacySheet','bdtSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
   // Also deactivate settings tab view if open
   document.getElementById('settingsView')?.classList.remove('active');
   // Stop color matcher game if running
@@ -8630,7 +8669,9 @@ function openSheet(t){
     switchTab('settings');
     return;
   }
+  const settingsWasActive = document.getElementById('settingsView')?.classList.contains('active');
   closeAll();
+  if(settingsWasActive) document.getElementById('settingsView')?.classList.add('active');
   document.getElementById('ov').classList.add('open');
   const ids={lang:'langSheet',add:'addSheet',echo:'echoSheet',colorMatcher:'colorMatcherSheet',pomodoro:'pomodoroSheet',converter:'converterSheet',profile:'profileSheet',sharedProfile:'sharedProfileSheet'};
   const sheet=document.getElementById(ids[t]);
@@ -8857,10 +8898,10 @@ function updateNotifCard(){
   } else {
     lbl.textContent='Event Reminders';
     sub.textContent=active
-      ?'Notified at 6 AM on event day'
+      ?'30 min · 2 hr · 1 day before events'
       :perm==='granted'
         ?'Reminders paused — tap to turn on'
-        :'Tap to allow · notified at 6 AM on event day';
+        :'Tap to allow · 30 min · 2 hr · 1 day before';
   }
 }
 
@@ -8878,34 +8919,50 @@ async function handleNotifToggle(){
   updateNotifCard();
 }
 
-// Fire once per day, only after 6 AM NST — never on every page open
+// Fire reminders: 30 min before, 2 hr before, and 1 day before events
 async function checkEventReminders(){
   if(!notifEnabled) return;
   if(!('Notification' in window)||Notification.permission!=='granted') return;
 
   // Current Nepal Standard Time (UTC+5:45)
-  const nst   =new Date(Date.now()+345*60000);
-  const nstH  =nst.getUTCHours();
-  if(nstH<6) return;  // Before 6 AM Nepal time — do nothing
+  const nowMs = Date.now() + 345*60000;
+  const WINDOW_MS = 2 * 60 * 1000; // 2-minute fire window to avoid missing triggers
 
-  // One-per-day gate keyed on Nepal calendar date
-  const dayKey=`vikram_notif_${nst.getUTCFullYear()}_${nst.getUTCMonth()}_${nst.getUTCDate()}`;
-  if(localStorage.getItem(dayKey)) return;  // Already ran today
-  localStorage.setItem(dayKey,'1');          // Mark before firing (prevents race)
-
-  const todayMid=new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
   for(const ev of userEvents){
-    const adMid=new Date(new Date(ev.adMs).setHours(0,0,0,0));
-    const diff=Math.round((adMid-todayMid)/86400000);
-    const mName=MEN[ev.bsM-1];
-    if(diff===0){
-      await showNotif(`📅 Today: ${ev.title}`,
-        `Your event is today · ${ev.bsD} ${mName} ${ev.bsY} BS${ev.note?' · '+ev.note:''}`,
-        `today-${ev.adMs}`);
-    } else if(diff===1){
-      await showNotif(`⏰ Tomorrow: ${ev.title}`,
-        `Reminder for tomorrow · ${ev.bsD} ${mName} ${ev.bsY} BS${ev.note?' · '+ev.note:''}`,
-        `tomorrow-${ev.adMs}`);
+    // Event anchor = noon NST of the event date = 06:15 UTC on that day
+    const evDate  = new Date(ev.adMs);
+    const evNoon  = Date.UTC(evDate.getUTCFullYear(), evDate.getUTCMonth(), evDate.getUTCDate(), 6, 15);
+    const mName   = MEN[ev.bsM-1];
+    const dateStr = `${ev.bsD} ${mName} ${ev.bsY} BS${ev.note?' · '+ev.note:''}`;
+
+    // 1 day before
+    const minus1day = evNoon - 24*60*60*1000;
+    const key1day   = `vn_1d_${ev.adMs}`;
+    if(!localStorage.getItem(key1day) && nowMs >= minus1day && nowMs < minus1day + WINDOW_MS){
+      localStorage.setItem(key1day,'1');
+      await showNotif(`📅 Tomorrow: ${ev.title}`,
+        `Event tomorrow · ${dateStr}`,
+        `1day-${ev.adMs}`);
+    }
+
+    // 2 hours before
+    const minus2hr = evNoon - 2*60*60*1000;
+    const key2hr   = `vn_2h_${ev.adMs}`;
+    if(!localStorage.getItem(key2hr) && nowMs >= minus2hr && nowMs < minus2hr + WINDOW_MS){
+      localStorage.setItem(key2hr,'1');
+      await showNotif(`⏰ In 2 hours: ${ev.title}`,
+        `Starting in 2 hours · ${dateStr}`,
+        `2hr-${ev.adMs}`);
+    }
+
+    // 30 minutes before
+    const minus30min = evNoon - 30*60*1000;
+    const key30min   = `vn_30m_${ev.adMs}`;
+    if(!localStorage.getItem(key30min) && nowMs >= minus30min && nowMs < minus30min + WINDOW_MS){
+      localStorage.setItem(key30min,'1');
+      await showNotif(`🔔 In 30 min: ${ev.title}`,
+        `Starting in 30 minutes · ${dateStr}`,
+        `30min-${ev.adMs}`);
     }
   }
 }
@@ -11574,6 +11631,8 @@ _ric(()=>{
   checkIncomingSharedProfile();
 });
 setTimeout(checkEventReminders, 2500);
+// Re-check every 60 seconds so 30-min and 2-hr triggers are caught within the 2-min window
+setInterval(checkEventReminders, 60000);
 
 // ══ PWA — INSTALL BANNER ══
 (function(){
@@ -13144,7 +13203,7 @@ function switchTab(tab) {
     if(mainFab2)    mainFab2.style.display    = 'none';
     // close any open sheets/overlay before showing settings view
     document.getElementById('ov').classList.remove('open');
-    ['langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet','profileSheet','sharedProfileSheet','changelogSheet','privacySheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+    ['langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet','profileSheet','sharedProfileSheet','changelogSheet','privacySheet','bdtSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
     _currentTab = 'settings';
     if(settingsView)settingsView.classList.add('active');
     // render dynamic settings content
@@ -15085,6 +15144,11 @@ function applyProfile(name,about){
   if(sm) sm.textContent=initials;
   const nd=document.getElementById('profileNameDisplay');
   if(nd) nd.textContent=name||'Your Name';
+  // Keep settings row avatar + name in sync
+  const svAv=document.getElementById('svProfileAvatar');
+  if(svAv) svAv.textContent=initials;
+  const svNm=document.getElementById('svProfileName');
+  if(svNm) svNm.textContent=name||'Your Name';
 }
 
 // ── BIRTHDAY (Profile) ─────────────────────────────────────────
@@ -15399,14 +15463,6 @@ window.inviteFriends = function() {
   <button class="hdr-menu-item" onclick="closeHdrMenu();openSheet('settings');" role="menuitem">
     <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     Settings
-  </button>
-  <div class="hdr-menu-sep"></div>
-  <button class="hdr-menu-item" id="hdrProfileBtn" onclick="closeHdrMenu();openSheet('profile');" role="menuitem">
-    <span style="position:relative;display:inline-flex;flex-shrink:0;">
-      <span id="hdrProfileAvatar" style="width:16px;height:16px;border-radius:50%;background:var(--tgon);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff;flex-shrink:0;line-height:1;">?</span>
-      <span class="notif-dot-mini"></span>
-    </span>
-    Profile
   </button>
 </div>
 
@@ -15959,6 +16015,24 @@ function svRefreshStorage(){
   window.switchTab = function(tab){
     if(typeof _base === 'function') _base.apply(this, arguments);
     if(tab === 'settings'){
+      // Sync profile row
+      try{
+        const p = JSON.parse(localStorage.getItem('vikram_profile')||'{}');
+        const nameEl = document.getElementById('svProfileName');
+        const subEl  = document.getElementById('svProfileSub');
+        const avEl   = document.getElementById('svProfileAvatar');
+        if(nameEl) nameEl.textContent = p.name || 'Your Name';
+        if(avEl){
+          const initials = profileInitials(p.name || '');
+          avEl.textContent = initials;
+        }
+        if(subEl){
+          if(p.bday && p.bday.y && p.bday.m && p.bday.d){
+            const MEN_=typeof MEN!=='undefined'?MEN:['Baisakh','Jestha','Ashadh','Shrawan','Bhadra','Ashwin','Kartik','Mangsir','Poush','Magh','Falgun','Chaitra'];
+            subEl.textContent = '🎂 ' + MEN_[p.bday.m-1] + ' ' + p.bday.d + ', ' + p.bday.y + ' BS';
+          } else { subEl.textContent = 'Edit profile, birthday & more'; }
+        }
+      }catch(e){}
       // Sync haptic
       document.getElementById('tgHaptic')?.classList.toggle('on', !!window._hapticEnabled);
       // Sync tithi & weeknum
@@ -16047,5 +16121,268 @@ function svRefreshStorage(){
   </div>
 </div>
 
+<!-- ── BIRTHDAY TRACKER SHEET ────────────────────────────────────────────── -->
+<div class="sheet" id="bdtSheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span id="bdtSheetTitle">🎂 Add Birthday</span>
+    <button class="ae-close" onclick="bdtCloseSheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:16px;">
+    <!-- Name -->
+    <div style="margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:800;color:var(--dsub);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">Name</div>
+      <input id="bdtName" class="einput" type="text" placeholder="e.g. Rose" maxlength="60" autocomplete="off" style="width:100%;padding:10px 12px;font-size:14px;">
+    </div>
+    <!-- Date -->
+    <div style="margin-bottom:14px;">
+      <div style="font-size:12px;font-weight:800;color:var(--dsub);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">Birthday (BS)</div>
+      <div style="display:grid;grid-template-columns:1fr 1.7fr 0.8fr;gap:8px;align-items:end;">
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--dsub);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;">Year</div>
+          <select class="cv-sel" id="bdtY" style="width:100%;"></select>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--dsub);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;">Month</div>
+          <select class="cv-sel" id="bdtM" style="width:100%;" onchange="bdtRefreshDays()"></select>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--dsub);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px;">Day</div>
+          <select class="cv-sel" id="bdtD" style="width:100%;"></select>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--dsub);margin-top:6px;" id="bdtAdPreview"></div>
+    </div>
+    <!-- Note -->
+    <div style="margin-bottom:20px;">
+      <div style="font-size:12px;font-weight:800;color:var(--dsub);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">Note <span style="font-weight:400;text-transform:none;">(optional)</span></div>
+      <input id="bdtNote" class="einput" type="text" placeholder="e.g. Best friend, Gift idea…" maxlength="80" autocomplete="off" style="width:100%;padding:10px 12px;font-size:14px;">
+    </div>
+    <button class="ebtn" id="bdtSaveBtn" onclick="bdtSave()" style="width:100%;">Save Birthday</button>
+    <button id="bdtDeleteBtn" onclick="bdtDelete()" style="display:none;width:100%;margin-top:10px;padding:11px;border-radius:13px;border:none;background:rgba(220,60,60,.1);color:#e53e3e;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">Delete</button>
+  </div>
+</div>
+
+<script>
+// ── Birthday Tracker ────────────────────────────────────────────────────────
+const BDT_KEY = 'vikram_birthdays_v1';
+let _bdtEditIdx = null;
+
+function bdtLoad(){ try{ return JSON.parse(localStorage.getItem(BDT_KEY)||'[]'); }catch(e){ return []; } }
+function bdtSaveAll(arr){ localStorage.setItem(BDT_KEY, JSON.stringify(arr)); }
+
+// BS months
+const BDT_MEN = ['Baisakh','Jestha','Ashadh','Shrawan','Bhadra','Ashwin','Kartik','Mangsir','Poush','Magh','Falgun','Chaitra'];
+const BDT_MNE = ['बैशाख','जेठ','असार','श्रावण','भाद्र','आश्विन','कार्तिक','मंसिर','पौष','माघ','फागुन','चैत्र'];
+
+// Populate selectors
+function bdtPopulateSelectors(){
+  const yEl = document.getElementById('bdtY');
+  const mEl = document.getElementById('bdtM');
+  if(!yEl || !mEl) return;
+  // Year range 1970–2090
+  yEl.innerHTML = '';
+  for(let y=2090;y>=1970;y--){
+    const o=document.createElement('option'); o.value=y; o.textContent=y; yEl.appendChild(o);
+  }
+  yEl.value = window.BS_YEAR || 2081;
+  // Months
+  mEl.innerHTML = BDT_MEN.map((m,i)=>`<option value="${i+1}">${m}</option>`).join('');
+  mEl.value = 1;
+  bdtRefreshDays();
+}
+
+function bdtRefreshDays(){
+  const yEl = document.getElementById('bdtY');
+  const mEl = document.getElementById('bdtM');
+  const dEl = document.getElementById('bdtD');
+  if(!yEl||!mEl||!dEl) return;
+  const y=+yEl.value, m=+mEl.value;
+  // Get max days for this BS month/year
+  let maxD = 32;
+  try{ if(window.BS_DATA && BS_DATA[y]) maxD = BS_DATA[y][m-1] || 32; } catch(e){}
+  const prev = +dEl.value || 1;
+  dEl.innerHTML = '';
+  for(let d=1;d<=maxD;d++){
+    const o=document.createElement('option'); o.value=d; o.textContent=d; dEl.appendChild(o);
+  }
+  dEl.value = Math.min(prev, maxD);
+  bdtUpdateAdPreview();
+}
+
+function bdtUpdateAdPreview(){
+  const y=+document.getElementById('bdtY')?.value;
+  const m=+document.getElementById('bdtM')?.value;
+  const d=+document.getElementById('bdtD')?.value;
+  const el=document.getElementById('bdtAdPreview');
+  if(!el) return;
+  try{
+    const ad = bsToAd(y,m,d);
+    if(ad instanceof Date && !isNaN(ad)){
+      const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      el.textContent = `AD: ${months[ad.getMonth()]} ${ad.getDate()}, ${ad.getFullYear()}`;
+    } else { el.textContent = ''; }
+  }catch(e){ el.textContent=''; }
+}
+
+function bdtOpenAdd(){
+  haptic('light');
+  _bdtEditIdx = null;
+  bdtPopulateSelectors();
+  document.getElementById('bdtName').value='';
+  document.getElementById('bdtNote').value='';
+  document.getElementById('bdtSheetTitle').textContent='🎂 Add Birthday';
+  document.getElementById('bdtSaveBtn').textContent='Save Birthday';
+  document.getElementById('bdtDeleteBtn').style.display='none';
+  document.getElementById('bdtAdPreview').textContent='';
+  // Preserve settingsView
+  const sv=document.getElementById('settingsView');
+  const wasActive=sv&&sv.classList.contains('active');
+  closeAll();
+  if(wasActive) sv.classList.add('active');
+  document.getElementById('ov').classList.add('open');
+  document.getElementById('bdtSheet').classList.add('open');
+}
+
+function bdtOpenEdit(idx){
+  haptic('light');
+  const list = bdtLoad();
+  const item = list[idx];
+  if(!item) return;
+  _bdtEditIdx = idx;
+  bdtPopulateSelectors();
+  document.getElementById('bdtName').value = item.name || '';
+  document.getElementById('bdtNote').value = item.note || '';
+  document.getElementById('bdtY').value = item.y;
+  document.getElementById('bdtM').value = item.m;
+  bdtRefreshDays();
+  document.getElementById('bdtD').value = item.d;
+  document.getElementById('bdtSheetTitle').textContent='✏️ Edit Birthday';
+  document.getElementById('bdtSaveBtn').textContent='Update Birthday';
+  document.getElementById('bdtDeleteBtn').style.display='block';
+  bdtUpdateAdPreview();
+  const sv=document.getElementById('settingsView');
+  const wasActive=sv&&sv.classList.contains('active');
+  closeAll();
+  if(wasActive) sv.classList.add('active');
+  document.getElementById('ov').classList.add('open');
+  document.getElementById('bdtSheet').classList.add('open');
+}
+
+function bdtCloseSheet(){
+  document.getElementById('bdtSheet').classList.remove('open');
+  document.getElementById('ov').classList.remove('open');
+}
+
+function bdtSave(){
+  const name = document.getElementById('bdtName').value.trim();
+  if(!name){ document.getElementById('bdtName').focus(); return; }
+  const y=+document.getElementById('bdtY').value;
+  const m=+document.getElementById('bdtM').value;
+  const d=+document.getElementById('bdtD').value;
+  const note=document.getElementById('bdtNote').value.trim();
+  const list = bdtLoad();
+  const entry = { name, y, m, d, note };
+  if(_bdtEditIdx !== null && _bdtEditIdx >= 0 && _bdtEditIdx < list.length){
+    list[_bdtEditIdx] = entry;
+  } else {
+    list.push(entry);
+  }
+  bdtSaveAll(list);
+  haptic('light');
+  bdtCloseSheet();
+  bdtRender();
+}
+
+function bdtDelete(){
+  if(_bdtEditIdx === null) return;
+  const list = bdtLoad();
+  list.splice(_bdtEditIdx, 1);
+  bdtSaveAll(list);
+  haptic('light');
+  bdtCloseSheet();
+  bdtRender();
+}
+
+// How many days until next birthday (circular, in AD)
+function bdtDaysUntil(bY, bM, bD){
+  try{
+    const ad = bsToAd(bY, bM, bD);
+    if(!(ad instanceof Date) || isNaN(ad)) return null;
+    const today = new Date();
+    const thisYear = today.getFullYear();
+    let next = new Date(thisYear, ad.getMonth(), ad.getDate());
+    if(next < today) next = new Date(thisYear+1, ad.getMonth(), ad.getDate());
+    const diffMs = next - new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    return Math.round(diffMs / 86400000);
+  }catch(e){ return null; }
+}
+
+function bdtRender(){
+  const el = document.getElementById('bdtList');
+  const subEl = document.getElementById('bdtSubText');
+  if(!el) return;
+  const list = bdtLoad();
+  if(subEl) subEl.textContent = list.length === 0 ? 'No birthdays saved yet' : `${list.length} birthday${list.length!==1?'s':''} saved`;
+  if(list.length === 0){
+    el.innerHTML = '';
+    return;
+  }
+  // Annotate with days until
+  const annotated = list.map((item, idx) => {
+    const days = bdtDaysUntil(item.y, item.m, item.d);
+    return { ...item, idx, days };
+  });
+  // Sort by days until (soonest first)
+  annotated.sort((a,b) => {
+    if(a.days===null && b.days===null) return 0;
+    if(a.days===null) return 1;
+    if(b.days===null) return -1;
+    return a.days - b.days;
+  });
+
+  const months = ['Baisakh','Jestha','Ashadh','Shrawan','Bhadra','Ashwin','Kartik','Mangsir','Poush','Magh','Falgun','Chaitra'];
+
+  el.innerHTML = annotated.map(item => {
+    const dateStr = `${months[item.m-1]} ${item.d}, ${item.y}`;
+    let badge = '';
+    if(item.days === 0){
+      badge = `<span style="background:linear-gradient(135deg,#ec4899,#f43f5e);color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;flex-shrink:0;">🎉 Today!</span>`;
+    } else if(item.days !== null && item.days <= 7){
+      badge = `<span style="background:rgba(236,72,153,.15);color:#ec4899;font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;flex-shrink:0;">in ${item.days}d</span>`;
+    } else if(item.days !== null){
+      badge = `<span style="background:var(--tgbg);color:var(--dsub);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;flex-shrink:0;">${item.days}d</span>`;
+    }
+    return `
+    <div class="sv-row" style="cursor:pointer;border-top:1px solid var(--border);" onclick="bdtOpenEdit(${item.idx})">
+      <div class="sv-icon" style="background:rgba(236,72,153,.1);">🎂</div>
+      <div class="sv-row-text">
+        <div class="sv-lbl">${esc(item.name)}</div>
+        <div class="sv-sub">${dateStr}${item.note ? ' · '+esc(item.note) : ''}</div>
+      </div>
+      ${badge}
+    </div>`;
+  }).join('');
+}
+
+// Init on settings open
+(function(){
+  const _baseBdt = window.switchTab;
+  window.switchTab = function(tab){
+    if(typeof _baseBdt === 'function') _baseBdt.apply(this, arguments);
+    if(tab === 'settings') setTimeout(bdtRender, 100);
+  };
+})();
+
+// Also render on page load in case settings is already active
+setTimeout(bdtRender, 500);
+
+// Listen to selectors for AD preview
+['bdtY','bdtM','bdtD'].forEach(id=>{
+  document.getElementById(id)?.addEventListener('change', bdtUpdateAdPreview);
+});
+</script>
 </body>
 </html>
