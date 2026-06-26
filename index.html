@@ -4944,7 +4944,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <!-- ECHO SHEET -->
 <div class="sheet cycle-fullscreen" id="echoSheet" style="padding-bottom:0;">
   <div class="cycle-head" style="background:linear-gradient(135deg,rgba(200,146,58,.18),rgba(168,100,30,.10),rgba(120,80,20,.07));">
-    <button class="cycle-back" onclick="closeAll()" aria-label="Back">
+    <button class="cycle-back" onclick="closeCycleSheet()" aria-label="Back">
       <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
     <div class="cycle-title-wrap">
@@ -4958,7 +4958,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <!-- COLOR MATCHER SHEET -->
 <div class="sheet cycle-fullscreen" id="colorMatcherSheet" style="padding-bottom:0;">
   <div class="cycle-head" style="background:linear-gradient(135deg,rgba(58,134,255,.18),rgba(114,9,183,.12),rgba(255,60,120,.07));">
-    <button class="cycle-back" onclick="closeAll()" aria-label="Back">
+    <button class="cycle-back" onclick="closeCycleSheet()" aria-label="Back">
       <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
     <div class="cycle-title-wrap">
@@ -4974,7 +4974,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <!-- POMODORO FOCUS TIMER SHEET -->
 <div class="sheet cycle-fullscreen" id="pomodoroSheet" style="padding-bottom:0;">
   <div class="cycle-head" style="background:linear-gradient(135deg,rgba(22,163,74,.18),rgba(15,118,61,.12),rgba(34,197,94,.06));">
-    <button class="cycle-back" onclick="closeAll()" aria-label="Back">
+    <button class="cycle-back" onclick="closeCycleSheet()" aria-label="Back">
       <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
     <div class="cycle-title-wrap">
@@ -4988,7 +4988,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <!-- DATE CONVERTER SHEET -->
 <div class="sheet cycle-fullscreen" id="converterSheet" style="padding-bottom:0;">
   <div class="cycle-head" style="background:linear-gradient(135deg,rgba(60,60,70,.22),rgba(26,26,26,.14),rgba(40,40,48,.08));">
-    <button class="cycle-back" onclick="closeAll()" aria-label="Back">
+    <button class="cycle-back" onclick="closeCycleSheet()" aria-label="Back">
       <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
     </button>
     <div class="cycle-title-wrap">
@@ -8319,6 +8319,29 @@ function openDay(bY,bM,bD){
   document.getElementById('dmodal').classList.add('open');
 }
 
+// ── Close a cycle-fullscreen sheet and restore the previous tab/view ──
+function closeCycleSheet(){
+  haptic('light');
+  // Remove cycle-dim from phone
+  document.querySelector('.phone')?.classList.remove('cycle-dim');
+  // Close all sheets/overlay
+  document.getElementById('ov').classList.remove('open');
+  ['langSheet','addSheet','dmodal','mpSheet','echoSheet','colorMatcherSheet','pomodoroSheet','converterSheet','profileSheet','sharedProfileSheet','changelogSheet','privacySheet','bdtSheet'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+  if(window.cmState && window.cmState.running) window.cmStopGame && window.cmStopGame();
+  if(window.pomoState && window.pomoState.running){ window.pomoToggle && window.pomoToggle(); }
+  if(window.tasksFlushSave) window.tasksFlushSave();
+  // Restore whatever tab was active before this sheet opened
+  const prev = window._cycleSheetPrevTab || null;
+  const prevSettings = window._cycleSheetPrevSettings || false;
+  window._cycleSheetPrevTab = null;
+  window._cycleSheetPrevSettings = false;
+  if(prevSettings){
+    document.getElementById('settingsView')?.classList.add('active');
+  } else if(prev && typeof switchTab === 'function'){
+    switchTab(prev);
+  }
+}
+
 // ══ SHEETS ══
 function closeAll(){
   haptic('light');
@@ -8705,9 +8728,16 @@ function openSheet(t){
   const settingsWasActive = document.getElementById('settingsView')?.classList.contains('active');
   closeAll();
   if(settingsWasActive) document.getElementById('settingsView')?.classList.add('active');
-  document.getElementById('ov').classList.add('open');
   const ids={lang:'langSheet',add:'addSheet',echo:'echoSheet',colorMatcher:'colorMatcherSheet',pomodoro:'pomodoroSheet',converter:'converterSheet',profile:'profileSheet',sharedProfile:'sharedProfileSheet'};
   const sheet=document.getElementById(ids[t]);
+  // cycle-fullscreen sheets cover the entire screen themselves — no overlay needed
+  const isFullscreen = sheet && sheet.classList.contains('cycle-fullscreen');
+  if(isFullscreen){
+    // Save state so closeCycleSheet() can restore it
+    window._cycleSheetPrevSettings = settingsWasActive;
+    window._cycleSheetPrevTab = typeof _currentTab !== 'undefined' ? _currentTab : 'home';
+  }
+  if(!isFullscreen) document.getElementById('ov').classList.add('open');
   sheet?.classList.add('open');
   if(t==='echo'){
     document.querySelector('.phone')?.classList.add('cycle-dim');
