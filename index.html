@@ -5441,6 +5441,21 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
           </button>
         </div>
+        <!-- Birthday info card (shown when birthday is set) -->
+        <div id="profileBdayCard" style="display:none;margin-top:14px;width:100%;max-width:290px;background:linear-gradient(135deg,rgba(236,72,153,.10),rgba(244,63,94,.07));border:1.5px solid rgba(236,72,153,.18);border-radius:16px;padding:14px 16px;text-align:left;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <span style="font-size:11px;font-weight:800;color:#ec4899;letter-spacing:.5px;text-transform:uppercase;">My Birthday</span>
+            <button onclick="profileBdayStartEdit()" style="padding:3px 9px;border-radius:8px;border:1px solid rgba(236,72,153,.25);background:transparent;color:#ec4899;font-size:10px;font-weight:800;cursor:pointer;font-family:inherit;">Edit</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="font-size:28px;line-height:1;">🎂</div>
+            <div>
+              <div id="profileBdayCardDate" style="font-size:14px;font-weight:800;color:var(--dtext);line-height:1.3;">—</div>
+              <div id="profileBdayCardAge" style="font-size:12px;font-weight:700;color:var(--dsub);margin-top:2px;">—</div>
+            </div>
+          </div>
+          <div id="profileBdayCardNext" style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(236,72,153,.13);font-size:11.5px;font-weight:700;color:#ec4899;"></div>
+        </div>
         <div id="profileBdayEditRow" style="display:none;flex-direction:column;align-items:center;gap:8px;margin-top:8px;width:100%;">
           <div style="display:flex;gap:6px;width:100%;max-width:250px;">
             <select class="cv-sel" id="profileBdayY" style="flex:1.1;"></select>
@@ -5479,12 +5494,25 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       </div>
     </div>
     <!-- My Upcoming Events section -->
-    <div class="ssec" id="profileEventsSec" style="display:none;">
-      <div class="ssect">My Upcoming Events</div>
+    <div class="ssec" id="profileEventsSec">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
+        <div class="ssect" style="margin-bottom:0;">My Events</div>
+        <button class="notif-hist-clear" onclick="closeAll();switchTab('home');setUpView('upcoming');">View all</button>
+      </div>
       <div id="profileShareEvents"></div>
+      <div class="ssub" id="profileEventsEmpty" style="display:none;padding:6px 2px;">No upcoming events.</div>
+    </div>
+    <!-- My Birthdays section -->
+    <div class="ssec" id="profileBdtSec">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
+        <div class="ssect" style="margin-bottom:0;">Birthdays</div>
+        <button class="notif-hist-clear" onclick="closeAll();switchTab('settings');setTimeout(()=>{const el=document.getElementById('bdtList');if(el)el.scrollIntoView({behavior:'smooth'});},400);">View all</button>
+      </div>
+      <div id="profileBdtList"></div>
+      <div class="ssub" id="profileBdtEmpty" style="display:none;padding:6px 2px;">No birthdays saved yet.</div>
     </div>
     <!-- My Notes section -->
-    <div class="ssec" id="profileNotesSec" style="display:none;">
+    <div class="ssec" id="profileNotesSec">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
         <div class="ssect" style="margin-bottom:0;">My Notes</div>
         <button class="notif-hist-clear" onclick="closeAll();switchTab('notes');">View all</button>
@@ -5493,7 +5521,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       <div class="ssub" id="profileNotesEmpty" style="display:none;padding:6px 2px;">No notes yet.</div>
     </div>
     <!-- My Tasks section -->
-    <div class="ssec" id="profileTasksSec" style="display:none;">
+    <div class="ssec" id="profileTasksSec">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;">
         <div class="ssect" style="margin-bottom:0;">My Tasks</div>
         <button class="notif-hist-clear" onclick="closeAll();switchTab('home');setUpView('tasks');">View all</button>
@@ -5793,7 +5821,12 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
   <div id="notesListView" style="display:flex;flex-direction:column;flex:1;">
     <!-- Header row -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 18px 10px;flex-shrink:0;">
-      <div style="font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;color:var(--htext);letter-spacing:-.4px;">📝 Notes</div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <button class="ntr-back-btn" onclick="switchTab('home')" aria-label="Back">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        </button>
+        <div style="font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;color:var(--htext);letter-spacing:-.4px;">📝 Notes</div>
+      </div>
       <button onclick="notesCreate()" style="display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border:none;border-radius:13px;background:rgba(99,102,241,.12);color:#6366f1;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:background .15s,transform .12s;border:1.5px solid rgba(99,102,241,.22);" onmousedown="this.style.transform='scale(.95)'" onmouseup="this.style.transform=''" ontouchend="this.style.transform=''">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         New Note
@@ -8709,6 +8742,20 @@ function openSheet(t){
     if(window.tasksShowList) window.tasksShowList();
   }
   if(t==='settings'){ /* handled by switchTab('settings') */ }
+  if(t==='profile'){
+    // Initialize birthday card when profile sheet opens
+    try{
+      const p=JSON.parse(localStorage.getItem('vikram_profile')||'{}');
+      if(typeof profileBdayCardUpdate==='function') profileBdayCardUpdate(p.bday||null);
+      const disp=document.getElementById('profileBdayDisplay');
+      if(disp) disp.textContent=typeof bdayDisplayText==='function'?bdayDisplayText(p.bday||null):'🎂 Add your birthday';
+      if(typeof renderProfileShareEvents==='function') renderProfileShareEvents();
+      if(typeof renderProfileBirthdays==='function') renderProfileBirthdays();
+      if(typeof renderProfileNotes==='function') renderProfileNotes();
+      if(typeof renderProfileTasks==='function') renderProfileTasks();
+      if(typeof renderNotifHistory==='function') renderNotifHistory();
+    }catch(e){}
+  }
   if(t==='add'){
     // Default date = today BS
     setEventRange(TODAYBS.y, TODAYBS.m, TODAYBS.d);
@@ -14810,6 +14857,20 @@ window.notesHighlight = function() {
     const p=JSON.parse(localStorage.getItem('vikram_profile')||'{}');
     if(p.name||p.about) applyProfile(p.name||'',p.about||'');
     showProfileShare(p.name||'',p.about||'');
+    // Initialize birthday card if birthday is already set
+    if(p.bday && p.bday.y){
+      setTimeout(function(){
+        if(typeof profileBdayCardUpdate==='function') profileBdayCardUpdate(p.bday);
+        const disp=document.getElementById('profileBdayDisplay');
+        if(disp) disp.textContent=typeof bdayDisplayText==='function'?bdayDisplayText(p.bday):'';
+      }, 300);
+    }
+    // Render profile sections on load
+    setTimeout(function(){
+      if(typeof renderProfileBirthdays==='function') renderProfileBirthdays();
+      if(typeof renderProfileNotes==='function') renderProfileNotes();
+      if(typeof renderProfileTasks==='function') renderProfileTasks();
+    }, 400);
   }catch(e){}
 })();
 
@@ -14943,35 +15004,92 @@ function renderProfileQR(url){
 function renderProfileShareEvents(events){
   const wrap=document.getElementById('profileShareEvents');
   const sec=document.getElementById('profileEventsSec');
+  const empty=document.getElementById('profileEventsEmpty');
   if(!wrap) return;
   // Work directly from userEvents so we have real indices for edit/delete
   const todayMid=new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate());
   const upcoming=(typeof userEvents==='undefined'?[]:userEvents)
     .map((ev,i)=>({ev,i}))
     .filter(({ev})=>{
-      const end=ev.isBirthday?nextOccurrenceAdMs(ev):(ev.endAdMs!=null?ev.endAdMs:ev.adMs);
+      if(ev.isBirthday||ev.isBdtBirthday) return false; // birthdays shown separately
+      const end=ev.endAdMs!=null?ev.endAdMs:ev.adMs;
       return new Date(new Date(end).setHours(0,0,0,0))>=todayMid;
     })
-    .sort((a,b)=>(a.ev.isBirthday?nextOccurrenceAdMs(a.ev):a.ev.adMs)-(b.ev.isBirthday?nextOccurrenceAdMs(b.ev):b.ev.adMs));
+    .sort((a,b)=>a.ev.adMs-b.ev.adMs);
+  if(sec) sec.style.display='';
   if(!upcoming.length){
-    if(sec) sec.style.display='none';
     wrap.innerHTML='';
+    if(empty) empty.style.display='';
     return;
   }
-  if(sec) sec.style.display='';
+  if(empty) empty.style.display='none';
   const mArr=lang==='ne'?MNE:MEN;
   const colorMap={'personal':'#3B82F6','work':'#10b981','cultural':'#f59e0b','health':'#ef4444','birthday':'#ec4899'};
-  wrap.innerHTML=upcoming.map(({ev,i})=>`<div class="pshare-evt" style="gap:7px;padding:8px 10px;">
+  const shown=upcoming.slice(0,5);
+  wrap.innerHTML=shown.map(({ev,i})=>`<div class="pshare-evt" style="gap:7px;padding:8px 10px;">
     <span class="pshare-evt-dot" style="background:${safeCss(colorMap[ev.color],'#3B82F6')};flex-shrink:0;"></span>
     <span class="pshare-evt-name" style="flex:1;font-size:12px;">${esc(ev.title)}</span>
     <span class="pshare-evt-date" style="font-size:10px;">${mArr[ev.bsM-1]} ${ns(ev.bsD)}</span>
-    ${ev.isBirthday ? `<span style="font-size:9.5px;font-weight:700;color:var(--dsub);flex-shrink:0;">via profile</span>` : `
     <button onclick="profileEditEvent(${i})" style="padding:3px 8px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--dsub);font-size:10px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;flex-shrink:0;line-height:1.4;">Edit</button>
-    <button onclick="profileDeleteEvent(${ev.adMs})" style="padding:3px 8px;border-radius:6px;border:1.5px solid rgba(224,62,62,.2);background:transparent;color:var(--wknd);font-size:10px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;flex-shrink:0;line-height:1.4;">Del</button>`}
-  </div>`).join('');
+    <button onclick="profileDeleteEvent(${ev.adMs})" style="padding:3px 8px;border-radius:6px;border:1.5px solid rgba(224,62,62,.2);background:transparent;color:var(--wknd);font-size:10px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;flex-shrink:0;line-height:1.4;">Del</button>
+  </div>`).join('') + (upcoming.length>5?`<div class="ssub" style="text-align:center;margin-top:4px;">+${upcoming.length-5} more</div>`:'');
 }
 
-// ── PROFILE: NOTES + TASKS SUMMARY ──
+// ── PROFILE: BIRTHDAYS SUMMARY ──
+function renderProfileBirthdays(){
+  const wrap=document.getElementById('profileBdtList');
+  const sec=document.getElementById('profileBdtSec');
+  const empty=document.getElementById('profileBdtEmpty');
+  if(!wrap||!sec) return;
+  sec.style.display='';
+  const list=typeof bdtLoad==='function'?bdtLoad():[];
+  // Also include profile birthday
+  const allBdays=[];
+  try{
+    const p=JSON.parse(localStorage.getItem('vikram_profile')||'{}');
+    if(p.bday&&p.bday.y){
+      const pName=(p.name||'Me').trim()||'Me';
+      allBdays.push({name:pName,y:p.bday.y,m:p.bday.m,d:p.bday.d,note:'',isProfile:true});
+    }
+  }catch(e){}
+  list.forEach(item=>{ if(item.y&&item.m&&item.d&&item.name) allBdays.push({...item,isProfile:false}); });
+  if(!allBdays.length){
+    wrap.innerHTML='';
+    if(empty) empty.style.display='';
+    return;
+  }
+  if(empty) empty.style.display='none';
+  // Annotate with days until
+  const annotated=allBdays.map((item,idx)=>{
+    const days=typeof bdtDaysUntil==='function'?bdtDaysUntil(item.y,item.m,item.d):null;
+    return{...item,days,origIdx:list.indexOf(allBdays[idx])};
+  }).sort((a,b)=>{
+    if(a.days===null&&b.days===null) return 0;
+    if(a.days===null) return 1; if(b.days===null) return -1;
+    return a.days-b.days;
+  });
+  const months=MEN;
+  const shown=annotated.slice(0,5);
+  wrap.innerHTML=shown.map(item=>{
+    const dateStr=`${months[item.m-1]} ${item.d}, ${item.y} BS`;
+    let badge='';
+    if(item.days===0) badge=`<span style="background:linear-gradient(135deg,#ec4899,#f43f5e);color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;flex-shrink:0;">🎉 Today!</span>`;
+    else if(item.days!==null&&item.days<=7) badge=`<span style="background:rgba(236,72,153,.15);color:#ec4899;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;flex-shrink:0;">in ${item.days}d</span>`;
+    else if(item.days!==null) badge=`<span style="background:var(--tgbg);color:var(--dsub);font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;flex-shrink:0;">${item.days}d</span>`;
+    const editBtn=item.isProfile?
+      `<button onclick="profileBdayStartEdit()" style="padding:3px 8px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--dsub);font-size:10px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;flex-shrink:0;line-height:1.4;">Edit</button>`:
+      `<button onclick="bdtOpenEdit(${list.findIndex(x=>x.name===item.name&&x.y===item.y&&x.m===item.m&&x.d===item.d)})" style="padding:3px 8px;border-radius:6px;border:1.5px solid var(--border);background:transparent;color:var(--dsub);font-size:10px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;flex-shrink:0;line-height:1.4;">Edit</button>`;
+    return `<div class="pshare-evt" style="gap:7px;padding:8px 10px;">
+      <span class="pshare-evt-dot" style="background:#ec4899;flex-shrink:0;"></span>
+      <span class="pshare-evt-name" style="flex:1;font-size:12px;">🎂 ${esc(item.name)}</span>
+      <span class="pshare-evt-date" style="font-size:10px;">${months[item.m-1]} ${item.d}</span>
+      ${badge}
+      ${editBtn}
+    </div>`;
+  }).join('')+(annotated.length>5?`<div class="ssub" style="text-align:center;margin-top:4px;">+${annotated.length-5} more</div>`:'');
+}
+
+
 function profEsc(str){
   return String(str||'').replace(/[&<>"']/g, function(c){
     return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
@@ -15157,6 +15275,74 @@ function bdayDisplayText(b){
   return `🎂 ${MEN[b.m-1]} ${b.d}, ${b.y} BS`;
 }
 
+// ── Birthday info card update ──
+function profileBdayCardUpdate(bday){
+  const card = document.getElementById('profileBdayCard');
+  const dispRow = document.getElementById('profileBdayRow');
+  if(!card) return;
+  if(!bday || !bday.y){
+    card.style.display = 'none';
+    if(dispRow) dispRow.style.display = 'flex';
+    return;
+  }
+  // Hide the plain text row, show the card instead
+  if(dispRow) dispRow.style.display = 'none';
+  card.style.display = 'block';
+
+  // Date string
+  const dateEl = document.getElementById('profileBdayCardDate');
+  if(dateEl) dateEl.textContent = `${MEN[bday.m-1]} ${bday.d}, ${bday.y} BS`;
+
+  // Age calculation (reuse TODAYBS)
+  const ageEl = document.getElementById('profileBdayCardAge');
+  if(ageEl && typeof TODAYBS !== 'undefined'){
+    try{
+      const tY=TODAYBS.y, tM=TODAYBS.m, tD=TODAYBS.d;
+      let ageY=tY-bday.y, ageM=tM-bday.m, ageD=tD-bday.d;
+      if(ageD<0){
+        ageM--;
+        const prevM=bday.m===1?12:bday.m-1;
+        const prevY=bday.m===1?bday.y-1:bday.y;
+        ageD+=(typeof BS!=='undefined'&&BS[prevY]&&BS[prevY][prevM-1])?BS[prevY][prevM-1]:30;
+      }
+      if(ageM<0){ageY--;ageM+=12;}
+      if(ageY>=0){
+        const parts=[];
+        if(ageY>0) parts.push(ageY+(ageY===1?' year':' years'));
+        if(ageM>0) parts.push(ageM+(ageM===1?' month':' months'));
+        if(ageD>0||parts.length===0) parts.push(ageD+(ageD===1?' day':' days'));
+        ageEl.textContent = parts.join(', ') + ' old';
+      } else {
+        ageEl.textContent = '';
+      }
+    }catch(e){ ageEl.textContent=''; }
+  }
+
+  // Days until next birthday
+  const nextEl = document.getElementById('profileBdayCardNext');
+  if(nextEl && typeof TODAYBS !== 'undefined' && typeof bsToAd === 'function'){
+    try{
+      const tY=TODAYBS.y, tM=TODAYBS.m, tD=TODAYBS.d;
+      let nbY=tY, nbM=bday.m, nbD=bday.d;
+      const maxNbD=(typeof BS!=='undefined'&&BS[nbY]&&BS[nbY][nbM-1])?BS[nbY][nbM-1]:30;
+      nbD=Math.min(bday.d,maxNbD);
+      if(nbM<tM||(nbM===tM&&nbD<=tD)) nbY++;
+      const maxNbD2=(typeof BS!=='undefined'&&BS[nbY]&&BS[nbY][nbM-1])?BS[nbY][nbM-1]:30;
+      nbD=Math.min(bday.d,maxNbD2);
+      const todayAD=bsToAd(tY,tM,tD);
+      const nextAD=bsToAd(nbY,nbM,nbD);
+      const daysUntil=Math.round((nextAD-todayAD)/86400000);
+      if(daysUntil===0){
+        nextEl.textContent='🎉 Happy Birthday today!';
+        nextEl.style.color='#ec4899';
+      } else {
+        nextEl.textContent=`🎂 Next birthday in ${daysUntil} day${daysUntil===1?'':'s'} · ${MEN[nbM-1]} ${nbD}, ${nbY} BS`;
+        nextEl.style.color='';
+      }
+    }catch(e){ nextEl.textContent=''; }
+  }
+}
+
 function bdayYearOpts(sel){
   const minY=2055, maxY=TODAYBS.y;
   let h='';
@@ -15207,10 +15393,17 @@ window.profileBdayStartEdit=function(){
 
 window.profileCancelBdayEdit=function(){
   haptic('light');
-  const dispRow=document.getElementById('profileBdayRow');
   const editRow=document.getElementById('profileBdayEditRow');
   if(editRow) editRow.style.display='none';
-  if(dispRow) dispRow.style.display='flex';
+  // Re-show card if birthday is set, otherwise show plain row
+  let p={};
+  try{ p=JSON.parse(localStorage.getItem('vikram_profile')||'{}'); }catch(e){}
+  if(p.bday && p.bday.y){
+    profileBdayCardUpdate(p.bday);
+  } else {
+    const dispRow=document.getElementById('profileBdayRow');
+    if(dispRow) dispRow.style.display='flex';
+  }
 };
 
 window.profileSaveBday=function(){
@@ -15225,11 +15418,11 @@ window.profileSaveBday=function(){
   try{ localStorage.setItem('vikram_profile',JSON.stringify(p)); }catch(e){}
   const disp=document.getElementById('profileBdayDisplay');
   if(disp) disp.textContent=bdayDisplayText(p.bday);
-  const dispRow=document.getElementById('profileBdayRow');
   const editRow=document.getElementById('profileBdayEditRow');
   if(editRow) editRow.style.display='none';
-  if(dispRow) dispRow.style.display='flex';
+  profileBdayCardUpdate(p.bday);
   syncBirthdayEvent(p);
+  if(typeof renderProfileBirthdays==='function') renderProfileBirthdays();
   vikramToast('🎂 Birthday saved!');
 };
 
@@ -15241,11 +15434,11 @@ window.profileRemoveBday=function(){
   try{ localStorage.setItem('vikram_profile',JSON.stringify(p)); }catch(e){}
   const disp=document.getElementById('profileBdayDisplay');
   if(disp) disp.textContent=bdayDisplayText(null);
-  const dispRow=document.getElementById('profileBdayRow');
   const editRow=document.getElementById('profileBdayEditRow');
   if(editRow) editRow.style.display='none';
-  if(dispRow) dispRow.style.display='flex';
+  profileBdayCardUpdate(null);
   syncBirthdayEvent(p);
+  if(typeof renderProfileBirthdays==='function') renderProfileBirthdays();
   vikramToast('Birthday removed');
 };
 
@@ -16122,7 +16315,7 @@ function svRefreshStorage(){
 </div>
 
 <!-- ── BIRTHDAY TRACKER SHEET ────────────────────────────────────────────── -->
-<div class="sheet" id="bdtSheet" style="max-height:88vh;">
+<div class="sheet" id="bdtSheet" style="max-height:88vh;z-index:80;">
   <div class="shandle"></div>
   <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
     <span id="bdtSheetTitle">🎂 Add Birthday</span>
@@ -16130,7 +16323,7 @@ function svRefreshStorage(){
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   </div>
-  <div class="sscroll" style="padding:16px;">
+  <div class="sscroll" style="padding:16px 16px 32px;">
     <!-- Name -->
     <div style="margin-bottom:14px;">
       <div style="font-size:12px;font-weight:800;color:var(--dsub);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">Name</div>
@@ -16160,8 +16353,10 @@ function svRefreshStorage(){
       <div style="font-size:12px;font-weight:800;color:var(--dsub);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;">Note <span style="font-weight:400;text-transform:none;">(optional)</span></div>
       <input id="bdtNote" class="einput" type="text" placeholder="e.g. Best friend, Gift idea…" maxlength="80" autocomplete="off" style="width:100%;padding:10px 12px;font-size:14px;">
     </div>
-    <button class="ebtn" id="bdtSaveBtn" onclick="bdtSave()" style="width:100%;">Save Birthday</button>
+    <button class="ebtn" id="bdtSaveBtn" style="width:100%;">Save Birthday</button>
+    <div id="bdtErrMsg" style="display:none;margin-top:8px;padding:8px 12px;border-radius:10px;background:rgba(220,60,60,.12);color:#e53e3e;font-size:13px;font-weight:700;text-align:center;"></div>
     <button id="bdtDeleteBtn" onclick="bdtDelete()" style="display:none;width:100%;margin-top:10px;padding:11px;border-radius:13px;border:none;background:rgba(220,60,60,.1);color:#e53e3e;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">Delete</button>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
   </div>
 </div>
 
@@ -16244,6 +16439,11 @@ function bdtOpenAdd(){
   if(wasActive) sv.classList.add('active');
   document.getElementById('ov').classList.add('open');
   document.getElementById('bdtSheet').classList.add('open');
+  // Prevent settingsView from intercepting touches while sheet is open
+  const svEl=document.getElementById('settingsView');
+  if(svEl) svEl.style.pointerEvents='none';
+  // Scroll to top so Save button is always reachable
+  setTimeout(()=>{ const sc=document.querySelector('#bdtSheet .sscroll'); if(sc) sc.scrollTop=0; },80);
 }
 
 function bdtOpenEdit(idx){
@@ -16269,32 +16469,83 @@ function bdtOpenEdit(idx){
   if(wasActive) sv.classList.add('active');
   document.getElementById('ov').classList.add('open');
   document.getElementById('bdtSheet').classList.add('open');
+  // Prevent settingsView from intercepting touches while sheet is open
+  const svEl=document.getElementById('settingsView');
+  if(svEl) svEl.style.pointerEvents='none';
 }
 
 function bdtCloseSheet(){
   document.getElementById('bdtSheet').classList.remove('open');
   document.getElementById('ov').classList.remove('open');
+  const sv=document.getElementById('settingsView');
+  if(sv) sv.style.pointerEvents='';
+}
+
+function bdtShowErr(msg){
+  const el = document.getElementById('bdtErrMsg');
+  if(!el) return;
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
 }
 
 function bdtSave(){
-  const name = document.getElementById('bdtName').value.trim();
-  if(!name){ document.getElementById('bdtName').focus(); return; }
-  const y=+document.getElementById('bdtY').value;
-  const m=+document.getElementById('bdtM').value;
-  const d=+document.getElementById('bdtD').value;
-  const note=document.getElementById('bdtNote').value.trim();
-  const list = bdtLoad();
-  const entry = { name, y, m, d, note };
-  if(_bdtEditIdx !== null && _bdtEditIdx >= 0 && _bdtEditIdx < list.length){
-    list[_bdtEditIdx] = entry;
-  } else {
-    list.push(entry);
+  try {
+    bdtShowErr('');
+    const nameEl = document.getElementById('bdtName');
+    const name = (nameEl ? nameEl.value : '').trim();
+    if(!name){
+      bdtShowErr('Please enter a name.');
+      if(nameEl) nameEl.focus();
+      return;
+    }
+    const yEl = document.getElementById('bdtY');
+    const mEl = document.getElementById('bdtM');
+    const dEl = document.getElementById('bdtD');
+    const y = yEl ? +yEl.value : 0;
+    const m = mEl ? +mEl.value : 0;
+    const d = dEl ? +dEl.value : 0;
+    if(!y || !m || !d){
+      bdtShowErr('Please select a valid date.');
+      return;
+    }
+    const noteEl = document.getElementById('bdtNote');
+    const note = (noteEl ? noteEl.value : '').trim();
+    const list = bdtLoad();
+    const entry = { name, y, m, d, note };
+    if(_bdtEditIdx !== null && _bdtEditIdx >= 0 && _bdtEditIdx < list.length){
+      list[_bdtEditIdx] = entry;
+    } else {
+      list.push(entry);
+    }
+    bdtSaveAll(list);
+    if(typeof haptic === 'function') haptic('light');
+    bdtCloseSheet();
+    bdtRender();
+    bdtSyncToEvents();
+  } catch(err) {
+    bdtShowErr('Error: ' + (err && err.message ? err.message : String(err)));
   }
-  bdtSaveAll(list);
-  haptic('light');
-  bdtCloseSheet();
-  bdtRender();
 }
+
+// Wire save button via addEventListener (not inline onclick)
+(function(){
+  function wireBdtSave(){
+    const btn = document.getElementById('bdtSaveBtn');
+    if(btn){
+      // Remove any existing onclick
+      btn.onclick = null;
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        bdtSave();
+      });
+    }
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', wireBdtSave);
+  } else {
+    wireBdtSave();
+  }
+})();
 
 function bdtDelete(){
   if(_bdtEditIdx === null) return;
@@ -16304,6 +16555,47 @@ function bdtDelete(){
   haptic('light');
   bdtCloseSheet();
   bdtRender();
+  bdtSyncToEvents();
+}
+
+// Sync all Birthday Tracker entries into userEvents so they appear on the
+// month view, schedule view, and day panel — just like the profile birthday.
+function bdtSyncToEvents(){
+  if(typeof userEvents === 'undefined') return;
+  // Remove any previously-synced tracker entries
+  for(let i = userEvents.length - 1; i >= 0; i--){
+    if(userEvents[i].isBdtBirthday) userEvents.splice(i, 1);
+  }
+  const list = bdtLoad();
+  list.forEach(item => {
+    if(!item.y || !item.m || !item.d || !item.name) return;
+    try{
+      const adDate = bsToAd(item.y, item.m, item.d);
+      if(!(adDate instanceof Date) || isNaN(adDate)) return;
+      const mid = new Date(adDate.getFullYear(), adDate.getMonth(), adDate.getDate());
+      userEvents.push({
+        title: `🎂 ${item.name}'s Birthday`,
+        bsY: item.y, bsM: item.m, bsD: item.d,
+        endBsY: item.y, endBsM: item.m, endBsD: item.d,
+        adMs: mid.getTime(),
+        endAdMs: mid.getTime(),
+        note: item.note || '',
+        startTime: null,
+        endTime: null,
+        color: 'birthday',
+        repeatYearly: true,
+        recur: null,
+        isBdtBirthday: true,
+      });
+    }catch(e){}
+  });
+  userEvents.sort((a, b) => a.adMs - b.adMs);
+  if(typeof saveEvents === 'function') saveEvents();
+  if(typeof render === 'function') render();
+  if(typeof renderUpcoming === 'function') renderUpcoming();
+  if(typeof renderSelectedDay === 'function') renderSelectedDay();
+  if(typeof renderScheduleView === 'function' && typeof scheduleActive !== 'undefined' && scheduleActive) renderScheduleView();
+  if(typeof renderProfileBirthdays === 'function') renderProfileBirthdays();
 }
 
 // How many days until next birthday (circular, in AD)
@@ -16378,6 +16670,9 @@ function bdtRender(){
 
 // Also render on page load in case settings is already active
 setTimeout(bdtRender, 500);
+
+// Sync Birthday Tracker entries into the calendar on startup
+setTimeout(bdtSyncToEvents, 600);
 
 // Listen to selectors for AD preview
 ['bdtY','bdtM','bdtD'].forEach(id=>{
