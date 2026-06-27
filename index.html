@@ -15979,17 +15979,26 @@ window.inviteFriends = function() {
   // Called by the "Continue with Google" button
   window.vikramSignIn = function(){
     if(typeof haptic==='function') haptic('medium');
-    if(_fbReady && typeof window.signInWithGoogle === 'function'){
+    if(typeof window.signInWithGoogle === 'function'){
       window.signInWithGoogle();
     } else {
-      // Firebase not ready yet — show spinner and retry once it loads
-      _pendingSignIn = true;
+      // Firebase not ready yet — show spinner and retry
       var btn = document.getElementById('googleSignInBtn');
-      if(btn){
-        var orig = btn.innerHTML;
-        btn.innerHTML = '<span style="font-size:13px;opacity:.7;">Connecting…</span>';
-        setTimeout(function(){ if(btn) btn.innerHTML = orig; }, 3000);
-      }
+      var orig = btn ? btn.innerHTML : '';
+      if(btn) btn.innerHTML = '<span style="font-size:13px;opacity:.7;">Connecting…</span>';
+      var attempts = 0;
+      var retry = setInterval(function(){
+        attempts++;
+        if(typeof window.signInWithGoogle === 'function'){
+          clearInterval(retry);
+          if(btn) btn.innerHTML = orig;
+          window.signInWithGoogle();
+        } else if(attempts > 20){
+          clearInterval(retry);
+          if(btn) btn.innerHTML = orig;
+          if(typeof vikramToast==='function') vikramToast('❌ Sign-in service unavailable. Try again.');
+        }
+      }, 500);
     }
   };
 
