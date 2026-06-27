@@ -11366,6 +11366,12 @@ function cyResetConfirmYes(){
   // ── Firebase: subscribe to partner's cycle ─────────────────────────────────
   function fbSubscribePartnerCycle(partnerCode){
     if(!fbReady() || !partnerCode) return;
+    // Safety: never subscribe to own path — that would mirror own cycle back as partner's
+    const d0 = pairLoad();
+    if(d0.myCode && partnerCode === d0.myCode){
+      console.warn('[Vikram] fbSubscribePartnerCycle: refusing self-subscribe');
+      return;
+    }
     // Detach previous listener if any
     if(_partnerCycleListener && _cycleRef){
       try{ _cycleRef.off('value', _partnerCycleListener); }catch(e){}
@@ -11645,6 +11651,16 @@ function cyResetConfirmYes(){
     const name = (nameInp.value || '').trim() || 'Partner';
 
     const d = pairLoad();
+
+    // ── Self-connect guard ──────────────────────────────────────────────────
+    // If the user entered their own code, reject it — subscribing to your own
+    // Firebase path would show your own data as "partner's cycle".
+    const myOwnCode = d.myCode || myCode();
+    if(code === myOwnCode){
+      if(typeof vikramToast === 'function') vikramToast("⚠️ That's your own code! Ask your partner for theirs.");
+      return;
+    }
+
     d.partnerCode = code;
     d.partnerName = name;
     d.sharedAt    = Date.now();
@@ -16121,7 +16137,15 @@ window.inviteFriends = function() {
       if(window._fbPair){
         var p=window._fbPair;
         var d=p.pairLoad();
-        if(d.myCode&&d.partnerCode){
+        // Guard: never subscribe to own code — that would show own cycle data as partner's.
+        // Also auto-fix existing broken pairings already saved in storage.
+        if(d.myCode && d.partnerCode && d.partnerCode === d.myCode){
+          console.warn('[Vikram] Detected self-pairing — clearing broken partnerCode from storage');
+          delete d.partnerCode; delete d.partnerName; delete d.partnerCycleData;
+          delete d.sharedAt; delete d.partnerCycleUpdatedAt;
+          try{ localStorage.setItem('vikram_pair_v1', JSON.stringify(d)); }catch(e){}
+          if(typeof renderPairSection === 'function') renderPairSection();
+        } else if(d.myCode && d.partnerCode){
           p.pushMyCycle();
           p.subscribePartnerCycle(d.partnerCode);
           p.subscribeMsgs(d.myCode,d.partnerCode);
