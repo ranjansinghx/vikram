@@ -16084,23 +16084,22 @@ window.inviteFriends = function() {
           if(typeof haptic==='function') haptic('medium');
           var provider = new firebase.auth.GoogleAuthProvider();
           var currentUser = firebase.auth().currentUser;
-          // If anonymous, link to Google so profile data is preserved
-          if(currentUser && currentUser.isAnonymous){
-            currentUser.linkWithPopup(provider)
+          function doSignIn(){
+            firebase.auth().signInWithPopup(provider)
               .then(function(r){
                 updateGoogleUI(r.user);
                 if(typeof vikramToast==='function') vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));
               })
-              .catch(function(e){
-                // If already linked or credential taken, fall back to signInWithPopup
-                firebase.auth().signInWithPopup(provider)
-                  .then(function(r){updateGoogleUI(r.user);if(typeof vikramToast==='function')vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));})
-                  .catch(function(){if(typeof vikramToast==='function')vikramToast('❌ Sign-in failed. Try again.');});
+              .catch(function(e){ 
+                console.warn('Google sign-in error:', e);
+                if(typeof vikramToast==='function') vikramToast('❌ Sign-in failed. Try again.');
               });
+          }
+          // Sign out of anonymous session first, then sign in with Google
+          if(currentUser && currentUser.isAnonymous){
+            firebase.auth().signOut().then(function(){ doSignIn(); }).catch(function(){ doSignIn(); });
           } else {
-            firebase.auth().signInWithPopup(provider)
-              .then(function(r){updateGoogleUI(r.user);if(typeof vikramToast==='function')vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));})
-              .catch(function(){if(typeof vikramToast==='function')vikramToast('❌ Sign-in failed. Try again.');});
+            doSignIn();
           }
         };
         window.signOutGoogle=function(){
