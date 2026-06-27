@@ -5114,7 +5114,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
       <!-- Google Sign-In -->
       <div id="googleAuthSec">
-        <button id="googleSignInBtn" onclick="signInWithGoogle()" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px 16px;border-radius:14px;border:none;background:transparent;color:var(--dtext);font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:opacity .2s;" onmouseenter="this.style.opacity='.7'" onmouseleave="this.style.opacity='1'">
+        <button id="googleSignInBtn" onclick="vikramSignIn()" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:12px 16px;border-radius:14px;border:none;background:transparent;color:var(--dtext);font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:opacity .2s;" onmouseenter="this.style.opacity='.7'" onmouseleave="this.style.opacity='1'">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
           Continue with Google
         </button>
@@ -11126,7 +11126,7 @@ function cyResetConfirmYes(){
   let _partnerCycleListener = null;
 
   function db(){
-    try{ return firebase.database(); }
+    try{ return (window.firebase && firebase.database) ? firebase.database() : null; }
     catch(e){ return null; }
   }
 
@@ -11160,17 +11160,21 @@ function cyResetConfirmYes(){
       periodLength:    cd.periodLength    || 5,
       updatedAt:       Date.now()
     };
-    try{ db().ref('cycles/'+d.myCode).set(payload); }catch(e){}
+    const database = db();
+    if(!database) return;
+    try{ database.ref('cycles/'+d.myCode).set(payload); }catch(e){}
   }
 
   // ── Firebase: subscribe to partner's cycle ─────────────────────────────────
   function fbSubscribePartnerCycle(partnerCode){
     if(!fbReady() || !partnerCode) return;
+    const database = db();
+    if(!database) return;
     // Detach previous listener if any
     if(_partnerCycleListener && _cycleRef){
       try{ _cycleRef.off('value', _partnerCycleListener); }catch(e){}
     }
-    _cycleRef = db().ref('cycles/'+partnerCode);
+    _cycleRef = database.ref('cycles/'+partnerCode);
     _partnerCycleListener = _cycleRef.on('value', snap => {
       const val = snap.val();
       if(!val) return;
@@ -11190,10 +11194,12 @@ function cyResetConfirmYes(){
   // ── Firebase: subscribe to messages ───────────────────────────────────────
   function fbSubscribeMsgs(myCode, partnerCode){
     if(!fbReady()) return;
+    const database = db();
+    if(!database) return;
     if(_msgsListener && _msgsRef){
       try{ _msgsRef.off('value', _msgsListener); }catch(e){}
     }
-    _msgsRef = db().ref('moments/'+roomKey(myCode, partnerCode));
+    _msgsRef = database.ref('moments/'+roomKey(myCode, partnerCode));
     _msgsListener = _msgsRef.on('value', snap => {
       const val = snap.val() || {};
       // Flatten object of objects → sorted array
@@ -11206,8 +11212,10 @@ function cyResetConfirmYes(){
   // ── Firebase: send a message ───────────────────────────────────────────────
   function fbSendMsg(myCode, partnerCode, text){
     if(!fbReady()) return false;
+    const database = db();
+    if(!database) return false;
     try{
-      db().ref('moments/'+roomKey(myCode, partnerCode)).push({
+      database.ref('moments/'+roomKey(myCode, partnerCode)).push({
         from: myCode.replace('-',''),
         text,
         ts: Date.now()
@@ -15851,6 +15859,46 @@ window.inviteFriends = function() {
 
 <!-- ══ FIREBASE SDK — async so it never blocks page render or offline use ══ -->
 <script>
+// Early stub: vikramSignIn waits for Firebase to be ready before signing in.
+// This prevents "function not defined" errors if the button is clicked
+// before the async Firebase SDK finishes loading.
+(function(){
+  var _fbReady = false;
+  var _pendingSignIn = false;
+
+  // Called by the "Continue with Google" button
+  window.vikramSignIn = function(){
+    if(typeof haptic==='function') haptic('medium');
+    if(_fbReady && typeof window.signInWithGoogle === 'function'){
+      window.signInWithGoogle();
+    } else {
+      // Firebase not ready yet — show spinner and retry once it loads
+      _pendingSignIn = true;
+      var btn = document.getElementById('googleSignInBtn');
+      if(btn){
+        var orig = btn.innerHTML;
+        btn.innerHTML = '<span style="font-size:13px;opacity:.7;">Connecting…</span>';
+        setTimeout(function(){ if(btn) btn.innerHTML = orig; }, 3000);
+      }
+    }
+  };
+
+  // Signal that Firebase+Auth is ready; flush pending sign-in if queued
+  window._vikramFirebaseReady = function(){
+    _fbReady = true;
+    // Re-render pair/cycle sync section now that Firebase is live
+    if(typeof window.renderPairSection === 'function'){
+      try{ window.renderPairSection(); }catch(e){}
+    }
+    // Flush any pending sign-in triggered before Firebase was ready
+    if(_pendingSignIn){
+      _pendingSignIn = false;
+      if(typeof window.signInWithGoogle === 'function') window.signInWithGoogle();
+    }
+  };
+})();
+</script>
+<script>
 (function(){
   // Only load Firebase if we're online — it's not needed for core calendar function
   function loadFirebase(){
@@ -15940,6 +15988,8 @@ window.inviteFriends = function() {
           }
         });
       }
+      // Signal to early stub that Firebase+Auth is fully wired
+      if(typeof window._vikramFirebaseReady === 'function') window._vikramFirebaseReady();
     } catch(e){ console.warn('[Vikram] Firebase init failed:',e); }
   }
   // Load Firebase after page is interactive (doesn't block offline calendar)
