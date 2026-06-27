@@ -6759,19 +6759,19 @@ function render(){
       }
       // Partner cycle chips
       try{
-        const pd = window._fbPair && window._fbPair.pairLoad ? window._fbPair.pairLoad() : null;
-        if(pd && pd.partnerCycleData && pd.partnerCycleData.lastPeriodStart){
-          const pcl=pd.partnerCycleData.cycleLength||28, ppl=pd.partnerCycleData.periodLength||5;
-          const povD=pcl-14, pfertD=Math.max(1,povD-5);
-          const pBase=new Date(pd.partnerCycleData.lastPeriodStart); pBase.setHours(0,0,0,0);
-          const pDayN=Math.floor((adMid-pBase)/86400000);
-          const pDayInCyc=((pDayN%pcl)+pcl)%pcl+1;
-          if(pDayInCyc===1)           chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.65">${cfg.compact?'':'💑 Period'}</div>`);
-          else if(pDayInCyc===ppl)    chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.65">${cfg.compact?'':'💑 End'}</div>`);
-          else if(pDayInCyc===pfertD) chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.65">${cfg.compact?'':'💑 Fertile'}</div>`);
-          else if(pDayInCyc===povD)   chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.65">${cfg.compact?'':'💑 Ovulation'}</div>`);
+        const _pd = window._fbPair && window._fbPair.pairLoad ? window._fbPair.pairLoad() : null;
+        if(_pd && _pd.partnerCycleData && (_pd.partnerCycleData.lastPeriodStart != null)){
+          const _pcl=_pd.partnerCycleData.cycleLength||28, _ppl=_pd.partnerCycleData.periodLength||5;
+          const _povD=_pcl-14, _pfertD=Math.max(1,_povD-5);
+          const _pBase=new Date(_pd.partnerCycleData.lastPeriodStart); _pBase.setHours(0,0,0,0);
+          const _pDayN=Math.floor((adMid-_pBase)/86400000);
+          const _pDayInCyc=((_pDayN%_pcl)+_pcl)%_pcl+1;
+          if(_pDayInCyc===1)             chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.7">${cfg.compact?'':'💑 Period'}</div>`);
+          else if(_pDayInCyc===_ppl)     chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.7">${cfg.compact?'':'💑 End'}</div>`);
+          else if(_pDayInCyc===_pfertD)  chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.7">${cfg.compact?'':'💑 Fertile'}</div>`);
+          else if(_pDayInCyc===_povD)    chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.7">${cfg.compact?'':'💑 Ovulation'}</div>`);
         }
-      }catch(e){}
+      }catch(_e){}
       const MAX=cfg.compact?chipArr.length:2;
       const visChips=chipArr.slice(0,MAX);
       const extraChips=chipArr.length-MAX;
@@ -11387,27 +11387,15 @@ function cyResetConfirmYes(){
       const val = snap.val();
       const d = pairLoad();
 
-      // Reject if this payload was pushed by ourselves — stale own data on partner's path
-      if(val && val.pushedBy && val.pushedBy === d.myCode){
-        console.warn('[Vikram] partner cycle data was pushed by us — ignoring stale own data');
-        // Wipe the stale data from that Firebase path so it doesn't keep coming back
-        try{ db().ref('cycles/'+partnerCode).remove(); }catch(e){}
-        d.partnerCycleData = { lastPeriodStart: null, cycleLength: 28, periodLength: 5 };
-        pairSave(d);
-        const wrap = document.getElementById('pairSyncSection');
-        if(wrap && wrap.closest('.sheet.open')) renderPairSection();
-        if(typeof render === 'function') render();
-        return;
-      }
-
       if(!val){
-        // Partner hasn't logged any cycle data yet — show empty state, not own data
+        // Partner hasn't logged any cycle data yet — show empty state
         d.partnerCycleData = { lastPeriodStart: null, cycleLength: 28, periodLength: 5 };
       } else {
+        // Use != null check so timestamp 0 isn't coerced to null
         d.partnerCycleData = {
-          lastPeriodStart: val.lastPeriodStart || null,
-          cycleLength:     val.cycleLength     || 28,
-          periodLength:    val.periodLength    || 5,
+          lastPeriodStart: (val.lastPeriodStart != null) ? val.lastPeriodStart : null,
+          cycleLength:     val.cycleLength  || 28,
+          periodLength:    val.periodLength || 5,
         };
         d.partnerCycleUpdatedAt = val.updatedAt || Date.now();
       }
@@ -11415,7 +11403,7 @@ function cyResetConfirmYes(){
       // Re-render cycle section if visible
       const wrap = document.getElementById('pairSyncSection');
       if(wrap && wrap.closest('.sheet.open')) renderPairSection();
-      // Re-render calendar so partner cycle chips appear on cells
+      // Re-render calendar so partner chips update
       if(typeof render === 'function') render();
     }, e => console.warn('[Vikram] partner cycle listen error:', e));
   }
@@ -11490,7 +11478,7 @@ function cyResetConfirmYes(){
     const today=new Date(); today.setHours(0,0,0,0);
 
     // If no period logged yet, show defaults with day=1
-    if(!p.lastPeriodStart){
+    if(p.lastPeriodStart == null){
       return {day:null, dNext:null, phase:'Unknown', phaseColor:'#aaa', cl, pl, noData:true};
     }
 
