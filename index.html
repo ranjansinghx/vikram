@@ -5598,16 +5598,6 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
 
-      <!-- PWA Date Badge -->
-      <div class="sv-row">
-        <div class="sv-icon" style="background:rgba(99,102,241,.12);">🗓</div>
-        <div class="sv-row-text">
-          <div class="sv-lbl">Show Date on App Icon</div>
-          <div class="sv-sub" id="pwaBadgeSub">Display today's BS date as a badge on the icon</div>
-        </div>
-        <button class="tgl" id="tgPwaBadge" onclick="togglePwaBadge()"></button>
-      </div>
-
       <!-- Install App -->
       <div class="sv-row" style="cursor:pointer;" id="svInstallRow" onclick="svInstallApp()">
         <div class="sv-icon" style="background:rgba(80,80,200,.13);">⬇️</div>
@@ -11358,7 +11348,8 @@ function cyResetConfirmYes(){
       lastPeriodStart: cd.lastPeriodStart || null,
       cycleLength:     cd.cycleLength     || 28,
       periodLength:    cd.periodLength    || 5,
-      updatedAt:       Date.now()
+      updatedAt:       Date.now(),
+      pushedBy:        d.myCode   // ← identity stamp so partner can verify origin
     };
     try{ db().ref('cycles/'+d.myCode).set(payload); }catch(e){}
   }
@@ -11380,6 +11371,19 @@ function cyResetConfirmYes(){
     _partnerCycleListener = _cycleRef.on('value', snap => {
       const val = snap.val();
       const d = pairLoad();
+
+      // Reject if this payload was pushed by ourselves — stale own data on partner's path
+      if(val && val.pushedBy && val.pushedBy === d.myCode){
+        console.warn('[Vikram] partner cycle data was pushed by us — ignoring stale own data');
+        // Wipe the stale data from that Firebase path so it doesn't keep coming back
+        try{ db().ref('cycles/'+partnerCode).remove(); }catch(e){}
+        d.partnerCycleData = { lastPeriodStart: null, cycleLength: 28, periodLength: 5 };
+        pairSave(d);
+        const wrap = document.getElementById('pairSyncSection');
+        if(wrap && wrap.closest('.sheet.open')) renderPairSection();
+        return;
+      }
+
       if(!val){
         // Partner hasn't logged any cycle data yet — show empty state, not own data
         d.partnerCycleData = { lastPeriodStart: null, cycleLength: 28, periodLength: 5 };
@@ -11664,9 +11668,10 @@ function cyResetConfirmYes(){
     d.partnerCode = code;
     d.partnerName = name;
     d.sharedAt    = Date.now();
-    // Start with no partner data — Firebase listener will fill it in once it arrives.
-    // Do NOT seed with own cycleData; that caused own period data to show as partner's.
+    // Always start with empty partner data — Firebase listener fills it in.
+    // Also wipe any stale own data that may be cached from a previous broken pairing.
     d.partnerCycleData = { lastPeriodStart: null, cycleLength: 28, periodLength: 5 };
+    delete d.partnerCycleUpdatedAt;
     pairSave(d);
 
     // Firebase: push MY cycle data so partner can read it, then subscribe
@@ -18004,66 +18009,6 @@ function exportNotesAsText(){
 // ══════════════════════════════════════════════════════════════════════════════
 // FEATURE: PWA DATE BADGE (shows today's BS day number on app icon)
 // ══════════════════════════════════════════════════════════════════════════════
-let _pwaBadgeInterval = null;
-
-function togglePwaBadge(){
-  haptic('light');
-  cfg.pwaBadge = !cfg.pwaBadge;
-  try{ localStorage.setItem('vikram_cfg', JSON.stringify(cfg)); }catch(e){}
-  applyPwaBadge();
-}
-
-function applyPwaBadge(){
-  const btn = document.getElementById('tgPwaBadge');
-  const sub = document.getElementById('pwaBadgeSub');
-  const on  = !!cfg.pwaBadge;
-  if(btn) btn.classList.toggle('on', on);
-  if(_pwaBadgeInterval){ clearInterval(_pwaBadgeInterval); _pwaBadgeInterval=null; }
-
-  function _getBsDay(){
-    if(typeof window._vikramGetTodayBsDay === 'function') return window._vikramGetTodayBsDay();
-    try{
-      const today = typeof getKathmanduToday==='function' ? getKathmanduToday() : new Date();
-      const bs    = typeof adToBs==='function' ? adToBs(today) : null;
-      return bs ? bs.d : new Date().getDate();
-    }catch(e){ return new Date().getDate(); }
-  }
-
-  function _setIcon(day){
-    try{
-      if(typeof window._vikramInjectManifest === 'function') window._vikramInjectManifest(day);
-      if('setAppBadge' in navigator) navigator.setAppBadge(day).catch(()=>{});
-    }catch(e){}
-  }
-
-  if(on){
-    const day = _getBsDay();
-    _setIcon(day);
-    if(sub) sub.textContent = `Showing BS day ${day} on icon`;
-    // Refresh at midnight — check every minute, update when day rolls over
-    let _lastDay = day;
-    _pwaBadgeInterval = setInterval(()=>{
-      const today = _getBsDay();
-      if(today !== _lastDay){
-        _lastDay = today;
-        _setIcon(today);
-        if(sub) sub.textContent = `Showing BS day ${today} on icon`;
-      }
-    }, 60 * 1000);
-  } else {
-    // Always keep icon showing today's real BS date (toggle only controls the badge overlay)
-    try{ _setIcon(_getBsDay()); if('clearAppBadge' in navigator) navigator.clearAppBadge().catch(()=>{}); }catch(e){}
-    if(sub) sub.textContent = "Display today's BS date as a badge on the icon";
-  }
-}
-
-(function(){
-  try{
-    const stored = JSON.parse(localStorage.getItem('vikram_cfg')||'{}');
-    cfg.pwaBadge = typeof stored.pwaBadge === 'boolean' ? stored.pwaBadge : false;
-  }catch(e){ cfg.pwaBadge=false; }
-  setTimeout(applyPwaBadge, 300);
-})();
 
 </script>
 </body>
