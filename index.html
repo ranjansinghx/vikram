@@ -17505,7 +17505,15 @@ setTimeout(initAllSettingsFeatures, 200);
 const _origSwitchTab = window.switchTab;
 window.switchTab = function(tab){
   if(typeof _origSwitchTab==='function') _origSwitchTab.apply(this,arguments);
-  if(tab==='settings') setTimeout(initAllSettingsFeatures,50);
+  if(tab==='settings'){
+    setTimeout(initAllSettingsFeatures,50);
+    // Refresh Google profile UI when settings tab opens
+    setTimeout(function(){
+      if(typeof updateGoogleUI === 'function' && window.firebase && firebase.auth){
+        updateGoogleUI(firebase.auth().currentUser);
+      }
+    }, 100);
+  }
   if(tab!=='settings') applyPinnedNote(); // refresh pinned note whenever leaving settings
 };
 
