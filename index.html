@@ -6757,6 +6757,21 @@ function render(){
         else if(dayInCyc===fertD2)   chipArr.push(`<div class="cell-chip cell-chip-cyc">${cfg.compact?'':'🌸 Fertile'}</div>`);
         else if(dayInCyc===ovD2)     chipArr.push(`<div class="cell-chip cell-chip-cyc">${cfg.compact?'':'✨ Ovulation'}</div>`);
       }
+      // Partner cycle chips
+      try{
+        const pd = (window._fbPair && window._fbPair.pairLoad) ? window._fbPair.pairLoad() : null;
+        if(pd && pd.partnerCycleData && pd.partnerCycleData.lastPeriodStart){
+          const pcl=pd.partnerCycleData.cycleLength||28, ppl=pd.partnerCycleData.periodLength||5;
+          const povD=pcl-14, pfertD=Math.max(1,povD-5);
+          const pBase=new Date(pd.partnerCycleData.lastPeriodStart); pBase.setHours(0,0,0,0);
+          const pDayN=Math.floor((adMid-pBase)/86400000);
+          const pDayInCyc=((pDayN%pcl)+pcl)%pcl+1;
+          if(pDayInCyc===1)           chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.65">${cfg.compact?'':'💑 Period'}</div>`);
+          else if(pDayInCyc===ppl)    chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.65">${cfg.compact?'':'💑 End'}</div>`);
+          else if(pDayInCyc===pfertD) chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.65">${cfg.compact?'':'💑 Fertile'}</div>`);
+          else if(pDayInCyc===povD)   chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.65">${cfg.compact?'':'💑 Ovulation'}</div>`);
+        }
+      }catch(e){}
       const MAX=cfg.compact?chipArr.length:2;
       const visChips=chipArr.slice(0,MAX);
       const extraChips=chipArr.length-MAX;
