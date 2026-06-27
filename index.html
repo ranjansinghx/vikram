@@ -6129,6 +6129,29 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
 </div>
 
+<!-- LOG WITH CUSTOM DATE MODAL -->
+<div class="dc-modal-overlay" id="cyDateLogOverlay" onclick="cyDateLogClose(event)">
+  <div class="dc-modal">
+    <div class="dc-modal-title">📅 Log with Date</div>
+    <div class="dc-field">
+      <div class="dc-label">Type</div>
+      <div class="dc-type-row">
+        <div class="dc-type-opt selected" id="cyDateTypePeriodStart" onclick="cyDateLogSelectType('period_start')">🩸 Period Start</div>
+        <div class="dc-type-opt" id="cyDateTypePeriodEnd" onclick="cyDateLogSelectType('period_end')">✅ Period End</div>
+        <div class="dc-type-opt" id="cyDateTypeOvulation" onclick="cyDateLogSelectType('ovulation')">✨ Ovulation</div>
+      </div>
+    </div>
+    <div class="dc-field">
+      <div class="dc-label">Date</div>
+      <input class="dc-input" type="date" id="cyDateLogInput">
+    </div>
+    <div class="dc-modal-btns">
+      <button class="dc-modal-cancel" onclick="cyDateLogClose()">Cancel</button>
+      <button class="dc-modal-save" style="background:linear-gradient(135deg,#FF6B9D,#C44569);box-shadow:0 6px 18px rgba(196,69,105,.35);" onclick="cyDateLogSave()">Save Log</button>
+    </div>
+  </div>
+</div>
+
 <!-- CLEAR CYCLE DATA CONFIRM MODAL -->
 <div class="dc-modal-overlay" id="cyResetConfirmOverlay" onclick="cyResetConfirmClose(event)">
   <div class="dc-modal" style="text-align:center">
@@ -11127,6 +11150,12 @@ function renderCycleSheet(){
     <button class="cyc-log-btn end"    onclick="cyLogPeriodEnd()">✅ Period End</button>
     <button class="cyc-log-btn ovul"   onclick="cyLogOvulation()">✨ Ovulation</button>
   </div>
+  <div style="padding:0 18px 14px;">
+    <button class="cyc-log-btn" onclick="cyDateLogOpen()" style="width:100%;background:rgba(99,102,241,.10);color:#6366f1;font-size:12.5px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:7px;">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Log with a specific date
+    </button>
+  </div>
 
   <!-- Recent logs -->
   ${logs.length?`
@@ -11200,6 +11229,66 @@ function cyLogOvulation(){
   cycleData.logs = [...(cycleData.logs||[]), {type:'ovulation',date:today}];
   saveCycle(); renderCycleSheet();
 }
+// ── Log with custom date ─────────────────────────────────────────────────────
+let _cyDateLogType = 'period_start';
+
+function cyDateLogOpen(){
+  // Default date to today
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm   = String(today.getMonth()+1).padStart(2,'0');
+  const dd   = String(today.getDate()).padStart(2,'0');
+  const inp  = document.getElementById('cyDateLogInput');
+  if(inp) inp.value = `${yyyy}-${mm}-${dd}`;
+  // Reset type selection to period_start
+  cyDateLogSelectType('period_start');
+  document.getElementById('cyDateLogOverlay').classList.add('open');
+}
+
+function cyDateLogClose(e){
+  if(e && e.target !== document.getElementById('cyDateLogOverlay')) return;
+  document.getElementById('cyDateLogOverlay').classList.remove('open');
+}
+
+function cyDateLogSelectType(type){
+  _cyDateLogType = type;
+  ['period_start','period_end','ovulation'].forEach(t=>{
+    const el = document.getElementById(
+      t==='period_start'?'cyDateTypePeriodStart':
+      t==='period_end'  ?'cyDateTypePeriodEnd'  :'cyDateTypeOvulation'
+    );
+    if(el) el.classList.toggle('selected', t===type);
+  });
+}
+
+function cyDateLogSave(){
+  const inp = document.getElementById('cyDateLogInput');
+  if(!inp || !inp.value){ if(typeof vikramToast==='function') vikramToast('Please pick a date'); return; }
+  // Parse the date input as local midnight timestamp
+  const [y,m,d] = inp.value.split('-').map(Number);
+  const ts = new Date(y, m-1, d, 0, 0, 0, 0).getTime();
+  if(isNaN(ts)){ if(typeof vikramToast==='function') vikramToast('Invalid date'); return; }
+
+  const type = _cyDateLogType;
+  // For period_start: update lastPeriodStart if this is the most recent one
+  if(type === 'period_start'){
+    const existing = cycleData.lastPeriodStart;
+    if(!existing || ts > existing){
+      cycleData.lastPeriodStart = ts;
+    }
+  }
+  cycleData.logs = [...(cycleData.logs||[]), { type, date: ts }];
+  // Sort logs chronologically
+  cycleData.logs.sort((a,b)=>a.date-b.date);
+
+  saveCycle();
+  document.getElementById('cyDateLogOverlay').classList.remove('open');
+  renderCycleSheet();
+  const labels = {period_start:'Period start',period_end:'Period end',ovulation:'Ovulation'};
+  const dateStr = new Date(ts).toLocaleDateString('en-NP',{month:'short',day:'numeric'});
+  if(typeof vikramToast==='function') vikramToast(`✅ ${labels[type]} logged for ${dateStr}`);
+}
+
 function cyReset(){
   document.getElementById('cyResetConfirmOverlay').classList.add('open');
 }
@@ -11211,6 +11300,19 @@ function cyResetConfirmYes(){
   document.getElementById('cyResetConfirmOverlay').classList.remove('open');
   cycleData = {};
   localStorage.removeItem('vikram_cycle');
+  // Stamp a fresh syncmeta so cloud sync treats this cleared state as the newest write.
+  // Without this, the real-time listener would see the old cloud data as "newer" and
+  // restore it immediately after clearing.
+  var clearedTs = Date.now();
+  try{ localStorage.setItem('vikram_cycle__syncmeta', JSON.stringify({ ts: clearedTs })); }catch(e){}
+  // Push the cleared state (empty '{}') up to the cloud so other devices also clear.
+  if(window.vikramCloudSync && typeof window.vikramCloudSync.push === 'function'){
+    // Temporarily write an explicit empty marker so buildLocalPayload() can include it
+    try{ localStorage.setItem('vikram_cycle', '{}'); }catch(e){}
+    window.vikramCloudSync.push();
+    // Now remove it locally so the slot is truly empty
+    try{ localStorage.removeItem('vikram_cycle'); }catch(e){}
+  }
   renderCycleSheet();
 }
 
@@ -11271,14 +11373,18 @@ function cyResetConfirmYes(){
     _cycleRef = db().ref('cycles/'+partnerCode);
     _partnerCycleListener = _cycleRef.on('value', snap => {
       const val = snap.val();
-      if(!val) return;
       const d = pairLoad();
-      d.partnerCycleData = {
-        lastPeriodStart: val.lastPeriodStart || null,
-        cycleLength:     val.cycleLength     || 28,
-        periodLength:    val.periodLength    || 5,
-      };
-      d.partnerCycleUpdatedAt = val.updatedAt || Date.now();
+      if(!val){
+        // Partner hasn't logged any cycle data yet — show empty state, not own data
+        d.partnerCycleData = { lastPeriodStart: null, cycleLength: 28, periodLength: 5 };
+      } else {
+        d.partnerCycleData = {
+          lastPeriodStart: val.lastPeriodStart || null,
+          cycleLength:     val.cycleLength     || 28,
+          periodLength:    val.periodLength    || 5,
+        };
+        d.partnerCycleUpdatedAt = val.updatedAt || Date.now();
+      }
       pairSave(d);
       // Re-render cycle section if visible
       const wrap = document.getElementById('pairSyncSection');
@@ -11542,13 +11648,9 @@ function cyResetConfirmYes(){
     d.partnerCode = code;
     d.partnerName = name;
     d.sharedAt    = Date.now();
-    // Seed local partner data from own cycle as placeholder until Firebase updates
-    const cd = (typeof cycleData !== 'undefined') ? cycleData : {};
-    d.partnerCycleData = {
-      lastPeriodStart: cd.lastPeriodStart || null,
-      cycleLength:     cd.cycleLength     || 28,
-      periodLength:    cd.periodLength    || 5,
-    };
+    // Start with no partner data — Firebase listener will fill it in once it arrives.
+    // Do NOT seed with own cycleData; that caused own period data to show as partner's.
+    d.partnerCycleData = { lastPeriodStart: null, cycleLength: 28, periodLength: 5 };
     pairSave(d);
 
     // Firebase: push MY cycle data so partner can read it, then subscribe
@@ -16747,7 +16849,14 @@ function svRefreshStorage(){
 
       if(localRaw === null || cloudTs > localTs){
         try{
-          localStorage.setItem(sk.key, cloudRaw);
+          // If cloud sent an explicit empty marker ('{}'), remove the local key
+          // so that "Clear all cycle data" propagates to all devices properly.
+          var isEmpty = (cloudRaw === '{}' || cloudRaw === 'null' || cloudRaw === '');
+          if(isEmpty){
+            localStorage.removeItem(sk.key);
+          } else {
+            localStorage.setItem(sk.key, cloudRaw);
+          }
           localStorage.setItem(sk.key + '__syncmeta', JSON.stringify({ ts: cloudTs }));
           changed = true;
         }catch(e){}
@@ -16796,6 +16905,8 @@ function svRefreshStorage(){
     try{
       if(typeof cycleData !== 'undefined'){
         var cy = JSON.parse(localStorage.getItem('vikram_cycle') || '{}');
+        // Full replace (not merge) so a cloud-cleared cycle wipes in-memory state
+        for(var _k in cycleData){ delete cycleData[_k]; }
         Object.assign(cycleData, cy);
       }
     }catch(e){}
