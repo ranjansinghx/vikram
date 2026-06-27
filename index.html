@@ -16087,26 +16087,28 @@ window.inviteFriends = function() {
           if(typeof haptic==='function') haptic('medium');
           var provider = new firebase.auth.GoogleAuthProvider();
           var currentUser = firebase.auth().currentUser;
-          function doSignIn(){
-            if(typeof _googleSignInInProgress !== 'undefined') _googleSignInInProgress = true;
-            firebase.auth().signInWithPopup(provider)
+          if(currentUser && currentUser.isAnonymous){
+            // Try to upgrade anonymous to Google account
+            currentUser.linkWithPopup(provider)
               .then(function(r){
-                if(typeof _googleSignInInProgress !== 'undefined') _googleSignInInProgress = false;
                 updateGoogleUI(r.user);
                 if(typeof vikramToast==='function') vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));
               })
               .catch(function(e){
-                if(typeof _googleSignInInProgress !== 'undefined') _googleSignInInProgress = false;
-                console.warn('Google sign-in error:', e);
-                if(typeof vikramToast==='function') vikramToast('❌ Sign-in failed. Try again.');
+                console.warn('linkWithPopup failed:', e.code, e.message);
+                // credential-already-in-use: sign in directly with that credential
+                if(e.code === 'auth/credential-already-in-use' && e.credential){
+                  firebase.auth().signInWithCredential(e.credential)
+                    .then(function(r){ updateGoogleUI(r.user); if(typeof vikramToast==='function') vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email)); })
+                    .catch(function(e2){ console.warn('signInWithCredential failed:', e2); if(typeof vikramToast==='function') vikramToast('❌ Sign-in failed. Try again.'); });
+                } else {
+                  if(typeof vikramToast==='function') vikramToast('❌ Sign-in failed: '+e.code);
+                }
               });
-          }
-          // Sign out of anonymous session first, then sign in with Google
-          if(currentUser && currentUser.isAnonymous){
-            if(typeof _googleSignInInProgress !== 'undefined') _googleSignInInProgress = true;
-            firebase.auth().signOut().then(function(){ doSignIn(); }).catch(function(){ doSignIn(); });
           } else {
-            doSignIn();
+            firebase.auth().signInWithPopup(provider)
+              .then(function(r){ updateGoogleUI(r.user); if(typeof vikramToast==='function') vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email)); })
+              .catch(function(e){ console.warn('signInWithPopup failed:', e); if(typeof vikramToast==='function') vikramToast('❌ Sign-in failed. Try again.'); });
           }
         };
         window.signOutGoogle=function(){
