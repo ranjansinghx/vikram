@@ -11148,6 +11148,19 @@ function cyResetConfirmYes(){
     return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  // ── Ensure user is signed into Firebase (anonymously if needed) ────────────
+  // REQUIRED: Firebase RTDB rules need "auth != null" — anon sign-in satisfies this
+  function ensureAuth(){
+    return new Promise((resolve, reject) => {
+      if(!fbReady() || !firebase.auth) return reject(new Error('firebase_not_ready'));
+      const user = firebase.auth().currentUser;
+      if(user){ resolve(user); return; }
+      firebase.auth().signInAnonymously()
+        .then(r => resolve(r.user))
+        .catch(e => { console.warn('[Vikram] anon auth failed:', e); reject(e); });
+    });
+  }
+
   // ── Firebase: push MY cycle data to /cycles/<myCode> ──────────────────────
   function fbPushMyCycle(){
     if(!fbReady()) return;
@@ -11162,7 +11175,16 @@ function cyResetConfirmYes(){
     };
     const database = db();
     if(!database) return;
-    try{ database.ref('cycles/'+d.myCode).set(payload); }catch(e){}
+    ensureAuth().then(() => {
+      database.ref('cycles/'+d.myCode).set(payload)
+        .then(() => { _pairSyncError = null; })
+        .catch(e => {
+          _pairSyncError = e.code || e.message || 'write_failed';
+          console.warn('[Vikram] cycle push FAILED:', e.code, e.message);
+          if(typeof vikramToast==='function') vikramToast('❌ Sync failed: ' + (e.code||'check Firebase rules'));
+          if(typeof renderPairSection==='function') renderPairSection();
+        });
+    }).catch(e => { _pairSyncError = 'auth_failed'; console.warn('[Vikram] auth failed for push:', e); });
   }
 
   // ── Firebase: subscribe to partner's cycle ─────────────────────────────────
@@ -11170,25 +11192,32 @@ function cyResetConfirmYes(){
     if(!fbReady() || !partnerCode) return;
     const database = db();
     if(!database) return;
-    // Detach previous listener if any
-    if(_partnerCycleListener && _cycleRef){
-      try{ _cycleRef.off('value', _partnerCycleListener); }catch(e){}
-    }
-    _cycleRef = database.ref('cycles/'+partnerCode);
-    _partnerCycleListener = _cycleRef.on('value', snap => {
-      const val = snap.val();
-      if(!val) return;
-      const d = pairLoad();
-      d.partnerCycleData = {
-        lastPeriodStart: val.lastPeriodStart || null,
-        cycleLength:     val.cycleLength     || 28,
-        periodLength:    val.periodLength    || 5,
-      };
-      d.partnerCycleUpdatedAt = val.updatedAt || Date.now();
-      pairSave(d);
-      if(typeof renderPairSection === 'function') renderPairSection();
-      if(typeof render === 'function') render();
-    }, e => console.warn('[Vikram] partner cycle listen error:', e));
+    ensureAuth().then(() => {
+      if(_partnerCycleListener && _cycleRef){
+        try{ _cycleRef.off('value', _partnerCycleListener); }catch(e){}
+      }
+      _cycleRef = database.ref('cycles/'+partnerCode);
+      _partnerCycleListener = _cycleRef.on('value', snap => {
+        _pairSyncError = null;
+        const val = snap.val();
+        if(!val) return;
+        const d = pairLoad();
+        d.partnerCycleData = {
+          lastPeriodStart: val.lastPeriodStart || null,
+          cycleLength:     val.cycleLength     || 28,
+          periodLength:    val.periodLength    || 5,
+        };
+        d.partnerCycleUpdatedAt = val.updatedAt || Date.now();
+        pairSave(d);
+        if(typeof renderPairSection === 'function') renderPairSection();
+        if(typeof render === 'function') render();
+      }, e => {
+        _pairSyncError = e.code || e.message || 'read_failed';
+        console.warn('[Vikram] partner cycle listen FAILED:', e.code, e.message);
+        if(typeof vikramToast==='function') vikramToast('❌ Sync failed: ' + (e.code||'check Firebase rules'));
+        if(typeof renderPairSection==='function') renderPairSection();
+      });
+    }).catch(e => { _pairSyncError = 'auth_failed'; console.warn('[Vikram] auth failed for subscribe:', e); });
   }
 
   // ── Firebase: subscribe to messages ───────────────────────────────────────
@@ -11196,32 +11225,38 @@ function cyResetConfirmYes(){
     if(!fbReady()) return;
     const database = db();
     if(!database) return;
-    if(_msgsListener && _msgsRef){
-      try{ _msgsRef.off('value', _msgsListener); }catch(e){}
-    }
-    _msgsRef = database.ref('moments/'+roomKey(myCode, partnerCode));
-    _msgsListener = _msgsRef.on('value', snap => {
-      const val = snap.val() || {};
-      // Flatten object of objects → sorted array
-      const msgs = Object.values(val).sort((a,b) => a.ts - b.ts);
-      try{ localStorage.setItem('vikram_pair_moments', JSON.stringify(msgs)); }catch(e){}
-      renderMoments();
-    }, e => console.warn('[Vikram] moments listen error:', e));
+    ensureAuth().then(() => {
+      if(_msgsListener && _msgsRef){
+        try{ _msgsRef.off('value', _msgsListener); }catch(e){}
+      }
+      _msgsRef = database.ref('moments/'+roomKey(myCode, partnerCode));
+      _msgsListener = _msgsRef.on('value', snap => {
+        const val = snap.val() || {};
+        const msgs = Object.values(val).sort((a,b) => a.ts - b.ts);
+        try{ localStorage.setItem('vikram_pair_moments', JSON.stringify(msgs)); }catch(e){}
+        renderMoments();
+      }, e => {
+        console.warn('[Vikram] moments listen FAILED:', e.code, e.message);
+      });
+    }).catch(e => console.warn('[Vikram] auth failed for msgs:', e));
   }
 
   // ── Firebase: send a message ───────────────────────────────────────────────
   function fbSendMsg(myCode, partnerCode, text){
-    if(!fbReady()) return false;
+    if(!fbReady()) return Promise.resolve(false);
     const database = db();
-    if(!database) return false;
-    try{
-      database.ref('moments/'+roomKey(myCode, partnerCode)).push({
-        from: myCode.replace('-',''),
+    if(!database) return Promise.resolve(false);
+    return ensureAuth().then(() => {
+      return database.ref('moments/'+roomKey(myCode, partnerCode)).push({
+        from: myCode.replace(/-/g,''),
         text,
         ts: Date.now()
-      });
-      return true;
-    }catch(e){ return false; }
+      }).then(() => true);
+    }).catch(e => {
+      console.warn('[Vikram] send msg FAILED:', e.code, e.message);
+      if(typeof vikramToast==='function') vikramToast('❌ Message failed: ' + (e.code||'check Firebase rules'));
+      return false;
+    });
   }
 
   // ── Firebase: detach all listeners ────────────────────────────────────────
@@ -11259,13 +11294,18 @@ function cyResetConfirmYes(){
     }
   }
 
+  // Track last sync error for UI
+  let _pairSyncError = null;
+
   // Expose Firebase helpers so the bottom-of-body init (after SDK loads) can call them
   window._fbPair = {
     pushMyCycle:           fbPushMyCycle,
     subscribePartnerCycle: fbSubscribePartnerCycle,
     subscribeMsgs:         fbSubscribeMsgs,
     forceSync:             forceSync,
-    pairLoad:              pairLoad
+    pairLoad:              pairLoad,
+    getError:              () => _pairSyncError,
+    setError:              (e) => { _pairSyncError = e; }
   };
   // initOnLoad intentionally skipped here — Firebase SDK is not loaded yet.
   // The bottom-of-body <script> calls window._fbPair after firebase.initializeApp().
@@ -11304,6 +11344,14 @@ function cyResetConfirmYes(){
     const d = pairLoad();
     const paired = !!(d.partnerCode && d.partnerName);
     const fbOk = fbReady();
+    const syncErr = window._fbPair ? window._fbPair.getError && window._fbPair.getError() : null;
+    const permDenied = syncErr && (syncErr.includes('PERMISSION_DENIED') || syncErr === 'read_failed' || syncErr === 'write_failed');
+
+    const errBanner = permDenied ? `
+      <div style="margin:0;padding:10px 14px;background:#fff3cd;border-left:3px solid #f59e0b;font-size:11px;font-weight:700;color:#92400e;line-height:1.5;">
+        ⚠️ <strong>Firebase rules blocking sync.</strong> In Firebase Console → Realtime Database → Rules, set:<br>
+        <code style="background:#fef9c3;padding:2px 5px;border-radius:3px;font-size:10px;">"cycles": {".read":"auth!=null",".write":"auth!=null"}, "moments": {".read":"auth!=null",".write":"auth!=null"}</code>
+      </div>` : '';
 
     wrap.innerHTML = `
     <div class="pair-card">
@@ -11313,8 +11361,9 @@ function cyResetConfirmYes(){
           <div class="pair-head-title">Pair &amp; Sync with Partner</div>
           <div class="pair-head-sub">${paired ? 'Connected · live cycle sync' : fbOk ? 'Real-time sync ready' : 'Connect with your partner\'s cycle'}</div>
         </div>
-        <div class="pair-status-dot ${paired && fbOk ? '' : 'offline'}"></div>
+        <div class="pair-status-dot ${paired && fbOk && !permDenied ? '' : 'offline'}"></div>
       </div>
+      ${errBanner}
       ${paired ? renderPaired(d, fbOk) : renderUnpaired(d, fbOk)}
     </div>`;
 
@@ -11570,28 +11619,28 @@ function cyResetConfirmYes(){
     inp.value = '';
     inp.style.height = 'auto';
 
-    // Firebase send (real-time); falls back to local cache if offline
-    const sent = fbSendMsg(d.myCode || myCode(), d.partnerCode, text);
-    if(!sent){
-      // Offline fallback: append to local cache and re-render
-      const msgs = msgsLoad();
-      const meRaw = (d.myCode || myCode()).replace('-','');
-      msgs.push({ from: meRaw, text, ts: Date.now() });
-      try{ localStorage.setItem(MSG_KEY, JSON.stringify(msgs)); }catch(e){}
-      renderMoments();
-      if(typeof vikramToast==='function') vikramToast('⚠️ Saved locally — no Firebase connection');
-    }
+    // Show optimistic local message immediately
+    const meRaw = (d.myCode || myCode()).replace(/-/g,'');
+    const optimisticMsg = { from: meRaw, text, ts: Date.now() };
+    const msgs = msgsLoad();
+    msgs.push(optimisticMsg);
+    try{ localStorage.setItem(MSG_KEY, JSON.stringify(msgs)); }catch(e){}
+    renderMoments();
 
     // Visual feedback
     const sendBtn = document.querySelector('.pair-moment-send');
     if(sendBtn){
       sendBtn.style.transform = 'scale(.85)';
       sendBtn.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
-      setTimeout(()=>{
-        sendBtn.style.transform = '';
-        sendBtn.style.background = '';
-      }, 600);
+      setTimeout(()=>{ sendBtn.style.transform = ''; sendBtn.style.background = ''; }, 600);
     }
+
+    // Firebase send (real-time) — async, Promise-based
+    fbSendMsg(d.myCode || myCode(), d.partnerCode, text).then(sent => {
+      if(!sent){
+        if(typeof vikramToast==='function') vikramToast('⚠️ Saved locally — sync when back online');
+      }
+    });
   };
 
   // Hook into cycle saves: whenever cycleData changes, push to Firebase + update local preview.
