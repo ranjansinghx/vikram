@@ -6757,19 +6757,17 @@ function render(){
         else if(dayInCyc===fertD2)   chipArr.push(`<div class="cell-chip cell-chip-cyc">${cfg.compact?'':'🌸 Fertile'}</div>`);
         else if(dayInCyc===ovD2)     chipArr.push(`<div class="cell-chip cell-chip-cyc">${cfg.compact?'':'✨ Ovulation'}</div>`);
       }
-      // Partner cycle chips
       try{
-        const _pd = window._fbPair && window._fbPair.pairLoad ? window._fbPair.pairLoad() : null;
-        if(_pd && _pd.partnerCycleData && (_pd.partnerCycleData.lastPeriodStart != null)){
-          const _pcl=_pd.partnerCycleData.cycleLength||28, _ppl=_pd.partnerCycleData.periodLength||5;
-          const _povD=_pcl-14, _pfertD=Math.max(1,_povD-5);
-          const _pBase=new Date(_pd.partnerCycleData.lastPeriodStart); _pBase.setHours(0,0,0,0);
-          const _pDayN=Math.floor((adMid-_pBase)/86400000);
-          const _pDayInCyc=((_pDayN%_pcl)+_pcl)%_pcl+1;
-          if(_pDayInCyc===1)             chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.7">${cfg.compact?'':'💑 Period'}</div>`);
-          else if(_pDayInCyc===_ppl)     chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.7">${cfg.compact?'':'💑 End'}</div>`);
-          else if(_pDayInCyc===_pfertD)  chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.7">${cfg.compact?'':'💑 Fertile'}</div>`);
-          else if(_pDayInCyc===_povD)    chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.7">${cfg.compact?'':'💑 Ovulation'}</div>`);
+        const _pd=window._fbPair&&window._fbPair.pairLoad?window._fbPair.pairLoad():null;
+        if(_pd&&_pd.partnerCycleData&&(_pd.partnerCycleData.lastPeriodStart!=null)){
+          const _pcl=_pd.partnerCycleData.cycleLength||28,_ppl=_pd.partnerCycleData.periodLength||5;
+          const _povD=_pcl-14,_pfertD=Math.max(1,_povD-5);
+          const _pBase=new Date(_pd.partnerCycleData.lastPeriodStart);_pBase.setHours(0,0,0,0);
+          const _pDayInCyc=((Math.floor((adMid-_pBase)/86400000)%_pcl)+_pcl)%_pcl+1;
+          if(_pDayInCyc===1)            chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.7">${cfg.compact?'':'💑 Period'}</div>`);
+          else if(_pDayInCyc===_ppl)    chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.7">${cfg.compact?'':'💑 End'}</div>`);
+          else if(_pDayInCyc===_pfertD) chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.7">${cfg.compact?'':'💑 Fertile'}</div>`);
+          else if(_pDayInCyc===_povD)   chipArr.push(`<div class="cell-chip cell-chip-cyc" style="opacity:.7">${cfg.compact?'':'💑 Ovulation'}</div>`);
         }
       }catch(_e){}
       const MAX=cfg.compact?chipArr.length:2;
@@ -11357,7 +11355,7 @@ function cyResetConfirmYes(){
   function fbPushMyCycle(){
     if(!fbReady()) return;
     const d = pairLoad();
-    if(!d.myCode) return;
+    if(!d.myCode){ d.myCode=genCode(); pairSave(d); }
     const cd = (typeof cycleData !== 'undefined') ? cycleData : {};
     const payload = {
       lastPeriodStart: cd.lastPeriodStart || null,
@@ -11393,15 +11391,14 @@ function cyResetConfirmYes(){
       } else {
         d.partnerCycleData = {
           lastPeriodStart: (val.lastPeriodStart != null) ? val.lastPeriodStart : null,
-          cycleLength:     val.cycleLength  || 28,
-          periodLength:    val.periodLength || 5,
+          cycleLength:     val.cycleLength     || 28,
+          periodLength:    val.periodLength    || 5,
         };
         d.partnerCycleUpdatedAt = val.updatedAt || Date.now();
       }
       pairSave(d);
-      // Re-render everywhere
-      const wrap = document.getElementById('pairSyncSection');
-      if(wrap) renderPairSection();
+      // Always re-render — don't wait for sheet to be open
+      if(typeof renderPairSection === 'function') renderPairSection();
       if(typeof render === 'function') render();
     }, e => console.warn('[Vikram] partner cycle listen error:', e));
   }
@@ -11476,7 +11473,7 @@ function cyResetConfirmYes(){
     const today=new Date(); today.setHours(0,0,0,0);
 
     // If no period logged yet, show defaults with day=1
-    if(p.lastPeriodStart == null || p.lastPeriodStart === false || p.lastPeriodStart === ''){
+    if(p.lastPeriodStart == null){
       return {day:null, dNext:null, phase:'Unknown', phaseColor:'#aaa', cl, pl, noData:true};
     }
 
@@ -11569,7 +11566,6 @@ function cyResetConfirmYes(){
           <div class="pair-partner-status">${fbOk ? '🟢 Live sync' : '⚠️ Offline mode'}${sharedTs?' · since '+sharedTs:''}${lastSync ? ' · updated '+lastSync : ''}</div>
         </div>
         <button class="pair-disconnect-btn" onclick="pairDisconnect()">Disconnect</button>
-        <button onclick="if(window._fbPair){const d=window._fbPair.pairLoad();if(d.partnerCode){window._fbPair.pushMyCycle();window._fbPair.subscribePartnerCycle(d.partnerCode);}}" style="margin-left:6px;padding:5px 10px;border:none;border-radius:12px;background:var(--tgbg);color:var(--dtext);font-size:11px;font-weight:800;cursor:pointer;">↻ Sync</button>
       </div>
 
       <div class="pair-partner-cycle">
@@ -16156,9 +16152,11 @@ window.inviteFriends = function() {
           try{ localStorage.setItem('vikram_pair_v1', JSON.stringify(d)); }catch(e){}
           if(typeof renderPairSection === 'function') renderPairSection();
         } else if(d.myCode && d.partnerCode){
-          p.pushMyCycle();
+          p.pushMyCycle();  // always push own cycle so partner can read it
           p.subscribePartnerCycle(d.partnerCode);
           p.subscribeMsgs(d.myCode,d.partnerCode);
+        } else if(d.myCode){
+          p.pushMyCycle();  // push own cycle even without partner — ready for when partner connects
         }
       }
       // Wire up Google Auth after Firebase is ready
