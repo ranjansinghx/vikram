@@ -16084,6 +16084,10 @@ window.inviteFriends = function() {
           }
         }
         window.updateGoogleUI = updateGoogleUI;
+        // Also refresh UI when settings tab opens
+        firebase.auth().onAuthStateChanged(function(user){
+          setTimeout(function(){ updateGoogleUI(user); }, 200);
+        });
         window.signInWithGoogle=function(){
           if(typeof haptic==='function') haptic('medium');
           var provider = new firebase.auth.GoogleAuthProvider();
