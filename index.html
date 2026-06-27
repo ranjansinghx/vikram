@@ -4833,6 +4833,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
       <div class="navtxt">
         <div class="nlbl ne" id="navlbl"></div>
         <div class="nsub" id="navsub"></div>
+        <div id="tzBadge" style="display:none;font-size:10px;font-weight:700;color:var(--dsub);letter-spacing:.3px;margin-top:2px;"></div>
       </div>
       <button class="nbtn" onclick="nextMonth()"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
@@ -5176,6 +5177,16 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <button class="tgl on" id="tgDark" onclick="toggleDark()"></button>
       </div>
 
+      <!-- Auto Dark Mode -->
+      <div class="sv-row">
+        <div class="sv-icon" style="background:rgba(100,100,200,.10);">🌗</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Auto Dark Mode</div>
+          <div class="sv-sub" id="autoDarkSub">Follow system light/dark preference</div>
+        </div>
+        <button class="tgl" id="tgAutoDark" onclick="toggleAutoDark()"></button>
+      </div>
+
       <!-- Haptic Feedback -->
       <div class="sv-row">
         <div class="sv-icon" style="background:rgba(140,100,220,.13);">📳</div>
@@ -5319,6 +5330,16 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <button class="tgl on" id="tgHlwknd" onclick="togSetting('hlwknd',this)"></button>
       </div>
 
+      <!-- Timezone Display -->
+      <div class="sv-row">
+        <div class="sv-icon" style="background:rgba(20,184,166,.12);">🌍</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Show Timezone</div>
+          <div class="sv-sub" id="tzDisplaySub">Show timezone label below month header</div>
+        </div>
+        <button class="tgl" id="tgTzDisplay" onclick="togSetting('showTimezone',this);applyTimezoneDisplay()"></button>
+      </div>
+
       <!-- Event Reminders -->
       <div class="sv-row" id="notifCard">
         <div class="sv-icon" style="background:rgba(255,160,50,.13);">🔔</div>
@@ -5356,6 +5377,43 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <button class="tgl" id="tgCountBadge" onclick="togSetting('showCountBadge',this);applyCountBadge()"></button>
       </div>
 
+      <!-- Auto-scroll to Today -->
+      <div class="sv-row">
+        <div class="sv-icon" style="background:rgba(99,102,241,.12);">🔁</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Auto-scroll to Today</div>
+          <div class="sv-sub" id="autoScrollSub">Jump back to today's month on tab switch</div>
+        </div>
+        <button class="tgl" id="tgAutoScroll" onclick="togSetting('autoScrollToday',this)"></button>
+      </div>
+
+      <!-- Upcoming Window Size -->
+      <div class="sv-row" style="flex-direction:column;align-items:flex-start;gap:10px;padding:12px 16px;">
+        <div style="display:flex;align-items:center;gap:12px;width:100%;">
+          <div class="sv-icon" style="background:rgba(14,165,233,.12);">📆</div>
+          <div class="sv-row-text">
+            <div class="sv-lbl">Upcoming Window</div>
+            <div class="sv-sub" id="upWindowSub">Days ahead shown in Upcoming list</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;padding-left:44px;flex-wrap:wrap;" id="upWindowChips">
+          <button class="sv-chip" onclick="setUpWindow(7,this)">7 days</button>
+          <button class="sv-chip" onclick="setUpWindow(14,this)">14 days</button>
+          <button class="sv-chip" onclick="setUpWindow(30,this)">30 days</button>
+          <button class="sv-chip" onclick="setUpWindow(60,this)">60 days</button>
+        </div>
+      </div>
+
+      <!-- Birthday Countdown in Upcoming -->
+      <div class="sv-row">
+        <div class="sv-icon" style="background:rgba(236,72,153,.12);">📅</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Birthday Countdown</div>
+          <div class="sv-sub" id="bdCountdownSub">Show upcoming birthdays in the Upcoming list</div>
+        </div>
+        <button class="tgl" id="tgBdCountdown" onclick="togSetting('bdCountdown',this);applyBdCountdown()"></button>
+      </div>
+
     </div><!-- /.sv-group -->
 
     <!-- NOTES -->
@@ -5368,6 +5426,16 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
           <div class="sv-sub" id="pinnedNoteSettingSub">Display your top pinned note above Upcoming</div>
         </div>
         <button class="tgl" id="tgPinnedNote" onclick="togSetting('showPinnedNote',this);applyPinnedNote()"></button>
+      </div>
+      <!-- Note Stats -->
+      <div class="sv-row" id="noteStatsRow" style="flex-direction:column;align-items:flex-start;gap:6px;padding:12px 16px;cursor:default;">
+        <div style="display:flex;align-items:center;gap:12px;width:100%;">
+          <div class="sv-icon" style="background:rgba(99,102,241,.12);">📊</div>
+          <div class="sv-row-text">
+            <div class="sv-lbl">Note Stats</div>
+            <div class="sv-sub" id="noteStatsSub">Loading…</div>
+          </div>
+        </div>
       </div>
     </div><!-- /.sv-group -->
 
@@ -5411,6 +5479,26 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <div class="sv-row-text">
           <div class="sv-lbl">Export Events</div>
           <div class="sv-sub">Download all events as JSON</div>
+        </div>
+        <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+
+      <!-- Export Notes -->
+      <div class="sv-row" style="cursor:pointer;" onclick="exportNotesAsText()">
+        <div class="sv-icon" style="background:rgba(34,160,100,.10);">📝</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Export Notes</div>
+          <div class="sv-sub">Download all notes as a .txt file</div>
+        </div>
+        <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+
+      <!-- Clear Old Events -->
+      <div class="sv-row" style="cursor:pointer;" onclick="confirmClearOldEvents()">
+        <div class="sv-icon" style="background:rgba(220,100,30,.10);">🧹</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl" style="color:#e07e3e;">Clear Past Events</div>
+          <div class="sv-sub" id="clearOldEventsSub">Delete events before today</div>
         </div>
         <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
@@ -5509,6 +5597,16 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         </div>
         <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </a>
+
+      <!-- PWA Date Badge -->
+      <div class="sv-row">
+        <div class="sv-icon" style="background:rgba(99,102,241,.12);">🗓</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Show Date on App Icon</div>
+          <div class="sv-sub" id="pwaBadgeSub">Display today's BS date as a badge on the icon</div>
+        </div>
+        <button class="tgl" id="tgPwaBadge" onclick="togglePwaBadge()"></button>
+      </div>
 
       <!-- Install App -->
       <div class="sv-row" style="cursor:pointer;" id="svInstallRow" onclick="svInstallApp()">
@@ -16487,6 +16585,18 @@ function svRefreshStorage(){
         <div class="cl-dot" style="background:#3b82f6;"></div>
         <div><div class="cl-title">Year in Review</div><div class="cl-sub">A full heatmap of your BS year — events, holidays & birthdays.</div></div>
       </div>
+      <div class="cl-entry">
+        <div class="cl-dot" style="background:#6b7280;"></div>
+        <div><div class="cl-title">Auto Dark Mode</div><div class="cl-sub">Theme now follows your system light/dark preference automatically.</div></div>
+      </div>
+      <div class="cl-entry">
+        <div class="cl-dot" style="background:#10b981;"></div>
+        <div><div class="cl-title">Export Notes as Text</div><div class="cl-sub">Download all your notes as a .txt file from Data & Privacy.</div></div>
+      </div>
+      <div class="cl-entry">
+        <div class="cl-dot" style="background:#8b5cf6;"></div>
+        <div><div class="cl-title">App Icon Date Badge</div><div class="cl-sub">Shows today's BS date number as a badge on the home screen icon.</div></div>
+      </div>
     </div>
     <div style="padding:0 16px 8px;">
       <button class="ebtn" onclick="document.getElementById('changelogSheet').classList.remove('open');document.getElementById('ov').classList.remove('open');">Close</button>
@@ -17347,13 +17457,437 @@ window.switchTab = function(tab){
 };
 
 
-// Sync Birthday Tracker entries into the calendar on startup
-setTimeout(bdtSyncToEvents, 600);
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE: AUTO-SCROLL TO TODAY
+// ══════════════════════════════════════════════════════════════════════════════
+(function(){
+  try{ const s=JSON.parse(localStorage.getItem('vikram_cfg')||'{}'); cfg.autoScrollToday=typeof s.autoScrollToday==='boolean'?s.autoScrollToday:false; }catch(e){ cfg.autoScrollToday=false; }
+})();
+function applyAutoScrollToday(){
+  document.getElementById('tgAutoScroll')?.classList.toggle('on', !!cfg.autoScrollToday);
+}
+// Hook into switchTab to jump to today if enabled
+const _origSwitchTab2 = window.switchTab;
+window.switchTab = function(tab){
+  if(typeof _origSwitchTab2==='function') _origSwitchTab2.apply(this, arguments);
+  if(tab==='home' && cfg.autoScrollToday){
+    try{ vY=TODAYBS.y; vM=TODAYBS.m; if(typeof render==='function') render(); }catch(e){}
+  }
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE: UPCOMING WINDOW SIZE
+// ══════════════════════════════════════════════════════════════════════════════
+(function(){
+  try{ const s=JSON.parse(localStorage.getItem('vikram_cfg')||'{}'); cfg.upWindow=typeof s.upWindow==='number'?s.upWindow:29; }catch(e){ cfg.upWindow=29; }
+})();
+function setUpWindow(days, btn){
+  haptic('light');
+  cfg.upWindow = days;
+  try{ localStorage.setItem('vikram_cfg', JSON.stringify(cfg)); }catch(e){}
+  applyUpWindow();
+  if(typeof renderUpcoming==='function') renderUpcoming();
+}
+function applyUpWindow(){
+  const sub = document.getElementById('upWindowSub');
+  if(sub) sub.textContent = `Showing ${cfg.upWindow} days ahead`;
+  document.querySelectorAll('#upWindowChips .sv-chip').forEach(btn=>{
+    const map={'7 days':7,'14 days':14,'30 days':30,'60 days':60};
+    btn.classList.toggle('on', map[btn.textContent.trim()] === cfg.upWindow);
+  });
+}
+// Patch WINDOW constant usage in renderUpcoming — override the const at runtime
+Object.defineProperty(window, '_vikramUpWindow', { get: ()=> cfg.upWindow||29, configurable:true });
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE: APP LOCK (PIN)
+// ══════════════════════════════════════════════════════════════════════════════
+(function(){
+  // Inject PIN lock UI
+  const lockHTML = `
+<div id="pinLockOverlay" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+  <div style="font-size:32px;">🔒</div>
+  <div style="font-size:18px;font-weight:900;color:var(--dtext);">Enter PIN</div>
+  <div style="display:flex;gap:12px;" id="pinDots">
+    <div style="width:14px;height:14px;border-radius:50%;background:var(--tgbg);border:2px solid var(--dsub);" id="pd0"></div>
+    <div style="width:14px;height:14px;border-radius:50%;background:var(--tgbg);border:2px solid var(--dsub);" id="pd1"></div>
+    <div style="width:14px;height:14px;border-radius:50%;background:var(--tgbg);border:2px solid var(--dsub);" id="pd2"></div>
+    <div style="width:14px;height:14px;border-radius:50%;background:var(--tgbg);border:2px solid var(--dsub);" id="pd3"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,64px);gap:10px;" id="pinPad">
+    ${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>`<button onclick="pinKey('${k}')" style="height:64px;border:none;border-radius:14px;background:var(--card);font-size:${k==='⌫'?'22px':'20px'};font-weight:800;color:var(--dtext);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.07);">${k}</button>`).join('')}
+  </div>
+  <div id="pinError" style="font-size:13px;color:#e53e3e;height:18px;"></div>
+</div>
+<div id="pinSetOverlay" style="display:none;position:fixed;inset:0;z-index:9998;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+  <div style="font-size:32px;">🔑</div>
+  <div style="font-size:18px;font-weight:900;color:var(--dtext);" id="pinSetTitle">Set a PIN</div>
+  <div style="font-size:13px;color:var(--dsub);" id="pinSetSub">Enter a 4-digit PIN</div>
+  <div style="display:flex;gap:12px;" id="pinSetDots">
+    ${[0,1,2,3].map(i=>`<div style="width:14px;height:14px;border-radius:50%;background:var(--tgbg);border:2px solid var(--dsub);" id="psd${i}"></div>`).join('')}
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,64px);gap:10px;">
+    ${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>`<button onclick="pinSetKey('${k}')" style="height:64px;border:none;border-radius:14px;background:var(--card);font-size:${k==='⌫'?'22px':'20px'};font-weight:800;color:var(--dtext);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.07);">${k}</button>`).join('')}
+  </div>
+  <button onclick="cancelSetPin()" style="margin-top:4px;background:none;border:none;color:var(--dsub);font-size:14px;cursor:pointer;">Cancel</button>
+</div>`;
+  const div = document.createElement('div');
+  div.innerHTML = lockHTML;
+  document.body.appendChild(div);
+})();
+
+let _pinBuffer='', _pinSetBuffer='', _pinSetStep=0, _pinSetFirst='';
+let _pinLastActive = Date.now();
+const PIN_TIMEOUT = 5 * 60 * 1000; // 5 min
+
+function _hashPin(pin){ let h=0; for(let c of pin){ h=(h<<5)-h+c.charCodeAt(0); h|=0; } return String(h); }
+function _storedPin(){ return localStorage.getItem('vikram_pin_hash'); }
+
+function pinKey(k){
+  if(k==='⌫'){ _pinBuffer=_pinBuffer.slice(0,-1); }
+  else if(_pinBuffer.length<4){ _pinBuffer+=String(k); }
+  [0,1,2,3].forEach(i=>{ const d=document.getElementById('pd'+i); if(d) d.style.background=i<_pinBuffer.length?'var(--accent)':'var(--tgbg)'; });
+  if(_pinBuffer.length===4){
+    if(_hashPin(_pinBuffer)===_storedPin()){
+      document.getElementById('pinLockOverlay').style.display='none';
+      _pinBuffer=''; _pinLastActive=Date.now();
+    } else {
+      document.getElementById('pinError').textContent='Incorrect PIN';
+      setTimeout(()=>{ _pinBuffer=''; [0,1,2,3].forEach(i=>{ const d=document.getElementById('pd'+i); if(d) d.style.background='var(--tgbg)'; }); document.getElementById('pinError').textContent=''; },700);
+    }
+  }
+}
+
+function pinSetKey(k){
+  if(k==='⌫'){ _pinSetBuffer=_pinSetBuffer.slice(0,-1); }
+  else if(_pinSetBuffer.length<4){ _pinSetBuffer+=String(k); }
+  [0,1,2,3].forEach(i=>{ const d=document.getElementById('psd'+i); if(d) d.style.background=i<_pinSetBuffer.length?'var(--accent)':'var(--tgbg)'; });
+  if(_pinSetBuffer.length===4){
+    if(_pinSetStep===0){
+      _pinSetFirst=_pinSetBuffer; _pinSetBuffer='';
+      [0,1,2,3].forEach(i=>{ const d=document.getElementById('psd'+i); if(d) d.style.background='var(--tgbg)'; });
+      document.getElementById('pinSetTitle').textContent='Confirm PIN';
+      document.getElementById('pinSetSub').textContent='Re-enter your 4-digit PIN';
+      _pinSetStep=1;
+    } else {
+      if(_pinSetBuffer===_pinSetFirst){
+        localStorage.setItem('vikram_pin_hash', _hashPin(_pinSetBuffer));
+        cfg.pinLock=true;
+        try{ localStorage.setItem('vikram_cfg', JSON.stringify(cfg)); }catch(e){}
+        document.getElementById('pinSetOverlay').style.display='none';
+        applyPinLockSettings();
+        vikramToast && vikramToast('✅ PIN set');
+      } else {
+        document.getElementById('pinSetSub').textContent='PINs do not match. Try again.';
+        _pinSetBuffer=''; _pinSetStep=0; _pinSetFirst='';
+        [0,1,2,3].forEach(i=>{ const d=document.getElementById('psd'+i); if(d) d.style.background='var(--tgbg)'; });
+        document.getElementById('pinSetTitle').textContent='Set a PIN';
+      }
+    }
+  }
+}
+function cancelSetPin(){ document.getElementById('pinSetOverlay').style.display='none'; _pinSetBuffer=''; _pinSetStep=0; _pinSetFirst=''; }
+
+function applyPinLockSettings(){
+  const hasPIN = !!_storedPin();
+  const pinRow = document.getElementById('pinLockRow');
+  if(pinRow){
+    const lbl = pinRow.querySelector('.sv-lbl');
+    const sub = pinRow.querySelector('.sv-sub');
+    const btn = pinRow.querySelector('button');
+    if(lbl) lbl.textContent = hasPIN ? 'App Lock (PIN)' : 'App Lock (PIN)';
+    if(sub) sub.textContent = hasPIN ? 'PIN is set · tap to change or remove' : 'Protect app with a 4-digit PIN';
+    if(btn){ btn.textContent = hasPIN ? 'Change' : 'Set PIN'; }
+  }
+}
+
+function openPinSetFlow(){
+  haptic('light');
+  _pinSetBuffer=''; _pinSetStep=0; _pinSetFirst='';
+  [0,1,2,3].forEach(i=>{ const d=document.getElementById('psd'+i); if(d) d.style.background='var(--tgbg)'; });
+  document.getElementById('pinSetTitle').textContent='Set a PIN';
+  document.getElementById('pinSetSub').textContent='Enter a 4-digit PIN';
+  document.getElementById('pinSetOverlay').style.display='flex';
+}
+function removePinLock(){
+  localStorage.removeItem('vikram_pin_hash');
+  cfg.pinLock=false;
+  try{ localStorage.setItem('vikram_cfg', JSON.stringify(cfg)); }catch(e){}
+  applyPinLockSettings();
+  vikramToast && vikramToast('🔓 PIN removed');
+}
+
+// Check PIN on visibility change (inactivity lock)
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible' && _storedPin()){
+    if(Date.now()-_pinLastActive > PIN_TIMEOUT){
+      _pinBuffer=''; [0,1,2,3].forEach(i=>{ const d=document.getElementById('pd'+i); if(d) d.style.background='var(--tgbg)'; });
+      document.getElementById('pinError').textContent='';
+      document.getElementById('pinLockOverlay').style.display='flex';
+    }
+  } else { _pinLastActive=Date.now(); }
+});
+// On load, show lock if PIN set
+if(_storedPin()){
+  document.getElementById('pinLockOverlay').style.display='flex';
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE: NOTE STATS
+// ══════════════════════════════════════════════════════════════════════════════
+function renderNoteStats(){
+  const sub = document.getElementById('noteStatsSub');
+  if(!sub) return;
+  try{
+    const notes = JSON.parse(localStorage.getItem('vikram_notes_v2')||'[]');
+    const total = notes.length;
+    const pinned = notes.filter(n=>n.pinned).length;
+    let words = 0;
+    notes.forEach(n=>{ const tmp=document.createElement('div'); tmp.innerHTML=n.content||''; words+=(tmp.textContent||'').trim().split(/\s+/).filter(Boolean).length; });
+    sub.textContent = `${total} note${total!==1?'s':''} · ${pinned} pinned · ~${words.toLocaleString()} words`;
+  }catch(e){ sub.textContent='No notes yet'; }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE: TIMEZONE DISPLAY
+// ══════════════════════════════════════════════════════════════════════════════
+(function(){ try{ const s=JSON.parse(localStorage.getItem('vikram_cfg')||'{}'); cfg.showTimezone=typeof s.showTimezone==='boolean'?s.showTimezone:false; }catch(e){ cfg.showTimezone=false; } })();
+function applyTimezoneDisplay(){
+  const el=document.getElementById('tzBadge');
+  const btn=document.getElementById('tgTzDisplay');
+  const sub=document.getElementById('tzDisplaySub');
+  const on=!!cfg.showTimezone;
+  if(btn) btn.classList.toggle('on',on);
+  if(!el) return;
+  if(on){
+    try{
+      const tz=Intl.DateTimeFormat().resolvedOptions().timeZone||'Unknown';
+      const offset=new Date().toLocaleTimeString('en-US',{timeZoneName:'short'}).split(' ').pop();
+      el.textContent=`${tz} · ${offset}`;
+      el.style.display='block';
+      if(sub) sub.textContent=`Currently: ${tz}`;
+    }catch(e){ el.style.display='none'; }
+  } else {
+    el.style.display='none';
+    if(sub) sub.textContent='Show timezone label below month header';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE: CLEAR PAST EVENTS
+// ══════════════════════════════════════════════════════════════════════════════
+function confirmClearOldEvents(){
+  haptic('light');
+  try{
+    const todayMs = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+    const old = (userEvents||[]).filter(e=>e.endAdMs<todayMs && !e.isBdtBirthday && !e.recur && !e.repeatYearly);
+    const sub = document.getElementById('clearOldEventsSub');
+    if(!old.length){ vikramToast&&vikramToast('ℹ️ No past events to clear'); return; }
+    if(sub) sub.textContent=`${old.length} past event${old.length>1?'s':''} found`;
+    if(!confirm(`Delete ${old.length} past event${old.length>1?'s':''}? This cannot be undone.`)) return;
+    for(let i=userEvents.length-1;i>=0;i--){
+      const e=userEvents[i];
+      if(e.endAdMs<todayMs && !e.isBdtBirthday && !e.recur && !e.repeatYearly) userEvents.splice(i,1);
+    }
+    if(typeof saveEvents==='function') saveEvents();
+    if(typeof render==='function') render();
+    if(typeof renderUpcoming==='function') renderUpcoming();
+    if(sub) sub.textContent='Delete events before today';
+    vikramToast&&vikramToast(`🗑 ${old.length} past event${old.length>1?'s':''} cleared`);
+  }catch(e){ vikramToast&&vikramToast('❌ Failed to clear events'); }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE: BIRTHDAY COUNTDOWN IN UPCOMING
+// ══════════════════════════════════════════════════════════════════════════════
+(function(){ try{ const s=JSON.parse(localStorage.getItem('vikram_cfg')||'{}'); cfg.bdCountdown=typeof s.bdCountdown==='boolean'?s.bdCountdown:true; }catch(e){ cfg.bdCountdown=true; } })();
+function applyBdCountdown(){
+  const btn=document.getElementById('tgBdCountdown');
+  const sub=document.getElementById('bdCountdownSub');
+  const on=!!cfg.bdCountdown;
+  if(btn) btn.classList.toggle('on',on);
+  if(sub) sub.textContent=on?'Birthdays appear in Upcoming list':'Birthdays hidden from Upcoming list';
+  // Trigger re-render of upcoming to show/hide birthday items
+  if(typeof renderUpcoming==='function') renderUpcoming();
+  if(typeof bdtSyncToEvents==='function') bdtSyncToEvents();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SETTINGS INIT — extended
+// ══════════════════════════════════════════════════════════════════════════════
+const _origInitAll = window.initAllSettingsFeatures;
+window.initAllSettingsFeatures = function(){
+  if(typeof _origInitAll==='function') _origInitAll();
+  applyAutoScrollToday();
+  applyUpWindow();
+  applyPinLockSettings();
+  renderNoteStats();
+  applyTimezoneDisplay();
+  applyBdCountdown();
+  // PIN lock settings row
+  const secGrp = document.getElementById('pinLockRow');
+  // already injected via HTML
+};
+
+// Inject Security group into settings HTML dynamically
+(function(){
+  const integrationsLabel = Array.from(document.querySelectorAll('.sv-group-label')).find(el=>el.textContent.includes('Integrations'));
+  if(!integrationsLabel) return;
+  const secDiv = document.createElement('div');
+  secDiv.innerHTML = `
+    <div class="sv-group-label">Security</div>
+    <div class="sv-group">
+      <div class="sv-row" id="pinLockRow" style="align-items:center;">
+        <div class="sv-icon" style="background:rgba(220,50,50,.12);">🔒</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">App Lock (PIN)</div>
+          <div class="sv-sub">Protect app with a 4-digit PIN</div>
+        </div>
+        <button onclick="openPinSetFlow()" style="padding:7px 14px;border:none;border-radius:20px;background:var(--tgbg);color:var(--dtext);font-weight:800;font-size:13px;cursor:pointer;" id="pinActionBtn">Set PIN</button>
+      </div>
+      <div id="pinRemoveRow" style="display:none;" class="sv-row" style="cursor:pointer;" onclick="removePinLock()">
+        <div class="sv-icon" style="background:rgba(220,50,50,.08);">🔓</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl" style="color:#e53e3e;">Remove PIN</div>
+          <div class="sv-sub">Disable app lock</div>
+        </div>
+      </div>
+    </div>`;
+  integrationsLabel.parentNode.insertBefore(secDiv, integrationsLabel);
+  // Show/hide remove row based on whether PIN is set
+  function syncPinRow(){
+    const hasPIN = !!localStorage.getItem('vikram_pin_hash');
+    const btn = document.getElementById('pinActionBtn');
+    const removeRow = document.getElementById('pinRemoveRow');
+    if(btn) btn.textContent = hasPIN ? 'Change' : 'Set PIN';
+    if(removeRow) removeRow.style.display = hasPIN ? '' : 'none';
+  }
+  syncPinRow();
+  const _obs = new MutationObserver(syncPinRow);
+  _obs.observe(document.body, {subtree:false,childList:false,attributes:false});
+  document.addEventListener('vikramPinChanged', syncPinRow);
+})();
+setTimeout(()=>{ applyAutoScrollToday(); applyUpWindow(); applyBdCountdown(); applyTimezoneDisplay(); }, 400);
+
 
 // Listen to selectors for AD preview
 ['bdtY','bdtM','bdtD'].forEach(id=>{
   document.getElementById(id)?.addEventListener('change', bdtUpdateAdPreview);
 });
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE: AUTO DARK MODE (follows system prefers-color-scheme)
+// ══════════════════════════════════════════════════════════════════════════════
+let _autoDarkMediaQuery = null;
+let _autoDarkListener  = null;
+
+function toggleAutoDark(){
+  haptic('light');
+  const on = !cfg.autoDark;
+  cfg.autoDark = on;
+  try{ localStorage.setItem('vikram_cfg', JSON.stringify(cfg)); }catch(e){}
+  applyAutoDark();
+}
+
+function applyAutoDark(){
+  const btn    = document.getElementById('tgAutoDark');
+  const tgDark = document.getElementById('tgDark');
+  const sub    = document.getElementById('autoDarkSub');
+  const on     = !!cfg.autoDark;
+
+  if(btn) btn.classList.toggle('on', on);
+  if(tgDark){ tgDark.style.opacity = on ? '.35' : ''; tgDark.style.pointerEvents = on ? 'none' : ''; }
+  if(sub) sub.textContent = on ? 'Auto · following system theme' : 'Follow system light/dark preference';
+
+  if(_autoDarkMediaQuery && _autoDarkListener){
+    try{ _autoDarkMediaQuery.removeEventListener('change', _autoDarkListener); }catch(e){}
+  }
+  if(on && window.matchMedia){
+    _autoDarkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    _autoDarkListener = (e) => { dark = e.matches; applyTheme(); };
+    _autoDarkMediaQuery.addEventListener('change', _autoDarkListener);
+    dark = _autoDarkMediaQuery.matches;
+    applyTheme();
+  }
+}
+
+(function(){
+  try{
+    const stored = JSON.parse(localStorage.getItem('vikram_cfg')||'{}');
+    cfg.autoDark = typeof stored.autoDark === 'boolean' ? stored.autoDark : false;
+  }catch(e){ cfg.autoDark = false; }
+  setTimeout(applyAutoDark, 250);
+})();
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE: EXPORT NOTES AS TEXT
+// ══════════════════════════════════════════════════════════════════════════════
+function exportNotesAsText(){
+  haptic('light');
+  try{
+    const notes = JSON.parse(localStorage.getItem('vikram_notes_v2')||'[]');
+    if(!notes.length){ vikramToast && vikramToast('ℹ️ No notes to export'); return; }
+    notes.sort((a,b)=>{ if(!!b.pinned!==!!a.pinned) return b.pinned?1:-1; return (b.updatedAt||0)-(a.updatedAt||0); });
+    let txt = `Vikram Notes Export\nExported: ${new Date().toLocaleString()}\n${notes.length} note${notes.length>1?'s':''}\n${'═'.repeat(40)}\n\n`;
+    notes.forEach((note,i)=>{
+      const title = note.title||'Untitled';
+      const pin   = note.pinned?' 📌':'';
+      const date  = note.updatedAt ? new Date(note.updatedAt).toLocaleDateString() : '';
+      const tmp   = document.createElement('div');
+      tmp.innerHTML = note.content||'';
+      const body  = (tmp.textContent||tmp.innerText||'').trim();
+      txt += `${i+1}. ${title}${pin}\n${date?`   Updated: ${date}\n`:''}\n${body}\n\n${'─'.repeat(40)}\n\n`;
+    });
+    const blob = new Blob([txt],{type:'text/plain;charset=utf-8'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href=url; a.download=`vikram-notes-${new Date().toISOString().slice(0,10)}.txt`; a.click();
+    URL.revokeObjectURL(url);
+    vikramToast && vikramToast(`✅ ${notes.length} note${notes.length>1?'s':''} exported`);
+  }catch(e){ vikramToast && vikramToast('❌ Export failed'); }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE: PWA DATE BADGE (shows today's BS day number on app icon)
+// ══════════════════════════════════════════════════════════════════════════════
+let _pwaBadgeInterval = null;
+
+function togglePwaBadge(){
+  haptic('light');
+  cfg.pwaBadge = !cfg.pwaBadge;
+  try{ localStorage.setItem('vikram_cfg', JSON.stringify(cfg)); }catch(e){}
+  applyPwaBadge();
+}
+
+function applyPwaBadge(){
+  const btn = document.getElementById('tgPwaBadge');
+  const sub = document.getElementById('pwaBadgeSub');
+  const on  = !!cfg.pwaBadge;
+  if(btn) btn.classList.toggle('on', on);
+  if(_pwaBadgeInterval){ clearInterval(_pwaBadgeInterval); _pwaBadgeInterval=null; }
+  if(!('setAppBadge' in navigator)){
+    if(sub) sub.textContent='Not supported — install the app first';
+    if(btn){ btn.style.opacity='.35'; btn.style.pointerEvents='none'; }
+    return;
+  }
+  if(on){
+    const update=()=>{ try{ const today=getKathmanduToday?getKathmanduToday():new Date(); const bs=adToBs(today); navigator.setAppBadge(bs.d).catch(()=>{}); if(sub) sub.textContent=`Showing BS day ${bs.d} on icon`; }catch(e){} };
+    update();
+    _pwaBadgeInterval=setInterval(update,60*60*1000);
+  } else {
+    navigator.clearAppBadge().catch(()=>{});
+    if(sub) sub.textContent="Display today's BS date as a badge on the icon";
+  }
+}
+
+(function(){
+  try{
+    const stored = JSON.parse(localStorage.getItem('vikram_cfg')||'{}');
+    cfg.pwaBadge = typeof stored.pwaBadge === 'boolean' ? stored.pwaBadge : false;
+  }catch(e){ cfg.pwaBadge=false; }
+  setTimeout(applyPwaBadge, 300);
+})();
+
 </script>
 </body>
 </html>
