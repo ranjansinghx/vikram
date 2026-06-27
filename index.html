@@ -15984,8 +15984,19 @@ window.inviteFriends = function() {
   // Called by the "Continue with Google" button
   window.vikramSignIn = function(){
     if(typeof haptic==='function') haptic('medium');
-    if(typeof window.signInWithGoogle === 'function'){
-      window.signInWithGoogle();
+    // Must call signInWithPopup directly from user gesture (button click)
+    if(window.firebase && firebase.auth){
+      var provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider)
+        .then(function(r){
+          if(typeof window.updateGoogleUI === 'function') window.updateGoogleUI(r.user);
+          if(typeof vikramCloudSync !== 'undefined') vikramCloudSync.startListening(r.user.uid);
+          if(typeof vikramToast==='function') vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));
+        })
+        .catch(function(e){
+          console.warn('signInWithPopup failed:', e.code, e.message);
+          if(typeof vikramToast==='function') vikramToast('❌ Sign-in failed: '+e.code);
+        });
     } else {
       // Firebase not ready yet — show spinner and retry
       var btn = document.getElementById('googleSignInBtn');
@@ -15994,10 +16005,10 @@ window.inviteFriends = function() {
       var attempts = 0;
       var retry = setInterval(function(){
         attempts++;
-        if(typeof window.signInWithGoogle === 'function'){
+        if(window.firebase && firebase.auth){
           clearInterval(retry);
           if(btn) btn.innerHTML = orig;
-          window.signInWithGoogle();
+          window.vikramSignIn();
         } else if(attempts > 20){
           clearInterval(retry);
           if(btn) btn.innerHTML = orig;
@@ -16101,10 +16112,15 @@ window.inviteFriends = function() {
         window.signInWithGoogle=function(){
           if(typeof haptic==='function') haptic('medium');
           var provider = new firebase.auth.GoogleAuthProvider();
-          firebase.auth().signInWithRedirect(provider)
+          firebase.auth().signInWithPopup(provider)
+            .then(function(r){
+              updateGoogleUI(r.user);
+              vikramCloudSync.startListening(r.user.uid);
+              if(typeof vikramToast==='function') vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));
+            })
             .catch(function(e){
-              console.warn('signInWithRedirect failed:', e.code, e.message);
-              if(typeof vikramToast==='function') vikramToast('❌ Sign-in failed. Try again.');
+              console.warn('signInWithPopup failed:', e.code, e.message);
+              if(typeof vikramToast==='function') vikramToast('❌ Sign-in failed: '+e.code);
             });
         };
         window.signOutGoogle=function(){
@@ -16113,7 +16129,7 @@ window.inviteFriends = function() {
         };
         // Set persistence to LOCAL so Google session survives refresh
         firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){});
-        // Single onAuthStateChanged — handles sign-in, redirect return, and refresh
+        // Single onAuthStateChanged — handles sign-in and refresh
         firebase.auth().onAuthStateChanged(function(user){
           updateGoogleUI(user);
           if(typeof renderGcalCard==='function') renderGcalCard();
@@ -16123,14 +16139,6 @@ window.inviteFriends = function() {
             vikramCloudSync.stopListening();
           }
         });
-        // Handle redirect result
-        firebase.auth().getRedirectResult().then(function(r){
-          if(r && r.user && !r.user.isAnonymous){
-            updateGoogleUI(r.user);
-            vikramCloudSync.startListening(r.user.uid);
-            if(typeof vikramToast==='function') vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));
-          }
-        }).catch(function(e){ console.warn('getRedirectResult failed:', e.code); });
       }
       // Signal to early stub that Firebase+Auth is fully wired
       if(typeof window._vikramFirebaseReady === 'function') window._vikramFirebaseReady();
