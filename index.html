@@ -16070,7 +16070,7 @@ window.inviteFriends = function() {
           var btn=document.getElementById('googleSignInBtn');
           var info=document.getElementById('googleUserInfo');
           if(!btn||!info) return;
-          if(user){
+          if(user && !user.isAnonymous){
             btn.style.display='none'; info.style.display='block';
             var av=document.getElementById('googleAvatar'); if(av) av.src=user.photoURL||'';
             var dn=document.getElementById('googleDisplayName'); if(dn) dn.textContent=user.displayName||'';
@@ -16083,6 +16083,7 @@ window.inviteFriends = function() {
             if(ha){ha.innerHTML='?';ha.style.background='';}
           }
         }
+        window.updateGoogleUI = updateGoogleUI;
         window.signInWithGoogle=function(){
           if(typeof haptic==='function') haptic('medium');
           var provider = new firebase.auth.GoogleAuthProvider();
@@ -16134,7 +16135,7 @@ window.inviteFriends = function() {
     const btn  = document.getElementById('googleSignInBtn');
     const info = document.getElementById('googleUserInfo');
     if(!btn || !info) return;
-    if(user){
+    if(user && !user.isAnonymous){
       btn.style.display  = 'none';
       info.style.display = 'block';
       const av = document.getElementById('googleAvatar');
