@@ -16098,44 +16098,39 @@ window.inviteFriends = function() {
           }
         }
         window.updateGoogleUI = updateGoogleUI;
-        // Also refresh UI when settings tab opens
-        firebase.auth().onAuthStateChanged(function(user){
-          setTimeout(function(){ updateGoogleUI(user); }, 200);
-        });
         window.signInWithGoogle=function(){
           if(typeof haptic==='function') haptic('medium');
           var provider = new firebase.auth.GoogleAuthProvider();
-          // Use redirect instead of popup for better browser compatibility
           firebase.auth().signInWithRedirect(provider)
             .catch(function(e){
               console.warn('signInWithRedirect failed:', e.code, e.message);
               if(typeof vikramToast==='function') vikramToast('❌ Sign-in failed. Try again.');
             });
         };
-        // Handle redirect result on page load
-        firebase.auth().getRedirectResult().then(function(r){
-          if(r && r.user && !r.user.isAnonymous){
-            updateGoogleUI(r.user);
-            if(typeof vikramCloudSync !== 'undefined') vikramCloudSync.startListening(r.user.uid);
-            if(typeof vikramToast==='function') vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));
-          }
-        }).catch(function(e){ console.warn('getRedirectResult failed:', e.code); });
         window.signOutGoogle=function(){
           if(typeof haptic==='function') haptic('light');
           firebase.auth().signOut().then(function(){updateGoogleUI(null);if(typeof vikramToast==='function')vikramToast('👋 Signed out');});
         };
         // Set persistence to LOCAL so Google session survives refresh
         firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){});
+        // Single onAuthStateChanged — handles sign-in, redirect return, and refresh
         firebase.auth().onAuthStateChanged(function(user){
           updateGoogleUI(user);
           if(typeof renderGcalCard==='function') renderGcalCard();
-          // ── Cloud Sync: restore on sign-in, clear listener on sign-out ──
           if(user && !user.isAnonymous){
             vikramCloudSync.startListening(user.uid);
           } else if(!user){
             vikramCloudSync.stopListening();
           }
         });
+        // Handle redirect result
+        firebase.auth().getRedirectResult().then(function(r){
+          if(r && r.user && !r.user.isAnonymous){
+            updateGoogleUI(r.user);
+            vikramCloudSync.startListening(r.user.uid);
+            if(typeof vikramToast==='function') vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));
+          }
+        }).catch(function(e){ console.warn('getRedirectResult failed:', e.code); });
       }
       // Signal to early stub that Firebase+Auth is fully wired
       if(typeof window._vikramFirebaseReady === 'function') window._vikramFirebaseReady();
