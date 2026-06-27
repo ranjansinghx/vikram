@@ -16774,7 +16774,15 @@ function svRefreshStorage(){
     startListening: function(uid){
       _uid = uid;
       var ref = userRef(uid);
-      if(!ref) return;
+      if(!ref){
+        // db() not ready yet (Firebase SDK still loading) — retry in 1s
+        setTimeout(function(){ if(_uid) window.vikramCloudSync.startListening(_uid); }, 1000);
+        return;
+      }
+      // Show synced UI immediately (don't wait for pull to complete)
+      _updateSyncUI(true);
+      // Keep ref so stopListening can detach it
+      _dbRef = ref;
       // One-time pull on sign-in
       ref.once('value').then(function(snap){
         var cloud = snap.val();
@@ -16784,8 +16792,6 @@ function svRefreshStorage(){
           // No cloud data yet — push current local data up
           doPush();
         }
-        // Show sync indicator in profile UI
-        _updateSyncUI(true);
       }).catch(function(e){ console.warn('[VikramSync] pull failed:', e); });
 
       // Real-time listener for changes from other devices
