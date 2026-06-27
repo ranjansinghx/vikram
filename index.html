@@ -11170,9 +11170,14 @@ function cyResetConfirmYes(){
       if(user){ resolve(user); return; }
       // Don't create anonymous session if Google sign-in is in progress
       if(_googleSignInInProgress){ reject(new Error('google_signin_in_progress')); return; }
-      firebase.auth().signInAnonymously()
-        .then(r => resolve(r.user))
-        .catch(e => { console.warn('[Vikram] anon auth failed:', e); reject(e); });
+      // Wait briefly to see if a Google session is being restored
+      setTimeout(function(){
+        const u = firebase.auth().currentUser;
+        if(u){ resolve(u); return; }
+        firebase.auth().signInAnonymously()
+          .then(r => resolve(r.user))
+          .catch(e => { console.warn('[Vikram] anon auth failed:', e); reject(e); });
+      }, 1000);
     });
   }
 
@@ -16119,13 +16124,15 @@ window.inviteFriends = function() {
           if(typeof haptic==='function') haptic('light');
           firebase.auth().signOut().then(function(){updateGoogleUI(null);if(typeof vikramToast==='function')vikramToast('👋 Signed out');});
         };
+        // Set persistence to LOCAL so Google session survives refresh
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function(){});
         firebase.auth().onAuthStateChanged(function(user){
           updateGoogleUI(user);
           if(typeof renderGcalCard==='function') renderGcalCard();
           // ── Cloud Sync: restore on sign-in, clear listener on sign-out ──
-          if(user){
+          if(user && !user.isAnonymous){
             vikramCloudSync.startListening(user.uid);
-          } else {
+          } else if(!user){
             vikramCloudSync.stopListening();
           }
         });
