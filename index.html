@@ -12081,41 +12081,62 @@ setInterval(checkEventReminders, 60000);
 (function(){
   if(location.protocol === 'file:') return;
   // 1. Inject manifest as blob so Chrome recognises this page as installable
-  const icons=[];
-  [192,512].forEach(sz=>{
-    const c=document.createElement('canvas');
-    c.width=c.height=sz;
-    const ctx=c.getContext('2d');
+  function _buildPwaIcons(dayLabel){
+    const icons=[];
+    [192,512].forEach(sz=>{
+      const c=document.createElement('canvas');
+      c.width=c.height=sz;
+      const ctx=c.getContext('2d');
 
-    // Solid black rounded background
-    ctx.fillStyle='#000000';
-    ctx.beginPath();
-    ctx.roundRect(0,0,sz,sz,sz*0.22);
-    ctx.fill();
+      // Solid black rounded background
+      ctx.fillStyle='#000000';
+      ctx.beginPath();
+      ctx.roundRect(0,0,sz,sz,sz*0.22);
+      ctx.fill();
 
-    // White bold "29" centered
-    ctx.fillStyle='#FFFFFF';
-    ctx.font=`900 ${sz*0.42}px Arial Black,Arial,sans-serif`;
-    ctx.textAlign='center';
-    ctx.textBaseline='middle';
-    ctx.fillText('29',sz/2,sz/2);
+      // White bold day number centered
+      ctx.fillStyle='#FFFFFF';
+      ctx.font=`900 ${sz*0.42}px Arial Black,Arial,sans-serif`;
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      ctx.fillText(String(dayLabel),sz/2,sz/2);
 
-    icons.push({src:c.toDataURL('image/png'),sizes:`${sz}x${sz}`,type:'image/png'});
-  });
-  const manifest={
-    name:'Vikram',
-    short_name:'Vikram',
-    description:'Beautiful Nepali Patro BS 2083–2084',
-    version:'2.2.0',
-    start_url:location.href,
-    display:'standalone',
-    orientation:'portrait',
-    background_color:'#ECEEF8',
-    theme_color:'#1a1a1a',
-    icons
-  };
-  const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
-  document.getElementById('pwaManifest').href=URL.createObjectURL(blob);
+      icons.push({src:c.toDataURL('image/png'),sizes:`${sz}x${sz}`,type:'image/png'});
+    });
+    return icons;
+  }
+
+  function _getTodayBsDay(){
+    try{
+      const today = typeof getKathmanduToday==='function' ? getKathmanduToday() : new Date();
+      const bs    = typeof adToBs==='function' ? adToBs(today) : null;
+      return bs ? bs.d : new Date().getDate();
+    }catch(e){ return new Date().getDate(); }
+  }
+
+  function _injectManifest(dayLabel){
+    const icons = _buildPwaIcons(dayLabel);
+    const manifest={
+      name:'Vikram',
+      short_name:'Vikram',
+      description:'Beautiful Nepali Patro BS 2083–2084',
+      version:'2.2.0',
+      start_url:location.href,
+      display:'standalone',
+      orientation:'portrait',
+      background_color:'#ECEEF8',
+      theme_color:'#1a1a1a',
+      icons
+    };
+    const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
+    document.getElementById('pwaManifest').href=URL.createObjectURL(blob);
+  }
+
+  // Initial icon — always show today's real BS day
+  _injectManifest(_getTodayBsDay());
+  // Expose helpers so applyPwaBadge (outside this IIFE) can update the icon
+  window._vikramInjectManifest = _injectManifest;
+  window._vikramGetTodayBsDay  = _getTodayBsDay;
 
   // 2. Register service worker via blob — full offline support
   if(location.protocol !== 'file:' && 'serviceWorker' in navigator){
@@ -17874,8 +17895,6 @@ window.initAllSettingsFeatures = function(){
     if(removeRow) removeRow.style.display = hasPIN ? '' : 'none';
   }
   syncPinRow();
-  const _obs = new MutationObserver(syncPinRow);
-  _obs.observe(document.body, {subtree:false,childList:false,attributes:false});
   document.addEventListener('vikramPinChanged', syncPinRow);
 })();
 setTimeout(()=>{ applyAutoScrollToday(); applyUpWindow(); applyBdCountdown(); applyTimezoneDisplay(); }, 400);
@@ -17976,18 +17995,41 @@ function applyPwaBadge(){
   const on  = !!cfg.pwaBadge;
   if(btn) btn.classList.toggle('on', on);
   if(_pwaBadgeInterval){ clearInterval(_pwaBadgeInterval); _pwaBadgeInterval=null; }
-  if(!('setAppBadge' in navigator)){
-    if(sub) sub.textContent='Not supported — install the app first';
-    if(btn){ btn.style.opacity='.35'; btn.style.pointerEvents='none'; }
-    return;
+
+  function _getBsDay(){
+    if(typeof window._vikramGetTodayBsDay === 'function') return window._vikramGetTodayBsDay();
+    try{
+      const today = typeof getKathmanduToday==='function' ? getKathmanduToday() : new Date();
+      const bs    = typeof adToBs==='function' ? adToBs(today) : null;
+      return bs ? bs.d : new Date().getDate();
+    }catch(e){ return new Date().getDate(); }
   }
+
+  function _setIcon(day){
+    try{
+      if(typeof window._vikramInjectManifest === 'function') window._vikramInjectManifest(day);
+      if('setAppBadge' in navigator) navigator.setAppBadge(day).catch(()=>{});
+    }catch(e){}
+  }
+
   if(on){
-    const update=()=>{ try{ const today=getKathmanduToday?getKathmanduToday():new Date(); const bs=adToBs(today); navigator.setAppBadge(bs.d).catch(()=>{}); if(sub) sub.textContent=`Showing BS day ${bs.d} on icon`; }catch(e){} };
-    update();
-    _pwaBadgeInterval=setInterval(update,60*60*1000);
+    const day = _getBsDay();
+    _setIcon(day);
+    if(sub) sub.textContent = `Showing BS day ${day} on icon`;
+    // Refresh at midnight — check every minute, update when day rolls over
+    let _lastDay = day;
+    _pwaBadgeInterval = setInterval(()=>{
+      const today = _getBsDay();
+      if(today !== _lastDay){
+        _lastDay = today;
+        _setIcon(today);
+        if(sub) sub.textContent = `Showing BS day ${today} on icon`;
+      }
+    }, 60 * 1000);
   } else {
-    navigator.clearAppBadge().catch(()=>{});
-    if(sub) sub.textContent="Display today's BS date as a badge on the icon";
+    // Always keep icon showing today's real BS date (toggle only controls the badge overlay)
+    try{ _setIcon(_getBsDay()); if('clearAppBadge' in navigator) navigator.clearAppBadge().catch(()=>{}); }catch(e){}
+    if(sub) sub.textContent = "Display today's BS date as a badge on the icon";
   }
 }
 
