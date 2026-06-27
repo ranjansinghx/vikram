@@ -16082,9 +16082,26 @@ window.inviteFriends = function() {
         }
         window.signInWithGoogle=function(){
           if(typeof haptic==='function') haptic('medium');
-          firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())
-            .then(function(r){updateGoogleUI(r.user);if(typeof vikramToast==='function')vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));})
-            .catch(function(){if(typeof vikramToast==='function')vikramToast('❌ Sign-in failed. Try again.');});
+          var provider = new firebase.auth.GoogleAuthProvider();
+          var currentUser = firebase.auth().currentUser;
+          // If anonymous, link to Google so profile data is preserved
+          if(currentUser && currentUser.isAnonymous){
+            currentUser.linkWithPopup(provider)
+              .then(function(r){
+                updateGoogleUI(r.user);
+                if(typeof vikramToast==='function') vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));
+              })
+              .catch(function(e){
+                // If already linked or credential taken, fall back to signInWithPopup
+                firebase.auth().signInWithPopup(provider)
+                  .then(function(r){updateGoogleUI(r.user);if(typeof vikramToast==='function')vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));})
+                  .catch(function(){if(typeof vikramToast==='function')vikramToast('❌ Sign-in failed. Try again.');});
+              });
+          } else {
+            firebase.auth().signInWithPopup(provider)
+              .then(function(r){updateGoogleUI(r.user);if(typeof vikramToast==='function')vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));})
+              .catch(function(){if(typeof vikramToast==='function')vikramToast('❌ Sign-in failed. Try again.');});
+          }
         };
         window.signOutGoogle=function(){
           if(typeof haptic==='function') haptic('light');
