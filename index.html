@@ -11113,6 +11113,18 @@ function cyResetConfirmYes(){
   document.getElementById('cyResetConfirmOverlay').classList.remove('open');
   cycleData = {};
   localStorage.removeItem('vikram_cycle');
+  // Push cleared state to cloud immediately so it does not restore from backup
+  try{
+    if(window.vikramCloudSync && typeof window.vikramCloudSync.push === 'function'){
+      window.vikramCloudSync.push();
+    }
+  }catch(e){}
+  // Also update pair sync so partner sees cleared state
+  try{
+    if(window._fbPair && typeof window._fbPair.pushMyCycle === 'function'){
+      window._fbPair.pushMyCycle();
+    }
+  }catch(e){}
   renderCycleSheet();
 }
 
