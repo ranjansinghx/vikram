@@ -6759,7 +6759,7 @@ function render(){
       }
       // Partner cycle chips
       try{
-        const pd = (window._fbPair && window._fbPair.pairLoad) ? window._fbPair.pairLoad() : null;
+        const pd = window._fbPair && window._fbPair.pairLoad ? window._fbPair.pairLoad() : null;
         if(pd && pd.partnerCycleData && pd.partnerCycleData.lastPeriodStart){
           const pcl=pd.partnerCycleData.cycleLength||28, ppl=pd.partnerCycleData.periodLength||5;
           const povD=pcl-14, pfertD=Math.max(1,povD-5);
@@ -11396,6 +11396,7 @@ function cyResetConfirmYes(){
         pairSave(d);
         const wrap = document.getElementById('pairSyncSection');
         if(wrap && wrap.closest('.sheet.open')) renderPairSection();
+        if(typeof render === 'function') render();
         return;
       }
 
@@ -11414,6 +11415,8 @@ function cyResetConfirmYes(){
       // Re-render cycle section if visible
       const wrap = document.getElementById('pairSyncSection');
       if(wrap && wrap.closest('.sheet.open')) renderPairSection();
+      // Re-render calendar so partner cycle chips appear on cells
+      if(typeof render === 'function') render();
     }, e => console.warn('[Vikram] partner cycle listen error:', e));
   }
 
