@@ -11162,11 +11162,14 @@ function cyResetConfirmYes(){
 
   // ── Ensure user is signed into Firebase (anonymously if needed) ────────────
   // REQUIRED: Firebase RTDB rules need "auth != null" — anon sign-in satisfies this
+  var _googleSignInInProgress = false;
   function ensureAuth(){
     return new Promise((resolve, reject) => {
       if(!fbReady() || !firebase.auth) return reject(new Error('firebase_not_ready'));
       const user = firebase.auth().currentUser;
       if(user){ resolve(user); return; }
+      // Don't create anonymous session if Google sign-in is in progress
+      if(_googleSignInInProgress){ reject(new Error('google_signin_in_progress')); return; }
       firebase.auth().signInAnonymously()
         .then(r => resolve(r.user))
         .catch(e => { console.warn('[Vikram] anon auth failed:', e); reject(e); });
@@ -16085,18 +16088,22 @@ window.inviteFriends = function() {
           var provider = new firebase.auth.GoogleAuthProvider();
           var currentUser = firebase.auth().currentUser;
           function doSignIn(){
+            if(typeof _googleSignInInProgress !== 'undefined') _googleSignInInProgress = true;
             firebase.auth().signInWithPopup(provider)
               .then(function(r){
+                if(typeof _googleSignInInProgress !== 'undefined') _googleSignInInProgress = false;
                 updateGoogleUI(r.user);
                 if(typeof vikramToast==='function') vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));
               })
-              .catch(function(e){ 
+              .catch(function(e){
+                if(typeof _googleSignInInProgress !== 'undefined') _googleSignInInProgress = false;
                 console.warn('Google sign-in error:', e);
                 if(typeof vikramToast==='function') vikramToast('❌ Sign-in failed. Try again.');
               });
           }
           // Sign out of anonymous session first, then sign in with Google
           if(currentUser && currentUser.isAnonymous){
+            if(typeof _googleSignInInProgress !== 'undefined') _googleSignInInProgress = true;
             firebase.auth().signOut().then(function(){ doSignIn(); }).catch(function(){ doSignIn(); });
           } else {
             doSignIn();
