@@ -11388,10 +11388,9 @@ function cyResetConfirmYes(){
       const d = pairLoad();
 
       if(!val){
-        // Partner hasn't logged any cycle data yet — show empty state
+        // Partner hasn't logged any cycle data yet — show empty state, not own data
         d.partnerCycleData = { lastPeriodStart: null, cycleLength: 28, periodLength: 5 };
       } else {
-        // Use != null check so timestamp 0 isn't coerced to null
         d.partnerCycleData = {
           lastPeriodStart: (val.lastPeriodStart != null) ? val.lastPeriodStart : null,
           cycleLength:     val.cycleLength  || 28,
@@ -11400,10 +11399,9 @@ function cyResetConfirmYes(){
         d.partnerCycleUpdatedAt = val.updatedAt || Date.now();
       }
       pairSave(d);
-      // Re-render cycle section if visible
+      // Re-render everywhere
       const wrap = document.getElementById('pairSyncSection');
-      if(wrap && wrap.closest('.sheet.open')) renderPairSection();
-      // Re-render calendar so partner chips update
+      if(wrap) renderPairSection();
       if(typeof render === 'function') render();
     }, e => console.warn('[Vikram] partner cycle listen error:', e));
   }
@@ -11478,7 +11476,7 @@ function cyResetConfirmYes(){
     const today=new Date(); today.setHours(0,0,0,0);
 
     // If no period logged yet, show defaults with day=1
-    if(p.lastPeriodStart == null){
+    if(p.lastPeriodStart == null || p.lastPeriodStart === false || p.lastPeriodStart === ''){
       return {day:null, dNext:null, phase:'Unknown', phaseColor:'#aaa', cl, pl, noData:true};
     }
 
@@ -11571,6 +11569,7 @@ function cyResetConfirmYes(){
           <div class="pair-partner-status">${fbOk ? '🟢 Live sync' : '⚠️ Offline mode'}${sharedTs?' · since '+sharedTs:''}${lastSync ? ' · updated '+lastSync : ''}</div>
         </div>
         <button class="pair-disconnect-btn" onclick="pairDisconnect()">Disconnect</button>
+        <button onclick="if(window._fbPair){const d=window._fbPair.pairLoad();if(d.partnerCode){window._fbPair.pushMyCycle();window._fbPair.subscribePartnerCycle(d.partnerCode);}}" style="margin-left:6px;padding:5px 10px;border:none;border-radius:12px;background:var(--tgbg);color:var(--dtext);font-size:11px;font-weight:800;cursor:pointer;">↻ Sync</button>
       </div>
 
       <div class="pair-partner-cycle">
