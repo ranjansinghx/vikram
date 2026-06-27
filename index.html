@@ -11170,14 +11170,21 @@ function cyResetConfirmYes(){
       if(user){ resolve(user); return; }
       // Don't create anonymous session if Google sign-in is in progress
       if(_googleSignInInProgress){ reject(new Error('google_signin_in_progress')); return; }
-      // Wait briefly to see if a Google session is being restored
-      setTimeout(function(){
-        const u = firebase.auth().currentUser;
-        if(u){ resolve(u); return; }
-        firebase.auth().signInAnonymously()
-          .then(r => resolve(r.user))
-          .catch(e => { console.warn('[Vikram] anon auth failed:', e); reject(e); });
-      }, 1000);
+      // Wait for Firebase to restore persisted session before falling back to anonymous.
+      // Using onAuthStateChanged (fires exactly once on init) avoids the race condition
+      // where a setTimeout fires before the Google session is restored, causing an
+      // anonymous sign-in that overwrites the Google session in the UI.
+      var unsubscribe = firebase.auth().onAuthStateChanged(function(u){
+        unsubscribe();
+        if(u){
+          resolve(u);
+        } else {
+          // Truly no persisted user — sign in anonymously so pair sync can write to RTDB
+          firebase.auth().signInAnonymously()
+            .then(r => resolve(r.user))
+            .catch(e => { console.warn('[Vikram] anon auth failed:', e); reject(e); });
+        }
+      });
     });
   }
 
