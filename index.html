@@ -11247,11 +11247,24 @@ function cyResetConfirmYes(){
     return d.myCode;
   }
 
+  // Force a full re-sync: push own data + re-subscribe (safe to call anytime after Firebase ready)
+  function forceSync(){
+    if(!fbReady()) return;
+    const d = pairLoad();
+    if(!d.myCode) return;
+    fbPushMyCycle();
+    if(d.partnerCode){
+      fbSubscribePartnerCycle(d.partnerCode);
+      fbSubscribeMsgs(d.myCode, d.partnerCode);
+    }
+  }
+
   // Expose Firebase helpers so the bottom-of-body init (after SDK loads) can call them
   window._fbPair = {
     pushMyCycle:           fbPushMyCycle,
     subscribePartnerCycle: fbSubscribePartnerCycle,
     subscribeMsgs:         fbSubscribeMsgs,
+    forceSync:             forceSync,
     pairLoad:              pairLoad
   };
   // initOnLoad intentionally skipped here — Firebase SDK is not loaded yet.
@@ -11270,8 +11283,10 @@ function cyResetConfirmYes(){
     }
 
     const last=new Date(p.lastPeriodStart); last.setHours(0,0,0,0);
-    const day=Math.floor((today-last)/86400000)+1;
-    const dNext=cl-(day%cl||cl);
+    const totalDays=Math.floor((today-last)/86400000)+1;
+    // Compute day within current cycle (handles multi-cycle elapsed time)
+    const day = totalDays > cl ? ((totalDays - 1) % cl) + 1 : totalDays;
+    const dNext = cl - day;
 
     let phase,phaseColor;
     if(day<=pl){phase='Period';phaseColor='#FF4757';}
@@ -11349,6 +11364,7 @@ function cyResetConfirmYes(){
     const pi = partnerPhaseInfo(d.partnerCycleData);
     const sharedTs = d.sharedAt ? new Date(d.sharedAt).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '';
     const lastSync = d.partnerCycleUpdatedAt ? new Date(d.partnerCycleUpdatedAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : null;
+    const noPartnerData = !pi || pi.noData;
     return `
     <div class="pair-paired">
       <div class="pair-partner-row">
@@ -11359,6 +11375,13 @@ function cyResetConfirmYes(){
         </div>
         <button class="pair-disconnect-btn" onclick="pairDisconnect()">Disconnect</button>
       </div>
+
+      ${noPartnerData ? `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 13px;background:var(--tgbg);border-radius:10px;margin:0 0 10px;gap:10px;">
+        <div style="font-size:11px;font-weight:700;color:var(--dsub);line-height:1.4;">
+          ${fbOk ? '⏳ Waiting for ' + escapeHtml(d.partnerName||'partner') + ' to log their cycle…' : '⚠️ Offline — connect to sync cycle data'}
+        </div>
+        ${fbOk ? `<button onclick="if(window._fbPair){window._fbPair.forceSync();if(typeof vikramToast==='function')vikramToast('🔄 Syncing…');}" style="flex-shrink:0;padding:5px 11px;border-radius:8px;border:none;background:linear-gradient(135deg,#FF6B9D,#C44569);color:#fff;font-size:11px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">Re-sync</button>` : ''}
+      </div>` : ''}
 
       <div class="pair-partner-cycle">
         <div class="pair-partner-cycle-head">
@@ -11475,8 +11498,10 @@ function cyResetConfirmYes(){
           fbSubscribePartnerCycle(_retryCode);
           fbSubscribeMsgs(_retryMyCode, _retryCode);
           if(typeof renderPairSection === 'function') renderPairSection();
-        } else if(_retryCount > 20) {
-          clearInterval(_retryInterval); // give up after 10s
+          if(typeof vikramToast === 'function') vikramToast('💞 Connected — syncing live!');
+        } else if(_retryCount > 60) {
+          clearInterval(_retryInterval); // give up after 30s
+          if(typeof vikramToast === 'function') vikramToast('⚠️ Sync service unavailable — saved locally');
         }
       }, 500);
     }
@@ -13408,6 +13433,8 @@ function switchTab(tab) {
     // Only re-render if we weren't already on cycle tab — prevents scroll jump on double-tap
     if(_currentTab !== 'cycle') {
       try{ renderCycleSheet(); }catch(e){ console.error('[Vikram] renderCycleSheet error:',e); }
+      // Push own cycle data to Firebase so partner sees fresh data
+      try{ if(window._fbPair) window._fbPair.forceSync(); }catch(e){}
     }
     _currentTab = 'cycle';
   } else if(tab === 'counter') {
@@ -15909,6 +15936,8 @@ window.inviteFriends = function() {
     if(typeof window.renderPairSection === 'function'){
       try{ window.renderPairSection(); }catch(e){}
     }
+    // Push own cycle data now that Firebase is ready
+    try{ if(window._fbPair) window._fbPair.forceSync(); }catch(e){}
     // Flush any pending sign-in triggered before Firebase was ready
     if(_pendingSignIn){
       _pendingSignIn = false;
@@ -15960,16 +15989,16 @@ window.inviteFriends = function() {
       // Always wire pair sync — runs every time Firebase SDK finishes loading
       if(window._fbPair){
         var p=window._fbPair;
-        var d=p.pairLoad();
-        if(d.myCode&&d.partnerCode){
-          p.pushMyCycle();
-          p.subscribePartnerCycle(d.partnerCode);
-          p.subscribeMsgs(d.myCode,d.partnerCode);
-        }
+        // forceSync: push own cycle data + subscribe to partner + messages if already paired
+        p.forceSync();
         // Re-render pair section now Firebase is live (clears loading state + shows green dot)
         setTimeout(function(){
           if(typeof window.renderPairSection === 'function') window.renderPairSection();
         }, 0);
+        // Also re-push after a short delay in case RTDB connection takes a moment to establish
+        setTimeout(function(){
+          if(window._fbPair) window._fbPair.forceSync();
+        }, 2000);
       }
       // Wire up Google Auth after Firebase is ready
       if(firebase.auth){
