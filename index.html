@@ -16100,16 +16100,21 @@ window.inviteFriends = function() {
         window.signInWithGoogle=function(){
           if(typeof haptic==='function') haptic('medium');
           var provider = new firebase.auth.GoogleAuthProvider();
-          firebase.auth().signInWithPopup(provider)
-            .then(function(r){
-              updateGoogleUI(r.user);
-              if(typeof vikramToast==='function') vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));
-            })
+          // Use redirect instead of popup for better browser compatibility
+          firebase.auth().signInWithRedirect(provider)
             .catch(function(e){
-              console.warn('signInWithPopup failed:', e.code, e.message);
+              console.warn('signInWithRedirect failed:', e.code, e.message);
               if(typeof vikramToast==='function') vikramToast('❌ Sign-in failed. Try again.');
             });
         };
+        // Handle redirect result on page load
+        firebase.auth().getRedirectResult().then(function(r){
+          if(r && r.user && !r.user.isAnonymous){
+            updateGoogleUI(r.user);
+            if(typeof vikramCloudSync !== 'undefined') vikramCloudSync.startListening(r.user.uid);
+            if(typeof vikramToast==='function') vikramToast('✅ Signed in as '+(r.user.displayName||r.user.email));
+          }
+        }).catch(function(e){ console.warn('getRedirectResult failed:', e.code); });
         window.signOutGoogle=function(){
           if(typeof haptic==='function') haptic('light');
           firebase.auth().signOut().then(function(){updateGoogleUI(null);if(typeof vikramToast==='function')vikramToast('👋 Signed out');});
