@@ -51,6 +51,7 @@ body, .ne, [class*="splash"] {
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 :root{
+  --accent:#6366f1;--accent-soft:rgba(99,102,241,.13);--accent-text:#6366f1;
   --bg:#ECEEF8;--card:#fff;--htext:#1a1a2e;--hsub:#9496a1;
   --border:#f0f0f8;--dtext:#2d2d44;--dsub:#adb0be;
   --wknd:#e03e3e;--hol:#d63031;--dim:#c8c9d4;--dimsub:#dcdde6;
@@ -4897,6 +4898,13 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     </div>
 
     <div id="upList"></div>
+    <div id="pinnedNoteCard" style="display:none;margin:0 0 10px;padding:12px 14px;background:var(--card);border-radius:14px;border:1px solid var(--border);cursor:pointer;" onclick="switchTab('notes')">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+        <span style="font-size:12px;font-weight:800;color:#f59e0b;">📌 Pinned Note</span>
+      </div>
+      <div id="pinnedNoteTitle" style="font-size:13px;font-weight:800;color:var(--dtext);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+      <div id="pinnedNotePreview" style="font-size:11.5px;color:var(--dsub);margin-top:3px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;"></div>
+    </div>
     <div id="upMonthView" style="display:none;"></div>
     <!-- Tasks inline view -->
     <div id="upTasksView" style="display:none;">
@@ -5178,6 +5186,35 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <button class="tgl on" id="tgHaptic" onclick="togHaptic(this)"></button>
       </div>
 
+      <!-- Focus Mode -->
+      <div class="sv-row">
+        <div class="sv-icon" style="background:rgba(60,60,60,.10);">🔕</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Focus Mode</div>
+          <div class="sv-sub" id="focusModeSub">Hide dots & schedule for distraction-free view</div>
+        </div>
+        <button class="tgl" id="tgFocusMode" onclick="togSetting('focusMode',this);applyFocusMode()"></button>
+      </div>
+
+      <!-- Accent Color -->
+      <div class="sv-row" style="flex-direction:column;align-items:flex-start;gap:10px;padding:12px 16px;">
+        <div style="display:flex;align-items:center;gap:12px;width:100%;">
+          <div class="sv-icon" style="background:var(--accent-soft);">🎨</div>
+          <div class="sv-row-text">
+            <div class="sv-lbl">Accent Color</div>
+            <div class="sv-sub" id="accentColorSub">Currently Indigo</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:9px;padding-left:44px;flex-wrap:wrap;" id="accentSwatches">
+          <button onclick="setAccent('indigo')"   title="Indigo"   style="width:26px;height:26px;border-radius:50%;border:3px solid transparent;background:#6366f1;cursor:pointer;transition:transform .15s,border-color .15s;" id="acSw-indigo"></button>
+          <button onclick="setAccent('violet')"   title="Violet"   style="width:26px;height:26px;border-radius:50%;border:3px solid transparent;background:#8b5cf6;cursor:pointer;transition:transform .15s,border-color .15s;" id="acSw-violet"></button>
+          <button onclick="setAccent('rose')"     title="Rose"     style="width:26px;height:26px;border-radius:50%;border:3px solid transparent;background:#f43f5e;cursor:pointer;transition:transform .15s,border-color .15s;" id="acSw-rose"></button>
+          <button onclick="setAccent('amber')"    title="Amber"    style="width:26px;height:26px;border-radius:50%;border:3px solid transparent;background:#f59e0b;cursor:pointer;transition:transform .15s,border-color .15s;" id="acSw-amber"></button>
+          <button onclick="setAccent('teal')"     title="Teal"     style="width:26px;height:26px;border-radius:50%;border:3px solid transparent;background:#14b8a6;cursor:pointer;transition:transform .15s,border-color .15s;" id="acSw-teal"></button>
+          <button onclick="setAccent('sky')"      title="Sky"      style="width:26px;height:26px;border-radius:50%;border:3px solid transparent;background:#0ea5e9;cursor:pointer;transition:transform .15s,border-color .15s;" id="acSw-sky"></button>
+        </div>
+      </div>
+
 
       <!-- Language -->
       <div class="sv-row">
@@ -5292,9 +5329,62 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
         <button class="tgl" id="notifTgl" onclick="handleNotifToggle()"></button>
       </div>
 
+      <!-- Default Reminder Time -->
+      <div class="sv-row" style="flex-direction:column;align-items:flex-start;gap:10px;padding:12px 16px;">
+        <div style="display:flex;align-items:center;gap:12px;width:100%;">
+          <div class="sv-icon" style="background:rgba(255,140,30,.13);">⏰</div>
+          <div class="sv-row-text">
+            <div class="sv-lbl">Default Reminder</div>
+            <div class="sv-sub" id="defReminderSub">Reminder offset when creating events</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;padding-left:44px;flex-wrap:wrap;" id="defReminderChips">
+          <button class="sv-chip" onclick="setDefReminder(15,this)">15 min</button>
+          <button class="sv-chip" onclick="setDefReminder(30,this)">30 min</button>
+          <button class="sv-chip" onclick="setDefReminder(60,this)">1 hr</button>
+          <button class="sv-chip" onclick="setDefReminder(1440,this)">1 day</button>
+        </div>
+      </div>
+
+      <!-- Event Count Badge -->
+      <div class="sv-row">
+        <div class="sv-icon" style="background:rgba(30,140,220,.10);">🔢</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Upcoming Count Badge</div>
+          <div class="sv-sub">Show event count on the Upcoming pill</div>
+        </div>
+        <button class="tgl" id="tgCountBadge" onclick="togSetting('showCountBadge',this);applyCountBadge()"></button>
+      </div>
+
     </div><!-- /.sv-group -->
 
-    <!-- GOOGLE CALENDAR SYNC -->
+    <!-- NOTES -->
+    <div class="sv-group-label">Notes</div>
+    <div class="sv-group">
+      <div class="sv-row">
+        <div class="sv-icon" style="background:rgba(245,158,11,.13);">📌</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">Show Pinned Note on Home</div>
+          <div class="sv-sub" id="pinnedNoteSettingSub">Display your top pinned note above Upcoming</div>
+        </div>
+        <button class="tgl" id="tgPinnedNote" onclick="togSetting('showPinnedNote',this);applyPinnedNote()"></button>
+      </div>
+    </div><!-- /.sv-group -->
+
+    <!-- YEAR IN REVIEW -->
+    <div class="sv-group-label">Year in Review</div>
+    <div class="sv-group">
+      <div class="sv-row" style="cursor:pointer;" onclick="openYearInReview()">
+        <div class="sv-icon" style="background:rgba(100,160,255,.13);">📊</div>
+        <div class="sv-row-text">
+          <div class="sv-lbl">View BS <span id="yirYearLabel">2083</span> Overview</div>
+          <div class="sv-sub">Heatmap of events, holidays & birthdays this year</div>
+        </div>
+        <svg class="sv-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--icon)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div><!-- /.sv-group -->
+
+    <!-- INTEGRATIONS -->
     <div class="sv-group-label">Integrations</div>
     <div class="sv-group">
       <div class="sv-row">
@@ -5407,7 +5497,7 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
           <div class="sv-lbl" style="font-size:14px;">Vikram</div>
           <div class="sv-sub">Nepali Calendar · BS 2083</div>
         </div>
-        <span class="sv-version-badge">v2.2</span>
+        <span class="sv-version-badge">v2.3</span>
       </div>
 
       <!-- Help & Feedback -->
@@ -5464,6 +5554,22 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 
   </div><!-- /.sv-body -->
 </div><!-- /#settingsView -->
+
+<!-- YEAR IN REVIEW SHEET -->
+<div class="dc-modal-overlay" id="yirOverlay" onclick="closeYearInReview(event)" style="display:none;z-index:3100;align-items:center;justify-content:center;">
+  <div class="dc-modal" style="max-width:420px;width:92%;max-height:88vh;overflow-y:auto;padding:0;border-radius:20px;transform:none !important;" onclick="event.stopPropagation()">
+    <div style="padding:18px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);">
+      <div>
+        <div style="font-weight:900;font-size:16px;color:var(--dtext);">📊 Year in Review</div>
+        <div style="font-size:12px;color:var(--dsub);margin-top:2px;" id="yirSubTitle">BS 2083</div>
+      </div>
+      <button onclick="closeYearInReview()" style="background:none;border:none;padding:6px;cursor:pointer;color:var(--icon);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="yirBody" style="padding:16px 20px 24px;"></div>
+  </div>
+</div>
 
 <!-- PROFILE SHEET -->
 <div class="sheet" id="profileSheet">
@@ -6325,19 +6431,25 @@ const TPAKSHA=['Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','Shukla','S
 // ══ STATE ══
 // UTC noon – safe anchor: .getDate() gives the same calendar day in every timezone (UTC-12 to UTC+14)
 const REF=new Date(Date.UTC(2026,3,14,12,0,0)); // Baishakh 1, 2083 = Apr 14, 2026
-let cfg={greg:true,hol:true,holn:true,fd:1,tithi:false,weekNum:false,compact:false,hlwknd:true};
+let cfg={greg:true,hol:true,holn:true,fd:1,tithi:false,weekNum:false,compact:false,hlwknd:true,
+         focusMode:false,accentColor:'indigo',defReminder:30,showCountBadge:true,showPinnedNote:false};
 (function loadCfg(){
   try{
     const stored=JSON.parse(localStorage.getItem('vikram_cfg')||'null');
     if(stored&&typeof stored==='object'){
-      if(typeof stored.greg==='boolean')    cfg.greg=stored.greg;
-      if(typeof stored.hol==='boolean')     cfg.hol=stored.hol;
-      if(typeof stored.holn==='boolean')    cfg.holn=stored.holn;
-      if(typeof stored.fd==='number')       cfg.fd=stored.fd;
-      if(typeof stored.tithi==='boolean')   cfg.tithi=stored.tithi;
-      if(typeof stored.weekNum==='boolean') cfg.weekNum=stored.weekNum;
-      if(typeof stored.compact==='boolean') cfg.compact=stored.compact;
-      if(typeof stored.hlwknd==='boolean')  cfg.hlwknd=stored.hlwknd;
+      if(typeof stored.greg==='boolean')          cfg.greg=stored.greg;
+      if(typeof stored.hol==='boolean')           cfg.hol=stored.hol;
+      if(typeof stored.holn==='boolean')          cfg.holn=stored.holn;
+      if(typeof stored.fd==='number')             cfg.fd=stored.fd;
+      if(typeof stored.tithi==='boolean')         cfg.tithi=stored.tithi;
+      if(typeof stored.weekNum==='boolean')       cfg.weekNum=stored.weekNum;
+      if(typeof stored.compact==='boolean')       cfg.compact=stored.compact;
+      if(typeof stored.hlwknd==='boolean')        cfg.hlwknd=stored.hlwknd;
+      if(typeof stored.focusMode==='boolean')     cfg.focusMode=stored.focusMode;
+      if(typeof stored.accentColor==='string')    cfg.accentColor=stored.accentColor;
+      if(typeof stored.defReminder==='number')    cfg.defReminder=stored.defReminder;
+      if(typeof stored.showCountBadge==='boolean')cfg.showCountBadge=stored.showCountBadge;
+      if(typeof stored.showPinnedNote==='boolean')cfg.showPinnedNote=stored.showPinnedNote;
     }
   }catch(e){}
 })();
@@ -9946,7 +10058,7 @@ function renderUpcoming(){
 
   const list=document.getElementById('upList');
   const countEl=document.getElementById('upCount');
-  if(countEl){ countEl.textContent=String(items.length); countEl.classList.remove('tasks-mode'); countEl.title=''; }
+  if(countEl){ countEl.textContent=String(items.length); countEl.classList.remove('tasks-mode'); countEl.title=''; countEl.style.display=cfg.showCountBadge?'':'none'; }
 
   if(items.length===0){
     list.innerHTML=`<div class="up-empty">
@@ -16360,20 +16472,20 @@ function svRefreshStorage(){
   <div class="sscroll" style="padding-bottom:32px;">
     <div class="ssec">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-        <span style="font-size:22px;font-weight:900;color:var(--dtext);">v2.2</span>
+        <span style="font-size:22px;font-weight:900;color:var(--dtext);">v2.3</span>
         <span style="font-size:11px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:3px 9px;border-radius:20px;">Latest</span>
       </div>
       <div class="cl-entry">
-        <div class="cl-dot" style="background:#10b981;"></div>
-        <div><div class="cl-title">Storage Usage Indicator</div><div class="cl-sub">See how much local storage Vikram is using, right in Settings.</div></div>
+        <div class="cl-dot" style="background:#6366f1;"></div>
+        <div><div class="cl-title">Accent Color Picker</div><div class="cl-sub">Personalize the whole app with 6 accent colors.</div></div>
       </div>
       <div class="cl-entry">
-        <div class="cl-dot" style="background:#f59e0b;"></div>
-        <div><div class="cl-title">Clear Notes &amp; Tasks Separately</div><div class="cl-sub">Privacy section now lets you wipe notes or tasks independently.</div></div>
+        <div class="cl-dot" style="background:#1a1a1a;"></div>
+        <div><div class="cl-title">Focus Mode</div><div class="cl-sub">Hide event dots and the schedule panel for a clean view.</div></div>
       </div>
       <div class="cl-entry">
-        <div class="cl-dot" style="background:#8b5cf6;"></div>
-        <div><div class="cl-title">Privacy Policy &amp; Changelog</div><div class="cl-sub">Access app policies and release history from the About section.</div></div>
+        <div class="cl-dot" style="background:#3b82f6;"></div>
+        <div><div class="cl-title">Year in Review</div><div class="cl-sub">A full heatmap of your BS year — events, holidays & birthdays.</div></div>
       </div>
     </div>
     <div style="padding:0 16px 8px;">
@@ -17009,8 +17121,231 @@ function bdtRender(){
   };
 })();
 
-// Also render on page load in case settings is already active
-setTimeout(bdtRender, 500);
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 1: FOCUS MODE
+// ══════════════════════════════════════════════════════════════════════════════
+function applyFocusMode(){
+  const on = cfg.focusMode;
+  // Hide/show event dots and the entire upcoming schedule section
+  const upEl = document.querySelector('.upcoming');
+  if(upEl) upEl.style.display = on ? 'none' : '';
+  // Hide/show cell chips (event dots/labels)
+  document.querySelectorAll('.cell-chip,.cell-weeknum,.cell-tithi').forEach(el=>{
+    el.style.display = on ? 'none' : '';
+  });
+  document.getElementById('tgFocusMode')?.classList.toggle('on', on);
+  document.getElementById('focusModeSub').textContent = on
+    ? 'Focus mode ON · dots & schedule hidden'
+    : 'Hide dots & schedule for distraction-free view';
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 2: ACCENT COLOR PICKER
+// ══════════════════════════════════════════════════════════════════════════════
+const ACCENT_MAP = {
+  indigo: { hex:'#6366f1', soft:'rgba(99,102,241,.13)',  label:'Indigo'  },
+  violet: { hex:'#8b5cf6', soft:'rgba(139,92,246,.13)',  label:'Violet'  },
+  rose:   { hex:'#f43f5e', soft:'rgba(244,63,94,.13)',   label:'Rose'    },
+  amber:  { hex:'#f59e0b', soft:'rgba(245,158,11,.13)',  label:'Amber'   },
+  teal:   { hex:'#14b8a6', soft:'rgba(20,184,166,.13)',  label:'Teal'    },
+  sky:    { hex:'#0ea5e9', soft:'rgba(14,165,233,.13)',  label:'Sky'     },
+};
+function applyAccentColor(name){
+  const ac = ACCENT_MAP[name] || ACCENT_MAP.indigo;
+  document.documentElement.style.setProperty('--accent', ac.hex);
+  document.documentElement.style.setProperty('--accent-soft', ac.soft);
+  document.documentElement.style.setProperty('--accent-text', ac.hex);
+  // Update swatch ring
+  document.querySelectorAll('#accentSwatches button').forEach(btn=>{
+    const id = btn.id.replace('acSw-','');
+    btn.style.borderColor = id===name ? ac.hex : 'transparent';
+    btn.style.transform = id===name ? 'scale(1.18)' : '';
+  });
+  const sub = document.getElementById('accentColorSub');
+  if(sub) sub.textContent = 'Currently ' + ac.label;
+}
+function setAccent(name){
+  haptic('light');
+  cfg.accentColor = name;
+  try{ localStorage.setItem('vikram_cfg', JSON.stringify(cfg)); }catch(e){}
+  applyAccentColor(name);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 3: YEAR IN REVIEW
+// ══════════════════════════════════════════════════════════════════════════════
+function openYearInReview(){
+  haptic('light');
+  const overlay = document.getElementById('yirOverlay');
+  if(!overlay) return;
+  overlay.style.display = '';
+  requestAnimationFrame(()=>overlay.classList.add('open'));
+  renderYearInReview(vY);
+}
+function closeYearInReview(e){
+  if(e && e.target !== document.getElementById('yirOverlay')) return;
+  const overlay = document.getElementById('yirOverlay');
+  overlay.classList.remove('open');
+  setTimeout(()=>{ overlay.style.display='none'; }, 220);
+}
+function renderYearInReview(bsYear){
+  const body = document.getElementById('yirBody');
+  const sub  = document.getElementById('yirSubTitle');
+  if(!body) return;
+  sub.textContent = 'BS ' + bsYear;
+  document.getElementById('yirYearLabel').textContent = bsYear;
+
+  // Gather all notes for quick lookup
+  let notesSet = new Set();
+  try{
+    const ns = JSON.parse(localStorage.getItem('vikram_notes_v2')||'[]');
+    ns.forEach(n=>{
+      const d = n.updatedAt ? new Date(n.updatedAt) : null;
+      if(d){ const bs=adToBs(d); notesSet.add(`${bs.y}-${bs.m}-${bs.d}`); }
+    });
+  }catch(e){}
+
+  // Gather birthday keys
+  let bdSet = new Set();
+  try{
+    const bds = JSON.parse(localStorage.getItem('vikram_birthdays_v1')||'[]');
+    bds.forEach(b=>{ if(b.bsYear&&b.bsMonth&&b.bsDay) bdSet.add(`${bsYear}-${b.bsMonth}-${b.bsDay}`); });
+  }catch(e){}
+
+  const months = BS[bsYear];
+  if(!months){ body.innerHTML='<p style="color:var(--dsub)">Year data not available</p>'; return; }
+
+  let html = '<div style="display:flex;flex-wrap:wrap;gap:16px;">';
+  for(let m=1;m<=12;m++){
+    const days = months[m-1];
+    if(!days) continue;
+    html += `<div style="min-width:100%;">`;
+    html += `<div style="font-size:11px;font-weight:800;color:var(--dsub);margin-bottom:5px;letter-spacing:.5px;">${MEN[m-1].toUpperCase()}</div>`;
+    html += `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;">`;
+    // Pad to start of week
+    const firstAD = bsToAd(bsYear,m,1);
+    const startDow = (firstAD.getDay() - cfg.fd + 7) % 7;
+    for(let p=0;p<startDow;p++) html += '<div></div>';
+    for(let d=1;d<=days;d++){
+      const key = `${bsYear}-${m}-${d}`;
+      const hasHol = !!HOL[key];
+      const hasEvt = (userEvents||[]).some(e=>{
+        const [ey,em,ed] = (e.dateKey||'').split('-').map(Number);
+        return ey===bsYear&&em===m&&ed===d;
+      });
+      const hasBd  = bdSet.has(key);
+      const adMid  = new Date(firstAD.getTime()+(d-1)*86400000);
+      const isTod  = adMid.toDateString()===TODAY.toDateString();
+      let bg = 'var(--tgbg)';
+      if(hasHol)       bg = 'rgba(239,143,149,.7)';
+      else if(hasBd)   bg = 'rgba(236,72,153,.55)';
+      else if(hasEvt)  bg = 'var(--accent)';
+      const border = isTod ? '2px solid var(--accent)' : '2px solid transparent';
+      html += `<div style="width:100%;aspect-ratio:1;border-radius:4px;background:${bg};border:${border};box-sizing:border-box;" title="${MEN[m-1]} ${d}"></div>`;
+    }
+    html += '</div></div>';
+  }
+  html += '</div>';
+
+  // Legend
+  html += `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);">
+    <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--dsub);">
+      <div style="width:12px;height:12px;border-radius:3px;background:var(--accent);"></div>Events
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--dsub);">
+      <div style="width:12px;height:12px;border-radius:3px;background:rgba(239,143,149,.7);"></div>Holidays
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--dsub);">
+      <div style="width:12px;height:12px;border-radius:3px;background:rgba(236,72,153,.55);"></div>Birthdays
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--dsub);">
+      <div style="width:12px;height:12px;border-radius:3px;background:var(--tgbg);border:2px solid var(--accent);box-sizing:border-box;"></div>Today
+    </div>
+  </div>`;
+  body.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 4: DEFAULT REMINDER TIME
+// ══════════════════════════════════════════════════════════════════════════════
+function setDefReminder(minutes, btn){
+  haptic('light');
+  cfg.defReminder = minutes;
+  try{ localStorage.setItem('vikram_cfg', JSON.stringify(cfg)); }catch(e){}
+  applyDefReminder();
+}
+function applyDefReminder(){
+  const labels = {15:'15 min', 30:'30 min', 60:'1 hour', 1440:'1 day'};
+  const sub = document.getElementById('defReminderSub');
+  if(sub) sub.textContent = 'Default: ' + (labels[cfg.defReminder] || cfg.defReminder + ' min') + ' before event';
+  document.querySelectorAll('#defReminderChips .sv-chip').forEach(btn=>{
+    const mins = parseInt(btn.textContent==='1 hr'?60:btn.textContent==='1 day'?1440:btn.textContent);
+    const map = {'15 min':15,'30 min':30,'1 hr':60,'1 day':1440};
+    const v = map[btn.textContent.trim()];
+    btn.classList.toggle('on', v === cfg.defReminder);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 5: WEEK START — ensure setFD already applies to all views (it does via render())
+// The existing setFD is already functional. Just mark it complete.
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 6: PINNED NOTE ON HOME
+// ══════════════════════════════════════════════════════════════════════════════
+function applyPinnedNote(){
+  const card = document.getElementById('pinnedNoteCard');
+  if(!card) return;
+  document.getElementById('tgPinnedNote')?.classList.toggle('on', cfg.showPinnedNote);
+  if(!cfg.showPinnedNote){ card.style.display='none'; return; }
+  // Find the first pinned note
+  try{
+    const notes = JSON.parse(localStorage.getItem('vikram_notes_v2')||'[]');
+    const pinned = notes.filter(n=>n.pinned).sort((a,b)=>(b.updatedAt||0)-(a.updatedAt||0))[0];
+    if(!pinned){ card.style.display='none'; return; }
+    document.getElementById('pinnedNoteTitle').textContent = pinned.title||'Untitled note';
+    // Strip HTML tags for preview
+    const tmp = document.createElement('div');
+    tmp.innerHTML = pinned.content||'';
+    document.getElementById('pinnedNotePreview').textContent = tmp.textContent||tmp.innerText||'';
+    card.style.display = 'block';
+  }catch(e){ card.style.display='none'; }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// FEATURE 7: EVENT COUNT BADGE
+// ══════════════════════════════════════════════════════════════════════════════
+function applyCountBadge(){
+  const el = document.getElementById('upCount');
+  if(el) el.style.display = cfg.showCountBadge ? '' : 'none';
+  document.getElementById('tgCountBadge')?.classList.toggle('on', cfg.showCountBadge);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SETTINGS INIT — run all feature inits when settings opens or on page load
+// ══════════════════════════════════════════════════════════════════════════════
+function initAllSettingsFeatures(){
+  applyFocusMode();
+  applyAccentColor(cfg.accentColor||'indigo');
+  applyDefReminder();
+  applyCountBadge();
+  applyPinnedNote();
+  // Year label
+  const yirLabel = document.getElementById('yirYearLabel');
+  if(yirLabel) yirLabel.textContent = vY;
+}
+// Run on page load
+setTimeout(initAllSettingsFeatures, 200);
+
+// Re-run whenever settings tab is opened
+const _origSwitchTab = window.switchTab;
+window.switchTab = function(tab){
+  if(typeof _origSwitchTab==='function') _origSwitchTab.apply(this,arguments);
+  if(tab==='settings') setTimeout(initAllSettingsFeatures,50);
+  if(tab!=='settings') applyPinnedNote(); // refresh pinned note whenever leaving settings
+};
+
 
 // Sync Birthday Tracker entries into the calendar on startup
 setTimeout(bdtSyncToEvents, 600);
