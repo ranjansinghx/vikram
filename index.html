@@ -10074,8 +10074,8 @@ function renderUpcoming(){
     const d = it.adMid;
     const dk = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
     if(!groups.has(dk)){
-      // get BS for display
-      const bs = adToBs(d);
+      // get BS for display — use UTC noon so adToBs diff matches REF (also UTC noon)
+      const bs = adToBs(new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0)));
       groups.set(dk, {diff:it.diff, adMid:d, bs, items:[]});
     }
     groups.get(dk).items.push(it);
