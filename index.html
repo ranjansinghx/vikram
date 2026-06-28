@@ -2599,6 +2599,122 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .pair-moment-send:active{transform:scale(.9);}
 .pair-moment-send svg{width:16px;height:16px;stroke:#fff;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;}
 
+/* ── PARTNER MODE ── */
+.partner-mode-toggle-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:20px;border:none;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;
+  transition:background .2s,color .2s,box-shadow .2s,transform .15s;
+  flex-shrink:0;
+}
+.partner-mode-toggle-btn.off{
+  background:var(--tgbg);color:var(--hsub);
+  border:1.5px solid var(--border);
+}
+.partner-mode-toggle-btn.on{
+  background:linear-gradient(135deg,#FF6B9D,#C44569);color:#fff;
+  border:1.5px solid transparent;
+  box-shadow:0 4px 14px rgba(255,107,157,.35);
+}
+.partner-mode-toggle-btn:active{transform:scale(.93);}
+.partner-mode-toggle-btn .pm-icon{font-size:14px;line-height:1;}
+
+/* Partner view header banner */
+.partner-mode-banner{
+  margin:0 18px 14px;padding:12px 16px;
+  border-radius:16px;
+  background:linear-gradient(135deg,rgba(255,107,157,.14),rgba(196,69,105,.08));
+  border:1.5px solid rgba(255,107,157,.28);
+  display:flex;align-items:center;gap:10px;
+  animation:pmBannerIn .22s cubic-bezier(.22,.85,.25,1);
+}
+@keyframes pmBannerIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+.partner-mode-banner-icon{font-size:22px;flex-shrink:0;}
+.partner-mode-banner-body{flex:1;min-width:0;}
+.partner-mode-banner-title{font-size:12.5px;font-weight:900;color:var(--htext);line-height:1.2;}
+.partner-mode-banner-sub{font-size:11px;font-weight:700;color:var(--hsub);margin-top:2px;line-height:1.4;}
+
+/* Unpair button */
+.pm-unpair-btn{
+  padding:7px 13px;border-radius:10px;border:none;cursor:pointer;
+  background:rgba(244,63,94,.1);color:#f43f5e;
+  font-size:11px;font-weight:800;font-family:'Nunito',sans-serif;
+  border:1.5px solid rgba(244,63,94,.18);
+  transition:background .2s,transform .15s;
+  white-space:nowrap;flex-shrink:0;
+}
+.pm-unpair-btn:hover{background:rgba(244,63,94,.18);}
+.pm-unpair-btn:active{transform:scale(.93);}
+
+/* Partner mode cycle view wrapper */
+.partner-cycle-view{
+  padding:0;
+  animation:pmIn .22s cubic-bezier(.22,.85,.25,1);
+}
+@keyframes pmIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+/* Big partner phase ring wrapper */
+.partner-phase-hero{
+  display:flex;flex-direction:column;align-items:center;
+  padding:24px 0 20px;
+}
+.partner-phase-hero-name{
+  margin-top:12px;font-size:15px;font-weight:900;
+  color:var(--dtext);letter-spacing:-.1px;
+}
+.partner-phase-hero-day{
+  font-size:12px;color:var(--dsub);font-weight:700;margin-top:3px;
+}
+
+/* Partner stat cards in partner mode */
+.partner-stat-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 18px 16px;
+}
+.partner-stat-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:18px;padding:14px 13px;
+  display:flex;flex-direction:column;gap:3px;
+}
+.partner-stat-emoji{font-size:18px;margin-bottom:2px;}
+.partner-stat-val{font-size:20px;font-weight:900;color:var(--dtext);letter-spacing:-.3px;line-height:1.1;}
+.partner-stat-lbl{font-size:10.5px;font-weight:700;color:var(--dsub);}
+
+/* Partner moments section in Partner Mode (full-width, no card border) */
+.pm-moments-section{
+  margin:0 18px 16px;
+  border:1px solid rgba(255,107,157,.18);
+  border-radius:16px;
+  overflow:hidden;
+  background:linear-gradient(135deg,rgba(255,107,157,.04),transparent);
+}
+.pm-moments-head{
+  display:flex;align-items:center;gap:8px;
+  padding:11px 14px 9px;
+  border-bottom:1px solid rgba(255,107,157,.12);
+  background:linear-gradient(135deg,rgba(255,107,157,.07),transparent);
+}
+.pm-moments-head-icon{font-size:15px;}
+.pm-moments-head-title{font-size:13px;font-weight:900;color:var(--htext);flex:1;}
+.pm-moments-head-count{font-size:10px;font-weight:800;color:var(--hsub);background:var(--tgbg);padding:2px 7px;border-radius:8px;}
+
+/* Not-paired nudge in partner mode */
+.pm-no-partner{
+  margin:0 18px 14px;padding:20px 16px;text-align:center;
+  border-radius:16px;background:var(--card);border:1px solid var(--border);
+}
+.pm-no-partner-emoji{font-size:36px;margin-bottom:10px;}
+.pm-no-partner-title{font-size:14px;font-weight:900;color:var(--htext);margin-bottom:6px;}
+.pm-no-partner-sub{font-size:12px;font-weight:600;color:var(--hsub);line-height:1.5;margin-bottom:14px;}
+.pm-no-partner-btn{
+  padding:10px 22px;border-radius:12px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  color:#fff;font-size:13px;font-weight:900;
+  font-family:'Nunito',sans-serif;
+  box-shadow:0 4px 14px rgba(255,107,157,.3);
+  transition:opacity .2s,transform .15s;
+}
+.pm-no-partner-btn:active{transform:scale(.96);}
+
 /* ── INSTALL BANNER ── */
 /* ── NOTIFICATION PERMISSION CARD ── */
 .notif-card{display:flex;align-items:center;gap:12px;background:var(--tgbg);border-radius:13px;padding:12px 14px;margin-bottom:12px;border:1.5px solid var(--border);transition:border-color .3s,background .3s;}
@@ -5961,8 +6077,12 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <!-- SCHEDULE SHEET -->
 <!-- CYCLE TRACKER VIEW -->
 <div class="daycounter-view" id="cycleView">
-  <div class="dc-title-row" style="padding:22px 18px 14px;">
-    <div class="dc-page-title">🌸 My Cycle</div>
+  <div class="dc-title-row" style="padding:22px 18px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+    <div class="dc-page-title" id="cycleTitleLabel">🌸 My Cycle</div>
+    <button class="partner-mode-toggle-btn off" id="partnerModeBtn" onclick="togglePartnerMode()" title="Partner Mode">
+      <span class="pm-icon">💑</span>
+      <span id="partnerModeBtnLabel">Partner</span>
+    </button>
   </div>
   <div id="cycleBody"><!-- rendered by renderCycleSheet() --></div>
 </div>
@@ -10971,6 +11091,20 @@ function cycCard(cls, pct, emoji, val, sub){
 
 // ── Main render ─────────────────────────────────────────────────────────────
 function renderCycleSheet(){
+  // ── Partner Mode dispatch ──
+  _applyPartnerModeUI();
+  if(_partnerModeActive){
+    const body = document.getElementById('cycleBody');
+    if(body){
+      try{ renderPartnerModeCycleSheet(body); }
+      catch(e){
+        console.error('[Vikram] renderPartnerModeCycleSheet error:', e);
+        body.innerHTML = '<div style="padding:32px 18px;text-align:center;color:var(--dsub);font-size:13px;font-weight:700;">⚠️ Failed to load partner view</div>';
+      }
+    }
+    return;
+  }
+  // ── Own cycle render ──
   const body = document.getElementById('cycleBody');
   if(!body) return;
   try{
@@ -11084,6 +11218,229 @@ function renderCycleSheet(){
     </div>`;
   }
 }
+
+// ══ PARTNER MODE ═══════════════════════════════════════════════════════════
+// State: persisted in localStorage under 'vikram_partner_mode'
+var _partnerModeActive = false;
+try{ _partnerModeActive = localStorage.getItem('vikram_partner_mode') === '1'; }catch(e){}
+
+function _pmPairLoad(){
+  try{ return JSON.parse(localStorage.getItem('vikram_pair_v1')||'{}'); }catch(e){ return {}; }
+}
+
+function _pmEscHtml(str){
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Toggle partner mode on/off
+function togglePartnerMode(){
+  if(typeof haptic === 'function') haptic('light');
+  _partnerModeActive = !_partnerModeActive;
+  try{ localStorage.setItem('vikram_partner_mode', _partnerModeActive ? '1' : '0'); }catch(e){}
+  _applyPartnerModeUI();
+  renderCycleSheet();
+}
+
+// Update button visuals to reflect current state
+function _applyPartnerModeUI(){
+  const btn = document.getElementById('partnerModeBtn');
+  const lbl = document.getElementById('partnerModeBtnLabel');
+  const title = document.getElementById('cycleTitleLabel');
+  if(btn){
+    btn.classList.toggle('on', _partnerModeActive);
+    btn.classList.toggle('off', !_partnerModeActive);
+  }
+  if(lbl) lbl.textContent = _partnerModeActive ? 'My View' : 'Partner';
+  if(title) title.textContent = _partnerModeActive ? '💑 Partner View' : '🌸 My Cycle';
+}
+
+// Build the partner-mode ring using same buildPhaseRing logic but partner's phase color
+function _buildPartnerPhaseRingHTML(day, phaseColor, phaseName){
+  // Simple colored ring SVG for partner
+  const R = 80, strokeW = 9;
+  const circ = 2 * Math.PI * R;
+  const total = 28; // use a 28-day base for visual proportion
+  const pct = Math.min(1, day / total);
+  const filled = pct * circ;
+  return `<svg viewBox="0 0 186 186" width="186" height="186" style="display:block;">
+    <circle cx="93" cy="93" r="${R}" fill="none" stroke="var(--tgbg)" stroke-width="${strokeW}"/>
+    <circle cx="93" cy="93" r="${R}" fill="none" stroke="${phaseColor}" stroke-width="${strokeW}"
+      stroke-dasharray="${filled} ${circ}" stroke-dashoffset="${circ/4}"
+      stroke-linecap="round" style="transition:stroke-dasharray .4s ease;"/>
+    <text x="93" y="88" text-anchor="middle" dominant-baseline="middle"
+      style="font-size:36px;font-family:'Nunito',sans-serif;">💑</text>
+    <text x="93" y="116" text-anchor="middle" dominant-baseline="middle"
+      style="font-size:13px;font-weight:900;fill:${phaseColor};font-family:'Nunito',sans-serif;">${phaseName}</text>
+  </svg>`;
+}
+
+// Render the Partner Mode body content into cycleBody
+function renderPartnerModeCycleSheet(body){
+  const d = _pmPairLoad();
+  const paired = !!(d.partnerCode && d.partnerName);
+  const partnerName = _pmEscHtml(d.partnerName || 'your partner');
+
+  if(!paired){
+    // Not paired — nudge them to connect
+    body.innerHTML = `
+    <div class="pm-no-partner">
+      <div class="pm-no-partner-emoji">💞</div>
+      <div class="pm-no-partner-title">No partner connected</div>
+      <div class="pm-no-partner-sub">Connect with your partner using your pair code below to see their cycle data and exchange moments in real time.</div>
+      <button class="pm-no-partner-btn" onclick="togglePartnerMode();setTimeout(function(){var el=document.getElementById('pairSyncSection');if(el)el.scrollIntoView({behavior:'smooth'});},80);">
+        Connect with partner 💞
+      </button>
+    </div>`;
+    return;
+  }
+
+  // Compute partner phase info from stored data
+  const p = d.partnerCycleData || {};
+  const cl = p.cycleLength || 28, pl = p.periodLength || 5;
+  const ovDay = cl - 14;
+  const today = new Date(); today.setHours(0,0,0,0);
+  let day = null, dNext = null, dOvul = null, phaseName = 'Unknown', phaseColor = '#aaa', noData = true;
+
+  if(p.lastPeriodStart){
+    const last = new Date(p.lastPeriodStart); last.setHours(0,0,0,0);
+    const totalDays = Math.floor((today - last) / 86400000) + 1;
+    day = totalDays > cl ? ((totalDays - 1) % cl) + 1 : totalDays;
+    dNext = Math.max(0, cl - day);
+    const rawDovul = ovDay - day;
+    dOvul = rawDovul < 0 ? null : rawDovul;
+    if(day <= pl){ phaseName='Period'; phaseColor='#FF4757'; }
+    else if(day < ovDay - 2){ phaseName='Follicular'; phaseColor='#FF6B9D'; }
+    else if(day <= ovDay + 2){ phaseName='Ovulation'; phaseColor='#5a5a68'; }
+    else { phaseName='Luteal'; phaseColor='#3B82F6'; }
+    noData = false;
+  }
+
+  const lastSync = d.partnerCycleUpdatedAt
+    ? new Date(d.partnerCycleUpdatedAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
+    : null;
+
+  const fbOk = !!(window.firebase && typeof firebase.database === 'function');
+
+  body.innerHTML = `
+  <div class="partner-cycle-view">
+
+    <!-- Partner banner with unpair button -->
+    <div class="partner-mode-banner">
+      <div class="partner-mode-banner-icon">💑</div>
+      <div class="partner-mode-banner-body">
+        <div class="partner-mode-banner-title">${partnerName}'s cycle</div>
+        <div class="partner-mode-banner-sub">${fbOk ? '🟢 Live sync' : '⚠️ Offline'}${lastSync ? ' · updated ' + lastSync : ''}</div>
+      </div>
+      <button class="pm-unpair-btn" onclick="pmUnpair()">Unpair</button>
+    </div>
+
+    <!-- Phase ring -->
+    <div class="partner-phase-hero">
+      ${noData
+        ? `<div style="width:180px;height:180px;border-radius:50%;background:var(--tgbg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:40px;">💑<span style="font-size:12px;font-weight:700;color:var(--dsub);text-align:center;padding:0 20px;">Waiting for ${partnerName} to log their cycle</span></div>`
+        : _buildPartnerPhaseRingHTML(day, phaseColor, phaseName)
+      }
+      ${!noData ? `
+      <div class="partner-phase-hero-name">${phaseName} Phase</div>
+      <div class="partner-phase-hero-day">Day ${day} of ${cl}-day cycle</div>` : ''}
+    </div>
+
+    <!-- Stats grid -->
+    <div class="partner-stat-grid">
+      <div class="partner-stat-card">
+        <div class="partner-stat-emoji">📅</div>
+        <div class="partner-stat-val">${noData ? '—' : 'Day ' + day}</div>
+        <div class="partner-stat-lbl">of ${cl}-day cycle</div>
+      </div>
+      <div class="partner-stat-card">
+        <div class="partner-stat-emoji">🔮</div>
+        <div class="partner-stat-val">${noData ? '—' : dNext + 'd'}</div>
+        <div class="partner-stat-lbl">until next period</div>
+      </div>
+      <div class="partner-stat-card">
+        <div class="partner-stat-emoji">✨</div>
+        <div class="partner-stat-val">${noData ? '—' : dOvul === null ? 'Active' : dOvul === 0 ? 'Today' : dOvul + 'd'}</div>
+        <div class="partner-stat-lbl">${noData ? 'Fertile window' : dOvul === null ? 'Fertile window' : dOvul === 0 ? 'Ovulating today' : 'to ovulation'}</div>
+      </div>
+      <div class="partner-stat-card">
+        <div class="partner-stat-emoji">🩸</div>
+        <div class="partner-stat-val">${noData ? '—' : day <= pl ? 'Day ' + day : day > (cl - 3) ? 'Soon' : 'Done'}</div>
+        <div class="partner-stat-lbl">${noData ? 'Period status' : day <= pl ? 'of ' + pl + '-day period' : 'Period'}</div>
+      </div>
+    </div>
+
+    <!-- Re-sync button if needed -->
+    ${noData && fbOk ? `
+    <div style="margin:0 18px 14px;display:flex;justify-content:center;">
+      <button onclick="if(window._fbPair){window._fbPair.forceSync();if(typeof vikramToast==='function')vikramToast('🔄 Syncing…');}"
+        style="padding:9px 20px;border-radius:11px;border:none;background:linear-gradient(135deg,#FF6B9D,#C44569);color:#fff;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 3px 10px rgba(255,107,157,.28);">
+        🔄 Re-sync partner data
+      </button>
+    </div>` : ''}
+
+    <!-- Moments section -->
+    <div class="pm-moments-section">
+      <div class="pm-moments-head">
+        <span class="pm-moments-head-icon">💌</span>
+        <span class="pm-moments-head-title">Moments</span>
+        <span class="pm-moments-head-count" id="pairMomentCount"></span>
+      </div>
+      <div class="pair-moment-msgs" id="pairMomentMsgs"></div>
+      <div class="pair-moment-compose" style="border-top:1px solid rgba(255,107,157,.12);padding:10px 12px;display:flex;align-items:flex-end;gap:8px;">
+        <textarea class="pair-moment-input" id="pairMomentInput"
+          placeholder="Type a moment for ${partnerName}…"
+          rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();pairSendMoment();}"
+          oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';"
+        ></textarea>
+        <button class="pair-moment-send" onclick="pairSendMoment()" title="Send">
+          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:#fff;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </div>`;
+
+  // Load moments into the freshly-rendered container
+  setTimeout(function(){
+    if(typeof window.renderPairMoments === 'function') window.renderPairMoments();
+  }, 0);
+}
+
+// Unpair action from within Partner Mode.
+// We handle our own confirm here, then perform the same teardown as pairDisconnect
+// without triggering its own confirm dialog again.
+function pmUnpair(){
+  if(typeof haptic === 'function') haptic('medium');
+  const partnerName = _pmPairLoad().partnerName || 'partner';
+  if(!confirm('Unpair from ' + partnerName + '? This only affects your device.')) return;
+
+  // Replicate pairDisconnect teardown (fbDetach + clear pair data) via available APIs.
+  // fbDetach is inside the IIFE closure, but we can force-clear the FB listeners by
+  // removing the refs from _fbPair (the SDK GCs unused listeners) and overwriting local state.
+  try{
+    // Clear partner data from localStorage (mirrors pairDisconnect internals)
+    const pd = _pmPairLoad();
+    delete pd.partnerCode; delete pd.partnerName; delete pd.partnerCycleData;
+    delete pd.sharedAt; delete pd.partnerCycleUpdatedAt;
+    localStorage.setItem('vikram_pair_v1', JSON.stringify(pd));
+    // Clear moments cache
+    localStorage.removeItem('vikram_pair_moments');
+  }catch(e){}
+
+  // Exit partner mode
+  _partnerModeActive = false;
+  try{ localStorage.setItem('vikram_partner_mode', '0'); }catch(e){}
+  _applyPartnerModeUI();
+
+  // Refresh the pair section (now shows unpaired state) and re-render cycle
+  if(typeof renderPairSection === 'function') renderPairSection();
+  renderCycleSheet();
+  if(typeof vikramToast === 'function') vikramToast('💔 Unpaired from ' + partnerName);
+}
+
+// Apply UI state on initial load
+setTimeout(_applyPartnerModeUI, 0);
 
 // ── Log actions ─────────────────────────────────────────────────────────────
 function cyLogPeriodStart(){
