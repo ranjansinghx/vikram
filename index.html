@@ -2273,12 +2273,6 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .cycle-pill:hover{opacity:.88;}
 .cycle-pill svg{width:14px;height:14px;stroke:#fff;stroke-width:2.2;fill:none;}
 
-/* Phase ring */
-.phase-ring-wrap{display:flex;flex-direction:column;align-items:center;padding:24px 0 22px;}
-.phase-ring-label{margin-top:10px;text-align:center;}
-.phase-name{font-size:15px;font-weight:900;color:var(--dtext);margin-top:4px;}
-.phase-day{font-size:12px;color:var(--dsub);font-weight:700;margin-top:2px;}
-
 /* Phase color tokens */
 .ph-menstrual{color:#FF4757;} .bg-menstrual{background:#FF4757;}
 .ph-follicular{color:#FF6B9D;} .bg-follicular{background:#FF6B9D;}
@@ -2286,56 +2280,109 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 [data-theme=dark] .ph-ovulation{color:#c4c4d4;}
 .ph-luteal{color:#3B82F6;} .bg-luteal{background:#3B82F6;}
 
-/* Stat grid */
-.cyc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 18px 16px;}
-.cyc-card{
-  display:flex;align-items:center;gap:11px;
-  background:var(--card);border:1px solid var(--border);
-  border-radius:18px;padding:12px 13px;
-  position:relative;overflow:hidden;
-  box-shadow:0 1px 3px rgba(20,20,46,.03);
+/* ── CYCLE HERO CARD (stays custom — lives above the native design system) ── */
+.cyc-hero{margin:0 16px 4px;border-radius:22px;overflow:hidden;box-shadow:0 6px 24px rgba(255,107,157,.16);}
+[data-theme=dark] .cyc-hero{box-shadow:0 6px 24px rgba(0,0,0,.32);}
+.cyc-hero-bg{padding:20px 18px 16px;position:relative;}
+.cyc-hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px;}
+.cyc-hero-phase{display:flex;flex-direction:column;gap:2px;}
+.cyc-hero-phase-label{font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.6);}
+.cyc-hero-phase-name{font-size:26px;font-weight:900;color:#fff;letter-spacing:-.4px;line-height:1.05;}
+.cyc-hero-phase-desc{font-size:11px;font-weight:700;color:rgba(255,255,255,.65);margin-top:2px;}
+.cyc-hero-ring-wrap{flex-shrink:0;position:relative;width:76px;height:76px;}
+.cyc-hero-ring-wrap svg{width:76px;height:76px;}
+.cyc-hero-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.cyc-hero-ring-day{font-size:19px;font-weight:900;color:#fff;line-height:1;}
+.cyc-hero-ring-of{font-size:9px;font-weight:800;color:rgba(255,255,255,.6);margin-top:1px;}
+.cyc-timeline{display:flex;gap:3px;height:4px;border-radius:2px;overflow:hidden;margin-bottom:14px;}
+.cyc-timeline-seg{height:100%;border-radius:2px;opacity:.45;flex-shrink:0;}
+.cyc-timeline-seg.active{opacity:1;}
+.cyc-hero-stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
 }
-.cyc-card.menstrual{--cyc-accent:#FF4757;background:linear-gradient(135deg,rgba(255,71,87,.08),var(--card) 60%);}
-.cyc-card.follicular{--cyc-accent:#FF6B9D;background:linear-gradient(135deg,rgba(255,107,157,.08),var(--card) 60%);}
-.cyc-card.ovulation{--cyc-accent:#5a5a68;background:linear-gradient(135deg,rgba(90,90,104,.08),var(--card) 60%);}
-.cyc-card.luteal{--cyc-accent:#3B82F6;background:linear-gradient(135deg,rgba(59,130,246,.08),var(--card) 60%);}
-.cyc-card.neutral{--cyc-accent:var(--tgon);}
-[data-theme=dark] .cyc-card.menstrual{background:linear-gradient(135deg,rgba(255,71,87,.16),var(--card) 60%);}
-[data-theme=dark] .cyc-card.follicular{background:linear-gradient(135deg,rgba(255,107,157,.16),var(--card) 60%);}
-[data-theme=dark] .cyc-card.ovulation{--cyc-accent:#c4c4d4;background:linear-gradient(135deg,rgba(255,255,255,.06),var(--card) 60%);}
-[data-theme=dark] .cyc-card.luteal{background:linear-gradient(135deg,rgba(59,130,246,.18),var(--card) 60%);}
-.cyc-card-ring{position:relative;flex-shrink:0;width:42px;height:42px;display:flex;align-items:center;justify-content:center;}
-.cyc-card-ring svg{width:42px;height:42px;transition:stroke-dasharray .4s ease;}
-.cyc-card-ring-track{fill:none;stroke:var(--tgbg);}
-.cyc-card-ring-fill{fill:none;stroke:var(--cyc-accent);stroke-linecap:round;}
-.cyc-card-ring-emoji{position:absolute;font-size:15px;line-height:1;}
-.cyc-card-body{flex:1;min-width:0;}
-.cyc-card-val{font-size:17px;font-weight:900;color:var(--dtext);line-height:1.15;letter-spacing:-.2px;}
-.cyc-card-sub{font-size:10.5px;font-weight:700;color:var(--dsub);margin-top:2px;line-height:1.3;}
+.cyc-hero-stat{
+  background:rgba(0,0,0,.18);
+  border-radius:11px;
+  padding:9px 8px 8px;
+  text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+}
+.cyc-hero-stat-icon{font-size:14px;line-height:1;}
+.cyc-hero-stat-val{font-size:14px;font-weight:900;color:#fff;line-height:1.1;letter-spacing:-.2px;}
+.cyc-hero-stat-lbl{font-size:8.5px;font-weight:700;color:rgba(255,255,255,.58);line-height:1.2;text-align:center;}
 
-/* Log buttons */
-.cyc-log-row{display:flex;gap:9px;padding:0 18px 14px;}
-.cyc-log-btn{flex:1;padding:11px;border-radius:13px;border:none;font-size:12.5px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:opacity .2s;}
-.cyc-log-btn:hover{opacity:.85;}
-.cyc-log-btn.period{background:rgba(255,71,87,.12);color:#FF4757;}
-.cyc-log-btn.ovul{background:rgba(90,90,104,.12);color:#5a5a68;}
-.cyc-log-btn.end{background:rgba(59,130,246,.12);color:#3B82F6;}
-[data-theme=dark] .cyc-log-btn.period{background:rgba(255,71,87,.2);}
-[data-theme=dark] .cyc-log-btn.ovul{background:rgba(90,90,104,.2);color:#c4c4d4;}
-[data-theme=dark] .cyc-log-btn.end{background:rgba(59,130,246,.2);}
+/* ── LOG BUTTONS — native srow style inside ssec ── */
+.cyc-log-btn-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid var(--sbdr);
+}
+.cyc-log-btn-row:last-child{border-bottom:none;}
+.cyc-log-btn-left{display:flex;align-items:center;gap:11px;}
+.cyc-log-btn-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.cyc-log-btn-label{font-size:13.5px;font-weight:700;color:var(--dtext);}
+.cyc-log-btn-sub{font-size:11px;color:var(--dsub);margin-top:1px;}
+.cyc-log-btn-action{
+  padding:7px 14px;border-radius:10px;border:none;cursor:pointer;
+  font-size:12px;font-weight:800;font-family:'Nunito',sans-serif;
+  transition:opacity .15s,transform .12s;white-space:nowrap;flex-shrink:0;
+}
+.cyc-log-btn-action:active{transform:scale(.94);opacity:.8;}
+.cyc-log-btn-action.period{background:rgba(255,71,87,.12);color:#FF4757;}
+.cyc-log-btn-action.end{background:rgba(34,197,94,.12);color:#16a34a;}
+.cyc-log-btn-action.ovul{background:rgba(168,85,247,.12);color:#9333ea;}
+[data-theme=dark] .cyc-log-btn-action.period{background:rgba(255,71,87,.2);}
+[data-theme=dark] .cyc-log-btn-action.end{background:rgba(34,197,94,.2);color:#4ade80;}
+[data-theme=dark] .cyc-log-btn-action.ovul{background:rgba(168,85,247,.2);color:#c084fc;}
 
-/* Cycle history */
-.cyc-log-entry{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
-.cyc-log-entry:last-child{border-bottom:none;}
-.cyc-log-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
-.cyc-log-txt{font-size:12.5px;font-weight:700;color:var(--dtext);flex:1;}
-.cyc-log-date{font-size:11px;color:var(--dsub);font-weight:600;}
+/* ── History bars — inside native ssec ── */
+.cyc-hist-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--sbdr);}
+.cyc-hist-row:last-child{border-bottom:none;}
+.cyc-hist-date{font-size:11px;color:var(--dsub);font-weight:700;min-width:54px;}
+.cyc-hist-bar-wrap{flex:1;height:4px;border-radius:2px;background:var(--sbdr);overflow:hidden;}
+.cyc-hist-bar{height:100%;border-radius:2px;background:linear-gradient(90deg,#FF6B9D,#C44569);}
+.cyc-hist-len{font-size:12px;font-weight:900;color:var(--dtext);min-width:26px;text-align:right;}
 
-/* Cycle settings row */
-.cyc-set-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);}
-.cyc-set-row:last-child{border-bottom:none;}
-.cyc-num-input{width:64px;padding:7px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--sbg);color:var(--dtext);font-size:14px;font-weight:800;text-align:center;font-family:'Nunito',sans-serif;outline:none;}
+/* ── Stepper (used in settings) ── */
+.cyc-stepper{display:flex;align-items:center;gap:0;border:1.5px solid var(--sbdr);border-radius:10px;overflow:hidden;background:var(--sbg);flex-shrink:0;}
+.cyc-stepper-btn{width:32px;height:32px;border:none;cursor:pointer;background:transparent;color:var(--dtext);font-size:17px;font-weight:700;font-family:'Nunito',sans-serif;display:flex;align-items:center;justify-content:center;transition:background .1s;}
+.cyc-stepper-btn:active{background:var(--tgbg);}
+.cyc-stepper-val{min-width:32px;text-align:center;font-size:13px;font-weight:900;color:var(--dtext);font-family:'Nunito',sans-serif;border-left:1px solid var(--sbdr);border-right:1px solid var(--sbdr);line-height:32px;height:32px;padding:0 3px;}
+.cyc-num-input{width:64px;padding:7px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--sbg);color:var(--dtext);font-size:14px;font-weight:800;text-align:center;font-family:'Nunito',sans-serif;outline:none;transition:border-color .15s;}
 .cyc-num-input:focus{border-color:#FF6B9D;}
+
+/* Log-by-date type chips */
+.cy-type-chip{
+  padding:7px 11px;border-radius:10px;border:1.5px solid var(--border);
+  background:var(--tgbg);color:var(--dsub);
+  font-size:11.5px;font-weight:800;font-family:'Nunito',sans-serif;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.cy-type-chip.on{
+  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  color:#fff;border-color:transparent;
+  box-shadow:0 3px 10px rgba(196,69,105,.28);
+}
+/* Delete button on log rows */
+.cyc-log-del{
+  display:flex;align-items:center;justify-content:center;
+  width:28px;height:28px;border-radius:8px;border:none;cursor:pointer;
+  background:rgba(244,63,94,.1);color:#f43f5e;
+  font-size:14px;flex-shrink:0;
+  transition:background .15s,transform .12s;
+}
+.cyc-log-del:active{background:rgba(244,63,94,.22);transform:scale(.9);}
+[data-theme=dark] .cyc-log-del{background:rgba(244,63,94,.18);}
+
+/* Legacy compat */
+.cyc-log-btn,.cyc-log-row,.cyc-log-strip,.cyc-log-action{display:none;}
+.cyc-card,.cyc-grid{display:none;}
+.phase-ring-wrap{display:none;}
+.cyc-section-head,.cyc-section-title,.cyc-section-badge{display:none;}
+.cyc-settings-card,.cyc-settings-row,.cyc-settings-lbl,.cyc-settings-sub{display:none;}
+.cyc-log-timeline,.cyc-log-item{display:none;}
+.cyc-history-wrap,.cyc-hist-row-old{display:none;}
 
 /* ── Predictions ── */
 .pred-list{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
@@ -3642,6 +3689,27 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   --icon:#8890c0;
 }
 .daycounter-view.active{ display:flex; }
+
+/* Cycle view ssec alignment — match hero card's 16px margin */
+#cycleView .ssec{ padding-left:16px; padding-right:16px; }
+#cycleView .ssect{ margin-bottom:8px; }
+
+/* Cycle view specific background */
+#cycleView{
+  background:
+    radial-gradient(ellipse 90% 35% at 50% 0%, rgba(255,107,157,.10), transparent 55%),
+    var(--app-bg);
+}
+[data-theme="dark"] #cycleView{
+  background:
+    radial-gradient(ellipse 90% 35% at 50% 0%, rgba(196,69,105,.13), transparent 55%),
+    linear-gradient(180deg,#0d0f16 0%,#111320 50%,#0d0f16 100%);
+  --bg:#0d0f16;--card:#181b26;--border:rgba(255,255,255,.09);
+  --htext:#e8ecff;--dtext:#cdd2ee;--hsub:#7c80a4;--dsub:#545878;
+  --chip:#202438;--mbg:#181b26;--ov:rgba(0,0,8,.82);
+  --tf:#3a4a7a;--tt:#232840;--tf-text:#b0b8e0;
+  --tgbg:#232840;--tgon:#4a5a9a;--icon:#8890c0;
+}
 
 /* Page header */
 .dc-page-header{
@@ -6077,8 +6145,8 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <!-- SCHEDULE SHEET -->
 <!-- CYCLE TRACKER VIEW -->
 <div class="daycounter-view" id="cycleView">
-  <div class="dc-title-row" style="padding:22px 18px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
-    <div class="dc-page-title" id="cycleTitleLabel">🌸 My Cycle</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 16px 10px;flex-shrink:0;">
+    <div id="cycleTitleLabel" style="font-size:22px;font-weight:900;color:var(--htext);letter-spacing:-.4px;">🌸 My Cycle</div>
     <button class="partner-mode-toggle-btn off" id="partnerModeBtn" onclick="togglePartnerMode()" title="Partner Mode">
       <span class="pm-icon">💑</span>
       <span id="partnerModeBtnLabel">Partner</span>
@@ -6159,6 +6227,43 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     <div class="dc-modal-btns">
       <button class="dc-modal-cancel" style="flex:1" onclick="cyResetConfirmClose()">Cancel</button>
       <button class="dc-modal-save" style="background:#d6453f;box-shadow:0 6px 18px rgba(214,69,63,.3)" onclick="cyResetConfirmYes()">Clear data</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── LOG BY DATE SHEET ── -->
+<div class="dc-modal-overlay" id="cyLogByDateOverlay" onclick="cyLogByDateClose(event)">
+  <div class="dc-modal" style="text-align:left;max-width:360px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+      <div class="dc-modal-title" style="margin-bottom:0;">Log by date</div>
+      <button onclick="cyLogByDateClose()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--dsub);padding:2px 4px;line-height:1;">✕</button>
+    </div>
+    <!-- Type selector -->
+    <div style="font-size:11px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;">Event type</div>
+    <div style="display:flex;gap:7px;margin-bottom:18px;" id="cyLogTypeChips">
+      <button class="cy-type-chip on" data-type="period_start" onclick="cyLogTypeSelect(this)">🩸 Period start</button>
+      <button class="cy-type-chip"    data-type="period_end"   onclick="cyLogTypeSelect(this)">🌿 Period end</button>
+      <button class="cy-type-chip"    data-type="ovulation"    onclick="cyLogTypeSelect(this)">✨ Ovulation</button>
+    </div>
+    <!-- Date picker -->
+    <div style="font-size:11px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;">Date</div>
+    <input type="date" id="cyLogByDateInput" class="einput" style="margin-bottom:20px;font-size:14px;">
+    <!-- Action buttons -->
+    <div class="dc-modal-btns" style="margin-top:0;">
+      <button class="dc-modal-cancel" onclick="cyLogByDateClose()">Cancel</button>
+      <button class="dc-modal-save" onclick="cyLogByDateSave()">Save log</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── DELETE LOG CONFIRM ── -->
+<div class="dc-modal-overlay" id="cyDeleteLogOverlay" onclick="cyDeleteLogClose(event)">
+  <div class="dc-modal" style="text-align:center">
+    <div class="dc-modal-title" style="margin-bottom:8px;">Delete this log?</div>
+    <div id="cyDeleteLogDesc" style="font-size:13px;font-weight:600;line-height:1.5;color:var(--hsub);margin-bottom:6px;"></div>
+    <div class="dc-modal-btns">
+      <button class="dc-modal-cancel" style="flex:1" onclick="cyDeleteLogClose()">Cancel</button>
+      <button class="dc-modal-save" style="background:#d6453f;box-shadow:0 6px 18px rgba(214,69,63,.3);" onclick="cyDeleteLogConfirm()">Delete</button>
     </div>
   </div>
 </div>
@@ -11022,72 +11127,49 @@ function getDaysUntilOvulation(){
   return remaining < 0 ? null : remaining;
 }
 
-// ── SVG phase ring ──────────────────────────────────────────────────────────
-function buildPhaseRing(dayOfCycle){
-  const CX=80,CY=80,R=62,SW=12;
-  const C = 2*Math.PI*R;
-  const cl = cycleData.cycleLength||28;
-  const pl = cycleData.periodLength||5;
-  const ovDay = cl-14;
-
-  function seg(start,end,color){
-    const s = start/cl*C, len = (end-start)/cl*C;
-    const rot = (start/cl)*360 - 90;
-    return `<circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="${color}" stroke-width="${SW}"
-      stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-s}" stroke-linecap="butt"
-      transform="rotate(${rot} ${CX} ${CY})" opacity="0.85"/>`;
-  }
-
-  // Day marker
-  const angle = ((dayOfCycle||1)-1)/cl*360 - 90;
-  const rad = angle*Math.PI/180;
-  const mx = CX+(R)*Math.cos(rad), my = CY+(R)*Math.sin(rad);
-
-  const phase = getPhase();
-  const pi = phase ? PHASE_INFO[phase.name] : PHASE_INFO.Follicular;
-  const phaseName = phase ? phase.name : '';
-  const dayText   = phase ? `Day ${phase.dayIn} of ${phase.of}` : '';
-
-  return `<svg width="180" height="180" viewBox="0 0 160 160">
-    <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="var(--tgbg)" stroke-width="${SW}"/>
-    ${seg(0, pl, '#FF4757')}
-    ${seg(pl, ovDay-2, '#FF6B9D')}
-    ${seg(ovDay-2, ovDay+2, '#5a5a68')}
-    ${seg(ovDay+2, cl, '#3B82F6')}
-    <circle cx="${mx}" cy="${my}" r="8" fill="${pi.color}" stroke="var(--sbg)" stroke-width="2.5"/>
-    <text x="${CX}" y="${CY-7}" text-anchor="middle" dominant-baseline="middle"
-      font-family="Nunito,Arial,sans-serif" font-size="11.5" font-weight="900"
-      fill="${pi.color}">${phaseName}</text>
-    <text x="${CX}" y="${CY+11}" text-anchor="middle"
-      font-family="Nunito,Arial,sans-serif" font-size="9.5" font-weight="700"
-      fill="#999">${dayText}</text>
+// ── Hero ring SVG (compact donut for hero card) ─────────────────────────────
+function buildHeroRing(dayOfCycle, color){
+  const R = 33, SW = 5.5, CX = 40, CY = 40;
+  const C = 2 * Math.PI * R;
+  const cl = cycleData.cycleLength || 28;
+  const pct = Math.min(1, (dayOfCycle || 1) / cl);
+  const filled = (pct * C).toFixed(2);
+  return `<svg viewBox="0 0 80 80" width="80" height="80">
+    <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="${SW}"/>
+    <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="${SW}"
+      stroke-dasharray="${filled} ${C.toFixed(2)}"
+      stroke-dashoffset="${C * 0.25}"
+      stroke-linecap="round"
+      style="transition:stroke-dasharray .5s ease;"/>
   </svg>`;
 }
 
-// ── Mini progress-ring stat cards ──────────────────────────────────────────
-function cycRing(pct, emoji){
-  const r = 15.5, C = 2*Math.PI*r;
-  const p = Math.max(0, Math.min(1, pct||0));
-  const dash = (p*C).toFixed(2);
-  return `<div class="cyc-card-ring">
-    <svg viewBox="0 0 36 36">
-      <circle class="cyc-card-ring-track" cx="18" cy="18" r="${r}" stroke-width="3.5"/>
-      ${p>0?`<circle class="cyc-card-ring-fill" cx="18" cy="18" r="${r}" stroke-width="3.5"
-        stroke-dasharray="${dash} ${C.toFixed(2)}" transform="rotate(-90 18 18)"/>`:''}
-    </svg>
-    <div class="cyc-card-ring-emoji">${emoji}</div>
-  </div>`;
+// ── Phase timeline HTML ──────────────────────────────────────────────────────
+function buildPhaseTimeline(dayOfCycle){
+  const cl = cycleData.cycleLength || 28;
+  const pl = cycleData.periodLength || 5;
+  const ovDay = cl - 14;
+  const segments = [
+    { start:0,      end:pl,       color:'#FF4757', label:'Period'     },
+    { start:pl,     end:ovDay-2,  color:'#FF6B9D', label:'Follicular' },
+    { start:ovDay-2,end:ovDay+2,  color:'rgba(255,255,255,.6)', label:'Ovulation'  },
+    { start:ovDay+2,end:cl,       color:'#7dd3fc',  label:'Luteal'     },
+  ];
+  const phase = getPhase();
+  const curPhaseName = phase ? phase.name : '';
+  return segments.map(s => {
+    const width = ((s.end - s.start) / cl * 100).toFixed(1);
+    const active = s.label === curPhaseName;
+    return `<div class="cyc-timeline-seg ${active ? 'active' : ''}"
+      style="width:${width}%;background:${s.color};"
+      title="${s.label}"></div>`;
+  }).join('');
 }
 
-function cycCard(cls, pct, emoji, val, sub){
-  return `<div class="cyc-card ${cls}">
-    ${cycRing(pct, emoji)}
-    <div class="cyc-card-body">
-      <div class="cyc-card-val">${val}</div>
-      <div class="cyc-card-sub">${sub}</div>
-    </div>
-  </div>`;
-}
+// ── Legacy stubs (kept for any external callers) ─────────────────────────────
+function buildPhaseRing(dayOfCycle){ return buildHeroRing(dayOfCycle, '#FF6B9D'); }
+function cycRing(pct, emoji){ return ''; }
+function cycCard(cls, pct, emoji, val, sub){ return ''; }
 
 // ── Main render ─────────────────────────────────────────────────────────────
 function renderCycleSheet(){
@@ -11126,81 +11208,223 @@ function renderCycleSheet(){
   const nextPct    = notSet ? 0 : Math.max(0, Math.min(1, (cl-dNext)/cl));
   const cyclePct   = notSet ? 0 : Math.min(1, day/cl);
 
-  // Last 3 log entries
-  const logs = (cycleData.logs||[]).slice(-5).reverse();
-  const logColors = {period_start:'#FF4757',period_end:'#3B82F6',ovulation:'#5a5a68'};
+  // Log colours & labels (used in template)
+  const logColors = {period_start:'#FF4757',period_end:'#22c55e',ovulation:'#a855f7'};
   const logLabels = {period_start:'Period started',period_end:'Period ended',ovulation:'Ovulation logged'};
 
+  // ── Derive hero gradient & ovulation info ──
+  const heroGradients = {
+    Menstrual:  'linear-gradient(145deg,#c0392b,#e74c3c,#ff6b6b)',
+    Follicular: 'linear-gradient(145deg,#c44569,#FF6B9D,#ffb3cc)',
+    Ovulation:  'linear-gradient(145deg,#6c5ce7,#a29bfe,#c9b8ff)',
+    Luteal:     'linear-gradient(145deg,#1565c0,#2196F3,#64b5f6)',
+  };
+  const heroBg = notSet
+    ? 'linear-gradient(145deg,#6c5ce7,#a29bfe)'
+    : (pi ? heroGradients[phase.name] || heroGradients.Follicular : heroGradients.Follicular);
+
+  // ── Richer derived stats ──
+  const ovDay2      = cl - 14;
+  const fertileStart = ovDay2 - 4;
+  const inFertile   = !notSet && day >= fertileStart && day <= ovDay2;
+  const dFertileStart = notSet ? null : fertileStart - day;
+  const dFertileEnd   = notSet ? null : ovDay2 - day;
+
+  const ovulLabel = notSet ? '—'
+    : dOvul === null ? 'Passed' : dOvul === 0 ? 'Today!' : 'In ' + dOvul + 'd';
+
+  const periodLabel = notSet ? '—'
+    : day <= pl ? 'Day ' + day + '/' + pl
+    : day > (cl - 3) ? 'Soon' : 'Done';
+
+  const fertileLabel = notSet ? '—'
+    : inFertile
+      ? (dFertileEnd <= 0 ? 'Last day' : dFertileEnd + 'd left')
+      : dFertileStart > 0 ? 'In ' + dFertileStart + 'd'
+      : 'Passed';
+
+  const dCycleLeft = notSet ? null : Math.max(0, cl - day);
+  const cyclePctStr = notSet ? '—' : Math.round(day / cl * 100) + '%';
+  const nextLabel = notSet ? '—' : dNext === 0 ? 'Today' : dNext + 'd';
+
+  const conceptionChance = notSet ? '—'
+    : (dOvul !== null && dOvul <= 1 && inFertile) ? 'Peak'
+    : inFertile ? 'High'
+    : (dFertileStart !== null && dFertileStart > 0 && dFertileStart <= 3) ? 'Rising'
+    : 'Low';
+
   body.innerHTML = `
-  <!-- Phase ring -->
-  <div class="phase-ring-wrap">
-    ${notSet
-      ? `<div style="width:180px;height:180px;border-radius:50%;background:var(--tgbg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:40px;">🌸<span style="font-size:12px;font-weight:700;color:var(--dsub);">Log period to begin</span></div>`
-      : buildPhaseRing(day)
-    }
+  <!-- ── HERO CARD ── -->
+  <div class="cyc-hero">
+    <div class="cyc-hero-bg" style="background:${heroBg};">
+      <div class="cyc-hero-top">
+        <div class="cyc-hero-phase">
+          <div class="cyc-hero-phase-label">Current Phase</div>
+          <div class="cyc-hero-phase-name">${notSet ? 'Not started' : (phase ? phase.name : '—')}</div>
+          <div class="cyc-hero-phase-desc">${notSet ? 'Log your first period below' : (pi ? pi.desc : '')}</div>
+        </div>
+        <div class="cyc-hero-ring-wrap">
+          ${notSet
+            ? `<svg viewBox="0 0 76 76" width="76" height="76"><circle cx="38" cy="38" r="31" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="5"/></svg>`
+            : buildHeroRing(day, pi ? pi.color : '#fff')
+          }
+          <div class="cyc-hero-ring-center">
+            <div class="cyc-hero-ring-day">${notSet ? '–' : day}</div>
+            <div class="cyc-hero-ring-of">${notSet ? '' : 'of ' + cl}</div>
+          </div>
+        </div>
+      </div>
+      ${notSet ? '' : `<div class="cyc-timeline">${buildPhaseTimeline(day)}</div>`}
+      <div class="cyc-hero-stats">
+        <div class="cyc-hero-stat">
+          <div class="cyc-hero-stat-icon">📅</div>
+          <div class="cyc-hero-stat-val">${nextLabel}</div>
+          <div class="cyc-hero-stat-lbl">Next period</div>
+        </div>
+        <div class="cyc-hero-stat">
+          <div class="cyc-hero-stat-icon">🩸</div>
+          <div class="cyc-hero-stat-val">${periodLabel}</div>
+          <div class="cyc-hero-stat-lbl">Period</div>
+        </div>
+        <div class="cyc-hero-stat">
+          <div class="cyc-hero-stat-icon">🌸</div>
+          <div class="cyc-hero-stat-val">${fertileLabel}</div>
+          <div class="cyc-hero-stat-lbl">Fertile</div>
+        </div>
+        <div class="cyc-hero-stat">
+          <div class="cyc-hero-stat-icon">✨</div>
+          <div class="cyc-hero-stat-val">${ovulLabel}</div>
+          <div class="cyc-hero-stat-lbl">Ovulation</div>
+        </div>
+        <div class="cyc-hero-stat">
+          <div class="cyc-hero-stat-icon">💊</div>
+          <div class="cyc-hero-stat-val">${conceptionChance}</div>
+          <div class="cyc-hero-stat-lbl">Conception</div>
+        </div>
+        <div class="cyc-hero-stat">
+          <div class="cyc-hero-stat-icon">🌙</div>
+          <div class="cyc-hero-stat-val">${notSet ? '—' : dCycleLeft + 'd'}</div>
+          <div class="cyc-hero-stat-lbl">Cycle left</div>
+        </div>
+        <div class="cyc-hero-stat">
+          <div class="cyc-hero-stat-icon">🔄</div>
+          <div class="cyc-hero-stat-val">${cyclePctStr}</div>
+          <div class="cyc-hero-stat-lbl">Progress</div>
+        </div>
+        <div class="cyc-hero-stat">
+          <div class="cyc-hero-stat-icon">📊</div>
+          <div class="cyc-hero-stat-val">${notSet ? '—' : cl + 'd'}</div>
+          <div class="cyc-hero-stat-lbl">Cycle length</div>
+        </div>
+      </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Stats grid -->
-  <div class="cyc-grid">
-    ${cycCard(pi?.cls||'neutral', periodPct, '🩸',
-      notSet?'–':day<=pl?`Day ${day}`:day>(cl-3)?'Soon':'Done',
-      day&&day<=pl?`of ${pl}-day period`:`Period · Day ${day||'?'} of cycle`)}
-    ${cycCard(dOvul===null&&!notSet?'ovulation':'neutral', fertilePct, '✨',
-      notSet?'–':dOvul===null?'Active':dOvul===0?'Today':`In ${dOvul}d`,
-      notSet?'Ovulation window':dOvul===0?'Ovulating today':dOvul===null?'Fertile window':'Days to ovulation')}
-    ${cycCard('neutral', nextPct, '📅',
-      notSet?'–':dNext===0?'Today':`${dNext}d`,
-      'Until next period')}
-    ${cycCard('neutral', cyclePct, '🔄',
-      notSet?'–':`Day ${day||'?'}`,
-      `of ${cl}-day cycle`)}
+  <!-- ── LOG TODAY ── -->
+  <div class="ssec" style="padding-bottom:6px;">
+    <div class="ssect">Log</div>
+    <div class="cyc-log-btn-row">
+      <div class="cyc-log-btn-left">
+        <div class="cyc-log-btn-dot" style="background:#FF4757;"></div>
+        <div>
+          <div class="cyc-log-btn-label">Period started</div>
+          <div class="ssub">First day of bleeding</div>
+        </div>
+      </div>
+      <button class="cyc-log-btn-action period" onclick="cyLogPeriodStart()">Today</button>
+    </div>
+    <div class="cyc-log-btn-row">
+      <div class="cyc-log-btn-left">
+        <div class="cyc-log-btn-dot" style="background:#22c55e;"></div>
+        <div>
+          <div class="cyc-log-btn-label">Period ended</div>
+          <div class="ssub">Last day of bleeding</div>
+        </div>
+      </div>
+      <button class="cyc-log-btn-action end" onclick="cyLogPeriodEnd()">Today</button>
+    </div>
+    <div class="cyc-log-btn-row">
+      <div class="cyc-log-btn-left">
+        <div class="cyc-log-btn-dot" style="background:#a855f7;"></div>
+        <div>
+          <div class="cyc-log-btn-label">Ovulation</div>
+          <div class="ssub">Fertile window detected</div>
+        </div>
+      </div>
+      <button class="cyc-log-btn-action ovul" onclick="cyLogOvulation()">Today</button>
+    </div>
+    <div class="cyc-log-btn-row" style="border-bottom:none;">
+      <div class="cyc-log-btn-left">
+        <div class="cyc-log-btn-dot" style="background:var(--dsub);"></div>
+        <div>
+          <div class="cyc-log-btn-label">Log by date</div>
+          <div class="ssub">Pick any past or future date</div>
+        </div>
+      </div>
+      <button class="cyc-log-btn-action" style="background:var(--tgbg);color:var(--dtext);" onclick="cyLogByDateOpen()">Pick date</button>
+    </div>
   </div>
 
-
-  <!-- Log buttons -->
-  <div class="cyc-log-row">
-    <button class="cyc-log-btn period" onclick="cyLogPeriodStart()">🩸 Period Start</button>
-    <button class="cyc-log-btn end"    onclick="cyLogPeriodEnd()">✅ Period End</button>
-    <button class="cyc-log-btn ovul"   onclick="cyLogOvulation()">✨ Ovulation</button>
-  </div>
-
-  <!-- Recent logs -->
-  ${logs.length?`
+  <!-- ── ALL LOGS ── -->
+  ${(cycleData.logs||[]).length ? `
   <div class="ssec" style="padding-top:0;">
-    <div class="ssect">Recent Logs</div>
-    ${logs.map(l=>`
-      <div class="cyc-log-entry">
-        <div class="cyc-log-dot" style="background:${logColors[l.type]||'#aaa'}"></div>
-        <div class="cyc-log-txt">${logLabels[l.type]||l.type}</div>
-        <div class="cyc-log-date">${new Date(l.date).toLocaleDateString('en-NP',{month:'short',day:'numeric'})}</div>
-      </div>`).join('')}
-  </div>`:''}
+    <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>Log history</span>
+      <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${(cycleData.logs||[]).length} entries</span>
+    </div>
+    ${[...(cycleData.logs||[])].reverse().map((l, revIdx) => {
+      const realIdx = (cycleData.logs||[]).length - 1 - revIdx;
+      return `
+    <div class="srow" style="gap:10px;">
+      <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+        <div style="width:8px;height:8px;border-radius:50%;background:${logColors[l.type]||'#aaa'};flex-shrink:0;"></div>
+        <div style="min-width:0;">
+          <div class="slbl">${logLabels[l.type] || l.type}</div>
+          <div class="ssub">${new Date(l.date).toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'})}</div>
+        </div>
+      </div>
+      <button class="cyc-log-del" onclick="cyDeleteLog(${realIdx})" title="Delete this log">🗑</button>
+    </div>`; }).join('')}
+  </div>` : ''}
 
-
-
-  <!-- Cycle History -->
+  <!-- ── CYCLE HISTORY ── -->
   ${renderCycleHistory()}
 
-  <!-- Partner Sync -->
+  <!-- ── PARTNER SYNC ── -->
   <div id="pairSyncSection"></div>
 
-  <!-- Cycle Settings -->
-  <div class="ssec">
-    <div class="ssect">⚙️ Cycle Settings</div>
-    <div class="cyc-set-row">
-      <div><div class="slbl">Cycle Length</div><div class="ssub">Average days between periods</div></div>
-      <input class="cyc-num-input" type="number" min="21" max="45" value="${cl}"
-        onchange="cycleData.cycleLength=+this.value;saveCycle();renderCycleSheet();">
+  <!-- ── SETTINGS ── -->
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect">Settings</div>
+    <div class="srow">
+      <div>
+        <div class="slbl">Cycle length</div>
+        <div class="ssub">Average days between periods</div>
+      </div>
+      <div class="cyc-stepper">
+        <button class="cyc-stepper-btn" onclick="cycleData.cycleLength=Math.max(21,(cycleData.cycleLength||28)-1);saveCycle();renderCycleSheet();">−</button>
+        <div class="cyc-stepper-val">${cl}</div>
+        <button class="cyc-stepper-btn" onclick="cycleData.cycleLength=Math.min(45,(cycleData.cycleLength||28)+1);saveCycle();renderCycleSheet();">+</button>
+      </div>
     </div>
-    <div class="cyc-set-row">
-      <div><div class="slbl">Period Length</div><div class="ssub">Average days of bleeding</div></div>
-      <input class="cyc-num-input" type="number" min="2" max="10" value="${pl}"
-        onchange="cycleData.periodLength=+this.value;saveCycle();renderCycleSheet();">
+    <div class="srow">
+      <div>
+        <div class="slbl">Period length</div>
+        <div class="ssub">Average days of bleeding</div>
+      </div>
+      <div class="cyc-stepper">
+        <button class="cyc-stepper-btn" onclick="cycleData.periodLength=Math.max(2,(cycleData.periodLength||5)-1);saveCycle();renderCycleSheet();">−</button>
+        <div class="cyc-stepper-val">${pl}</div>
+        <button class="cyc-stepper-btn" onclick="cycleData.periodLength=Math.min(10,(cycleData.periodLength||5)+1);saveCycle();renderCycleSheet();">+</button>
+      </div>
     </div>
-    <div class="cyc-set-row" style="border-bottom:none;">
-      <div class="slbl" style="color:#f44336;cursor:pointer;" onclick="cyReset()">🗑️ Clear all cycle data</div>
+    <div class="srow" style="cursor:pointer;" onclick="cyReset()">
+      <div class="slbl" style="color:#f43f5e;">🗑 Clear all cycle data</div>
     </div>
-  </div>`;
+  </div>
+  <div style="height:20px;"></div>
+  `;
 
   // Render partner sync widget after body HTML is set
   setTimeout(function(){
@@ -11461,6 +11685,99 @@ function cyLogOvulation(){
 }
 function cyReset(){
   document.getElementById('cyResetConfirmOverlay').classList.add('open');
+}
+
+// ── Log by date ──────────────────────────────────────────────────────────────
+function cyLogByDateOpen(){
+  if(typeof haptic === 'function') haptic('light');
+  // Default date input to today in YYYY-MM-DD
+  const t = TODAY;
+  const pad = n => String(n).padStart(2,'0');
+  const todayStr = t.getFullYear() + '-' + pad(t.getMonth()+1) + '-' + pad(t.getDate());
+  const inp = document.getElementById('cyLogByDateInput');
+  if(inp){ inp.value = todayStr; inp.max = todayStr; }
+  // Reset chip selection to period_start
+  document.querySelectorAll('.cy-type-chip').forEach(c => c.classList.remove('on'));
+  const first = document.querySelector('.cy-type-chip[data-type="period_start"]');
+  if(first) first.classList.add('on');
+  document.getElementById('cyLogByDateOverlay').classList.add('open');
+}
+
+function cyLogByDateClose(e){
+  if(e && e.target !== document.getElementById('cyLogByDateOverlay')) return;
+  document.getElementById('cyLogByDateOverlay').classList.remove('open');
+}
+
+function cyLogTypeSelect(btn){
+  document.querySelectorAll('.cy-type-chip').forEach(c => c.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+function cyLogByDateSave(){
+  const inp = document.getElementById('cyLogByDateInput');
+  if(!inp || !inp.value){ vikramToast && vikramToast('⚠️ Please pick a date'); return; }
+  const activeChip = document.querySelector('.cy-type-chip.on');
+  const type = activeChip ? activeChip.dataset.type : 'period_start';
+  // Parse date as midnight local
+  const parts = inp.value.split('-').map(Number);
+  const ts = new Date(parts[0], parts[1]-1, parts[2]).getTime();
+  if(isNaN(ts)){ vikramToast && vikramToast('⚠️ Invalid date'); return; }
+  // Push log
+  cycleData.logs = [...(cycleData.logs||[]), {type, date:ts}];
+  // Sort logs by date ascending
+  cycleData.logs.sort((a,b) => a.date - b.date);
+  // If period_start, also update lastPeriodStart to the most recent one
+  if(type === 'period_start'){
+    const starts = cycleData.logs.filter(l=>l.type==='period_start');
+    cycleData.lastPeriodStart = starts[starts.length-1].date;
+  }
+  saveCycle();
+  document.getElementById('cyLogByDateOverlay').classList.remove('open');
+  renderCycleSheet();
+  const labels = {period_start:'Period start',period_end:'Period end',ovulation:'Ovulation'};
+  const dateStr = new Date(ts).toLocaleDateString('en-NP',{month:'short',day:'numeric'});
+  if(typeof vikramToast==='function') vikramToast('✅ ' + (labels[type]||type) + ' logged for ' + dateStr);
+}
+
+// ── Delete log ───────────────────────────────────────────────────────────────
+var _cyDeleteIdx = -1;
+
+function cyDeleteLog(idx){
+  if(typeof haptic === 'function') haptic('light');
+  const logs = cycleData.logs || [];
+  if(idx < 0 || idx >= logs.length) return;
+  _cyDeleteIdx = idx;
+  const l = logs[idx];
+  const labels = {period_start:'Period started',period_end:'Period ended',ovulation:'Ovulation logged'};
+  const dateStr = new Date(l.date).toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'});
+  const desc = document.getElementById('cyDeleteLogDesc');
+  if(desc) desc.textContent = (labels[l.type]||l.type) + ' · ' + dateStr;
+  document.getElementById('cyDeleteLogOverlay').classList.add('open');
+}
+
+function cyDeleteLogClose(e){
+  if(e && e.target !== document.getElementById('cyDeleteLogOverlay')) return;
+  document.getElementById('cyDeleteLogOverlay').classList.remove('open');
+  _cyDeleteIdx = -1;
+}
+
+function cyDeleteLogConfirm(){
+  const logs = cycleData.logs || [];
+  if(_cyDeleteIdx < 0 || _cyDeleteIdx >= logs.length){
+    document.getElementById('cyDeleteLogOverlay').classList.remove('open');
+    return;
+  }
+  const removed = logs.splice(_cyDeleteIdx, 1)[0];
+  cycleData.logs = logs;
+  // Recalculate lastPeriodStart from remaining logs
+  const starts = logs.filter(l=>l.type==='period_start');
+  cycleData.lastPeriodStart = starts.length ? starts[starts.length-1].date : null;
+  saveCycle();
+  document.getElementById('cyDeleteLogOverlay').classList.remove('open');
+  _cyDeleteIdx = -1;
+  renderCycleSheet();
+  const labels = {period_start:'Period start',period_end:'Period end',ovulation:'Ovulation'};
+  if(typeof vikramToast==='function') vikramToast('🗑 ' + (labels[removed.type]||removed.type) + ' deleted');
 }
 function cyResetConfirmClose(e){
   if(e && e.target !== document.getElementById('cyResetConfirmOverlay')) return;
@@ -12098,16 +12415,14 @@ function renderCycleHistory(){
   const avg = Math.round(cycles.reduce((a,c)=>a+c.len,0)/cycles.length);
   const maxLen = Math.max(...cycles.map(c=>c.len), 35);
   return `
-  <div class="ssec">
-    <div class="ssect">📊 Cycle History · Avg ${avg}d</div>
-    <div class="hist-list">
-      ${cycles.slice(-6).reverse().map(c=>`
-        <div class="hist-row">
-          <div class="hist-date">${c.dateStr}</div>
-          <div class="hist-bar-wrap"><div class="hist-bar" style="width:${Math.round(c.len/maxLen*100)}%"></div></div>
-          <div class="hist-len">${c.len}d</div>
-        </div>`).join('')}
-    </div>
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect">Cycle history · avg ${avg}d</div>
+    ${cycles.slice(-6).reverse().map(c=>`
+    <div class="cyc-hist-row">
+      <div class="cyc-hist-date">${c.dateStr}</div>
+      <div class="cyc-hist-bar-wrap"><div class="cyc-hist-bar" style="width:${Math.round(c.len/maxLen*100)}%"></div></div>
+      <div class="cyc-hist-len">${c.len}d</div>
+    </div>`).join('')}
   </div>`;
 }
 let widgetTab='ios';
