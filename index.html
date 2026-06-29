@@ -9739,33 +9739,56 @@ function switchUpTab(t){ /* retired — tabs removed */ }
 function buildCycleUpcomingItems(todayMid, windowEnd){
   if(!cycleData.lastPeriodStart) return [];
 
-  const cl = cycleData.cycleLength || 28;
-  const pl = cycleData.periodLength || 5;
-  const baseRaw = new Date(cycleData.lastPeriodStart);
-  if(isNaN(baseRaw)) return [];
-
+  const cl  = cycleData.cycleLength  || 28;
+  const pl  = cycleData.periodLength || 5;
   const msDay = 86400000;
+
+  // ── Use the most-recent period_start log as the true cycle anchor ──
+  const allLogs = cycleData.logs || [];
+  const periodStartLogs = allLogs
+    .filter(l => l.type === 'period_start' && l.date)
+    .sort((a, b) => b.date - a.date);
+  const anchorRaw = periodStartLogs.length
+    ? new Date(periodStartLogs[0].date)
+    : new Date(cycleData.lastPeriodStart);
+  if(isNaN(anchorRaw)) return [];
+
+  let cycleStart = new Date(anchorRaw.getFullYear(), anchorRaw.getMonth(), anchorRaw.getDate());
+
+  // Advance to the cycle that contains or follows todayMid
+  while(new Date(cycleStart.getTime() + cl * msDay) <= todayMid){
+    cycleStart = new Date(cycleStart.getTime() + cl * msDay);
+  }
+  // Step back one if we overshot
+  while(cycleStart > todayMid){
+    cycleStart = new Date(cycleStart.getTime() - cl * msDay);
+  }
+
+  if(cycleStart > windowEnd) return [];
+
+  // ── Log-aware flags for the CURRENT cycle ──
+  const cycleStartTs = cycleStart.getTime();
+
+  // Most recent period_end log in this cycle
+  const periodEndLog = allLogs
+    .filter(l => l.type === 'period_end' && l.date >= cycleStartTs)
+    .sort((a, b) => b.date - a.date)[0] || null;
+
+  // Most recent ovulation log in this cycle
+  const ovulLog = allLogs
+    .filter(l => l.type === 'ovulation' && l.date >= cycleStartTs)
+    .sort((a, b) => b.date - a.date)[0] || null;
+
   const ovDay = cl - 14;
-  const fertileOpenDay = Math.max(1, ovDay - 5);
-
-  let cycleStart = new Date(baseRaw.getFullYear(), baseRaw.getMonth(), baseRaw.getDate());
-
-  while(cycleStart.getTime() + cl*msDay <= todayMid.getTime()){
-    cycleStart = new Date(cycleStart.getTime() + cl*msDay);
-  }
-  while(cycleStart.getTime() > todayMid.getTime()){
-    cycleStart = new Date(cycleStart.getTime() - cl*msDay);
-  }
-
-  if(cycleStart.getTime() > windowEnd.getTime()) return [];
+  const fertileStartDay = Math.max(1, ovDay - 5);
 
   const items = [];
   const pushItem = (date, title, sub) => {
     const ad = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    const diff = Math.round((ad - todayMid)/msDay);
+    const diff = Math.round((ad - todayMid) / msDay);
     if(diff < 0 || diff > WINDOW) return;
     items.push({
-      type:'cyc',
+      type: 'cyc',
       ky: ad.getFullYear(),
       km: ad.getMonth() + 1,
       kd: ad.getDate(),
@@ -9777,17 +9800,34 @@ function buildCycleUpcomingItems(todayMid, windowEnd){
     });
   };
 
-  for(let start = new Date(cycleStart); start <= windowEnd; start = new Date(start.getTime() + cl*msDay)){
-    pushItem(start, 'Period starts', 'Cycle Day 1 · predicted');
+  for(let start = new Date(cycleStart); start <= windowEnd; start = new Date(start.getTime() + cl * msDay)){
+    const isCurrentCycle = start.getTime() === cycleStart.getTime();
 
-    const periodEnd = new Date(start.getTime() + (pl - 1) * msDay);
-    pushItem(periodEnd, 'Period ends', `Cycle Day ${pl} · predicted`);
+    // Period starts — skip if already logged for this cycle
+    if(!isCurrentCycle || !periodStartLogs.some(l => {
+      const ld = new Date(l.date); const lMid = new Date(ld.getFullYear(),ld.getMonth(),ld.getDate());
+      return lMid.getTime() === start.getTime();
+    })){
+      pushItem(start, 'Period starts', 'Cycle Day 1 · predicted');
+    }
 
-    const fertileOpen = new Date(start.getTime() + (fertileOpenDay - 1) * msDay);
-    pushItem(fertileOpen, 'Fertile window opens', `Cycle Day ${fertileOpenDay} · predicted`);
+    // Period ends — skip if user already logged period_end in this cycle
+    if(!isCurrentCycle || !periodEndLog){
+      const periodEndDate = new Date(start.getTime() + (pl - 1) * msDay);
+      pushItem(periodEndDate, 'Period ends', 'Cycle Day ' + pl + ' · predicted');
+    }
 
-    const ovulation = new Date(start.getTime() + (ovDay - 1) * msDay);
-    pushItem(ovulation, 'Ovulation', `Cycle Day ${ovDay} · predicted`);
+    // Fertile window — skip if ovulation already logged in this cycle
+    if(!isCurrentCycle || !ovulLog){
+      const fertileDate = new Date(start.getTime() + (fertileStartDay - 1) * msDay);
+      pushItem(fertileDate, 'Fertile window opens', 'Cycle Day ' + fertileStartDay + ' · predicted');
+    }
+
+    // Ovulation — skip if already logged
+    if(!isCurrentCycle || !ovulLog){
+      const ovulDate = new Date(start.getTime() + (ovDay - 1) * msDay);
+      pushItem(ovulDate, 'Ovulation', 'Cycle Day ' + ovDay + ' · predicted');
+    }
   }
 
   return items;
@@ -10533,7 +10573,7 @@ function renderSchedule(){
     addToDay(dk, {
       type:'cyc', color:'#FF6B9D',
       title: '🌸 ' + ci.title,
-      sub: `My Cycle · ${ADMEN[ci.ad.getMonth()]} ${ci.ad.getDate()}, ${ci.ad.getFullYear()}${ci.sub?' · '+ci.sub:''}`,
+      sub: `My Cycle · ${ci.sub || ''}`,
       tag:'Cycle', tagCls:'cyc',
       action:()=>{ switchTab('cycle'); }
     });
