@@ -2402,158 +2402,286 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .hist-date{font-size:10.5px;color:var(--dsub);font-weight:600;min-width:70px;}
 
 /* ── PARTNER SYNC ── */
+/* ── PAIR & SYNC CARD ── */
 .pair-card{
-  margin:0 18px 14px;border-radius:18px;overflow:hidden;
+  margin:0 18px 14px;border-radius:20px;overflow:hidden;
   border:1px solid var(--border);
-  background:linear-gradient(135deg,rgba(255,107,157,.06),rgba(196,69,105,.03),var(--card));
-  box-shadow:0 2px 12px rgba(255,107,157,.08);
+  background:var(--card);
+  box-shadow:0 4px 20px rgba(255,107,157,.07);
 }
 [data-theme=dark] .pair-card{
-  background:linear-gradient(135deg,rgba(255,107,157,.10),rgba(100,40,80,.08),var(--card));
-  border-color:rgba(255,107,157,.18);
+  border-color:rgba(255,107,157,.15);
+  box-shadow:0 4px 24px rgba(0,0,0,.25);
 }
 .pair-card-head{
-  display:flex;align-items:center;gap:11px;
-  padding:14px 16px 12px;
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;
   border-bottom:1px solid var(--border);
-  background:linear-gradient(135deg,rgba(255,107,157,.10),rgba(196,69,105,.05));
+  background:linear-gradient(135deg,rgba(255,107,157,.08) 0%,rgba(196,69,105,.03) 100%);
 }
 [data-theme=dark] .pair-card-head{
-  border-bottom-color:rgba(255,255,255,.06);
-  background:linear-gradient(135deg,rgba(255,107,157,.14),rgba(100,40,80,.10));
+  border-bottom-color:rgba(255,107,157,.12);
+  background:linear-gradient(135deg,rgba(255,107,157,.12) 0%,rgba(100,40,80,.07) 100%);
 }
 .pair-icon-wrap{
-  width:38px;height:38px;border-radius:12px;flex-shrink:0;
+  width:40px;height:40px;border-radius:13px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,#FF6B9D,#C44569);
-  box-shadow:0 4px 12px rgba(255,107,157,.32);
-  font-size:18px;
+  box-shadow:0 3px 10px rgba(255,107,157,.35);
+  font-size:19px;
 }
 .pair-head-text{flex:1;}
 .pair-head-title{font-size:14px;font-weight:900;color:var(--htext);line-height:1.1;}
 .pair-head-sub{font-size:11px;font-weight:700;color:var(--hsub);margin-top:2px;}
 .pair-status-dot{
-  width:9px;height:9px;border-radius:50%;
+  width:8px;height:8px;border-radius:50%;
   background:#22c55e;flex-shrink:0;
-  box-shadow:0 0 8px rgba(34,197,94,.5);
-  animation:pairPulse 2s ease-in-out infinite;
+  box-shadow:0 0 0 2px rgba(34,197,94,.2);
+  animation:pairPulse 2.4s ease-in-out infinite;
 }
 .pair-status-dot.offline{background:var(--dim);box-shadow:none;animation:none;}
 @keyframes pairPulse{
-  0%,100%{transform:scale(1);opacity:1;}
-  50%{transform:scale(1.25);opacity:.7;}
+  0%,100%{box-shadow:0 0 0 2px rgba(34,197,94,.2);}
+  50%{box-shadow:0 0 0 5px rgba(34,197,94,.08);}
 }
 
-/* Not-paired state */
-.pair-unpaired{padding:20px 16px;text-align:center;}
-.pair-unpaired-emoji{font-size:38px;margin-bottom:10px;}
-.pair-unpaired-title{font-size:15px;font-weight:900;color:var(--htext);margin-bottom:6px;}
-.pair-unpaired-sub{font-size:12px;font-weight:600;color:var(--hsub);line-height:1.5;margin-bottom:16px;}
-.pair-code-box{
-  display:flex;align-items:center;gap:9px;
-  background:var(--tgbg);border-radius:12px;padding:10px 14px;
-  border:1.5px dashed rgba(255,107,157,.35);
-  margin-bottom:14px;
+/* ── NOT-PAIRED STATE ── */
+.pair-unpaired{padding:24px 18px 20px;text-align:center;}
+.pair-unpaired-emoji{font-size:36px;margin-bottom:12px;line-height:1;}
+.pair-unpaired-title{font-size:16px;font-weight:900;color:var(--htext);margin-bottom:6px;letter-spacing:-.2px;}
+.pair-unpaired-sub{font-size:12px;font-weight:600;color:var(--hsub);line-height:1.6;margin-bottom:20px;max-width:280px;margin-left:auto;margin-right:auto;}
+
+/* Your code block */
+.pair-code-block{
+  background:linear-gradient(135deg,rgba(255,107,157,.08),rgba(196,69,105,.04));
+  border:1.5px dashed rgba(255,107,157,.3);
+  border-radius:14px;padding:14px 16px;margin-bottom:16px;
 }
-.pair-code-lbl{font-size:10px;font-weight:800;color:var(--hsub);text-transform:uppercase;letter-spacing:.7px;white-space:nowrap;}
+[data-theme=dark] .pair-code-block{
+  background:linear-gradient(135deg,rgba(255,107,157,.12),rgba(196,69,105,.06));
+}
+.pair-code-lbl-row{
+  font-size:10px;font-weight:800;color:var(--hsub);
+  text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+}
+.pair-code-display{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
 .pair-code-val{
-  flex:1;font-size:16px;font-weight:900;letter-spacing:3px;
-  color:#FF6B9D;font-family:'Courier New',monospace;text-align:center;
+  font-size:22px;font-weight:900;letter-spacing:5px;
+  color:#FF6B9D;font-family:'Courier New',monospace;
 }
 .pair-copy-btn{
-  width:30px;height:30px;border-radius:8px;border:none;cursor:pointer;
+  width:32px;height:32px;border-radius:9px;border:none;cursor:pointer;
   background:linear-gradient(135deg,#FF6B9D,#C44569);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  transition:transform .15s,box-shadow .15s;
+  box-shadow:0 3px 10px rgba(255,107,157,.3);
+  transition:transform .15s,opacity .15s;
 }
-.pair-copy-btn:active{transform:scale(.93);}
+.pair-copy-btn:active{transform:scale(.90);opacity:.85;}
 .pair-copy-btn svg{width:14px;height:14px;stroke:#fff;stroke-width:2.3;fill:none;}
+
+/* Divider */
+.pair-or-divider{
+  display:flex;align-items:center;gap:10px;margin-bottom:14px;
+}
+.pair-or-line{flex:1;height:1px;background:var(--border);}
+.pair-or-lbl{font-size:10px;font-weight:800;color:var(--hsub);text-transform:uppercase;letter-spacing:.6px;}
+
+/* Enter code */
 .pair-enter-row{display:flex;gap:8px;margin-bottom:4px;}
 .pair-enter-input{
-  flex:1;padding:10px 12px;border-radius:10px;
+  flex:1;padding:11px 13px;border-radius:11px;
   border:1.5px solid var(--border);background:var(--sbg);
-  color:var(--dtext);font-size:14px;font-weight:800;
-  font-family:'Courier New',monospace;letter-spacing:2px;
+  color:var(--dtext);font-size:15px;font-weight:800;
+  font-family:'Courier New',monospace;letter-spacing:2.5px;
   text-transform:uppercase;outline:none;
-  transition:border-color .2s;
+  transition:border-color .2s,box-shadow .2s;
 }
-.pair-enter-input::placeholder{font-family:'Nunito',sans-serif;letter-spacing:0;font-size:13px;font-weight:600;text-transform:none;}
-.pair-enter-input:focus{border-color:#FF6B9D;}
+.pair-enter-input::placeholder{font-family:'Nunito',sans-serif;letter-spacing:0;font-size:13px;font-weight:600;text-transform:none;color:var(--hsub);}
+.pair-enter-input:focus{border-color:#FF6B9D;box-shadow:0 0 0 3px rgba(255,107,157,.12);}
 .pair-connect-btn{
-  padding:10px 16px;border-radius:10px;border:none;cursor:pointer;
+  padding:11px 18px;border-radius:11px;border:none;cursor:pointer;
   background:linear-gradient(135deg,#FF6B9D,#C44569);
   color:#fff;font-size:13px;font-weight:900;
   font-family:'Nunito',sans-serif;white-space:nowrap;
   box-shadow:0 4px 14px rgba(255,107,157,.3);
-  transition:opacity .2s,transform .15s;
+  transition:transform .15s,opacity .2s;
 }
-.pair-connect-btn:active{transform:scale(.96);}
+.pair-connect-btn:active{transform:scale(.95);opacity:.9;}
 
-/* Paired state */
-.pair-paired{padding:16px;}
-.pair-partner-row{
-  display:flex;align-items:center;gap:12px;
-  background:var(--tgbg);border-radius:14px;padding:12px 14px;
-  margin-bottom:12px;
-}
-.pair-partner-avatar{
-  width:42px;height:42px;border-radius:50%;
-  background:linear-gradient(135deg,#FF6B9D,#C44569);
-  display:flex;align-items:center;justify-content:center;
-  font-size:20px;flex-shrink:0;
-  box-shadow:0 3px 10px rgba(255,107,157,.3);
-}
-.pair-partner-info{flex:1;}
-.pair-partner-name{font-size:14px;font-weight:900;color:var(--htext);}
-.pair-partner-status{font-size:11px;font-weight:700;color:var(--hsub);margin-top:2px;}
-.pair-disconnect-btn{
-  padding:6px 11px;border-radius:8px;border:none;cursor:pointer;
-  background:rgba(244,63,94,.1);color:#f43f5e;
-  font-size:11px;font-weight:800;font-family:'Nunito',sans-serif;
-  transition:background .2s;
-}
-.pair-disconnect-btn:hover{background:rgba(244,63,94,.18);}
+/* ── PAIRED STATE ── */
+.pair-paired{padding:0;}
 
-/* Partner cycle info */
-.pair-partner-cycle{
-  border-radius:14px;border:1px solid var(--border);
-  overflow:hidden;background:var(--sbg);margin-bottom:10px;
-}
-.pair-partner-cycle-head{
-  display:flex;align-items:center;gap:8px;padding:10px 14px;
-  background:linear-gradient(135deg,rgba(255,107,157,.07),transparent);
+/* Connected banner */
+.pair-connected-banner{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 12px;
+  background:linear-gradient(135deg,rgba(255,107,157,.07),rgba(196,69,105,.03));
   border-bottom:1px solid var(--border);
 }
-.pair-partner-cycle-head span{font-size:12px;font-weight:800;color:var(--htext);}
-.pair-partner-phase-badge{
-  margin-left:auto;padding:3px 9px;border-radius:8px;
-  font-size:10px;font-weight:800;color:#fff;white-space:nowrap;
+[data-theme=dark] .pair-connected-banner{
+  background:linear-gradient(135deg,rgba(255,107,157,.11),rgba(100,40,80,.07));
+  border-bottom-color:rgba(255,107,157,.12);
 }
-.pair-cycle-stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);}
-.pair-cycle-stat{background:var(--sbg);padding:11px 13px;}
-.pair-cycle-stat-val{font-size:17px;font-weight:900;color:var(--htext);line-height:1.1;}
-.pair-cycle-stat-lbl{font-size:10.5px;font-weight:700;color:var(--hsub);margin-top:2px;}
-.pair-cycle-stat-emoji{font-size:14px;margin-bottom:2px;}
+.pair-partner-avatar{
+  width:30px;height:30px;border-radius:50%;
+  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(255,107,157,.28);
+}
+.pair-partner-info{flex:1;min-width:0;}
+.pair-partner-name{font-size:13px;font-weight:900;color:var(--htext);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pair-partner-status{font-size:10px;font-weight:700;color:var(--hsub);margin-top:1px;}
+.pair-disconnect-btn{
+  padding:4px 9px;border-radius:7px;border:1.5px solid rgba(244,63,94,.2);cursor:pointer;
+  background:rgba(244,63,94,.07);color:#f43f5e;
+  font-size:10px;font-weight:800;font-family:'Nunito',sans-serif;
+  transition:background .2s,transform .15s;white-space:nowrap;flex-shrink:0;
+}
+.pair-disconnect-btn:active{transform:scale(.93);}
+
+/* Cycle stats strip */
+.pair-cycle-strip{
+  display:grid;grid-template-columns:1fr 1fr;
+  padding:0;border-bottom:1px solid var(--border);
+}
+.pair-cycle-stat{
+  padding:13px 16px;
+  display:flex;flex-direction:column;gap:2px;
+}
+.pair-cycle-stat:first-child{border-right:1px solid var(--border);}
+.pair-cycle-stat-emoji{font-size:13px;line-height:1;margin-bottom:1px;}
+.pair-cycle-stat-val{font-size:18px;font-weight:900;color:var(--htext);line-height:1.1;letter-spacing:-.3px;}
+.pair-cycle-stat-lbl{font-size:10.5px;font-weight:700;color:var(--hsub);}
+
+/* Phase pill row */
+.pair-phase-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 16px;
+  border-bottom:1px solid var(--border);
+  gap:10px;
+}
+.pair-phase-label{font-size:11px;font-weight:700;color:var(--hsub);}
+.pair-partner-phase-badge{
+  padding:4px 11px;border-radius:20px;
+  font-size:11px;font-weight:800;color:#fff;white-space:nowrap;
+}
+
+/* Waiting state */
+.pair-waiting-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;gap:10px;
+  border-bottom:1px solid var(--border);
+  background:var(--tgbg);
+}
+.pair-waiting-text{font-size:12px;font-weight:700;color:var(--hsub);line-height:1.4;}
+.pair-resync-btn{
+  flex-shrink:0;padding:6px 13px;border-radius:9px;border:none;
+  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  color:#fff;font-size:11px;font-weight:800;cursor:pointer;
+  font-family:'Nunito',sans-serif;
+  box-shadow:0 3px 10px rgba(255,107,157,.25);
+  transition:transform .15s,opacity .2s;
+}
+.pair-resync-btn:active{transform:scale(.93);}
 
 /* Heartbeat line */
 .pair-heartbeat{
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  padding:8px 0 2px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:10px 16px;
+  border-bottom:1px solid var(--border);
 }
-.pair-hb-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,107,157,.25),transparent);}
-.pair-hb-icon{font-size:16px;animation:pairHb 1.3s ease-in-out infinite;}
+.pair-hb-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,107,157,.2),transparent);}
+.pair-hb-icon{font-size:15px;animation:pairHb 1.4s ease-in-out infinite;}
 @keyframes pairHb{
   0%,100%{transform:scale(1);}
-  14%{transform:scale(1.25);}
+  14%{transform:scale(1.28);}
   28%{transform:scale(1);}
-  42%{transform:scale(1.12);}
+  42%{transform:scale(1.14);}
   56%{transform:scale(1);}
 }
+
+/* ── MOMENT MESSAGES ── */
+.pair-moment-wrap{overflow:hidden;}
+.pair-moment-head{
+  display:flex;align-items:center;gap:8px;
+  padding:11px 16px 10px;
+  border-bottom:1px solid rgba(255,107,157,.1);
+}
+.pair-moment-head-icon{font-size:15px;}
+.pair-moment-head-title{
+  font-size:12px;font-weight:900;color:var(--htext);flex:1;letter-spacing:.1px;
+}
+.pair-moment-head-count{
+  font-size:10px;font-weight:800;color:var(--hsub);
+  background:var(--tgbg);padding:2px 8px;border-radius:20px;
+}
+.pair-moment-msgs{
+  max-height:190px;overflow-y:auto;padding:12px 14px;
+  display:flex;flex-direction:column;gap:8px;
+}
+.pair-moment-msgs:empty::after{
+  content:'No messages yet — say something sweet 💌';
+  font-size:12px;font-weight:600;color:var(--hsub);
+  text-align:center;padding:12px 0;display:block;line-height:1.6;
+}
+.pair-msg-bubble{
+  display:flex;flex-direction:column;
+  max-width:86%;
+}
+.pair-msg-bubble.mine{ align-self:flex-end;align-items:flex-end; }
+.pair-msg-bubble.theirs{ align-self:flex-start;align-items:flex-start; }
+.pair-msg-text{
+  padding:9px 13px;border-radius:16px;
+  font-size:13px;font-weight:700;line-height:1.45;
+  word-break:break-word;
+}
+.pair-msg-bubble.mine .pair-msg-text{
+  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  color:#fff;border-bottom-right-radius:4px;
+}
+.pair-msg-bubble.theirs .pair-msg-text{
+  background:var(--tgbg);color:var(--htext);
+  border-bottom-left-radius:4px;
+}
+.pair-msg-meta{
+  font-size:9.5px;font-weight:700;color:var(--hsub);
+  margin-top:3px;padding:0 3px;
+}
+.pair-moment-compose{
+  border-top:1px solid rgba(255,107,157,.1);
+  padding:10px 12px;
+  display:flex;align-items:flex-end;gap:8px;
+  background:var(--sbg);
+}
+.pair-moment-input{
+  flex:1;resize:none;border:1.5px solid var(--border);outline:none;
+  background:var(--tgbg);border-radius:12px;
+  padding:9px 12px;min-height:38px;max-height:100px;
+  font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;
+  color:var(--htext);line-height:1.4;overflow-y:auto;
+  transition:border-color .2s;
+}
+.pair-moment-input:focus{border-color:rgba(255,107,157,.4);}
+.pair-moment-input::placeholder{color:var(--hsub);}
+.pair-moment-send{
+  width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 3px 10px rgba(255,107,157,.35);
+  transition:transform .15s,opacity .15s;
+}
+.pair-moment-send:active{transform:scale(.9);opacity:.85;}
+.pair-moment-send svg{width:16px;height:16px;stroke:#fff;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+
 .pair-nudge-btn{
   width:100%;padding:11px;border-radius:12px;border:none;cursor:pointer;
-  background:linear-gradient(135deg,rgba(255,107,157,.12),rgba(196,69,105,.08));
+  background:linear-gradient(135deg,rgba(255,107,157,.10),rgba(196,69,105,.07));
   color:#FF6B9D;font-size:13px;font-weight:900;font-family:'Nunito',sans-serif;
-  border:1px solid rgba(255,107,157,.2);
+  border:1px solid rgba(255,107,157,.18);
   display:flex;align-items:center;justify-content:center;gap:7px;
   transition:background .2s,transform .15s;
 }
@@ -2569,82 +2697,6 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   70%{opacity:1;}
   100%{opacity:0;}
 }
-
-/* ── MOMENT MESSAGES ── */
-.pair-moment-wrap{
-  margin-top:10px;
-  border:1px solid rgba(255,107,157,.18);
-  border-radius:16px;
-  overflow:hidden;
-  background:linear-gradient(135deg,rgba(255,107,157,.04),transparent);
-}
-.pair-moment-head{
-  display:flex;align-items:center;gap:8px;
-  padding:10px 14px 8px;
-  border-bottom:1px solid rgba(255,107,157,.12);
-}
-.pair-moment-head-icon{font-size:15px;}
-.pair-moment-head-title{
-  font-size:12px;font-weight:900;color:var(--htext);flex:1;
-}
-.pair-moment-head-count{
-  font-size:10px;font-weight:800;color:var(--hsub);
-  background:var(--tgbg);padding:2px 7px;border-radius:8px;
-}
-.pair-moment-msgs{
-  max-height:200px;overflow-y:auto;padding:10px 12px;
-  display:flex;flex-direction:column;gap:7px;
-}
-.pair-moment-msgs:empty::after{
-  content:'No messages yet — say something sweet 💌';
-  font-size:11.5px;font-weight:600;color:var(--hsub);
-  text-align:center;padding:10px 0;display:block;
-}
-.pair-msg-bubble{
-  display:flex;flex-direction:column;
-  max-width:88%;
-}
-.pair-msg-bubble.mine{ align-self:flex-end;align-items:flex-end; }
-.pair-msg-bubble.theirs{ align-self:flex-start;align-items:flex-start; }
-.pair-msg-text{
-  padding:8px 12px;border-radius:14px;
-  font-size:13px;font-weight:700;line-height:1.45;
-  word-break:break-word;
-}
-.pair-msg-bubble.mine .pair-msg-text{
-  background:linear-gradient(135deg,#FF6B9D,#C44569);
-  color:#fff;border-bottom-right-radius:4px;
-}
-.pair-msg-bubble.theirs .pair-msg-text{
-  background:var(--tgbg);color:var(--htext);
-  border-bottom-left-radius:4px;
-}
-.pair-msg-meta{
-  font-size:9.5px;font-weight:700;color:var(--hsub);
-  margin-top:3px;padding:0 2px;
-}
-.pair-moment-compose{
-  border-top:1px solid rgba(255,107,157,.12);
-  padding:10px 12px;
-  display:flex;align-items:flex-end;gap:8px;
-}
-.pair-moment-input{
-  flex:1;resize:none;border:none;outline:none;
-  background:var(--tgbg);border-radius:12px;
-  padding:9px 12px;min-height:38px;max-height:100px;
-  font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;
-  color:var(--htext);line-height:1.4;overflow-y:auto;
-}
-.pair-moment-input::placeholder{color:var(--hsub);}
-.pair-moment-send{
-  width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;
-  background:linear-gradient(135deg,#FF6B9D,#C44569);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  box-shadow:0 3px 10px rgba(255,107,157,.35);
-  transition:transform .15s,opacity .15s;
-}
-.pair-moment-send:active{transform:scale(.9);}
-.pair-moment-send svg{width:16px;height:16px;stroke:#fff;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;}
 
 /* ── PARTNER MODE ── */
 .partner-mode-toggle-btn{
@@ -12291,22 +12343,32 @@ function cyResetConfirmYes(){
 
   function renderUnpaired(d, fbOk){
     const code = myCode();
-    const fbNote = fbOk ? '' : `<div style="font-size:11px;font-weight:700;color:var(--dsub);text-align:center;margin-bottom:10px;padding:8px 12px;background:var(--tgbg);border-radius:10px;">⏳ Connecting to sync service…</div>`;
+    const fbNote = fbOk ? '' : `<div style="font-size:11px;font-weight:700;color:var(--dsub);text-align:center;margin-bottom:16px;padding:9px 13px;background:var(--tgbg);border-radius:11px;border:1px solid var(--border);">⏳ Connecting to sync service…</div>`;
     return `
     <div class="pair-unpaired">
       <div class="pair-unpaired-emoji">💞</div>
       <div class="pair-unpaired-title">Sync Cycles Together</div>
-      <div class="pair-unpaired-sub">Share your code with your partner, or enter theirs below to stay in sync — see their phase, fertile window &amp; next period in real time.</div>
+      <div class="pair-unpaired-sub">Share your code or enter your partner’s to see their phase, fertile window &amp; next period in real time.</div>
       ${fbNote}
-      <div class="pair-code-box">
-        <span class="pair-code-lbl">Your code</span>
-        <span class="pair-code-val" id="pairMyCode">${code}</span>
-        <button class="pair-copy-btn" onclick="pairCopyCode('${esc(code)}')" title="Copy">
-          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        </button>
+      <div class="pair-code-block">
+        <div class="pair-code-lbl-row">
+          <svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:var(--hsub);stroke-width:2.3;fill:none;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Your pair code
+        </div>
+        <div class="pair-code-display">
+          <span class="pair-code-val" id="pairMyCode">${code}</span>
+          <button class="pair-copy-btn" onclick="pairCopyCode('${esc(code)}')" title="Copy code">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="pair-or-divider">
+        <div class="pair-or-line"></div>
+        <span class="pair-or-lbl">Enter partner’s code</span>
+        <div class="pair-or-line"></div>
       </div>
       <div class="pair-enter-row">
-        <input class="pair-enter-input" id="pairCodeInput" placeholder="Enter partner's code…" maxlength="7"
+        <input class="pair-enter-input" id="pairCodeInput" placeholder="ABC-123" maxlength="7"
           oninput="
             let v=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
             if(v.length>3) v=v.slice(0,3)+'-'+v.slice(3,6);
@@ -12316,7 +12378,7 @@ function cyResetConfirmYes(){
       </div>
       <div id="pairNameRow" style="display:none;margin-top:8px;">
         <div class="pair-enter-row">
-          <input class="pair-enter-input" id="pairNameInput" placeholder="Partner's name or nickname…"
+          <input class="pair-enter-input" id="pairNameInput" placeholder="Partner’s name or nickname…"
             style="letter-spacing:0;text-transform:none;font-family:'Nunito',sans-serif;font-size:13px;"
             maxlength="30"
             onkeydown="if(event.key==='Enter'){event.preventDefault();pairConnectConfirm();}">
@@ -12331,43 +12393,48 @@ function cyResetConfirmYes(){
     const sharedTs = d.sharedAt ? new Date(d.sharedAt).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '';
     const lastSync = d.partnerCycleUpdatedAt ? new Date(d.partnerCycleUpdatedAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : null;
     const noPartnerData = !pi || pi.noData;
+    const statusLine = (fbOk ? '🟢 Live sync' : '⚠️ Offline') + (sharedTs ? ' · since ' + sharedTs : '') + (lastSync ? ' · ' + lastSync : '');
     return `
     <div class="pair-paired">
-      <div class="pair-partner-row">
+
+      <!-- Connected banner -->
+      <div class="pair-connected-banner">
         <div class="pair-partner-avatar">💑</div>
         <div class="pair-partner-info">
           <div class="pair-partner-name">${escapeHtml(d.partnerName||'Partner')}</div>
-          <div class="pair-partner-status">${fbOk ? '🟢 Live sync' : '⚠️ Offline mode'}${sharedTs?' · since '+sharedTs:''}${lastSync ? ' · updated '+lastSync : ''}</div>
+          <div class="pair-partner-status">${statusLine}</div>
         </div>
         <button class="pair-disconnect-btn" onclick="pairDisconnect()">Disconnect</button>
       </div>
 
-      ${noPartnerData ? `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 13px;background:var(--tgbg);border-radius:10px;margin:0 0 10px;gap:10px;">
-        <div style="font-size:11px;font-weight:700;color:var(--dsub);line-height:1.4;">
-          ${fbOk ? '⏳ Waiting for ' + escapeHtml(d.partnerName||'partner') + ' to log their cycle…' : '⚠️ Offline — connect to sync cycle data'}
-        </div>
-        ${fbOk ? `<button onclick="if(window._fbPair){window._fbPair.forceSync();if(typeof vikramToast==='function')vikramToast('🔄 Syncing…');}" style="flex-shrink:0;padding:5px 11px;border-radius:8px;border:none;background:linear-gradient(135deg,#FF6B9D,#C44569);color:#fff;font-size:11px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">Re-sync</button>` : ''}
+      <!-- Waiting / no data row -->
+      ${noPartnerData ? `
+      <div class="pair-waiting-row">
+        <div class="pair-waiting-text">${fbOk ? '⏳ Waiting for ' + escapeHtml(d.partnerName||'partner') + ' to log their cycle' : '⚠️ Offline — connect to sync'}</div>
+        ${fbOk ? '<button class="pair-resync-btn" onclick="if(window._fbPair){window._fbPair.forceSync();if(typeof vikramToast===\'function\')vikramToast(\'\U0001f504 Syncing…\');}">Re-sync</button>' : ''}
       </div>` : ''}
 
-      <div class="pair-partner-cycle">
-        <div class="pair-partner-cycle-head">
-          <span>🌸 ${escapeHtml(d.partnerName||'Partner')}'s Cycle</span>
-          ${pi && !pi.noData ? `<div class="pair-partner-phase-badge" style="background:${pi.phaseColor}">${pi.phase}</div>` : '<div class="pair-partner-phase-badge" style="background:#aaa">Logging</div>'}
+      <!-- Phase pill -->
+      <div class="pair-phase-row">
+        <span class="pair-phase-label">🌸 ${escapeHtml(d.partnerName||'Partner')}’s phase</span>
+        ${pi && !pi.noData ? `<div class="pair-partner-phase-badge" style="background:${pi.phaseColor}">${pi.phase}</div>` : '<div class="pair-partner-phase-badge" style="background:var(--dim);color:var(--htext);">Logging…</div>'}
+      </div>
+
+      <!-- Cycle stat strip -->
+      <div class="pair-cycle-strip">
+        <div class="pair-cycle-stat">
+          <div class="pair-cycle-stat-emoji">📅</div>
+          <div class="pair-cycle-stat-val">${pi && !pi.noData ? 'Day '+pi.day : '—'}</div>
+          <div class="pair-cycle-stat-lbl">of ${pi ? pi.cl : 28}-day cycle</div>
         </div>
-        <div class="pair-cycle-stats">
-          <div class="pair-cycle-stat">
-            <div class="pair-cycle-stat-emoji">📅</div>
-            <div class="pair-cycle-stat-val">${pi && !pi.noData ? 'Day '+pi.day : '—'}</div>
-            <div class="pair-cycle-stat-lbl">of ${pi ? pi.cl : 28}-day cycle</div>
-          </div>
-          <div class="pair-cycle-stat">
-            <div class="pair-cycle-stat-emoji">🔮</div>
-            <div class="pair-cycle-stat-val">${pi && !pi.noData ? pi.dNext+'d' : '—'}</div>
-            <div class="pair-cycle-stat-lbl">until next period</div>
-          </div>
+        <div class="pair-cycle-stat">
+          <div class="pair-cycle-stat-emoji">🔮</div>
+          <div class="pair-cycle-stat-val">${pi && !pi.noData ? pi.dNext+'d' : '—'}</div>
+          <div class="pair-cycle-stat-lbl">until next period</div>
         </div>
       </div>
 
+      <!-- Heartbeat -->
       <div class="pair-heartbeat">
         <div class="pair-hb-line"></div>
         <div class="pair-hb-icon">💗</div>
@@ -12384,7 +12451,7 @@ function cyResetConfirmYes(){
         <div class="pair-moment-msgs" id="pairMomentMsgs"></div>
         <div class="pair-moment-compose">
           <textarea class="pair-moment-input" id="pairMomentInput"
-            placeholder="Type a moment for ${escapeHtml(d.partnerName||'your partner')}…"
+            placeholder="Say something to ${escapeHtml(d.partnerName||'your partner')}…"
             rows="1"
             onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();pairSendMoment();}"
             oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';"
