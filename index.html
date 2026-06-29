@@ -11663,23 +11663,16 @@ function renderCycleSheet(){
   <!-- ── ALL LOGS ── -->
   ${(cycleData.logs||[]).length ? `
   <div class="ssec" style="padding-top:0;">
-    <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
-      <span>Log history</span>
-      <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${Math.min((cycleData.logs||[]).length, 6)} entries</span>
-    </div>
-    ${[...(cycleData.logs||[])].reverse().slice(0, 6).map((l, revIdx) => {
-      const realIdx = (cycleData.logs||[]).length - 1 - revIdx;
-      return `
-    <div class="srow" style="gap:10px;">
-      <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
-        <div style="width:8px;height:8px;border-radius:50%;background:${logColors[l.type]||'#aaa'};flex-shrink:0;"></div>
+    <div class="srow" style="cursor:pointer;" onclick="openLogHistorySheet()">
+      <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(255,71,87,.15),rgba(255,71,87,.07));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📋</div>
         <div style="min-width:0;">
-          <div class="slbl">${logLabels[l.type] || l.type}</div>
-          <div class="ssub">${new Date(l.date).toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'})}</div>
+          <div class="slbl">Log history</div>
+          <div class="ssub" id="logHistoryEntrySub">${(cycleData.logs||[]).length} ${(cycleData.logs||[]).length === 1 ? 'entry' : 'entries'}</div>
         </div>
       </div>
-      <button class="cyc-log-del" onclick="cyDeleteLog(${realIdx})" title="Delete this log">🗑</button>
-    </div>`; }).join('')}
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
   </div>` : ''}
 
   <!-- ── CYCLE HISTORY ── -->
@@ -11705,31 +11698,15 @@ function renderCycleSheet(){
 
   <!-- ── SETTINGS ── -->
   <div class="ssec" style="padding-top:0;">
-    <div class="ssect">Settings</div>
-    <div class="srow">
-      <div>
-        <div class="slbl">Cycle length</div>
-        <div class="ssub">Average days between periods</div>
+    <div class="srow" style="cursor:pointer;" onclick="openCycleSettingsSheet()">
+      <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(99,102,241,.07));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">⚙️</div>
+        <div style="min-width:0;">
+          <div class="slbl">Cycle Settings</div>
+          <div class="ssub" id="cycleSettingsEntrySub">Cycle ${cl}d · Period ${pl}d</div>
+        </div>
       </div>
-      <div class="cyc-stepper">
-        <button class="cyc-stepper-btn" onclick="cycleData.cycleLength=Math.max(21,(cycleData.cycleLength||28)-1);saveCycle();renderCycleSheet();">−</button>
-        <div class="cyc-stepper-val">${cl}</div>
-        <button class="cyc-stepper-btn" onclick="cycleData.cycleLength=Math.min(45,(cycleData.cycleLength||28)+1);saveCycle();renderCycleSheet();">+</button>
-      </div>
-    </div>
-    <div class="srow">
-      <div>
-        <div class="slbl">Period length</div>
-        <div class="ssub">Average days of bleeding</div>
-      </div>
-      <div class="cyc-stepper">
-        <button class="cyc-stepper-btn" onclick="cycleData.periodLength=Math.max(2,(cycleData.periodLength||5)-1);saveCycle();renderCycleSheet();">−</button>
-        <div class="cyc-stepper-val">${pl}</div>
-        <button class="cyc-stepper-btn" onclick="cycleData.periodLength=Math.min(10,(cycleData.periodLength||5)+1);saveCycle();renderCycleSheet();">+</button>
-      </div>
-    </div>
-    <div class="srow" style="cursor:pointer;" onclick="cyReset()">
-      <div class="slbl" style="color:#f43f5e;">🗑 Clear all cycle data</div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
   </div>
   <div style="height:20px;"></div>
@@ -12261,6 +12238,11 @@ function cyDeleteLogConfirm(){
   document.getElementById('cyDeleteLogOverlay').classList.remove('open');
   _cyDeleteIdx = -1;
   renderCycleSheet();
+  // If the log history sheet is open, re-render it in place
+  if(document.getElementById('logHistorySheet')?.classList.contains('open')){
+    renderLogHistorySheet();
+    if(!(cycleData.logs||[]).length) closeLogHistorySheet();
+  }
   const labels = {period_start:'Period start',period_end:'Period end',ovulation:'Ovulation'};
   if(typeof vikramToast==='function') vikramToast('🗑 ' + (labels[removed.type]||removed.type) + ' deleted');
 }
@@ -12270,6 +12252,8 @@ function cyResetConfirmClose(e){
 }
 function cyResetConfirmYes(){
   document.getElementById('cyResetConfirmOverlay').classList.remove('open');
+  // Close the settings sheet if open
+  try{ closeCycleSettingsSheet(); }catch(e){}
   cycleData = {};
   localStorage.removeItem('vikram_cycle');
   // Push cleared state to cloud immediately so it does not restore from backup
@@ -12878,6 +12862,129 @@ function cyResetConfirmYes(){
     }catch(e){}
   };
 })();
+
+// ── Log History Sheet open / close / render ───────────────────────────────
+function renderLogHistorySheet(){
+  const body = document.getElementById('logHistorySheetBody');
+  if(!body) return;
+  const logs = cycleData.logs || [];
+  const logColors = {period_start:'#FF4757', period_end:'#22c55e', ovulation:'#a855f7'};
+  const logLabels = {period_start:'Period started', period_end:'Period ended', ovulation:'Ovulation logged'};
+  if(!logs.length){
+    body.innerHTML = `<div style="padding:40px 24px;text-align:center;font-size:13px;font-weight:700;color:var(--dsub);">No logs yet — start tracking above 🌸</div>`;
+    return;
+  }
+  body.innerHTML = `
+  <div class="ssec" style="padding-top:4px;">
+    <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>All entries</span>
+      <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${logs.length} ${logs.length === 1 ? 'entry' : 'entries'}</span>
+    </div>
+    ${[...logs].reverse().map((l, revIdx) => {
+      const realIdx = logs.length - 1 - revIdx;
+      return `<div class="srow" style="gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+          <div style="width:8px;height:8px;border-radius:50%;background:${logColors[l.type]||'#aaa'};flex-shrink:0;"></div>
+          <div style="min-width:0;">
+            <div class="slbl">${logLabels[l.type] || l.type}</div>
+            <div class="ssub">${new Date(l.date).toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'})}</div>
+          </div>
+        </div>
+        <button class="cyc-log-del" onclick="cyDeleteLogFromSheet(${realIdx})" title="Delete this log">🗑</button>
+      </div>`;
+    }).join('')}
+  </div>`;
+  // Keep entry row subtitle in sync
+  const sub = document.getElementById('logHistoryEntrySub');
+  if(sub) sub.textContent = logs.length + ' ' + (logs.length === 1 ? 'entry' : 'entries');
+}
+
+function openLogHistorySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  renderLogHistorySheet();
+  const sheet = document.getElementById('logHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+
+function closeLogHistorySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('logHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+
+// Delete from inside the sheet — re-renders sheet in place, also refreshes main tab
+function cyDeleteLogFromSheet(idx){
+  if(typeof haptic === 'function') haptic('light');
+  _cyDeleteIdx = idx;
+  const logs = cycleData.logs || [];
+  if(idx < 0 || idx >= logs.length) return;
+  const l = logs[idx];
+  const logLabels = {period_start:'Period started', period_end:'Period ended', ovulation:'Ovulation logged'};
+  const dateStr = new Date(l.date).toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'});
+  const desc = document.getElementById('cyDeleteLogDesc');
+  if(desc) desc.textContent = (logLabels[l.type]||l.type) + ' · ' + dateStr;
+  document.getElementById('cyDeleteLogOverlay').classList.add('open');
+}
+
+// ── Cycle Settings Sheet open / close / render ────────────────────────────
+function renderCycleSettingsSheet(){
+  const body = document.getElementById('cycleSettingsSheetBody');
+  if(!body) return;
+  const cl = cycleData.cycleLength  || 28;
+  const pl = cycleData.periodLength || 5;
+  body.innerHTML = `
+  <div class="ssec" style="padding-top:4px;">
+    <div class="srow">
+      <div>
+        <div class="slbl">Cycle length</div>
+        <div class="ssub">Average days between periods</div>
+      </div>
+      <div class="cyc-stepper">
+        <button class="cyc-stepper-btn" onclick="cycleData.cycleLength=Math.max(21,(cycleData.cycleLength||28)-1);saveCycle();renderCycleSettingsSheet();renderCycleSheet();">−</button>
+        <div class="cyc-stepper-val" id="cssClVal">${cl}</div>
+        <button class="cyc-stepper-btn" onclick="cycleData.cycleLength=Math.min(45,(cycleData.cycleLength||28)+1);saveCycle();renderCycleSettingsSheet();renderCycleSheet();">+</button>
+      </div>
+    </div>
+    <div class="srow">
+      <div>
+        <div class="slbl">Period length</div>
+        <div class="ssub">Average days of bleeding</div>
+      </div>
+      <div class="cyc-stepper">
+        <button class="cyc-stepper-btn" onclick="cycleData.periodLength=Math.max(2,(cycleData.periodLength||5)-1);saveCycle();renderCycleSettingsSheet();renderCycleSheet();">−</button>
+        <div class="cyc-stepper-val" id="cssPlVal">${pl}</div>
+        <button class="cyc-stepper-btn" onclick="cycleData.periodLength=Math.min(10,(cycleData.periodLength||5)+1);saveCycle();renderCycleSettingsSheet();renderCycleSheet();">+</button>
+      </div>
+    </div>
+    <div class="srow" style="border-bottom:none;cursor:pointer;" onclick="cyReset()">
+      <div class="slbl" style="color:#f43f5e;">🗑 Clear all cycle data</div>
+    </div>
+  </div>`;
+  // Keep entry row subtitle in sync
+  const sub = document.getElementById('cycleSettingsEntrySub');
+  if(sub) sub.textContent = 'Cycle ' + cl + 'd · Period ' + pl + 'd';
+}
+
+function openCycleSettingsSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  renderCycleSettingsSheet();
+  const sheet = document.getElementById('cycleSettingsSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+
+function closeCycleSettingsSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('cycleSettingsSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
 
 // ── Partner Sync Dashboard Sheet open / close ─────────────────────────────
 function openPartnerSyncSheet(){
@@ -18044,6 +18151,36 @@ function svRefreshStorage(){
     <button class="ebtn" id="bdtSaveBtn" style="width:100%;">Save Birthday</button>
     <div id="bdtErrMsg" style="display:none;margin-top:8px;padding:8px 12px;border-radius:10px;background:rgba(220,60,60,.12);color:#e53e3e;font-size:13px;font-weight:700;text-align:center;"></div>
     <button id="bdtDeleteBtn" onclick="bdtDelete()" style="display:none;width:100%;margin-top:10px;padding:11px;border-radius:13px;border:none;background:rgba(220,60,60,.1);color:#e53e3e;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">Delete</button>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── LOG HISTORY SHEET ──────────────────────────────────────────────────── -->
+<div class="sheet" id="logHistorySheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>📋 Log History</span>
+    <button class="ae-close" onclick="closeLogHistorySheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="logHistorySheetBody"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── CYCLE SETTINGS SHEET ──────────────────────────────────────────────── -->
+<div class="sheet" id="cycleSettingsSheet" style="max-height:72vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>⚙️ Cycle Settings</span>
+    <button class="ae-close" onclick="closeCycleSettingsSheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="cycleSettingsSheetBody"></div>
     <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
   </div>
 </div>
