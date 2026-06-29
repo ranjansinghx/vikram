@@ -11687,6 +11687,21 @@ function renderCycleSheet(){
 
   <!-- ── PARTNER SYNC ── -->
   <div id="pairSyncSection"></div>
+  <div class="ssec" style="padding-top:0;">
+    <div class="srow" style="cursor:pointer;" id="pairSyncEntryRow" onclick="openPartnerSyncSheet()">
+      <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(255,107,157,.18),rgba(236,72,153,.10));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💞</div>
+        <div style="min-width:0;">
+          <div class="slbl">Pair &amp; Sync with Partner</div>
+          <div class="ssub" id="pairSyncEntrySub">Connect with your partner's cycle</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:7px;flex-shrink:0;">
+        <div id="pairSyncEntryDot" class="pair-status-dot offline" style="flex-shrink:0;"></div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+  </div>
 
   <!-- ── SETTINGS ── -->
   <div class="ssec" style="padding-top:0;">
@@ -11720,11 +11735,11 @@ function renderCycleSheet(){
   <div style="height:20px;"></div>
   `;
 
-  // Render partner sync widget after body HTML is set
+  // Update the entry row status dot + subtitle after body HTML is set
   setTimeout(function(){
+    // renderPairSection now writes to partnerSyncSheetBody (only visible when sheet opens)
+    // but we still call it here so the entry row status dot + subtitle update
     renderPairSection();
-    // Load moments after paired view is rendered
-    if(typeof window.renderPairMoments === 'function') window.renderPairMoments();
   }, 0);
   }catch(e){
     console.error('[Vikram] renderCycleSheet error:', e);
@@ -12526,22 +12541,38 @@ function cyResetConfirmYes(){
         <code style="background:#fef9c3;padding:2px 5px;border-radius:3px;font-size:10px;">"cycles": {".read":"auth!=null",".write":"auth!=null"}, "moments": {".read":"auth!=null",".write":"auth!=null"}</code>
       </div>` : '';
 
-    wrap.innerHTML = `
-    <div class="pair-card">
-      <div class="pair-card-head">
-        <div class="pair-icon-wrap">💞</div>
-        <div class="pair-head-text">
-          <div class="pair-head-title">Pair &amp; Sync with Partner</div>
-          <div class="pair-head-sub">${paired ? 'Connected · live cycle sync' : fbOk ? 'Real-time sync ready' : 'Connect with your partner\'s cycle'}</div>
-        </div>
-        <div class="pair-status-dot ${paired && fbOk && !permDenied ? '' : 'offline'}"></div>
+    // Render into the sheet body
+    const sheetBody = document.getElementById('partnerSyncSheetBody');
+    if(sheetBody){
+      const isOnline = paired && fbOk && !permDenied;
+      sheetBody.innerHTML = `
+      <div style="padding:0 16px;">
+        ${errBanner ? `<div style="margin:12px 0;">${errBanner}</div>` : ''}
       </div>
-      ${errBanner}
-      ${paired ? renderPaired(d, fbOk) : renderUnpaired(d, fbOk)}
-    </div>`;
+      <div style="padding:0 16px 8px;">
+        ${paired ? renderPaired(d, fbOk) : renderUnpaired(d, fbOk)}
+      </div>`;
+    }
+
+    // Also keep the hidden legacy wrap empty (some external callers reference it)
+    if(wrap) wrap.innerHTML = '';
+
+    // Update the entry row button in cycle tab
+    const entrySub = document.getElementById('pairSyncEntrySub');
+    const entryDot = document.getElementById('pairSyncEntryDot');
+    const isOnline = paired && fbOk && !permDenied;
+    if(entrySub){
+      if(paired) entrySub.textContent = 'Connected · live cycle sync';
+      else if(fbOk) entrySub.textContent = 'Real-time sync ready';
+      else entrySub.textContent = 'Connect with your partner\'s cycle';
+    }
+    if(entryDot){
+      entryDot.classList.toggle('offline', !isOnline);
+    }
 
     if(paired && typeof window.renderPairMoments === 'function'){
-      setTimeout(window.renderPairMoments, 0);
+      const sheetOpen = document.getElementById('partnerSyncSheet')?.classList.contains('open');
+      if(sheetOpen) setTimeout(window.renderPairMoments, 0);
     }
   };
 
@@ -12846,6 +12877,42 @@ function cyResetConfirmYes(){
       pairSave(d);
     }catch(e){}
   };
+})();
+
+// ── Partner Sync Dashboard Sheet open / close ─────────────────────────────
+function openPartnerSyncSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  // Render the pair content into the sheet first
+  if(typeof renderPairSection === 'function') renderPairSection();
+  const sheet = document.getElementById('partnerSyncSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet){ sheet.classList.add('open'); }
+  if(ov){ ov.classList.add('open'); }
+  // Render moments now that the DOM elements are visible
+  setTimeout(function(){
+    if(typeof window.renderPairMoments === 'function') window.renderPairMoments();
+  }, 60);
+}
+
+function closePartnerSyncSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('partnerSyncSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet){ sheet.classList.remove('open'); }
+  if(ov){ ov.classList.remove('open'); }
+}
+
+// Allow the overlay tap to close the partner sync sheet too
+(function(){
+  const origOvHandler = document.getElementById('ov');
+  if(origOvHandler){
+    const existing = origOvHandler.getAttribute('onclick') || '';
+    origOvHandler.setAttribute('onclick',
+      existing.replace(')(this)',
+        `)(this); if(document.getElementById('partnerSyncSheet')?.classList.contains('open')){closePartnerSyncSheet();}`
+      )
+    );
+  }
 })();
 
 function cyPrivToggle(key, btn){
@@ -17977,6 +18044,21 @@ function svRefreshStorage(){
     <button class="ebtn" id="bdtSaveBtn" style="width:100%;">Save Birthday</button>
     <div id="bdtErrMsg" style="display:none;margin-top:8px;padding:8px 12px;border-radius:10px;background:rgba(220,60,60,.12);color:#e53e3e;font-size:13px;font-weight:700;text-align:center;"></div>
     <button id="bdtDeleteBtn" onclick="bdtDelete()" style="display:none;width:100%;margin-top:10px;padding:11px;border-radius:13px;border:none;background:rgba(220,60,60,.1);color:#e53e3e;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">Delete</button>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── PARTNER SYNC DASHBOARD SHEET ─────────────────────────────────────── -->
+<div class="sheet" id="partnerSyncSheet" style="max-height:92vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>💞 Partner Sync</span>
+    <button class="ae-close" onclick="closePartnerSyncSheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="partnerSyncSheetBody"></div>
     <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
   </div>
 </div>
