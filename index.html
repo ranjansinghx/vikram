@@ -11099,17 +11099,49 @@ function getPhase(){
   const d = cycleData, day = getDayOfCycle();
   if(!day || day < 1) return null;
   const cl = d.cycleLength||28, pl = d.periodLength||5;
-  const ovDay = cl - 14; // typical ovulation day
+  const ovDay = cl - 14;
+  const logs = cycleData.logs || [];
+  const cycleStartTs = cycleData.lastPeriodStart;
 
-  if(day <= pl)
-    return { name:'Menstrual',  dayIn:day,          of:pl,         next: pl-day+1    };
+  // Check if period_end has been logged for this cycle
+  const periodEndLog = logs.filter(l => l.type === 'period_end' && l.date >= cycleStartTs)
+    .sort((a,b) => b.date - a.date)[0] || null;
+  // Check if ovulation has been logged for this cycle
+  const ovulationLog = logs.filter(l => l.type === 'ovulation' && l.date >= cycleStartTs)
+    .sort((a,b) => b.date - a.date)[0] || null;
+
   const follEnd = ovDay - 3;
-  if(day <= follEnd)
-    return { name:'Follicular', dayIn:day-pl,        of:follEnd-pl, next: follEnd-day+1 };
   const ovEnd = ovDay + 2;
+
+  // If ovulation confirmed: day-of-ovulation log determines phase
+  if(ovulationLog){
+    const today0 = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+    const daysSinceOvul = Math.round((today0 - ovulationLog.date) / 86400000);
+    if(daysSinceOvul <= 1)
+      return { name:'Ovulation', dayIn:daysSinceOvul+1, of:2, next: 1-daysSinceOvul };
+    // After ovulation confirmed → Luteal
+    const lutealDay = daysSinceOvul - 1;
+    const lutealLen = cl - ovEnd;
+    return { name:'Luteal', dayIn:lutealDay, of:lutealLen, next: Math.max(0, cl - day + 1) };
+  }
+
+  // If period ended early → skip to Follicular
+  if(periodEndLog && day <= pl){
+    const today0 = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+    const daysSinceEnd = Math.round((today0 - periodEndLog.date) / 86400000);
+    const follDay = daysSinceEnd + 1;
+    const follLen = follEnd - pl;
+    return { name:'Follicular', dayIn:follDay, of:follLen, next: Math.max(0, follEnd - day + 1) };
+  }
+
+  // Default date-math phases
+  if(day <= pl)
+    return { name:'Menstrual',  dayIn:day,             of:pl,         next: pl-day+1    };
+  if(day <= follEnd)
+    return { name:'Follicular', dayIn:day-pl,           of:follEnd-pl, next: follEnd-day+1 };
   if(day <= ovEnd)
-    return { name:'Ovulation',  dayIn:day-(ovDay-2)+1, of:5,        next: ovEnd-day+1  };
-  return   { name:'Luteal',     dayIn:day-ovEnd,    of:cl-ovEnd,   next: cl-day+1    };
+    return { name:'Ovulation',  dayIn:day-(ovDay-2)+1,  of:5,          next: ovEnd-day+1  };
+  return   { name:'Luteal',     dayIn:day-ovEnd,        of:cl-ovEnd,   next: cl-day+1    };
 }
 
 function getDaysUntilNextPeriod(){
@@ -11223,35 +11255,76 @@ function renderCycleSheet(){
     ? 'linear-gradient(145deg,#6c5ce7,#a29bfe)'
     : (pi ? heroGradients[phase.name] || heroGradients.Follicular : heroGradients.Follicular);
 
-  // ── Richer derived stats ──
-  const ovDay2      = cl - 14;
-  const fertileStart = ovDay2 - 4;
-  const inFertile   = !notSet && day >= fertileStart && day <= ovDay2;
-  const dFertileStart = notSet ? null : fertileStart - day;
-  const dFertileEnd   = notSet ? null : ovDay2 - day;
+  // ── Log-aware derived stats ──
+  const today0ts     = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+  const cycleStartTs = cycleData.lastPeriodStart;
+  const allLogs      = cycleData.logs || [];
 
-  const ovulLabel = notSet ? '—'
-    : dOvul === null ? 'Passed' : dOvul === 0 ? 'Today!' : 'In ' + dOvul + 'd';
+  // Period-end log for current cycle
+  const periodEndLog = notSet ? null :
+    (allLogs.filter(l => l.type === 'period_end' && l.date >= cycleStartTs)
+      .sort((a,b) => b.date - a.date)[0] || null);
 
+  // Ovulation log for current cycle
+  const ovulLog = notSet ? null :
+    (allLogs.filter(l => l.type === 'ovulation' && l.date >= cycleStartTs)
+      .sort((a,b) => b.date - a.date)[0] || null);
+
+  const ovDay2        = cl - 14;
+  const fertileStart  = ovDay2 - 4;
+  const ovulDaysAgo   = ovulLog   ? Math.round((today0ts - ovulLog.date)      / 86400000) : null;
+  const periodEndDaysAgo = periodEndLog ? Math.round((today0ts - periodEndLog.date) / 86400000) : null;
+
+  // ── Period card ──
+  const periodEndedLabel = periodEndLog
+    ? (periodEndDaysAgo === 0 ? 'Today' : periodEndDaysAgo === 1 ? 'Yesterday' : periodEndDaysAgo + 'd ago')
+    : null;
   const periodLabel = notSet ? '—'
+    : periodEndLog ? 'Done'
     : day <= pl ? 'Day ' + day + '/' + pl
     : day > (cl - 3) ? 'Soon' : 'Done';
 
-  const fertileLabel = notSet ? '—'
-    : inFertile
-      ? (dFertileEnd <= 0 ? 'Last day' : dFertileEnd + 'd left')
-      : dFertileStart > 0 ? 'In ' + dFertileStart + 'd'
-      : 'Passed';
+  // ── Fertile card ──
+  // Ovulation logged → fertile window is confirmed passed
+  const inFertile     = !notSet && !ovulLog && day >= fertileStart && day <= ovDay2;
+  const dFertileStart = notSet ? null : fertileStart - day;
+  const dFertileEnd   = notSet ? null : ovDay2 - day;
+  const fertileLabel  = notSet ? '—'
+    : ovulLog   ? 'Passed'
+    : inFertile ? (dFertileEnd <= 0 ? 'Last day' : dFertileEnd + 'd left')
+    : dFertileStart > 0 ? 'In ' + dFertileStart + 'd'
+    : 'Passed';
 
-  const dCycleLeft = notSet ? null : Math.max(0, cl - day);
+  // ── Ovulation card ──
+  const ovulLabel = notSet ? '—'
+    : ovulLog ? 'Logged'
+    : dOvul === null ? 'Passed' : dOvul === 0 ? 'Today!' : 'In ' + dOvul + 'd';
+  const ovulSubLabel = ovulLog
+    ? (ovulDaysAgo === 0 ? 'Today' : ovulDaysAgo === 1 ? 'Yesterday' : ovulDaysAgo + 'd ago')
+    : null;
+
+  // ── Next period card ──
+  // Ovulation confirmed → luteal phase is ~14d, so next period = ovulation + 14d
+  const nextLabel = (() => {
+    if(notSet) return '—';
+    if(ovulLog){
+      const dFromOvul = 14 - ovulDaysAgo;
+      if(dFromOvul <= 0) return 'Today';
+      return dFromOvul + 'd';
+    }
+    return dNext === 0 ? 'Today' : dNext + 'd';
+  })();
+
+  const dCycleLeft  = notSet ? null : Math.max(0, cl - day);
   const cyclePctStr = notSet ? '—' : Math.round(day / cl * 100) + '%';
-  const nextLabel = notSet ? '—' : dNext === 0 ? 'Today' : dNext + 'd';
 
   const conceptionChance = notSet ? '—'
-    : (dOvul !== null && dOvul <= 1 && inFertile) ? 'Peak'
+    : (ovulLog && ovulDaysAgo <= 1) ? 'Peak'
+    : ovulLog ? 'Low'
     : inFertile ? 'High'
     : (dFertileStart !== null && dFertileStart > 0 && dFertileStart <= 3) ? 'Rising'
     : 'Low';
+
 
   body.innerHTML = `
   <!-- ── HERO CARD ── -->
@@ -11262,6 +11335,7 @@ function renderCycleSheet(){
           <div class="cyc-hero-phase-label">Current Phase</div>
           <div class="cyc-hero-phase-name">${notSet ? 'Not started' : (phase ? phase.name : '—')}</div>
           <div class="cyc-hero-phase-desc">${notSet ? 'Log your first period below' : (pi ? pi.desc : '')}</div>
+          ${periodEndedLabel ? `<div style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:3px 9px;border-radius:20px;background:rgba(34,197,94,.18);border:1px solid rgba(34,197,94,.35);width:fit-content;"><span style="font-size:11px;">🌿</span><span style="font-size:11px;font-weight:800;color:rgba(255,255,255,.9);letter-spacing:.2px;">Period ended · ${periodEndedLabel}</span></div>` : ''}
         </div>
         <div class="cyc-hero-ring-wrap">
           ${notSet
@@ -11294,28 +11368,9 @@ function renderCycleSheet(){
         <div class="cyc-hero-stat">
           <div class="cyc-hero-stat-icon">✨</div>
           <div class="cyc-hero-stat-val">${ovulLabel}</div>
-          <div class="cyc-hero-stat-lbl">Ovulation</div>
+          <div class="cyc-hero-stat-lbl">${ovulSubLabel ? ovulSubLabel : 'Ovulation'}</div>
         </div>
-        <div class="cyc-hero-stat">
-          <div class="cyc-hero-stat-icon">💊</div>
-          <div class="cyc-hero-stat-val">${conceptionChance}</div>
-          <div class="cyc-hero-stat-lbl">Conception</div>
-        </div>
-        <div class="cyc-hero-stat">
-          <div class="cyc-hero-stat-icon">🌙</div>
-          <div class="cyc-hero-stat-val">${notSet ? '—' : dCycleLeft + 'd'}</div>
-          <div class="cyc-hero-stat-lbl">Cycle left</div>
-        </div>
-        <div class="cyc-hero-stat">
-          <div class="cyc-hero-stat-icon">🔄</div>
-          <div class="cyc-hero-stat-val">${cyclePctStr}</div>
-          <div class="cyc-hero-stat-lbl">Progress</div>
-        </div>
-        <div class="cyc-hero-stat">
-          <div class="cyc-hero-stat-icon">📊</div>
-          <div class="cyc-hero-stat-val">${notSet ? '—' : cl + 'd'}</div>
-          <div class="cyc-hero-stat-lbl">Cycle length</div>
-        </div>
+
       </div>
       </div>
     </div>
@@ -11505,96 +11560,207 @@ function renderPartnerModeCycleSheet(body){
   const partnerName = _pmEscHtml(d.partnerName || 'your partner');
 
   if(!paired){
-    // Not paired — nudge them to connect
     body.innerHTML = `
     <div class="pm-no-partner">
       <div class="pm-no-partner-emoji">💞</div>
       <div class="pm-no-partner-title">No partner connected</div>
-      <div class="pm-no-partner-sub">Connect with your partner using your pair code below to see their cycle data and exchange moments in real time.</div>
-      <button class="pm-no-partner-btn" onclick="togglePartnerMode();setTimeout(function(){var el=document.getElementById('pairSyncSection');if(el)el.scrollIntoView({behavior:'smooth'});},80);">
-        Connect with partner 💞
-      </button>
+      <div class="pm-no-partner-sub">Connect with your partner using your pair code to see their cycle data and exchange moments in real time.</div>
     </div>`;
     return;
   }
 
-  // Compute partner phase info from stored data
-  const p = d.partnerCycleData || {};
-  const cl = p.cycleLength || 28, pl = p.periodLength || 5;
-  const ovDay = cl - 14;
-  const today = new Date(); today.setHours(0,0,0,0);
-  let day = null, dNext = null, dOvul = null, phaseName = 'Unknown', phaseColor = '#aaa', noData = true;
+  // ── Compute partner stats (mirrors own-view logic, log-aware) ──────────────
+  const p       = d.partnerCycleData || {};
+  const cl      = p.cycleLength  || 28;
+  const pl      = p.periodLength || 5;
+  const ovDay   = cl - 14;
+  const today0  = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
+  const today0ts = today0.getTime();
+  const notSet  = !p.lastPeriodStart;
 
-  if(p.lastPeriodStart){
-    const last = new Date(p.lastPeriodStart); last.setHours(0,0,0,0);
-    const totalDays = Math.floor((today - last) / 86400000) + 1;
-    day = totalDays > cl ? ((totalDays - 1) % cl) + 1 : totalDays;
-    dNext = Math.max(0, cl - day);
-    const rawDovul = ovDay - day;
-    dOvul = rawDovul < 0 ? null : rawDovul;
-    if(day <= pl){ phaseName='Period'; phaseColor='#FF4757'; }
-    else if(day < ovDay - 2){ phaseName='Follicular'; phaseColor='#FF6B9D'; }
-    else if(day <= ovDay + 2){ phaseName='Ovulation'; phaseColor='#5a5a68'; }
-    else { phaseName='Luteal'; phaseColor='#3B82F6'; }
-    noData = false;
+  let day = null, dNext = null, dOvul = null;
+
+  if(!notSet){
+    const start = new Date(p.lastPeriodStart);
+    const startMid = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    day   = Math.floor((today0 - startMid) / 86400000) + 1;
+    dNext = day > cl ? 0 : cl - day + 1;
+    const rawOvul = ovDay - day;
+    dOvul = rawOvul < 0 ? null : rawOvul;
   }
 
+  // ── Log-aware: read partner's synced logs ──────────────────────────────────
+  const allLogs      = p.logs || [];
+  const cycleStartTs = p.lastPeriodStart || 0;
+
+  const periodEndLog = notSet ? null :
+    (allLogs.filter(l => l.type === 'period_end' && l.date >= cycleStartTs)
+      .sort((a,b) => b.date - a.date)[0] || null);
+
+  const ovulLog = notSet ? null :
+    (allLogs.filter(l => l.type === 'ovulation' && l.date >= cycleStartTs)
+      .sort((a,b) => b.date - a.date)[0] || null);
+
+  const ovulDaysAgo      = ovulLog      ? Math.round((today0ts - ovulLog.date)      / 86400000) : null;
+  const periodEndDaysAgo = periodEndLog ? Math.round((today0ts - periodEndLog.date) / 86400000) : null;
+
+  // ── Phase name (log-aware) ─────────────────────────────────────────────────
+  const heroGradients = {
+    Menstrual:  'linear-gradient(145deg,#c0392b,#e74c3c,#ff6b6b)',
+    Follicular: 'linear-gradient(145deg,#c44569,#FF6B9D,#ffb3cc)',
+    Ovulation:  'linear-gradient(145deg,#6c5ce7,#a29bfe,#c9b8ff)',
+    Luteal:     'linear-gradient(145deg,#1565c0,#2196F3,#64b5f6)',
+  };
+  const PHASE_DESC = {
+    Menstrual:'Period phase', Follicular:'Building phase',
+    Ovulation:'Fertile window', Luteal:'Premenstrual'
+  };
+  let phaseName = 'Unknown', phaseColor = '#aaa', phaseDesc = '';
+  if(!notSet){
+    if(ovulLog){
+      if(ovulDaysAgo <= 1){ phaseName='Ovulation'; phaseColor='#5a5a68'; }
+      else                 { phaseName='Luteal';    phaseColor='#3B82F6'; }
+    } else if(periodEndLog && day <= pl){
+      phaseName='Follicular'; phaseColor='#FF6B9D';
+    } else if(day <= pl)           { phaseName='Menstrual';  phaseColor='#FF4757'; }
+    else if(day < ovDay - 2)       { phaseName='Follicular'; phaseColor='#FF6B9D'; }
+    else if(day <= ovDay + 2)      { phaseName='Ovulation';  phaseColor='#5a5a68'; }
+    else                           { phaseName='Luteal';     phaseColor='#3B82F6'; }
+    phaseDesc = PHASE_DESC[phaseName] || '';
+  }
+  const heroBg = notSet
+    ? 'linear-gradient(145deg,#6c5ce7,#a29bfe)'
+    : (heroGradients[phaseName] || heroGradients.Follicular);
+
+  // ── Stat labels (mirrors own-view) ─────────────────────────────────────────
+  const ovDay2       = cl - 14;
+  const fertileStart = ovDay2 - 4;
+  const inFertile    = !notSet && !ovulLog && day >= fertileStart && day <= ovDay2;
+  const dFertileStart= notSet ? null : fertileStart - day;
+  const dFertileEnd  = notSet ? null : ovDay2 - day;
+
+  // Period card
+  const periodEndedLabel = periodEndLog
+    ? (periodEndDaysAgo === 0 ? 'Today' : periodEndDaysAgo === 1 ? 'Yesterday' : periodEndDaysAgo + 'd ago')
+    : null;
+  const periodLabel = notSet ? '—'
+    : periodEndLog ? 'Done'
+    : day <= pl ? 'Day ' + day + '/' + pl
+    : day > (cl - 3) ? 'Soon' : 'Done';
+
+  // Fertile card
+  const fertileLabel = notSet ? '—'
+    : ovulLog   ? 'Passed'
+    : inFertile ? (dFertileEnd <= 0 ? 'Last day' : dFertileEnd + 'd left')
+    : dFertileStart > 0 ? 'In ' + dFertileStart + 'd'
+    : 'Passed';
+
+  // Ovulation card
+  const ovulLabel    = notSet ? '—'
+    : ovulLog ? 'Logged'
+    : dOvul === null ? 'Passed' : dOvul === 0 ? 'Today!' : 'In ' + dOvul + 'd';
+  const ovulSubLabel = ovulLog
+    ? (ovulDaysAgo === 0 ? 'Today' : ovulDaysAgo === 1 ? 'Yesterday' : ovulDaysAgo + 'd ago')
+    : null;
+
+  // Next period card
+  const nextLabel = (() => {
+    if(notSet) return '—';
+    if(ovulLog){ const df = 14 - ovulDaysAgo; return df <= 0 ? 'Today' : df + 'd'; }
+    return dNext === 0 ? 'Today' : dNext + 'd';
+  })();
+
+  // ── Misc ───────────────────────────────────────────────────────────────────
   const lastSync = d.partnerCycleUpdatedAt
     ? new Date(d.partnerCycleUpdatedAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
     : null;
-
   const fbOk = !!(window.firebase && typeof firebase.database === 'function');
+
+  // ── Ring SVG (reuse own-view builder with partner's day) ───────────────────
+  const ringHTML = notSet
+    ? `<svg viewBox="0 0 80 80" width="76" height="76"><circle cx="40" cy="40" r="33" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="5.5"/></svg>`
+    : (() => {
+        const R=33, SW=5.5, CX=40, CY=40, C=2*Math.PI*R;
+        const pct = Math.min(1, day/cl);
+        const filled = (pct*C).toFixed(2);
+        return `<svg viewBox="0 0 80 80" width="80" height="80">
+          <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="${SW}"/>
+          <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="${SW}"
+            stroke-dasharray="${filled} ${C.toFixed(2)}" stroke-dashoffset="${C*0.25}"
+            stroke-linecap="round" style="transition:stroke-dasharray .5s ease;"/>
+        </svg>`;
+      })();
 
   body.innerHTML = `
   <div class="partner-cycle-view">
 
-    <!-- Partner banner with unpair button -->
+    <!-- Partner banner -->
     <div class="partner-mode-banner">
       <div class="partner-mode-banner-icon">💑</div>
       <div class="partner-mode-banner-body">
         <div class="partner-mode-banner-title">${partnerName}'s cycle</div>
         <div class="partner-mode-banner-sub">${fbOk ? '🟢 Live sync' : '⚠️ Offline'}${lastSync ? ' · updated ' + lastSync : ''}</div>
       </div>
-      <button class="pm-unpair-btn" onclick="pmUnpair()">Unpair</button>
     </div>
 
-    <!-- Phase ring -->
-    <div class="partner-phase-hero">
-      ${noData
-        ? `<div style="width:180px;height:180px;border-radius:50%;background:var(--tgbg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:40px;">💑<span style="font-size:12px;font-weight:700;color:var(--dsub);text-align:center;padding:0 20px;">Waiting for ${partnerName} to log their cycle</span></div>`
-        : _buildPartnerPhaseRingHTML(day, phaseColor, phaseName)
-      }
-      ${!noData ? `
-      <div class="partner-phase-hero-name">${phaseName} Phase</div>
-      <div class="partner-phase-hero-day">Day ${day} of ${cl}-day cycle</div>` : ''}
-    </div>
-
-    <!-- Stats grid -->
-    <div class="partner-stat-grid">
-      <div class="partner-stat-card">
-        <div class="partner-stat-emoji">📅</div>
-        <div class="partner-stat-val">${noData ? '—' : 'Day ' + day}</div>
-        <div class="partner-stat-lbl">of ${cl}-day cycle</div>
-      </div>
-      <div class="partner-stat-card">
-        <div class="partner-stat-emoji">🔮</div>
-        <div class="partner-stat-val">${noData ? '—' : dNext + 'd'}</div>
-        <div class="partner-stat-lbl">until next period</div>
-      </div>
-      <div class="partner-stat-card">
-        <div class="partner-stat-emoji">✨</div>
-        <div class="partner-stat-val">${noData ? '—' : dOvul === null ? 'Active' : dOvul === 0 ? 'Today' : dOvul + 'd'}</div>
-        <div class="partner-stat-lbl">${noData ? 'Fertile window' : dOvul === null ? 'Fertile window' : dOvul === 0 ? 'Ovulating today' : 'to ovulation'}</div>
-      </div>
-      <div class="partner-stat-card">
-        <div class="partner-stat-emoji">🩸</div>
-        <div class="partner-stat-val">${noData ? '—' : day <= pl ? 'Day ' + day : day > (cl - 3) ? 'Soon' : 'Done'}</div>
-        <div class="partner-stat-lbl">${noData ? 'Period status' : day <= pl ? 'of ' + pl + '-day period' : 'Period'}</div>
+    <!-- Hero card — same layout as own view -->
+    <div class="cyc-hero">
+      <div class="cyc-hero-bg" style="background:${heroBg};">
+        <div class="cyc-hero-top">
+          <div class="cyc-hero-phase">
+            <div class="cyc-hero-phase-label">Current Phase</div>
+            <div class="cyc-hero-phase-name">${notSet ? 'Not started' : phaseName}</div>
+            <div class="cyc-hero-phase-desc">${notSet ? 'Waiting for ' + partnerName + ' to log their cycle' : phaseDesc}</div>
+            ${periodEndedLabel ? `<div style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:3px 9px;border-radius:20px;background:rgba(34,197,94,.18);border:1px solid rgba(34,197,94,.35);width:fit-content;"><span style="font-size:11px;">🌿</span><span style="font-size:11px;font-weight:800;color:rgba(255,255,255,.9);letter-spacing:.2px;">Period ended · ${periodEndedLabel}</span></div>` : ''}
+          </div>
+          <div class="cyc-hero-ring-wrap">
+            ${ringHTML}
+            <div class="cyc-hero-ring-center">
+              <div class="cyc-hero-ring-day">${notSet ? '–' : day}</div>
+              <div class="cyc-hero-ring-of">${notSet ? '' : 'of ' + cl}</div>
+            </div>
+          </div>
+        </div>
+        ${notSet ? '' : (() => {
+          const segments = [
+            {start:0,      end:pl,       color:'#FF4757'},
+            {start:pl,     end:ovDay2-2, color:'#FF6B9D'},
+            {start:ovDay2-2,end:ovDay2+2,color:'rgba(255,255,255,.6)'},
+            {start:ovDay2+2,end:cl,      color:'#7dd3fc'},
+          ];
+          const segs = segments.map(s=>{
+            const w=((s.end-s.start)/cl*100).toFixed(1);
+            return '<div class="cyc-timeline-seg" style="width:'+w+'%;background:'+s.color+';"></div>';
+          }).join('');
+          return '<div class="cyc-timeline">'+segs+'</div>';
+        })()}
+        <div class="cyc-hero-stats">
+          <div class="cyc-hero-stat">
+            <div class="cyc-hero-stat-icon">📅</div>
+            <div class="cyc-hero-stat-val">${nextLabel}</div>
+            <div class="cyc-hero-stat-lbl">Next period</div>
+          </div>
+          <div class="cyc-hero-stat">
+            <div class="cyc-hero-stat-icon">🩸</div>
+            <div class="cyc-hero-stat-val">${periodLabel}</div>
+            <div class="cyc-hero-stat-lbl">Period</div>
+          </div>
+          <div class="cyc-hero-stat">
+            <div class="cyc-hero-stat-icon">🌸</div>
+            <div class="cyc-hero-stat-val">${fertileLabel}</div>
+            <div class="cyc-hero-stat-lbl">Fertile</div>
+          </div>
+          <div class="cyc-hero-stat">
+            <div class="cyc-hero-stat-icon">✨</div>
+            <div class="cyc-hero-stat-val">${ovulLabel}</div>
+            <div class="cyc-hero-stat-lbl">${ovulSubLabel ? ovulSubLabel : 'Ovulation'}</div>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Re-sync button if needed -->
-    ${noData && fbOk ? `
+    ${notSet && fbOk ? `
     <div style="margin:0 18px 14px;display:flex;justify-content:center;">
       <button onclick="if(window._fbPair){window._fbPair.forceSync();if(typeof vikramToast==='function')vikramToast('🔄 Syncing…');}"
         style="padding:9px 20px;border-radius:11px;border:none;background:linear-gradient(135deg,#FF6B9D,#C44569);color:#fff;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 3px 10px rgba(255,107,157,.28);">
@@ -11625,7 +11791,6 @@ function renderPartnerModeCycleSheet(body){
 
   </div>`;
 
-  // Load moments into the freshly-rendered container
   setTimeout(function(){
     if(typeof window.renderPairMoments === 'function') window.renderPairMoments();
   }, 0);
@@ -11872,6 +12037,7 @@ function cyResetConfirmYes(){
       lastPeriodStart: cd.lastPeriodStart || null,
       cycleLength:     cd.cycleLength     || 28,
       periodLength:    cd.periodLength    || 5,
+      logs:            (cd.logs || []).filter(l => l.date >= (cd.lastPeriodStart || 0)),
       updatedAt:       Date.now()
     };
     const database = db();
@@ -11907,6 +12073,7 @@ function cyResetConfirmYes(){
           lastPeriodStart: val.lastPeriodStart || null,
           cycleLength:     val.cycleLength     || 28,
           periodLength:    val.periodLength    || 5,
+          logs:            val.logs            || [],
         };
         d.partnerCycleUpdatedAt = val.updatedAt || Date.now();
         pairSave(d);
