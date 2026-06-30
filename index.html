@@ -2605,77 +2605,146 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 }
 
 /* ── MOMENT MESSAGES ── */
-.pair-moment-wrap{overflow:hidden;}
-.pair-moment-head{
-  display:flex;align-items:center;gap:8px;
-  padding:11px 16px 10px;
-  border-bottom:1px solid rgba(255,107,157,.1);
+/* ── MOMENTS REDESIGN ───────────────────────────────────────── */
+.pair-moment-wrap{
+  overflow:hidden;
+  border-radius:20px;
+  border:1px solid rgba(255,107,157,.15);
+  background:var(--card);
+  margin:0;
 }
-.pair-moment-head-icon{font-size:15px;}
+.pair-moment-head{
+  display:flex;align-items:center;gap:10px;
+  padding:13px 16px 11px;
+  background:linear-gradient(135deg,rgba(255,107,157,.08),rgba(196,69,105,.04));
+  border-bottom:1px solid rgba(255,107,157,.10);
+}
+.pair-moment-head-left{display:flex;align-items:center;gap:9px;flex:1;min-width:0;}
+.pair-moment-head-icon{
+  width:32px;height:32px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  box-shadow:0 2px 8px rgba(255,107,157,.3);
+}
 .pair-moment-head-title{
-  font-size:12px;font-weight:900;color:var(--htext);flex:1;letter-spacing:.1px;
+  font-size:13px;font-weight:900;color:var(--htext);letter-spacing:-.1px;
+}
+.pair-moment-head-sub{
+  font-size:10.5px;font-weight:700;color:var(--hsub);margin-top:1px;
 }
 .pair-moment-head-count{
-  font-size:10px;font-weight:800;color:var(--hsub);
-  background:var(--tgbg);padding:2px 8px;border-radius:20px;
+  font-size:10px;font-weight:800;color:#FF6B9D;
+  background:rgba(255,107,157,.12);padding:2px 8px;border-radius:20px;
+  border:1px solid rgba(255,107,157,.2);
 }
+/* Quick emoji strip */
+.pair-quick-emojis{
+  display:flex;gap:6px;padding:8px 14px 0;
+  overflow-x:auto;scrollbar-width:none;
+}
+.pair-quick-emojis::-webkit-scrollbar{display:none;}
+.pair-quick-emoji{
+  flex-shrink:0;width:34px;height:34px;border-radius:10px;border:none;cursor:pointer;
+  background:var(--tgbg);font-size:17px;display:flex;align-items:center;
+  justify-content:center;transition:transform .12s,background .15s;
+  border:1px solid var(--border);
+}
+.pair-quick-emoji:active{transform:scale(.82);}
+/* Message list */
 .pair-moment-msgs{
-  max-height:190px;overflow-y:auto;padding:12px 14px;
-  display:flex;flex-direction:column;gap:8px;
+  min-height:80px;max-height:220px;overflow-y:auto;
+  padding:12px 14px 6px;
+  display:flex;flex-direction:column;gap:6px;
+  scroll-behavior:smooth;
 }
 .pair-moment-msgs:empty::after{
-  content:'No messages yet — say something sweet 💌';
+  content:'No moments yet — send something sweet 💌';
   font-size:12px;font-weight:600;color:var(--hsub);
-  text-align:center;padding:12px 0;display:block;line-height:1.6;
+  text-align:center;padding:20px 0;display:block;line-height:1.6;
 }
+/* Bubbles */
 .pair-msg-bubble{
   display:flex;flex-direction:column;
-  max-width:86%;
+  max-width:82%;
+  animation:bubbleIn .18s cubic-bezier(.22,.85,.25,1);
 }
+@keyframes bubbleIn{from{opacity:0;transform:translateY(6px) scale(.96);}to{opacity:1;transform:none;}}
 .pair-msg-bubble.mine{ align-self:flex-end;align-items:flex-end; }
 .pair-msg-bubble.theirs{ align-self:flex-start;align-items:flex-start; }
 .pair-msg-text{
-  padding:9px 13px;border-radius:16px;
-  font-size:13px;font-weight:700;line-height:1.45;
-  word-break:break-word;
+  padding:9px 13px;border-radius:18px;
+  font-size:13px;font-weight:700;line-height:1.5;
+  word-break:break-word;position:relative;
 }
 .pair-msg-bubble.mine .pair-msg-text{
   background:linear-gradient(135deg,#FF6B9D,#C44569);
-  color:#fff;border-bottom-right-radius:4px;
+  color:#fff;border-bottom-right-radius:5px;
+  box-shadow:0 2px 10px rgba(255,107,157,.28);
 }
 .pair-msg-bubble.theirs .pair-msg-text{
   background:var(--tgbg);color:var(--htext);
-  border-bottom-left-radius:4px;
+  border-bottom-left-radius:5px;
+  border:1px solid var(--border);
+}
+/* Emoji-only large bubble */
+.pair-msg-bubble.emoji-only .pair-msg-text{
+  background:none!important;border:none!important;box-shadow:none!important;
+  padding:2px 4px;font-size:32px;line-height:1.2;
 }
 .pair-msg-meta{
   font-size:9.5px;font-weight:700;color:var(--hsub);
-  margin-top:3px;padding:0 3px;
+  margin-top:3px;padding:0 4px;display:flex;align-items:center;gap:4px;
 }
+.pair-msg-meta .pair-msg-tick{color:#22c55e;font-size:10px;}
+/* Date divider */
+.pair-date-divider{
+  display:flex;align-items:center;gap:8px;margin:6px 0;
+}
+.pair-date-divider span{
+  font-size:10px;font-weight:800;color:var(--hsub);
+  background:var(--tgbg);padding:2px 10px;border-radius:20px;
+  border:1px solid var(--border);white-space:nowrap;
+}
+.pair-date-divider::before,.pair-date-divider::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+/* Compose bar */
 .pair-moment-compose{
-  border-top:1px solid rgba(255,107,157,.1);
-  padding:10px 12px;
-  display:flex;align-items:flex-end;gap:8px;
-  background:var(--sbg);
+  border-top:1px solid rgba(255,107,157,.10);
+  padding:8px 10px 10px;
+  display:flex;align-items:flex-end;gap:7px;
+  background:var(--card);
 }
+.pair-compose-field{
+  flex:1;display:flex;align-items:flex-end;
+  background:var(--tgbg);border-radius:20px;
+  border:1.5px solid var(--border);
+  padding:6px 12px;gap:6px;
+  transition:border-color .2s;min-height:38px;
+}
+.pair-compose-field:focus-within{border-color:rgba(255,107,157,.45);}
 .pair-moment-input{
-  flex:1;resize:none;border:1.5px solid var(--border);outline:none;
-  background:var(--tgbg);border-radius:12px;
-  padding:9px 12px;min-height:38px;max-height:100px;
+  flex:1;resize:none;border:none;outline:none;
+  background:transparent;
+  min-height:24px;max-height:90px;
   font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;
-  color:var(--htext);line-height:1.4;overflow-y:auto;
-  transition:border-color .2s;
+  color:var(--htext);line-height:1.45;overflow-y:auto;
+  padding:2px 0;
 }
-.pair-moment-input:focus{border-color:rgba(255,107,157,.4);}
 .pair-moment-input::placeholder{color:var(--hsub);}
 .pair-moment-send{
   width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;
   background:linear-gradient(135deg,#FF6B9D,#C44569);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
   box-shadow:0 3px 10px rgba(255,107,157,.35);
-  transition:transform .15s,opacity .15s;
+  transition:transform .13s,opacity .13s,background .2s;
 }
-.pair-moment-send:active{transform:scale(.9);opacity:.85;}
-.pair-moment-send svg{width:16px;height:16px;stroke:#fff;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.pair-moment-send:active{transform:scale(.88);opacity:.85;}
+.pair-moment-send svg{width:15px;height:15px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.pair-moment-send.sent-anim{
+  background:linear-gradient(135deg,#22c55e,#16a34a)!important;
+  transform:scale(.88)!important;
+}
 
 .pair-nudge-btn{
   width:100%;padding:11px;border-radius:12px;border:none;cursor:pointer;
@@ -2778,23 +2847,28 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .partner-stat-val{font-size:20px;font-weight:900;color:var(--dtext);letter-spacing:-.3px;line-height:1.1;}
 .partner-stat-lbl{font-size:10.5px;font-weight:700;color:var(--dsub);}
 
-/* Partner moments section in Partner Mode (full-width, no card border) */
+/* Partner moments section — reuses .pair-moment-wrap styles in partner mode */
 .pm-moments-section{
   margin:0 18px 16px;
-  border:1px solid rgba(255,107,157,.18);
-  border-radius:16px;
+  border-radius:20px;
   overflow:hidden;
-  background:linear-gradient(135deg,rgba(255,107,157,.04),transparent);
+  border:1px solid rgba(255,107,157,.15);
+  background:var(--card);
 }
 .pm-moments-head{
-  display:flex;align-items:center;gap:8px;
-  padding:11px 14px 9px;
-  border-bottom:1px solid rgba(255,107,157,.12);
-  background:linear-gradient(135deg,rgba(255,107,157,.07),transparent);
+  display:flex;align-items:center;gap:10px;
+  padding:13px 16px 11px;
+  background:linear-gradient(135deg,rgba(255,107,157,.08),rgba(196,69,105,.04));
+  border-bottom:1px solid rgba(255,107,157,.10);
 }
-.pm-moments-head-icon{font-size:15px;}
+.pm-moments-head-icon{
+  width:32px;height:32px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  display:flex;align-items:center;justify-content:center;font-size:16px;
+  box-shadow:0 2px 8px rgba(255,107,157,.3);
+}
 .pm-moments-head-title{font-size:13px;font-weight:900;color:var(--htext);flex:1;}
-.pm-moments-head-count{font-size:10px;font-weight:800;color:var(--hsub);background:var(--tgbg);padding:2px 7px;border-radius:8px;}
+.pm-moments-head-count{font-size:10px;font-weight:800;color:#FF6B9D;background:rgba(255,107,157,.12);padding:2px 8px;border-radius:20px;border:1px solid rgba(255,107,157,.2);}
 
 /* Not-paired nudge in partner mode */
 .pm-no-partner{
@@ -12042,23 +12116,35 @@ function renderPartnerModeCycleSheet(body){
       </div>`;
     })()}
 
-    <!-- Moments section -->
+    <!-- Moments section — redesign -->
     <div class="pm-moments-section">
       <div class="pm-moments-head">
-        <span class="pm-moments-head-icon">💌</span>
+        <div class="pm-moments-head-icon">💌</div>
         <span class="pm-moments-head-title">Moments</span>
         <span class="pm-moments-head-count" id="pairMomentCount"></span>
       </div>
+      <div class="pair-quick-emojis">
+        <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('💗')" title="Love">💗</button>
+        <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('🌸')" title="Flower">🌸</button>
+        <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('🤗')" title="Hug">🤗</button>
+        <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('☀️')" title="Sunshine">☀️</button>
+        <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('💆')" title="Relax">💆</button>
+        <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('🍵')" title="Tea">🍵</button>
+        <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('🌙')" title="Moon">🌙</button>
+        <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('💪')" title="Strong">💪</button>
+      </div>
       <div class="pair-moment-msgs" id="pairMomentMsgs"></div>
-      <div class="pair-moment-compose" style="border-top:1px solid rgba(255,107,157,.12);padding:10px 12px;display:flex;align-items:flex-end;gap:8px;">
-        <textarea class="pair-moment-input" id="pairMomentInput"
-          placeholder="Type a moment for ${partnerName}…"
-          rows="1"
-          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();pairSendMoment();}"
-          oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';"
-        ></textarea>
-        <button class="pair-moment-send" onclick="pairSendMoment()" title="Send">
-          <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:#fff;stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      <div class="pair-moment-compose">
+        <div class="pair-compose-field">
+          <textarea class="pair-moment-input" id="pairMomentInput"
+            placeholder="Type a moment for ${partnerName}…"
+            rows="1"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();pairSendMoment();}"
+            oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px';"
+          ></textarea>
+        </div>
+        <button class="pair-moment-send" id="pairMomentSendBtn" onclick="pairSendMoment()" title="Send">
+          <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </div>
     </div>
@@ -12654,22 +12740,39 @@ function cyResetConfirmYes(){
         <div class="pair-hb-line"></div>
       </div>
 
-      <!-- Moment Messages -->
+      <!-- Moments redesign -->
       <div class="pair-moment-wrap">
         <div class="pair-moment-head">
-          <span class="pair-moment-head-icon">💌</span>
-          <span class="pair-moment-head-title">Moments</span>
+          <div class="pair-moment-head-left">
+            <div class="pair-moment-head-icon">💌</div>
+            <div>
+              <div class="pair-moment-head-title">Moments</div>
+              <div class="pair-moment-head-sub">Just between you two</div>
+            </div>
+          </div>
           <span class="pair-moment-head-count" id="pairMomentCount"></span>
+        </div>
+        <div class="pair-quick-emojis" id="pairQuickEmojis">
+          <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('💗')" title="Love">💗</button>
+          <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('🌸')" title="Flower">🌸</button>
+          <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('🤗')" title="Hug">🤗</button>
+          <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('☀️')" title="Sunshine">☀️</button>
+          <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('💆')" title="Relax">💆</button>
+          <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('🍵')" title="Tea">🍵</button>
+          <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('🌙')" title="Moon">🌙</button>
+          <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('💪')" title="Strong">💪</button>
         </div>
         <div class="pair-moment-msgs" id="pairMomentMsgs"></div>
         <div class="pair-moment-compose">
-          <textarea class="pair-moment-input" id="pairMomentInput"
-            placeholder="Say something to ${escapeHtml(d.partnerName||'your partner')}…"
-            rows="1"
-            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();pairSendMoment();}"
-            oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';"
-          ></textarea>
-          <button class="pair-moment-send" onclick="pairSendMoment()" title="Send">
+          <div class="pair-compose-field">
+            <textarea class="pair-moment-input" id="pairMomentInput"
+              placeholder="Say something to ${escapeHtml(d.partnerName||'your partner')}…"
+              rows="1"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();pairSendMoment();}"
+              oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px';"
+            ></textarea>
+          </div>
+          <button class="pair-moment-send" id="pairMomentSendBtn" onclick="pairSendMoment()" title="Send">
             <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
           </button>
         </div>
@@ -12771,6 +12874,22 @@ function cyResetConfirmYes(){
   // Local cache helpers (Firebase listener keeps this fresh)
   function msgsLoad(){ try{ return JSON.parse(localStorage.getItem(MSG_KEY)||'[]'); }catch(e){ return []; } }
 
+  // Helpers for renderMoments
+  function isEmojiOnly(str){
+    // Returns true if string is purely emoji characters (no Latin text)
+    return /^(\p{Emoji_Presentation}|\p{Extended_Pictographic}|\s)+$/u.test(str) && str.trim().length > 0;
+  }
+  function formatMsgDate(ts){
+    const d = new Date(ts);
+    const now = new Date();
+    const isToday = d.toDateString() === now.toDateString();
+    const yesterday = new Date(now); yesterday.setDate(now.getDate()-1);
+    const isYesterday = d.toDateString() === yesterday.toDateString();
+    if(isToday) return 'Today';
+    if(isYesterday) return 'Yesterday';
+    return d.toLocaleDateString([],{month:'short',day:'numeric'});
+  }
+
   function renderMoments(){
     const container = document.getElementById('pairMomentMsgs');
     const countEl   = document.getElementById('pairMomentCount');
@@ -12780,43 +12899,47 @@ function cyResetConfirmYes(){
     const meRaw = (d.myCode || '').replace('-','');
     const theirName = escapeHtml(d.partnerName||'Partner');
 
-    countEl && (countEl.textContent = msgs.length ? msgs.length + ' msg' + (msgs.length===1?'':'s') : '');
+    countEl && (countEl.textContent = msgs.length ? msgs.length + (msgs.length===1?' msg':' msgs') : '');
 
     if(!msgs.length){
-      container.innerHTML = '<div style="text-align:center;padding:14px 0;font-size:12px;font-weight:600;color:var(--hsub);">No messages yet 💌</div>';
+      container.innerHTML = '';
       return;
     }
 
-    container.innerHTML = msgs.map(m => {
+    let html = '';
+    let lastDateStr = '';
+    msgs.forEach(m => {
       const mine = m.from === meRaw;
-      const time = new Date(m.ts).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) +
-                   ', ' + new Date(m.ts).toLocaleDateString([], {month:'short', day:'numeric'});
-      return `<div class="pair-msg-bubble ${mine ? 'mine' : 'theirs'}">
-        <div class="pair-msg-text">${escapeHtml(m.text)}</div>
-        <div class="pair-msg-meta">${mine ? 'You' : theirName} · ${time}</div>
-      </div>`;
-    }).join('');
+      const dateStr = formatMsgDate(m.ts);
+      const time = new Date(m.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      const emojiOnly = isEmojiOnly(m.text);
 
+      if(dateStr !== lastDateStr){
+        html += `<div class="pair-date-divider"><span>${dateStr}</span></div>`;
+        lastDateStr = dateStr;
+      }
+
+      html += `<div class="pair-msg-bubble ${mine?'mine':'theirs'}${emojiOnly?' emoji-only':''}">
+        <div class="pair-msg-text">${escapeHtml(m.text)}</div>
+        <div class="pair-msg-meta">
+          ${mine ? 'You' : theirName} · ${time}
+          ${mine ? '<span class="pair-msg-tick">✓✓</span>' : ''}
+        </div>
+      </div>`;
+    });
+    container.innerHTML = html;
     container.scrollTop = container.scrollHeight;
   }
 
   // Expose so renderPairSection can call it after DOM is set
   window.renderPairMoments = renderMoments;
 
-  window.pairSendMoment = function(){
-    const inp = document.getElementById('pairMomentInput');
-    if(!inp) return;
-    const text = inp.value.trim();
+  function doSendMoment(text){
     if(!text) return;
-    if(typeof haptic === 'function') haptic('light');
-
+    if(typeof haptic === 'function') haptic('medium');
     const d = pairLoad();
     if(!d.partnerCode){ if(typeof vikramToast==='function') vikramToast('Connect with a partner first 💞'); return; }
 
-    inp.value = '';
-    inp.style.height = 'auto';
-
-    // Show optimistic local message immediately
     const meRaw = (d.myCode || myCode()).replace(/-/g,'');
     const optimisticMsg = { from: meRaw, text, ts: Date.now() };
     const msgs = msgsLoad();
@@ -12824,20 +12947,30 @@ function cyResetConfirmYes(){
     try{ localStorage.setItem(MSG_KEY, JSON.stringify(msgs)); }catch(e){}
     renderMoments();
 
-    // Visual feedback
-    const sendBtn = document.querySelector('.pair-moment-send');
+    // Send animation on button
+    const sendBtn = document.getElementById('pairMomentSendBtn') || document.querySelector('.pair-moment-send');
     if(sendBtn){
-      sendBtn.style.transform = 'scale(.85)';
-      sendBtn.style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
-      setTimeout(()=>{ sendBtn.style.transform = ''; sendBtn.style.background = ''; }, 600);
+      sendBtn.classList.add('sent-anim');
+      setTimeout(()=>sendBtn.classList.remove('sent-anim'), 500);
     }
 
-    // Firebase send (real-time) — async, Promise-based
     fbSendMsg(d.myCode || myCode(), d.partnerCode, text).then(sent => {
-      if(!sent){
-        if(typeof vikramToast==='function') vikramToast('⚠️ Saved locally — sync when back online');
-      }
+      if(!sent) if(typeof vikramToast==='function') vikramToast('⚠️ Saved locally — sync when back online');
     });
+  }
+
+  window.pairSendMoment = function(){
+    const inp = document.getElementById('pairMomentInput');
+    if(!inp) return;
+    const text = inp.value.trim();
+    if(!text) return;
+    inp.value = '';
+    inp.style.height = 'auto';
+    doSendMoment(text);
+  };
+
+  window.pairSendQuickEmoji = function(emoji){
+    doSendMoment(emoji);
   };
 
   // Hook into cycle saves: whenever cycleData changes, push to Firebase + update local preview.
