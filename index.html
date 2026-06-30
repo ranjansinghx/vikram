@@ -2364,6 +2364,71 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   color:#fff;border-color:transparent;
   box-shadow:0 3px 10px rgba(196,69,105,.28);
 }
+
+/* ── MOOD & SYMPTOM LOGGING ── */
+.mood-scale{display:flex;justify-content:space-between;gap:6px;margin-bottom:4px;}
+.mood-opt{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:10px 4px;border-radius:14px;border:2px solid var(--border);
+  background:var(--chip);cursor:pointer;transition:all .15s;
+}
+.mood-opt-emoji{font-size:22px;line-height:1;}
+.mood-opt-lbl{font-size:9px;font-weight:800;color:var(--hsub);letter-spacing:.1px;text-align:center;}
+.mood-opt.selected{border-color:var(--tf);background:rgba(99,102,241,.08);transform:scale(1.04);}
+[data-theme="dark"] .mood-opt.selected{background:rgba(124,92,255,.16);border-color:rgba(140,120,255,.55);}
+
+.symptom-chip-grid{display:flex;flex-wrap:wrap;gap:7px;}
+.symptom-chip{
+  padding:8px 13px;border-radius:20px;border:1.5px solid var(--border);
+  background:var(--tgbg);color:var(--dtext);
+  font-size:12px;font-weight:700;font-family:'Nunito',sans-serif;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+  display:flex;align-items:center;gap:5px;
+}
+.symptom-chip.on{
+  background:linear-gradient(135deg,#a78bfa,#7c5cff);
+  color:#fff;border-color:transparent;
+  box-shadow:0 3px 10px rgba(124,92,255,.28);
+}
+
+/* Phase tag pill — used on symptom log entries and history rows */
+.phase-tag{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:8px;
+  font-size:9.5px;font-weight:800;letter-spacing:.2px;flex-shrink:0;
+}
+.phase-tag.tag-Menstrual{background:rgba(255,71,87,.14);color:#e63946;}
+.phase-tag.tag-Follicular{background:rgba(255,107,157,.14);color:#c44569;}
+.phase-tag.tag-Ovulation{background:rgba(168,85,247,.14);color:#9333ea;}
+.phase-tag.tag-Luteal{background:rgba(59,130,246,.14);color:#2563eb;}
+[data-theme="dark"] .phase-tag.tag-Menstrual{background:rgba(255,120,120,.18);color:#ff9b9b;}
+[data-theme="dark"] .phase-tag.tag-Follicular{background:rgba(255,107,157,.18);color:#ffa8c4;}
+[data-theme="dark"] .phase-tag.tag-Ovulation{background:rgba(168,85,247,.22);color:#c8a0ff;}
+[data-theme="dark"] .phase-tag.tag-Luteal{background:rgba(59,130,246,.22);color:#93c5fd;}
+
+/* Symptom history entry row */
+.symlog-row{padding:12px 0;border-bottom:1px solid var(--border);}
+.symlog-row:last-child{border-bottom:none;}
+.symlog-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;}
+.symlog-date-mood{display:flex;align-items:center;gap:8px;min-width:0;}
+.symlog-mood-emoji{font-size:18px;line-height:1;flex-shrink:0;}
+.symlog-date{font-size:12.5px;font-weight:800;color:var(--htext);}
+.symlog-symptoms{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+.symlog-symptom-pill{font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:7px;}
+.symlog-note{font-size:11.5px;font-weight:600;color:var(--dsub);margin-top:5px;line-height:1.4;font-style:italic;}
+
+/* By-Phase insights */
+.phase-insight-card{border-radius:16px;background:var(--card);padding:14px;margin-bottom:10px;box-shadow:0 2px 10px rgba(0,0,0,.05);}
+.phase-insight-head{display:flex;align-items:center;justify-content:between;gap:8px;margin-bottom:8px;}
+.phase-insight-title{font-size:13px;font-weight:900;color:var(--htext);flex:1;}
+.phase-insight-count{font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;}
+.phase-insight-empty{font-size:11.5px;font-weight:600;color:var(--dsub);padding:4px 0;}
+.phase-insight-bars{display:flex;flex-direction:column;gap:6px;}
+.phase-insight-bar-row{display:flex;align-items:center;gap:8px;}
+.phase-insight-bar-lbl{font-size:10.5px;font-weight:700;color:var(--dtext);width:84px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.phase-insight-bar-wrap{flex:1;height:7px;border-radius:4px;background:var(--tgbg);overflow:hidden;}
+.phase-insight-bar-fill{height:100%;border-radius:4px;}
+.phase-insight-bar-val{font-size:10px;font-weight:800;color:var(--dsub);width:22px;text-align:right;flex-shrink:0;}
 /* Delete button on log rows */
 .cyc-log-del{
   display:flex;align-items:center;justify-content:center;
@@ -2374,6 +2439,73 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 }
 .cyc-log-del:active{background:rgba(244,63,94,.22);transform:scale(.9);}
 [data-theme=dark] .cyc-log-del{background:rgba(244,63,94,.18);}
+
+/* ── CYCLE INSIGHTS / TRENDS CARD ── */
+.cyc-insights-card{margin:0 16px 14px;border-radius:18px;background:var(--card);padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.cyc-insights-title{font-size:13px;font-weight:900;color:var(--htext);margin-bottom:2px;display:flex;align-items:center;gap:7px;}
+.cyc-insights-sub{font-size:11.5px;font-weight:600;color:var(--dsub);margin-bottom:14px;}
+.cyc-insights-stats{display:flex;gap:10px;margin-bottom:14px;}
+.cyc-insights-stat{flex:1;background:var(--tgbg);border-radius:14px;padding:10px 8px;text-align:center;}
+.cyc-insights-stat-val{font-size:17px;font-weight:900;color:var(--dtext);line-height:1.15;}
+.cyc-insights-stat-lbl{font-size:9px;font-weight:800;color:var(--dsub);margin-top:3px;letter-spacing:.2px;text-transform:uppercase;}
+.cyc-insights-stat-trend{font-size:9.5px;font-weight:800;margin-top:2px;}
+.cyc-insights-stat-trend.up{color:#ef4444;}
+.cyc-insights-stat-trend.down{color:#3b82f6;}
+.cyc-insights-stat-trend.flat{color:#22c55e;}
+.cyc-spark-wrap{display:flex;align-items:flex-end;gap:4px;}
+.cyc-spark-svg{display:block;flex-shrink:0;}
+.cyc-insights-empty{font-size:12px;font-weight:600;color:var(--dsub);line-height:1.55;padding:4px 2px;}
+.cyc-insights-regularity{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:8px;font-size:10.5px;font-weight:800;margin-top:2px;}
+.cyc-insights-regularity.reg{background:rgba(34,197,94,.14);color:#16a34a;}
+.cyc-insights-regularity.mod{background:rgba(245,158,11,.14);color:#b45309;}
+.cyc-insights-regularity.irreg{background:rgba(244,63,94,.14);color:#e11d48;}
+[data-theme=dark] .cyc-insights-regularity.reg{background:rgba(34,197,94,.22);color:#4ade80;}
+[data-theme=dark] .cyc-insights-regularity.mod{background:rgba(245,158,11,.24);color:#fbbf24;}
+[data-theme=dark] .cyc-insights-regularity.irreg{background:rgba(244,63,94,.22);color:#fb7185;}
+
+/* ── TTC SUITE — Intercourse / OPK / BBT ── */
+.ttc-result-grid{display:flex;gap:7px;}
+.ttc-result-chip{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:12px 6px;border-radius:14px;border:2px solid var(--border);
+  background:var(--chip);cursor:pointer;transition:all .15s;
+}
+.ttc-result-chip-emoji{font-size:20px;line-height:1;}
+.ttc-result-chip-lbl{font-size:10.5px;font-weight:800;color:var(--hsub);letter-spacing:.1px;text-align:center;}
+.ttc-result-chip.selected{border-color:var(--tf);background:rgba(99,102,241,.08);transform:scale(1.03);}
+[data-theme="dark"] .ttc-result-chip.selected{background:rgba(124,92,255,.16);border-color:rgba(140,120,255,.55);}
+.ttc-result-chip.selected.neg{border-color:#94a3b8;background:rgba(148,163,184,.14);}
+.ttc-result-chip.selected.faint{border-color:#f59e0b;background:rgba(245,158,11,.14);}
+.ttc-result-chip.selected.pos{border-color:#22c55e;background:rgba(34,197,94,.16);}
+
+.ttc-bbt-input-row{display:flex;align-items:stretch;gap:8px;margin-bottom:9px;}
+.ttc-bbt-input-row .dc-input{margin-bottom:0;flex:1;}
+.ttc-unit-toggle{display:flex;border-radius:11px;overflow:hidden;border:1.5px solid var(--border);flex-shrink:0;}
+.ttc-unit-btn{padding:0 14px;border:none;background:var(--tgbg);color:var(--dsub);font-size:12.5px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .15s;}
+.ttc-unit-btn.on{background:linear-gradient(135deg,#FF6B9D,#C44569);color:#fff;}
+
+.ttc-log-row{padding:12px 0;border-bottom:1px solid var(--border);}
+.ttc-log-row:last-child{border-bottom:none;}
+.ttc-log-top{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.ttc-log-left{display:flex;align-items:center;gap:10px;min-width:0;}
+.ttc-log-icon{font-size:17px;flex-shrink:0;line-height:1;}
+.ttc-log-date{font-size:12.5px;font-weight:800;color:var(--htext);}
+.ttc-log-detail{font-size:11px;font-weight:700;color:var(--dsub);margin-top:1px;}
+.ttc-log-note{font-size:11.5px;font-weight:600;color:var(--dsub);margin-top:5px;line-height:1.4;font-style:italic;}
+
+.ttc-pill{font-size:10px;font-weight:800;padding:2px 8px;border-radius:7px;letter-spacing:.2px;}
+.ttc-pill.neg{background:rgba(148,163,184,.16);color:#64748b;}
+.ttc-pill.faint{background:rgba(245,158,11,.16);color:#b45309;}
+.ttc-pill.pos{background:rgba(34,197,94,.16);color:#16a34a;}
+[data-theme=dark] .ttc-pill.neg{background:rgba(148,163,184,.22);color:#cbd5e1;}
+[data-theme=dark] .ttc-pill.faint{background:rgba(245,158,11,.24);color:#fbbf24;}
+[data-theme=dark] .ttc-pill.pos{background:rgba(34,197,94,.24);color:#4ade80;}
+
+.ttc-mode-empty{padding:40px 24px;text-align:center;font-size:13px;font-weight:700;color:var(--dsub);}
+
+/* BBT mini chart */
+.ttc-bbt-chart-wrap{padding:14px 0 4px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.ttc-bbt-chart-svg{display:block;}
 
 /* Legacy compat */
 .cyc-log-btn,.cyc-log-row,.cyc-log-strip,.cyc-log-action{display:none;}
@@ -2804,22 +2936,108 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
 /* ── PARTNER MODE ── */
 .partner-mode-toggle-btn{
-  display:flex;align-items:center;gap:6px;
-  padding:6px 12px;border-radius:20px;border:none;cursor:pointer;
-  font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  width:22px;height:22px;border-radius:50%;border:none;cursor:pointer;
+  padding:0;flex-shrink:0;
   transition:background .2s,color .2s,box-shadow .2s,transform .15s;
-  flex-shrink:0;
+  margin-left:-13px;
+  box-shadow:0 0 0 2px var(--sbg);
+  position:relative;z-index:1;
 }
 .partner-mode-toggle-btn.off{
-  background:var(--tgbg);color:var(--hsub);
+  background:var(--card);color:var(--hsub);
   border:1.5px solid var(--border);
 }
 .partner-mode-toggle-btn.on{
   background:var(--pr-rose-grad,linear-gradient(155deg,#ff9bb1,#e8617f));color:#fff;
   border:1.5px solid transparent;
 }
-.partner-mode-toggle-btn:active{transform:scale(.93);}
-.partner-mode-toggle-btn .pm-icon{font-size:14px;line-height:1;}
+.partner-mode-toggle-btn:active{transform:scale(.88);}
+.partner-mode-toggle-btn .pm-icon{font-size:11px;line-height:1;}
+
+.cycle-mode-combo{display:flex;align-items:center;}
+
+/* ── CYCLE MODE (Cycle / TTC / Pregnant) ── */
+.cycle-mode-toggle-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:20px;border:none;cursor:pointer;
+  font-family:'Nunito',sans-serif;font-size:11px;font-weight:800;
+  background:var(--tgbg);color:var(--hsub);
+  border:1.5px solid var(--border);
+  transition:background .2s,color .2s,box-shadow .2s,transform .15s,border-color .2s;
+  flex-shrink:0;position:relative;z-index:0;
+}
+.cycle-mode-toggle-btn:active{transform:scale(.93);}
+.cycle-mode-toggle-btn.mode-ttc{
+  background:linear-gradient(155deg,rgba(255,180,90,.22),rgba(255,140,40,.14));
+  color:#c8650a;border-color:rgba(255,150,50,.35);
+}
+[data-theme="dark"] .cycle-mode-toggle-btn.mode-ttc{color:#ffb15e;}
+.cycle-mode-toggle-btn.mode-pregnant{
+  background:linear-gradient(155deg,#b18cff,#7c5cff);
+  color:#fff;border-color:transparent;
+}
+.cycle-mode-toggle-btn .cm-icon{font-size:14px;line-height:1;}
+
+/* ── Mode picker modal options ── */
+.cm-opt{
+  display:flex;align-items:center;gap:12px;padding:14px;border-radius:16px;
+  border:2px solid var(--border);background:var(--chip);cursor:pointer;
+  margin-bottom:10px;transition:all .15s;
+}
+.cm-opt:last-child{margin-bottom:0;}
+.cm-opt.selected{border-color:var(--tf);background:rgba(26,26,26,.06);}
+[data-theme="dark"] .cm-opt.selected{background:rgba(124,92,255,.14);border-color:rgba(140,120,255,.5);}
+.cm-opt-icon{width:38px;height:38px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--tgbg);}
+.cm-opt-body{flex:1;min-width:0;}
+.cm-opt-title{font-size:13.5px;font-weight:900;color:var(--htext);}
+.cm-opt-sub{font-size:11px;font-weight:700;color:var(--hsub);margin-top:2px;line-height:1.35;}
+
+/* ── Partner Mode row inside picker ── */
+.cm-divider{height:1px;background:var(--border);margin:6px 2px 12px;}
+.cm-opt-partner.on{border-color:#e8617f;background:rgba(232,97,127,.08);}
+[data-theme="dark"] .cm-opt-partner.on{background:rgba(255,107,157,.14);border-color:rgba(255,140,170,.5);}
+.cm-opt-switch{
+  width:38px;height:22px;border-radius:12px;flex-shrink:0;
+  background:var(--border);position:relative;transition:background .2s;
+}
+.cm-opt-switch.on{background:linear-gradient(155deg,#ff9bb1,#e8617f);}
+.cm-opt-switch-knob{
+  position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s;
+}
+.cm-opt-switch.on .cm-opt-switch-knob{transform:translateX(16px);}
+
+/* ── Pregnancy dashboard ── */
+.preg-hero{margin:0 16px 14px;border-radius:24px;overflow:hidden;
+  background:linear-gradient(150deg,#7c5cff,#b18cff 55%,#ffb3d6);
+  box-shadow:0 14px 34px rgba(124,92,255,.25);position:relative;}
+.preg-hero-inner{padding:22px 20px 20px;color:#fff;}
+.preg-week-lbl{font-size:12px;font-weight:800;letter-spacing:.3px;color:rgba(255,255,255,.85);}
+.preg-week-val{font-size:34px;font-weight:900;letter-spacing:-.6px;line-height:1.1;margin-top:2px;}
+.preg-week-sub{font-size:12.5px;font-weight:700;color:rgba(255,255,255,.85);margin-top:6px;}
+.preg-progress-wrap{margin-top:16px;height:8px;border-radius:6px;background:rgba(255,255,255,.22);overflow:hidden;}
+.preg-progress-bar{height:100%;border-radius:6px;background:#fff;transition:width .5s ease;}
+.preg-trimester-row{display:flex;justify-content:space-between;margin-top:6px;font-size:9.5px;font-weight:800;color:rgba(255,255,255,.7);letter-spacing:.2px;}
+.preg-stats-row{display:flex;gap:10px;margin-top:16px;}
+.preg-stat{flex:1;background:rgba(255,255,255,.16);border-radius:14px;padding:10px 8px;text-align:center;}
+.preg-stat-val{font-size:15px;font-weight:900;line-height:1.15;}
+.preg-stat-lbl{font-size:9.5px;font-weight:800;color:rgba(255,255,255,.78);margin-top:2px;letter-spacing:.2px;}
+.preg-card{margin:0 16px 14px;border-radius:18px;background:var(--card);padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.preg-card-title{font-size:13px;font-weight:900;color:var(--htext);margin-bottom:4px;display:flex;align-items:center;gap:7px;}
+.preg-card-text{font-size:12.5px;font-weight:600;color:var(--dsub);line-height:1.55;}
+
+/* ── TTC banner ── */
+.ttc-banner{margin:0 16px 12px;padding:13px 14px;border-radius:16px;
+  background:linear-gradient(135deg,rgba(255,170,80,.16),rgba(255,140,40,.08));
+  border:1px solid rgba(255,150,50,.25);
+  display:flex;align-items:center;gap:11px;}
+.ttc-banner-icon{width:36px;height:36px;border-radius:12px;flex-shrink:0;
+  background:linear-gradient(135deg,#ffb15e,#ff8c28);
+  display:flex;align-items:center;justify-content:center;font-size:17px;}
+.ttc-banner-body{flex:1;min-width:0;}
+.ttc-banner-title{font-size:13px;font-weight:900;color:var(--htext);}
+.ttc-banner-sub{font-size:11px;font-weight:700;color:var(--hsub);margin-top:2px;line-height:1.35;}
 
 /* Partner view header banner */
 .partner-mode-banner{
@@ -3786,8 +4004,8 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 }
 [data-theme=dark] .bottom-nav{
   background:rgba(16,18,28,.97);
-  border-top:1px solid rgba(255,255,255,.07);
-  box-shadow:0 -4px 24px rgba(0,0,16,.38);
+  border:none;
+  box-shadow:none;
 }
 .bnav-btn{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -6309,12 +6527,14 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
 <!-- SCHEDULE SHEET -->
 <!-- CYCLE TRACKER VIEW -->
 <div class="daycounter-view" id="cycleView">
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 16px 10px;flex-shrink:0;">
-    <div id="cycleTitleLabel" style="font-size:22px;font-weight:900;color:var(--htext);letter-spacing:-.4px;">🌸 My Cycle</div>
-    <button class="partner-mode-toggle-btn off" id="partnerModeBtn" onclick="togglePartnerMode()" title="Partner Mode">
-      <span class="pm-icon">💑</span>
-      <span id="partnerModeBtnLabel">Partner</span>
-    </button>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 16px 10px;flex-shrink:0;gap:8px;">
+    <div id="cycleTitleLabel" style="font-size:22px;font-weight:900;color:var(--htext);letter-spacing:-.4px;flex:1;min-width:0;">🌸 My Cycle</div>
+    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+      <button class="cycle-mode-toggle-btn" id="cycleModeBtn" onclick="openCycleModePicker()" title="Cycle / TTC / Pregnancy mode">
+        <span class="cm-icon" id="cycleModeBtnIcon">🌸</span>
+        <span id="cycleModeBtnLabel">Mode</span>
+      </button>
+    </div>
   </div>
   <div id="cycleBody"><!-- rendered by renderCycleSheet() --></div>
 </div>
@@ -6428,6 +6648,87 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     <div class="dc-modal-btns">
       <button class="dc-modal-cancel" style="flex:1" onclick="cyDeleteLogClose()">Cancel</button>
       <button class="dc-modal-save" style="background:#d6453f;box-shadow:0 6px 18px rgba(214,69,63,.3);" onclick="cyDeleteLogConfirm()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── CYCLE MODE PICKER (Cycle / TTC / Pregnant) ── -->
+<div class="dc-modal-overlay" id="cycleModePickerOverlay" onclick="closeCycleModePicker(event)">
+  <div class="dc-modal" style="text-align:left;max-width:380px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div class="dc-modal-title" style="margin-bottom:0;">Choose mode</div>
+      <button onclick="closeCycleModePicker()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--dsub);padding:2px 4px;line-height:1;">✕</button>
+    </div>
+    <div id="cycleModeOptions">
+      <div class="cm-opt" data-mode="cycle" onclick="selectCycleMode('cycle')">
+        <div class="cm-opt-icon">🌸</div>
+        <div class="cm-opt-body">
+          <div class="cm-opt-title">Cycle Tracking</div>
+          <div class="cm-opt-sub">Track your period, fertile window &amp; phases</div>
+        </div>
+      </div>
+      <div class="cm-opt" data-mode="ttc" onclick="selectCycleMode('ttc')">
+        <div class="cm-opt-icon">🌱</div>
+        <div class="cm-opt-body">
+          <div class="cm-opt-title">Trying to Conceive</div>
+          <div class="cm-opt-sub">Highlights fertile window &amp; conception odds</div>
+        </div>
+      </div>
+      <div class="cm-opt" data-mode="pregnant" onclick="selectCycleMode('pregnant')">
+        <div class="cm-opt-icon">🤰</div>
+        <div class="cm-opt-body">
+          <div class="cm-opt-title">Pregnant</div>
+          <div class="cm-opt-sub">Week-by-week countdown to your due date</div>
+        </div>
+      </div>
+    </div>
+    <div class="cm-divider"></div>
+    <div class="cm-opt cm-opt-partner" id="partnerModeBtn" onclick="togglePartnerMode()">
+      <div class="cm-opt-icon">💑</div>
+      <div class="cm-opt-body">
+        <div class="cm-opt-title">Partner Mode</div>
+        <div class="cm-opt-sub" id="partnerModeBtnSub">View your partner's synced cycle</div>
+      </div>
+      <div class="cm-opt-switch off" id="partnerModeSwitch"><div class="cm-opt-switch-knob"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PREGNANCY SETUP ── -->
+<div class="dc-modal-overlay" id="pregSetupOverlay" onclick="closePregSetup(event)">
+  <div class="dc-modal" style="text-align:left;max-width:380px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div class="dc-modal-title" style="margin-bottom:0;">🤰 Pregnancy setup</div>
+      <button onclick="closePregSetup()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--dsub);padding:2px 4px;line-height:1;">✕</button>
+    </div>
+    <div style="font-size:11px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;">What do you know?</div>
+    <div class="dc-type-row" style="margin-bottom:18px;" id="pregSetupTypeRow">
+      <div class="dc-type-opt selected" data-pregtype="lmp" onclick="pregSetupTypeSelect(this)">Last period date</div>
+      <div class="dc-type-opt" data-pregtype="due" onclick="pregSetupTypeSelect(this)">Due date</div>
+    </div>
+    <div id="pregSetupLmpField" class="dc-field">
+      <div class="dc-label">First day of your last period</div>
+      <input type="date" id="pregSetupLmpInput" class="dc-input">
+    </div>
+    <div id="pregSetupDueField" class="dc-field" style="display:none;">
+      <div class="dc-label">Estimated due date</div>
+      <input type="date" id="pregSetupDueInput" class="dc-input">
+    </div>
+    <div class="dc-modal-btns" style="margin-top:6px;">
+      <button class="dc-modal-cancel" onclick="closePregSetup()">Cancel</button>
+      <button class="dc-modal-save" style="background:linear-gradient(135deg,#7c5cff,#b18cff);box-shadow:0 6px 18px rgba(124,92,255,.35);" onclick="savePregSetup()">Start tracking</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── END PREGNANCY CONFIRM ── -->
+<div class="dc-modal-overlay" id="pregEndOverlay" onclick="closePregEndConfirm(event)">
+  <div class="dc-modal" style="text-align:center">
+    <div class="dc-modal-title" style="margin-bottom:8px">End pregnancy mode?</div>
+    <div style="font-size:13px;font-weight:600;line-height:1.5;color:var(--hsub);margin-bottom:6px">This switches you back to Cycle Tracking. Your pregnancy dates stay saved unless you clear cycle data.</div>
+    <div class="dc-modal-btns">
+      <button class="dc-modal-cancel" style="flex:1" onclick="closePregEndConfirm()">Cancel</button>
+      <button class="dc-modal-save" style="background:#d6453f;box-shadow:0 6px 18px rgba(214,69,63,.3)" onclick="confirmEndPregnancy()">End pregnancy mode</button>
     </div>
   </div>
 </div>
@@ -11350,7 +11651,14 @@ function cycleDefaults(){
     periodLength: cycleData.periodLength || 5,
     lastPeriodStart: cycleData.lastPeriodStart || null,
     logs: cycleData.logs || [],
+    symptomLogs: cycleData.symptomLogs || [],
     privacy: cycleData.privacy || { phase:true, fertility:true, periodDay:true },
+    mode: cycleData.mode || 'cycle',
+    pregnancy: cycleData.pregnancy || null,
+    intercourseLogs: cycleData.intercourseLogs || [],
+    opkLogs: cycleData.opkLogs || [],
+    bbtLogs: cycleData.bbtLogs || [],
+    bbtUnit: cycleData.bbtUnit || 'C',
   };
 }
 
@@ -11409,6 +11717,806 @@ function getPhase(){
   if(day <= ovEnd)
     return { name:'Ovulation',  dayIn:day-(ovDay-2)+1,  of:5,          next: ovEnd-day+1  };
   return   { name:'Luteal',     dayIn:day-ovEnd,        of:cl-ovEnd,   next: cl-day+1    };
+}
+
+// ── Generalized phase lookup for an arbitrary date (used by symptom/mood logging) ──
+// Mirrors getPhase()'s date-math logic but works for any timestamp, not just "today".
+// Falls back to simple date math (ignores mid-cycle period_end/ovulation logs) since
+// those are most meaningful for the *current* cycle, whereas this is used for any date.
+function getPhaseForDate(ts){
+  if(!cycleData.lastPeriodStart || ts == null) return null;
+  const cl = cycleData.cycleLength || 28, pl = cycleData.periodLength || 5;
+  const ovDay = cl - 14;
+  const follEnd = ovDay - 3;
+  const ovEnd = ovDay + 2;
+
+  const target = new Date(ts);
+  const targetMid = new Date(target.getFullYear(), target.getMonth(), target.getDate()).getTime();
+  const anchor = new Date(cycleData.lastPeriodStart);
+  const anchorMid = new Date(anchor.getFullYear(), anchor.getMonth(), anchor.getDate()).getTime();
+
+  // Find which cycle this date falls in relative to the anchor (can be before or after)
+  const diffDays = Math.round((targetMid - anchorMid) / 86400000);
+  if(diffDays < -3650 || diffDays > 3650) return null; // sanity guard
+  let day = ((diffDays % cl) + cl) % cl + 1; // 1-indexed day within a cl-length cycle
+
+  if(day <= pl)      return { name:'Menstrual',  dayIn:day };
+  if(day <= follEnd) return { name:'Follicular', dayIn:day-pl };
+  if(day <= ovEnd)   return { name:'Ovulation',  dayIn:day-(ovDay-2)+1 };
+  return               { name:'Luteal',     dayIn:day-ovEnd };
+}
+
+
+// ══ MOOD & SYMPTOM LOGGING — tied to cycle phase ═════════════════════════════
+// Each entry: { date: ts, mood: 'great'|'good'|'okay'|'low'|'rough', symptoms: [..], note: '' }
+// Every entry is tagged with its cycle phase (computed from `date` via getPhaseForDate)
+// at render/read time — not stored statically — so it always reflects the current
+// cycle-length/period-length settings.
+
+const MOOD_OPTIONS = [
+  { id:'great', emoji:'😄', label:'Great' },
+  { id:'good',  emoji:'🙂', label:'Good' },
+  { id:'okay',  emoji:'😐', label:'Okay' },
+  { id:'low',   emoji:'😔', label:'Low' },
+  { id:'rough', emoji:'😣', label:'Rough' },
+];
+const MOOD_META = Object.fromEntries(MOOD_OPTIONS.map(m=>[m.id,m]));
+
+const SYMPTOM_OPTIONS = [
+  { id:'cramps',     emoji:'🤕', label:'Cramps' },
+  { id:'headache',   emoji:'🤯', label:'Headache' },
+  { id:'bloating',   emoji:'🎈', label:'Bloating' },
+  { id:'fatigue',    emoji:'😴', label:'Fatigue' },
+  { id:'acne',       emoji:'😬', label:'Acne' },
+  { id:'tender',     emoji:'💢', label:'Tender breasts' },
+  { id:'backache',   emoji:'🦴', label:'Backache' },
+  { id:'nausea',     emoji:'🤢', label:'Nausea' },
+  { id:'cravings',   emoji:'🍫', label:'Cravings' },
+  { id:'insomnia',   emoji:'🌙', label:'Insomnia' },
+  { id:'cm',         emoji:'💧', label:'Discharge' },
+  { id:'libido',     emoji:'🔥', label:'High libido' },
+];
+const SYMPTOM_META = Object.fromEntries(SYMPTOM_OPTIONS.map(s=>[s.id,s]));
+
+const PHASE_ORDER = ['Menstrual','Follicular','Ovulation','Luteal'];
+const PHASE_DOT_COLOR = { Menstrual:'#e63946', Follicular:'#c44569', Ovulation:'#9333ea', Luteal:'#2563eb' };
+
+// Selection state while the log form is open
+let _symLogSelectedMood = null;
+let _symLogSelectedSymptoms = new Set();
+let _symLogDate = null; // ts (midnight local) being logged — defaults to today
+
+function phaseTagHTML(phaseName){
+  if(!phaseName) return '';
+  return `<span class="phase-tag tag-${phaseName}">${phaseName}</span>`;
+}
+
+// ── Open the log form (defaults to today; can be reused for backdating later) ──
+function openSymptomLogSheet(dateTs){
+  if(typeof haptic === 'function') haptic('light');
+  _symLogDate = dateTs || new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+  // Pre-fill if an entry already exists for this date
+  const existing = (cycleData.symptomLogs||[]).find(s=>{
+    const sd = new Date(s.date); const sm = new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime();
+    return sm === _symLogDate;
+  });
+  _symLogSelectedMood = existing ? existing.mood : null;
+  _symLogSelectedSymptoms = new Set(existing ? (existing.symptoms||[]) : []);
+  const noteEl = document.getElementById('symLogNoteInput');
+  if(noteEl) noteEl.value = existing ? (existing.note||'') : '';
+  renderSymptomLogSheet();
+  const sheet = document.getElementById('symptomLogSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closeSymptomLogSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('symptomLogSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+
+function renderSymptomLogSheet(){
+  const titleEl = document.getElementById('symLogDateLabel');
+  if(titleEl){
+    const d = new Date(_symLogDate);
+    const todayMid = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+    titleEl.textContent = (_symLogDate === todayMid) ? 'Today' : d.toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'});
+  }
+  const phaseEl = document.getElementById('symLogPhaseTag');
+  if(phaseEl){
+    const ph = getPhaseForDate(_symLogDate);
+    phaseEl.innerHTML = ph ? phaseTagHTML(ph.name) + `<span style="font-size:11px;font-weight:700;color:var(--dsub);margin-left:6px;">Day ${ph.dayIn}</span>` : `<span style="font-size:11px;font-weight:700;color:var(--dsub);">Log a period start date to see phase</span>`;
+  }
+  const moodWrap = document.getElementById('symLogMoodScale');
+  if(moodWrap){
+    moodWrap.innerHTML = MOOD_OPTIONS.map(m => `
+      <div class="mood-opt${_symLogSelectedMood===m.id?' selected':''}" data-mood="${m.id}" onclick="symLogSelectMood('${m.id}')">
+        <div class="mood-opt-emoji">${m.emoji}</div>
+        <div class="mood-opt-lbl">${m.label}</div>
+      </div>`).join('');
+  }
+  const symWrap = document.getElementById('symLogSymptomGrid');
+  if(symWrap){
+    symWrap.innerHTML = SYMPTOM_OPTIONS.map(s => `
+      <div class="symptom-chip${_symLogSelectedSymptoms.has(s.id)?' on':''}" data-symptom="${s.id}" onclick="symLogToggleSymptom('${s.id}')">
+        <span>${s.emoji}</span><span>${s.label}</span>
+      </div>`).join('');
+  }
+}
+
+function symLogSelectMood(id){
+  if(typeof haptic === 'function') haptic('light');
+  _symLogSelectedMood = (_symLogSelectedMood === id) ? null : id;
+  renderSymptomLogSheet();
+}
+function symLogToggleSymptom(id){
+  if(typeof haptic === 'function') haptic('light');
+  if(_symLogSelectedSymptoms.has(id)) _symLogSelectedSymptoms.delete(id);
+  else _symLogSelectedSymptoms.add(id);
+  renderSymptomLogSheet();
+}
+
+function saveSymptomLog(){
+  if(!_symLogSelectedMood && _symLogSelectedSymptoms.size === 0){
+    if(typeof vikramToast==='function') vikramToast('⚠️ Pick a mood or at least one symptom');
+    return;
+  }
+  if(typeof haptic === 'function') haptic('light');
+  const note = (document.getElementById('symLogNoteInput')?.value || '').trim().slice(0,200);
+  const entry = {
+    date: _symLogDate,
+    mood: _symLogSelectedMood,
+    symptoms: Array.from(_symLogSelectedSymptoms),
+    note,
+  };
+  cycleData.symptomLogs = cycleData.symptomLogs || [];
+  // Replace existing entry for the same date, if any
+  const idx = cycleData.symptomLogs.findIndex(s=>{
+    const sd = new Date(s.date); const sm = new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime();
+    return sm === _symLogDate;
+  });
+  if(idx >= 0) cycleData.symptomLogs[idx] = entry;
+  else cycleData.symptomLogs.push(entry);
+  cycleData.symptomLogs.sort((a,b)=>a.date-b.date);
+  saveCycle();
+  closeSymptomLogSheet();
+  renderCycleSheet();
+  if(typeof vikramToast==='function') vikramToast('✅ Logged — thanks for checking in 💭');
+}
+
+// ── Symptom History sheet (list + by-phase insights tabs) ──
+let _symHistTab = 'list'; // 'list' | 'phase'
+
+function openSymptomHistorySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  _symHistTab = 'list';
+  renderSymptomHistorySheet();
+  const sheet = document.getElementById('symptomHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closeSymptomHistorySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('symptomHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+function setSymHistTab(tab){
+  if(typeof haptic === 'function') haptic('light');
+  _symHistTab = tab;
+  renderSymptomHistorySheet();
+}
+
+function renderSymptomHistorySheet(){
+  const tabBar = document.getElementById('symHistTabBar');
+  if(tabBar){
+    tabBar.querySelectorAll('.up-vtbtn').forEach(b=>{
+      b.classList.toggle('on', b.getAttribute('data-tab') === _symHistTab);
+    });
+  }
+  const body = document.getElementById('symptomHistorySheetBody');
+  if(!body) return;
+  const logs = cycleData.symptomLogs || [];
+  if(_symHistTab === 'phase'){
+    body.innerHTML = renderPhaseInsightsHTML(logs);
+    return;
+  }
+  if(!logs.length){
+    body.innerHTML = `<div style="padding:40px 24px;text-align:center;font-size:13px;font-weight:700;color:var(--dsub);">No mood or symptom entries yet — log how you're feeling above 💭</div>`;
+    return;
+  }
+  body.innerHTML = `
+  <div class="ssec" style="padding-top:4px;">
+    <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>All entries</span>
+      <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${logs.length} ${logs.length===1?'entry':'entries'}</span>
+    </div>
+    ${[...logs].reverse().map((l, revIdx) => {
+      const realIdx = logs.length - 1 - revIdx;
+      const ph = getPhaseForDate(l.date);
+      const mood = l.mood ? MOOD_META[l.mood] : null;
+      const dateStr = new Date(l.date).toLocaleDateString('en-NP',{month:'short',day:'numeric',year:'numeric'});
+      return `<div class="symlog-row">
+        <div class="symlog-top">
+          <div class="symlog-date-mood">
+            ${mood ? `<span class="symlog-mood-emoji">${mood.emoji}</span>` : ''}
+            <span class="symlog-date">${dateStr}</span>
+            ${ph ? phaseTagHTML(ph.name) : ''}
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+            <button class="cyc-log-del" title="Edit" onclick="closeSymptomHistorySheet();openSymptomLogSheet(${l.date})">✏️</button>
+            <button class="cyc-log-del" title="Delete" onclick="symDeleteLog(${realIdx})">🗑</button>
+          </div>
+        </div>
+        ${(l.symptoms&&l.symptoms.length) ? `<div class="symlog-symptoms">${l.symptoms.map(sid=>{
+          const sm = SYMPTOM_META[sid]; return sm ? `<span class="symlog-symptom-pill">${sm.emoji} ${sm.label}</span>` : '';
+        }).join('')}</div>` : ''}
+        ${l.note ? `<div class="symlog-note">“${esc(l.note)}”</div>` : ''}
+      </div>`;
+    }).join('')}
+  </div>`;
+  const sub = document.getElementById('symptomHistoryEntrySub');
+  if(sub) sub.textContent = logs.length + ' ' + (logs.length === 1 ? 'entry' : 'entries') + ' · tracked by phase';
+}
+
+// ── By-Phase insights: aggregate mood + symptom frequency per phase ──
+function renderPhaseInsightsHTML(logs){
+  if(!logs.length){
+    return `<div style="padding:40px 24px;text-align:center;font-size:13px;font-weight:700;color:var(--dsub);">Log a few entries to see patterns by phase 📊</div>`;
+  }
+  // Bucket entries by phase
+  const buckets = { Menstrual:[], Follicular:[], Ovulation:[], Luteal:[] };
+  logs.forEach(l=>{
+    const ph = getPhaseForDate(l.date);
+    if(ph && buckets[ph.name]) buckets[ph.name].push(l);
+  });
+  const barColors = { cramps:'#e63946', headache:'#f59e0b', bloating:'#3b82f6', fatigue:'#6366f1',
+    acne:'#ec4899', tender:'#f97316', backache:'#84cc16', nausea:'#14b8a6', cravings:'#a855f7',
+    insomnia:'#64748b', cm:'#06b6d4', libido:'#ef4444' };
+
+  const cards = PHASE_ORDER.map(phaseName => {
+    const entries = buckets[phaseName];
+    const dotColor = PHASE_DOT_COLOR[phaseName];
+    if(!entries.length){
+      return `<div class="phase-insight-card">
+        <div class="phase-insight-head">
+          <div style="display:flex;align-items:center;gap:7px;flex:1;">
+            <div style="width:9px;height:9px;border-radius:50%;background:${dotColor};flex-shrink:0;"></div>
+            <div class="phase-insight-title">${phaseName}</div>
+          </div>
+          <div class="phase-insight-count">0 entries</div>
+        </div>
+        <div class="phase-insight-empty">No entries logged in this phase yet.</div>
+      </div>`;
+    }
+    // Most common mood
+    const moodCounts = {};
+    entries.forEach(e=>{ if(e.mood) moodCounts[e.mood] = (moodCounts[e.mood]||0)+1; });
+    const topMoodId = Object.keys(moodCounts).sort((a,b)=>moodCounts[b]-moodCounts[a])[0];
+    const topMood = topMoodId ? MOOD_META[topMoodId] : null;
+    // Symptom frequency
+    const symCounts = {};
+    entries.forEach(e=>(e.symptoms||[]).forEach(sid=>{ symCounts[sid] = (symCounts[sid]||0)+1; }));
+    const topSymptoms = Object.keys(symCounts).sort((a,b)=>symCounts[b]-symCounts[a]).slice(0,5);
+    const maxCount = topSymptoms.length ? symCounts[topSymptoms[0]] : 1;
+    return `<div class="phase-insight-card">
+      <div class="phase-insight-head">
+        <div style="display:flex;align-items:center;gap:7px;flex:1;">
+          <div style="width:9px;height:9px;border-radius:50%;background:${dotColor};flex-shrink:0;"></div>
+          <div class="phase-insight-title">${phaseName}</div>
+        </div>
+        <div class="phase-insight-count">${entries.length} ${entries.length===1?'entry':'entries'}</div>
+      </div>
+      ${topMood ? `<div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;font-size:12px;font-weight:700;color:var(--dtext);"><span style="font-size:16px;">${topMood.emoji}</span>Most common mood: ${topMood.label}</div>` : ''}
+      ${topSymptoms.length ? `<div class="phase-insight-bars">
+        ${topSymptoms.map(sid=>{
+          const sm = SYMPTOM_META[sid];
+          const pct = Math.round(symCounts[sid]/maxCount*100);
+          return `<div class="phase-insight-bar-row">
+            <div class="phase-insight-bar-lbl">${sm.emoji} ${sm.label}</div>
+            <div class="phase-insight-bar-wrap"><div class="phase-insight-bar-fill" style="width:${pct}%;background:${barColors[sid]||dotColor};"></div></div>
+            <div class="phase-insight-bar-val">${symCounts[sid]}</div>
+          </div>`;
+        }).join('')}
+      </div>` : `<div class="phase-insight-empty">No symptoms logged in this phase yet.</div>`}
+    </div>`;
+  }).join('');
+
+  return `<div class="ssec" style="padding-top:4px;">
+    <div class="ssect">Patterns by phase</div>
+    ${cards}
+  </div>`;
+}
+
+// ── Delete a symptom/mood log ──
+var _symDeleteIdx = -1;
+function symDeleteLog(idx){
+  if(typeof haptic === 'function') haptic('light');
+  const logs = cycleData.symptomLogs || [];
+  if(idx < 0 || idx >= logs.length) return;
+  _symDeleteIdx = idx;
+  const l = logs[idx];
+  const dateStr = new Date(l.date).toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'});
+  const desc = document.getElementById('symDeleteLogDesc');
+  if(desc) desc.textContent = 'Mood & symptom entry · ' + dateStr;
+  document.getElementById('symDeleteLogOverlay').classList.add('open');
+}
+function symDeleteLogClose(e){
+  if(e && e.target !== document.getElementById('symDeleteLogOverlay')) return;
+  if(typeof haptic === 'function') haptic('light');
+  document.getElementById('symDeleteLogOverlay').classList.remove('open');
+  _symDeleteIdx = -1;
+}
+function symDeleteLogConfirm(){
+  const logs = cycleData.symptomLogs || [];
+  if(_symDeleteIdx < 0 || _symDeleteIdx >= logs.length){
+    document.getElementById('symDeleteLogOverlay').classList.remove('open');
+    return;
+  }
+  logs.splice(_symDeleteIdx, 1);
+  cycleData.symptomLogs = logs;
+  saveCycle();
+  document.getElementById('symDeleteLogOverlay').classList.remove('open');
+  _symDeleteIdx = -1;
+  renderSymptomHistorySheet();
+  renderCycleSheet();
+  if(typeof haptic === 'function') haptic('light');
+  if(typeof vikramToast==='function') vikramToast('🗑 Entry deleted');
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TTC SUITE — Intercourse Log / Ovulation Test (OPK) / BBT Temperature Log
+// ══════════════════════════════════════════════════════════════════════════════
+
+// ── Intercourse log ──
+let _bdLogDate = null;
+let _bdLogProtected = null; // null = not selected, true/false
+
+function openIntercourseLogSheet(dateTs){
+  if(typeof haptic === 'function') haptic('light');
+  _bdLogDate = dateTs || new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+  const existing = (cycleData.intercourseLogs||[]).find(s=>{
+    const sd = new Date(s.date); const sm = new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime();
+    return sm === _bdLogDate;
+  });
+  _bdLogProtected = existing ? !!existing.protected : false;
+  const noteEl = document.getElementById('bdLogNoteInput');
+  if(noteEl) noteEl.value = existing ? (existing.note||'') : '';
+  renderIntercourseLogSheet();
+  const sheet = document.getElementById('intercourseLogSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closeIntercourseLogSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('intercourseLogSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+function renderIntercourseLogSheet(){
+  const titleEl = document.getElementById('bdLogDateLabel');
+  if(titleEl){
+    const d = new Date(_bdLogDate);
+    const todayMid = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+    titleEl.textContent = (_bdLogDate === todayMid) ? 'Today' : d.toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'});
+  }
+  const phaseEl = document.getElementById('bdLogPhaseTag');
+  if(phaseEl){
+    const ph = (typeof getPhaseForDate === 'function') ? getPhaseForDate(_bdLogDate) : null;
+    phaseEl.innerHTML = ph ? phaseTagHTML(ph.name) + `<span style="font-size:11px;font-weight:700;color:var(--dsub);margin-left:6px;">Day ${ph.dayIn}</span>` : `<span style="font-size:11px;font-weight:700;color:var(--dsub);">Log a period start date to see phase</span>`;
+  }
+  document.querySelectorAll('#bdLogProtectedRow .ttc-result-chip').forEach(c=>{
+    const v = c.getAttribute('data-protected') === '1';
+    c.classList.toggle('selected', v === _bdLogProtected);
+  });
+}
+function bdLogSelectProtected(val){
+  if(typeof haptic === 'function') haptic('light');
+  _bdLogProtected = val;
+  renderIntercourseLogSheet();
+}
+function saveIntercourseLog(){
+  if(typeof haptic === 'function') haptic('light');
+  const note = (document.getElementById('bdLogNoteInput')?.value || '').trim().slice(0,200);
+  const entry = { date: _bdLogDate, protected: !!_bdLogProtected, note };
+  cycleData.intercourseLogs = cycleData.intercourseLogs || [];
+  const idx = cycleData.intercourseLogs.findIndex(s=>{
+    const sd = new Date(s.date); const sm = new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime();
+    return sm === _bdLogDate;
+  });
+  if(idx >= 0) cycleData.intercourseLogs[idx] = entry;
+  else cycleData.intercourseLogs.push(entry);
+  cycleData.intercourseLogs.sort((a,b)=>a.date-b.date);
+  saveCycle();
+  closeIntercourseLogSheet();
+  renderCycleSheet();
+  if(typeof vikramToast==='function') vikramToast('✅ Intercourse logged 💕');
+}
+
+// ── Ovulation test (OPK) log ──
+let _opkLogDate = null;
+let _opkLogResult = null; // 'neg' | 'faint' | 'pos'
+
+function openOpkLogSheet(dateTs){
+  if(typeof haptic === 'function') haptic('light');
+  _opkLogDate = dateTs || new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+  const existing = (cycleData.opkLogs||[]).find(s=>{
+    const sd = new Date(s.date); const sm = new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime();
+    return sm === _opkLogDate;
+  });
+  _opkLogResult = existing ? existing.result : null;
+  const noteEl = document.getElementById('opkLogNoteInput');
+  if(noteEl) noteEl.value = existing ? (existing.note||'') : '';
+  renderOpkLogSheet();
+  const sheet = document.getElementById('opkLogSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closeOpkLogSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('opkLogSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+function renderOpkLogSheet(){
+  const titleEl = document.getElementById('opkLogDateLabel');
+  if(titleEl){
+    const d = new Date(_opkLogDate);
+    const todayMid = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+    titleEl.textContent = (_opkLogDate === todayMid) ? 'Today' : d.toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'});
+  }
+  const phaseEl = document.getElementById('opkLogPhaseTag');
+  if(phaseEl){
+    const ph = (typeof getPhaseForDate === 'function') ? getPhaseForDate(_opkLogDate) : null;
+    phaseEl.innerHTML = ph ? phaseTagHTML(ph.name) + `<span style="font-size:11px;font-weight:700;color:var(--dsub);margin-left:6px;">Day ${ph.dayIn}</span>` : `<span style="font-size:11px;font-weight:700;color:var(--dsub);">Log a period start date to see phase</span>`;
+  }
+  document.querySelectorAll('#opkResultRow .ttc-result-chip').forEach(c=>{
+    const v = c.getAttribute('data-result');
+    c.classList.toggle('selected', v === _opkLogResult);
+    c.classList.toggle('neg', v==='neg' && v===_opkLogResult);
+    c.classList.toggle('faint', v==='faint' && v===_opkLogResult);
+    c.classList.toggle('pos', v==='pos' && v===_opkLogResult);
+  });
+}
+function opkLogSelectResult(val){
+  if(typeof haptic === 'function') haptic('light');
+  _opkLogResult = (_opkLogResult === val) ? null : val;
+  renderOpkLogSheet();
+}
+function saveOpkLog(){
+  if(!_opkLogResult){
+    if(typeof vikramToast==='function') vikramToast('⚠️ Pick a test result');
+    return;
+  }
+  if(typeof haptic === 'function') haptic('light');
+  const note = (document.getElementById('opkLogNoteInput')?.value || '').trim().slice(0,200);
+  const entry = { date: _opkLogDate, result: _opkLogResult, note };
+  cycleData.opkLogs = cycleData.opkLogs || [];
+  const idx = cycleData.opkLogs.findIndex(s=>{
+    const sd = new Date(s.date); const sm = new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime();
+    return sm === _opkLogDate;
+  });
+  if(idx >= 0) cycleData.opkLogs[idx] = entry;
+  else cycleData.opkLogs.push(entry);
+  cycleData.opkLogs.sort((a,b)=>a.date-b.date);
+  // Positive OPK result is a strong ovulation signal — auto-log ovulation if not already logged today
+  if(_opkLogResult === 'pos'){
+    const hasOvulToday = (cycleData.logs||[]).some(l=>{
+      if(l.type!=='ovulation') return false;
+      const ld = new Date(l.date); const lm = new Date(ld.getFullYear(),ld.getMonth(),ld.getDate()).getTime();
+      return lm === _opkLogDate;
+    });
+    if(!hasOvulToday){
+      cycleData.logs = [...(cycleData.logs||[]), {type:'ovulation', date:_opkLogDate}];
+    }
+  }
+  saveCycle();
+  closeOpkLogSheet();
+  renderCycleSheet();
+  const msgs = {neg:'✅ Negative OPK logged', faint:'✅ Faint line logged', pos:'✅ Positive OPK logged — ovulation marked!'};
+  if(typeof vikramToast==='function') vikramToast(msgs[_opkLogResult] || '✅ Logged');
+}
+
+// ── BBT (basal body temperature) log ──
+let _bbtLogDate = null;
+function openBbtLogSheet(dateTs){
+  if(typeof haptic === 'function') haptic('light');
+  _bbtLogDate = dateTs || new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+  const existing = (cycleData.bbtLogs||[]).find(s=>{
+    const sd = new Date(s.date); const sm = new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime();
+    return sm === _bbtLogDate;
+  });
+  const unit = cycleData.bbtUnit || 'C';
+  document.querySelectorAll('#bbtUnitToggle .ttc-unit-btn').forEach(b=>{
+    b.classList.toggle('on', b.getAttribute('data-unit') === unit);
+  });
+  const tempEl = document.getElementById('bbtTempInput');
+  if(tempEl) tempEl.value = existing ? existing.temp : '';
+  const timeEl = document.getElementById('bbtTimeInput');
+  if(timeEl) timeEl.value = existing && existing.time ? existing.time : '07:00';
+  const noteEl = document.getElementById('bbtLogNoteInput');
+  if(noteEl) noteEl.value = existing ? (existing.note||'') : '';
+  const titleEl = document.getElementById('bbtLogDateLabel');
+  if(titleEl){
+    const d = new Date(_bbtLogDate);
+    const todayMid = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+    titleEl.textContent = (_bbtLogDate === todayMid) ? 'Today' : d.toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'});
+  }
+  const phaseEl = document.getElementById('bbtLogPhaseTag');
+  if(phaseEl){
+    const ph = (typeof getPhaseForDate === 'function') ? getPhaseForDate(_bbtLogDate) : null;
+    phaseEl.innerHTML = ph ? phaseTagHTML(ph.name) + `<span style="font-size:11px;font-weight:700;color:var(--dsub);margin-left:6px;">Day ${ph.dayIn}</span>` : `<span style="font-size:11px;font-weight:700;color:var(--dsub);">Log a period start date to see phase</span>`;
+  }
+  const sheet = document.getElementById('bbtLogSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closeBbtLogSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('bbtLogSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+function bbtSelectUnit(unit){
+  if(typeof haptic === 'function') haptic('light');
+  cycleData.bbtUnit = unit;
+  saveCycle();
+  document.querySelectorAll('#bbtUnitToggle .ttc-unit-btn').forEach(b=>{
+    b.classList.toggle('on', b.getAttribute('data-unit') === unit);
+  });
+}
+function saveBbtLog(){
+  const tempEl = document.getElementById('bbtTempInput');
+  const raw = tempEl ? tempEl.value.trim() : '';
+  const temp = parseFloat(raw);
+  if(!raw || isNaN(temp)){
+    if(typeof vikramToast==='function') vikramToast('⚠️ Enter a temperature');
+    if(tempEl) tempEl.focus();
+    return;
+  }
+  const unit = cycleData.bbtUnit || 'C';
+  // Sanity range check (generous, covers C and F)
+  const min = unit==='C' ? 33 : 91, max = unit==='C' ? 41 : 106;
+  if(temp < min || temp > max){
+    if(typeof vikramToast==='function') vikramToast('⚠️ That temperature looks out of range');
+    return;
+  }
+  if(typeof haptic === 'function') haptic('light');
+  const time = document.getElementById('bbtTimeInput')?.value || '';
+  const note = (document.getElementById('bbtLogNoteInput')?.value || '').trim().slice(0,200);
+  const entry = { date: _bbtLogDate, temp, unit, time, note };
+  cycleData.bbtLogs = cycleData.bbtLogs || [];
+  const idx = cycleData.bbtLogs.findIndex(s=>{
+    const sd = new Date(s.date); const sm = new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime();
+    return sm === _bbtLogDate;
+  });
+  if(idx >= 0) cycleData.bbtLogs[idx] = entry;
+  else cycleData.bbtLogs.push(entry);
+  cycleData.bbtLogs.sort((a,b)=>a.date-b.date);
+  saveCycle();
+  closeBbtLogSheet();
+  renderCycleSheet();
+  if(typeof vikramToast==='function') vikramToast('✅ Temperature logged 🌡️');
+}
+
+// ── Convert a BBT entry's stored temp to the currently-displayed unit ──
+function _bbtToUnit(entry, displayUnit){
+  if(entry.unit === displayUnit) return entry.temp;
+  if(entry.unit === 'C' && displayUnit === 'F') return entry.temp * 9/5 + 32;
+  if(entry.unit === 'F' && displayUnit === 'C') return (entry.temp - 32) * 5/9;
+  return entry.temp;
+}
+
+// ── TTC History Sheet (tabs: Intercourse / OPK / BBT) ──
+let _ttcHistTab = 'bd'; // 'bd' | 'opk' | 'bbt'
+function openTtcHistorySheet(tab){
+  if(typeof haptic === 'function') haptic('light');
+  _ttcHistTab = tab || 'bd';
+  renderTtcHistorySheet();
+  const sheet = document.getElementById('ttcHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closeTtcHistorySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('ttcHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+function setTtcHistTab(tab){
+  if(typeof haptic === 'function') haptic('light');
+  _ttcHistTab = tab;
+  renderTtcHistorySheet();
+}
+function _ttcDateStr(ts){
+  return new Date(ts).toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'});
+}
+function renderTtcBbtChart(logs){
+  if(logs.length < 2) return '';
+  const unit = cycleData.bbtUnit || 'C';
+  const W = Math.max(320, logs.length * 34), H = 140, padL = 34, padR = 12, padT = 14, padB = 22;
+  const vals = logs.map(l => _bbtToUnit(l, unit));
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  if(hi - lo < 0.4){ const mid=(hi+lo)/2; lo = mid-0.4; hi = mid+0.4; }
+  lo -= 0.15; hi += 0.15;
+  const xStep = (W - padL - padR) / Math.max(1, logs.length - 1);
+  const yFor = v => padT + (1 - (v - lo)/(hi - lo)) * (H - padT - padB);
+  const xFor = i => padL + i * xStep;
+  const pathD = logs.map((l,i)=>`${i===0?'M':'L'}${xFor(i).toFixed(1)},${yFor(vals[i]).toFixed(1)}`).join(' ');
+  const ovulSet = new Set((cycleData.logs||[]).filter(l=>l.type==='ovulation').map(l=>{
+    const d=new Date(l.date); return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();
+  }));
+  const dots = logs.map((l,i)=>{
+    const x=xFor(i), y=yFor(vals[i]);
+    const dMid = (()=>{ const d=new Date(l.date); return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime(); })();
+    const isOvul = ovulSet.has(dMid);
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${isOvul?4.5:3}" fill="${isOvul?'#a855f7':'#FF6B9D'}" stroke="${isOvul?'#fff':'none'}" stroke-width="${isOvul?1.5:0}"/>`;
+  }).join('');
+  const xLabels = logs.map((l,i)=>{
+    if(logs.length > 10 && i % Math.ceil(logs.length/8) !== 0 && i !== logs.length-1) return '';
+    const d = new Date(l.date);
+    return `<text x="${xFor(i).toFixed(1)}" y="${H-6}" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--dsub)">${d.getDate()}/${d.getMonth()+1}</text>`;
+  }).join('');
+  const yTicks = [lo + (hi-lo)*0.15, lo + (hi-lo)*0.5, lo + (hi-lo)*0.85];
+  const yLabels = yTicks.map(v=>{
+    const y = yFor(v);
+    return `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W-padR}" y2="${y.toFixed(1)}" stroke="var(--sbdr)" stroke-width="1" stroke-dasharray="3,3"/>
+      <text x="${padL-5}" y="${(y+3).toFixed(1)}" text-anchor="end" font-size="8.5" font-weight="700" fill="var(--dsub)">${v.toFixed(1)}</text>`;
+  }).join('');
+  return `<div class="ttc-bbt-chart-wrap"><svg class="ttc-bbt-chart-svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    ${yLabels}
+    <path d="${pathD}" fill="none" stroke="#FF6B9D" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    ${dots}
+    ${xLabels}
+  </svg></div>
+  <div style="display:flex;gap:14px;padding:0 0 4px;font-size:10px;font-weight:700;color:var(--dsub);">
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:#FF6B9D;display:inline-block;"></span>Temp (°${unit})</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:#a855f7;display:inline-block;"></span>Ovulation logged</span>
+  </div>`;
+}
+function renderTtcHistorySheet(){
+  const tabBar = document.getElementById('ttcHistTabBar');
+  if(tabBar){
+    tabBar.querySelectorAll('.up-vtbtn').forEach(b=>{
+      b.classList.toggle('on', b.getAttribute('data-tab') === _ttcHistTab);
+    });
+  }
+  const body = document.getElementById('ttcHistorySheetBody');
+  if(!body) return;
+
+  if(_ttcHistTab === 'bd'){
+    const logs = cycleData.intercourseLogs || [];
+    if(!logs.length){
+      body.innerHTML = `<div class="ttc-mode-empty">No intercourse entries yet — log above 💕</div>`;
+      return;
+    }
+    body.innerHTML = `<div class="ssec" style="padding-top:4px;">
+      <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>All entries</span>
+        <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${logs.length} ${logs.length===1?'entry':'entries'}</span>
+      </div>
+      ${[...logs].reverse().map((l, revIdx)=>{
+        const realIdx = logs.length - 1 - revIdx;
+        return `<div class="ttc-log-row">
+          <div class="ttc-log-top">
+            <div class="ttc-log-left">
+              <div class="ttc-log-icon">💕</div>
+              <div>
+                <div class="ttc-log-date">${_ttcDateStr(l.date)}</div>
+                <div class="ttc-log-detail">${l.protected ? 'Protected' : 'Unprotected'}</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <button class="cyc-log-del" title="Edit" onclick="closeTtcHistorySheet();openIntercourseLogSheet(${l.date})">✏️</button>
+              <button class="cyc-log-del" title="Delete" onclick="ttcDeleteLog('bd',${realIdx})">🗑</button>
+            </div>
+          </div>
+          ${l.note ? `<div class="ttc-log-note">"${esc(l.note)}"</div>` : ''}
+        </div>`;
+      }).join('')}
+    </div>`;
+    return;
+  }
+
+  if(_ttcHistTab === 'opk'){
+    const logs = cycleData.opkLogs || [];
+    if(!logs.length){
+      body.innerHTML = `<div class="ttc-mode-empty">No ovulation test entries yet — log above 🧪</div>`;
+      return;
+    }
+    const resultMeta = {neg:{emoji:'⚪',label:'Negative',cls:'neg'},faint:{emoji:'🟡',label:'Faint line',cls:'faint'},pos:{emoji:'🟢',label:'Positive',cls:'pos'}};
+    body.innerHTML = `<div class="ssec" style="padding-top:4px;">
+      <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>All entries</span>
+        <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${logs.length} ${logs.length===1?'entry':'entries'}</span>
+      </div>
+      ${[...logs].reverse().map((l, revIdx)=>{
+        const realIdx = logs.length - 1 - revIdx;
+        const rm = resultMeta[l.result] || resultMeta.neg;
+        return `<div class="ttc-log-row">
+          <div class="ttc-log-top">
+            <div class="ttc-log-left">
+              <div class="ttc-log-icon">🧪</div>
+              <div>
+                <div class="ttc-log-date">${_ttcDateStr(l.date)}</div>
+                <div class="ttc-log-detail"><span class="ttc-pill ${rm.cls}">${rm.emoji} ${rm.label}</span></div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <button class="cyc-log-del" title="Edit" onclick="closeTtcHistorySheet();openOpkLogSheet(${l.date})">✏️</button>
+              <button class="cyc-log-del" title="Delete" onclick="ttcDeleteLog('opk',${realIdx})">🗑</button>
+            </div>
+          </div>
+          ${l.note ? `<div class="ttc-log-note">"${esc(l.note)}"</div>` : ''}
+        </div>`;
+      }).join('')}
+    </div>`;
+    return;
+  }
+
+  // BBT tab
+  const logs = cycleData.bbtLogs || [];
+  if(!logs.length){
+    body.innerHTML = `<div class="ttc-mode-empty">No temperature entries yet — log your BBT each morning 🌡️</div>`;
+    return;
+  }
+  const unit = cycleData.bbtUnit || 'C';
+  body.innerHTML = `<div class="ssec" style="padding-top:4px;">
+    <div class="ssect">Chart</div>
+    ${renderTtcBbtChart(logs)}
+  </div>
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>All entries</span>
+      <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${logs.length} ${logs.length===1?'entry':'entries'}</span>
+    </div>
+    ${[...logs].reverse().map((l, revIdx)=>{
+      const realIdx = logs.length - 1 - revIdx;
+      const dispTemp = _bbtToUnit(l, unit);
+      return `<div class="ttc-log-row">
+        <div class="ttc-log-top">
+          <div class="ttc-log-left">
+            <div class="ttc-log-icon">🌡️</div>
+            <div>
+              <div class="ttc-log-date">${_ttcDateStr(l.date)}</div>
+              <div class="ttc-log-detail">${dispTemp.toFixed(2)}°${unit}${l.time ? ' · ' + l.time : ''}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+            <button class="cyc-log-del" title="Edit" onclick="closeTtcHistorySheet();openBbtLogSheet(${l.date})">✏️</button>
+            <button class="cyc-log-del" title="Delete" onclick="ttcDeleteLog('bbt',${realIdx})">🗑</button>
+          </div>
+        </div>
+        ${l.note ? `<div class="ttc-log-note">"${esc(l.note)}"</div>` : ''}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+function ttcDeleteLog(kind, idx){
+  if(typeof haptic === 'function') haptic('light');
+  const key = kind==='bd' ? 'intercourseLogs' : kind==='opk' ? 'opkLogs' : 'bbtLogs';
+  const logs = cycleData[key] || [];
+  if(idx < 0 || idx >= logs.length) return;
+  logs.splice(idx, 1);
+  cycleData[key] = logs;
+  saveCycle();
+  renderTtcHistorySheet();
+  renderCycleSheet();
+  if(typeof vikramToast==='function') vikramToast('🗑 Entry deleted');
 }
 
 function getDaysUntilNextPeriod(){
@@ -11470,10 +12578,289 @@ function buildPhaseRing(dayOfCycle){ return buildHeroRing(dayOfCycle, '#FF6B9D')
 function cycRing(pct, emoji){ return ''; }
 function cycCard(cls, pct, emoji, val, sub){ return ''; }
 
+// ══ CYCLE MODE — Cycle Tracking / Trying to Conceive / Pregnant ══════════════
+// Persisted on cycleData.mode: 'cycle' | 'ttc' | 'pregnant'
+// Pregnancy dates persisted on cycleData.pregnancy: { lmpDate, dueDate, setAt }
+
+function getCycleMode(){
+  return cycleData.mode || 'cycle';
+}
+
+function _cycleModeMeta(mode){
+  return {
+    cycle:    { icon:'🌸', label:'Mode',      title:'🌸 My Cycle' },
+    ttc:      { icon:'🌱', label:'TTC',       title:'🌱 Trying to Conceive' },
+    pregnant: { icon:'🤰', label:'Pregnant',  title:'🤰 Pregnancy' },
+  }[mode] || { icon:'🌸', label:'Mode', title:'🌸 My Cycle' };
+}
+
+// Update header button + title to reflect current mode
+function _applyCycleModeUI(){
+  const mode = getCycleMode();
+  const meta = _cycleModeMeta(mode);
+  const btn  = document.getElementById('cycleModeBtn');
+  const icon = document.getElementById('cycleModeBtnIcon');
+  const lbl  = document.getElementById('cycleModeBtnLabel');
+  const title= document.getElementById('cycleTitleLabel');
+  if(btn){
+    btn.classList.remove('mode-ttc','mode-pregnant');
+    if(mode==='ttc') btn.classList.add('mode-ttc');
+    if(mode==='pregnant') btn.classList.add('mode-pregnant');
+  }
+  if(icon) icon.textContent = meta.icon;
+  if(lbl)  lbl.textContent  = meta.label;
+  // Only set the title if Partner Mode isn't currently overriding it
+  if(title && !(typeof _partnerModeActive !== 'undefined' && _partnerModeActive)) title.textContent = meta.title;
+}
+
+// ── Mode picker modal ──
+function openCycleModePicker(){
+  if(typeof haptic === 'function') haptic('light');
+  const mode = getCycleMode();
+  document.querySelectorAll('#cycleModeOptions .cm-opt').forEach(opt=>{
+    opt.classList.toggle('selected', opt.getAttribute('data-mode') === mode);
+  });
+  _applyPartnerModeUI();
+  const ov = document.getElementById('cycleModePickerOverlay');
+  if(ov) ov.classList.add('open');
+}
+function closeCycleModePicker(e){
+  if(e && e.target !== e.currentTarget) return;
+  if(typeof haptic === 'function') haptic('light');
+  const ov = document.getElementById('cycleModePickerOverlay');
+  if(ov) ov.classList.remove('open');
+}
+
+function selectCycleMode(mode){
+  if(typeof haptic === 'function') haptic('light');
+  if(mode === 'pregnant' && getCycleMode() !== 'pregnant'){
+    // Need setup info first
+    closeCycleModePicker();
+    openPregSetup();
+    return;
+  }
+  if(getCycleMode() === 'pregnant' && mode !== 'pregnant'){
+    // Leaving pregnancy mode — confirm first
+    closeCycleModePicker();
+    openPregEndConfirm(mode);
+    return;
+  }
+  cycleData.mode = mode;
+  saveCycle();
+  closeCycleModePicker();
+  _applyCycleModeUI();
+  renderCycleSheet();
+}
+
+// ── Pregnancy setup modal ──
+function openPregSetup(){
+  if(typeof haptic === 'function') haptic('light');
+  const t = TODAY;
+  const pad = n => String(n).padStart(2,'0');
+  const todayStr = t.getFullYear() + '-' + pad(t.getMonth()+1) + '-' + pad(t.getDate());
+  const lmpInput = document.getElementById('pregSetupLmpInput');
+  const dueInput = document.getElementById('pregSetupDueInput');
+  if(lmpInput){
+    lmpInput.max = todayStr;
+    lmpInput.value = (cycleData.pregnancy && cycleData.pregnancy.lmpDate)
+      ? _pregTsToDateStr(cycleData.pregnancy.lmpDate)
+      : (cycleData.lastPeriodStart ? _pregTsToDateStr(cycleData.lastPeriodStart) : '');
+  }
+  if(dueInput){
+    dueInput.value = (cycleData.pregnancy && cycleData.pregnancy.dueDate)
+      ? _pregTsToDateStr(cycleData.pregnancy.dueDate) : '';
+  }
+  // Reset to "LMP" tab by default
+  document.querySelectorAll('#pregSetupTypeRow .dc-type-opt').forEach(o=>o.classList.remove('selected'));
+  document.querySelector('#pregSetupTypeRow .dc-type-opt[data-pregtype="lmp"]')?.classList.add('selected');
+  document.getElementById('pregSetupLmpField').style.display = '';
+  document.getElementById('pregSetupDueField').style.display = 'none';
+  const ov = document.getElementById('pregSetupOverlay');
+  if(ov) ov.classList.add('open');
+}
+function closePregSetup(e){
+  if(e && e.target !== e.currentTarget) return;
+  if(typeof haptic === 'function') haptic('light');
+  const ov = document.getElementById('pregSetupOverlay');
+  if(ov) ov.classList.remove('open');
+}
+function pregSetupTypeSelect(el){
+  if(typeof haptic === 'function') haptic('light');
+  document.querySelectorAll('#pregSetupTypeRow .dc-type-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+  const type = el.getAttribute('data-pregtype');
+  document.getElementById('pregSetupLmpField').style.display = type === 'lmp' ? '' : 'none';
+  document.getElementById('pregSetupDueField').style.display = type === 'due' ? '' : 'none';
+}
+function _pregTsToDateStr(ts){
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2,'0');
+  return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate());
+}
+function _pregFlashInvalid(inputId){
+  if(typeof haptic === 'function') haptic('medium');
+  const el = document.getElementById(inputId);
+  if(!el) return;
+  el.style.borderColor = '#f43f5e';
+  el.focus();
+  setTimeout(()=>{ el.style.borderColor = ''; }, 1200);
+}
+function savePregSetup(){
+  const type = document.querySelector('#pregSetupTypeRow .dc-type-opt.selected')?.getAttribute('data-pregtype') || 'lmp';
+  let lmpTs = null, dueTs = null;
+  if(type === 'lmp'){
+    const val = document.getElementById('pregSetupLmpInput')?.value;
+    if(!val){ _pregFlashInvalid('pregSetupLmpInput'); return; }
+    const [y,m,dd] = val.split('-').map(Number);
+    const lmp = new Date(y, m-1, dd);
+    lmpTs = lmp.getTime();
+    dueTs = new Date(lmp.getTime() + 280*86400000).getTime(); // 280 days = 40 weeks from LMP
+  } else {
+    const val = document.getElementById('pregSetupDueInput')?.value;
+    if(!val){ _pregFlashInvalid('pregSetupDueInput'); return; }
+    const [y,m,dd] = val.split('-').map(Number);
+    const due = new Date(y, m-1, dd);
+    dueTs = due.getTime();
+    lmpTs = new Date(due.getTime() - 280*86400000).getTime();
+  }
+  if(typeof haptic === 'function') haptic('light');
+  cycleData.pregnancy = { lmpDate: lmpTs, dueDate: dueTs, setAt: Date.now() };
+  cycleData.mode = 'pregnant';
+  saveCycle();
+  closePregSetup();
+  _applyCycleModeUI();
+  renderCycleSheet();
+}
+
+// ── Ending pregnancy mode ──
+let _pregEndTargetMode = 'cycle';
+function openPregEndConfirm(targetMode){
+  _pregEndTargetMode = targetMode || 'cycle';
+  const ov = document.getElementById('pregEndOverlay');
+  if(ov) ov.classList.add('open');
+}
+function closePregEndConfirm(e){
+  if(e && e.target !== e.currentTarget) return;
+  if(typeof haptic === 'function') haptic('light');
+  const ov = document.getElementById('pregEndOverlay');
+  if(ov) ov.classList.remove('open');
+}
+function confirmEndPregnancy(){
+  if(typeof haptic === 'function') haptic('light');
+  cycleData.mode = _pregEndTargetMode || 'cycle';
+  saveCycle();
+  closePregEndConfirm();
+  _applyCycleModeUI();
+  renderCycleSheet();
+}
+
+// ── Pregnancy math ──
+function getPregnancyInfo(){
+  const p = cycleData.pregnancy;
+  if(!p || !p.lmpDate) return null;
+  const todayMid = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate()).getTime();
+  const lmpD = new Date(p.lmpDate);
+  const lmpMid = new Date(lmpD.getFullYear(), lmpD.getMonth(), lmpD.getDate()).getTime();
+  const daysPregnant = Math.floor((todayMid - lmpMid) / 86400000);
+  const week = Math.floor(daysPregnant / 7);
+  const dayInWeek = daysPregnant % 7;
+  const dueD = new Date(p.dueDate);
+  const dueMid = new Date(dueD.getFullYear(), dueD.getMonth(), dueD.getDate()).getTime();
+  const daysToGo = Math.round((dueMid - todayMid) / 86400000);
+  const trimester = week < 13 ? 1 : week < 27 ? 2 : 3;
+  const pct = Math.max(0, Math.min(1, daysPregnant / 280));
+  return { daysPregnant, week, dayInWeek, daysToGo, trimester, pct, dueMid, lmpMid };
+}
+
+const TRIMESTER_INFO = {
+  1: { label:'First Trimester', desc:'Early development — the foundation is being built.' },
+  2: { label:'Second Trimester', desc:'Often called the most comfortable stretch — energy tends to return.' },
+  3: { label:'Third Trimester', desc:'The home stretch — baby is growing fast and getting ready.' },
+};
+
+function renderPregnancyDashboard(body){
+  const info = getPregnancyInfo();
+  if(!info){
+    body.innerHTML = `<div style="padding:48px 24px;text-align:center;">
+      <div style="font-size:36px;margin-bottom:14px;">🤰</div>
+      <div style="font-size:15px;font-weight:800;color:var(--dtext);margin-bottom:6px;">No pregnancy dates set</div>
+      <div style="font-size:12.5px;color:var(--dsub);margin-bottom:18px;">Add your last period date or due date to start tracking.</div>
+      <button onclick="openPregSetup()" style="padding:11px 28px;border-radius:12px;border:none;background:linear-gradient(135deg,#7c5cff,#b18cff);color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">Set up pregnancy</button>
+    </div>`;
+    return;
+  }
+  const { week, dayInWeek, daysToGo, trimester, pct, daysPregnant } = info;
+  const ti = TRIMESTER_INFO[trimester];
+  const dueDate = new Date(cycleData.pregnancy.dueDate);
+  const dueStr = dueDate.toLocaleDateString('en-NP', {month:'long', day:'numeric', year:'numeric'});
+  const overdue = daysToGo < 0;
+  const weeksToGo = Math.max(0, Math.ceil(daysToGo/7));
+
+  body.innerHTML = `
+  <div class="preg-hero">
+    <div class="preg-hero-inner">
+      <div class="preg-week-lbl">You're currently</div>
+      <div class="preg-week-val">Week ${week}<span style="font-size:18px;font-weight:800;opacity:.8;"> + ${dayInWeek}d</span></div>
+      <div class="preg-week-sub">${ti.label} · ${daysPregnant} days pregnant</div>
+      <div class="preg-progress-wrap"><div class="preg-progress-bar" style="width:${(pct*100).toFixed(1)}%;"></div></div>
+      <div class="preg-trimester-row"><span>T1</span><span>T2</span><span>T3</span><span>Due</span></div>
+      <div class="preg-stats-row">
+        <div class="preg-stat">
+          <div class="preg-stat-val">${overdue ? 'Overdue' : weeksToGo}</div>
+          <div class="preg-stat-lbl">${overdue ? ('by ' + Math.abs(daysToGo) + 'd') : 'weeks to go'}</div>
+        </div>
+        <div class="preg-stat">
+          <div class="preg-stat-val">${overdue ? Math.abs(daysToGo) : daysToGo}</div>
+          <div class="preg-stat-lbl">${overdue ? 'days overdue' : 'days to go'}</div>
+        </div>
+        <div class="preg-stat">
+          <div class="preg-stat-val">${trimester}<span style="font-size:11px;">${trimester===1?'st':trimester===2?'nd':'rd'}</span></div>
+          <div class="preg-stat-lbl">trimester</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="preg-card">
+    <div class="preg-card-title">📅 Due date</div>
+    <div class="preg-card-text">${dueStr}${overdue ? ' — your estimated due date has passed. Babies often arrive anywhere from 1–2 weeks before or after this date.' : ''}</div>
+  </div>
+
+  <div class="preg-card">
+    <div class="preg-card-title">${ti.label}</div>
+    <div class="preg-card-text">${ti.desc}</div>
+  </div>
+
+  <div class="ssec" style="padding-top:0;">
+    <div class="srow" style="cursor:pointer;" onclick="openPregSetup()">
+      <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(124,92,255,.18),rgba(124,92,255,.08));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">✏️</div>
+        <div style="min-width:0;">
+          <div class="slbl">Edit pregnancy dates</div>
+          <div class="ssub">Update last period or due date</div>
+        </div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="srow" style="cursor:pointer;border-bottom:none;" onclick="openPregEndConfirm('cycle')">
+      <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(244,63,94,.15),rgba(244,63,94,.07));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">↩️</div>
+        <div style="min-width:0;">
+          <div class="slbl" style="color:#f43f5e;">End pregnancy mode</div>
+          <div class="ssub">Switch back to cycle tracking</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="height:20px;"></div>`;
+}
+
+
 // ── Main render ─────────────────────────────────────────────────────────────
 function renderCycleSheet(){
   // ── Partner Mode dispatch ──
   _applyPartnerModeUI();
+  _applyCycleModeUI();
   if(_partnerModeActive){
     const body = document.getElementById('cycleBody');
     if(body){
@@ -11481,6 +12868,18 @@ function renderCycleSheet(){
       catch(e){
         console.error('[Vikram] renderPartnerModeCycleSheet error:', e);
         body.innerHTML = '<div style="padding:32px 18px;text-align:center;color:var(--dsub);font-size:13px;font-weight:700;">⚠️ Failed to load partner view</div>';
+      }
+    }
+    return;
+  }
+  // ── Pregnancy Mode dispatch ──
+  if(getCycleMode() === 'pregnant'){
+    const body = document.getElementById('cycleBody');
+    if(body){
+      try{ renderPregnancyDashboard(body); }
+      catch(e){
+        console.error('[Vikram] renderPregnancyDashboard error:', e);
+        body.innerHTML = '<div style="padding:32px 18px;text-align:center;color:var(--dsub);font-size:13px;font-weight:700;">⚠️ Failed to load pregnancy view</div>';
       }
     }
     return;
@@ -11715,6 +13114,29 @@ function renderCycleSheet(){
   </div>`;
   })()}
 
+  <!-- ── TTC MODE BANNER ── -->
+  ${getCycleMode() === 'ttc' && !notSet ? `
+  <div class="ttc-banner">
+    <div class="ttc-banner-icon">🌱</div>
+    <div class="ttc-banner-body">
+      <div class="ttc-banner-title">Conception chance: ${conceptionChance}</div>
+      <div class="ttc-banner-sub">${
+        inFertile ? 'You\'re in your fertile window — a great time to try.'
+        : ovulLog ? 'Ovulation logged this cycle. Fertile window has passed.'
+        : (dFertileStart !== null && dFertileStart > 0) ? `Fertile window opens in ${dFertileStart}d.`
+        : 'Track ovulation to pinpoint your next fertile window.'
+      }</div>
+    </div>
+  </div>` : ''}
+  ${getCycleMode() === 'ttc' && notSet ? `
+  <div class="ttc-banner">
+    <div class="ttc-banner-icon">🌱</div>
+    <div class="ttc-banner-body">
+      <div class="ttc-banner-title">Trying to Conceive mode</div>
+      <div class="ttc-banner-sub">Log your last period below so we can predict your fertile window.</div>
+    </div>
+  </div>` : ''}
+
   <!-- ── LOG TODAY ── -->
   <div class="ssec" style="padding-bottom:6px;">
     <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
@@ -11760,6 +13182,73 @@ function renderCycleSheet(){
       </div>
       <button class="cyc-log-btn-action ovul" onclick="cyLogOvulation()">Today</button>
     </div>
+    ${getCycleMode() === 'ttc' ? `
+    <div class="cyc-log-btn-row">
+      <div class="cyc-log-btn-left">
+        <div class="cyc-log-btn-dot" style="background:#ec4899;"></div>
+        <div>
+          <div class="cyc-log-btn-label">Intercourse</div>
+          <div class="ssub">${(() => {
+            const todayMid = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+            const loggedToday = (cycleData.intercourseLogs||[]).some(s=>{
+              const sd = new Date(s.date); return new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime() === todayMid;
+            });
+            return loggedToday ? 'Logged for today ✓' : 'Track timing during fertile days';
+          })()}</div>
+        </div>
+      </div>
+      <button class="cyc-log-btn-action" style="background:rgba(236,72,153,.14);color:#db2777;" onclick="openIntercourseLogSheet()">Log</button>
+    </div>
+    <div class="cyc-log-btn-row">
+      <div class="cyc-log-btn-left">
+        <div class="cyc-log-btn-dot" style="background:#22c55e;"></div>
+        <div>
+          <div class="cyc-log-btn-label">Ovulation test</div>
+          <div class="ssub">${(() => {
+            const todayMid = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+            const t = (cycleData.opkLogs||[]).find(s=>{
+              const sd = new Date(s.date); return new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime() === todayMid;
+            });
+            const labels = {neg:'Negative today',faint:'Faint line today',pos:'Positive today ✓'};
+            return t ? labels[t.result] : 'Log LH strip result';
+          })()}</div>
+        </div>
+      </div>
+      <button class="cyc-log-btn-action" style="background:rgba(34,197,94,.14);color:#16a34a;" onclick="openOpkLogSheet()">Log</button>
+    </div>
+    <div class="cyc-log-btn-row">
+      <div class="cyc-log-btn-left">
+        <div class="cyc-log-btn-dot" style="background:#FF6B9D;"></div>
+        <div>
+          <div class="cyc-log-btn-label">BBT temperature</div>
+          <div class="ssub">${(() => {
+            const todayMid = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+            const t = (cycleData.bbtLogs||[]).find(s=>{
+              const sd = new Date(s.date); return new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime() === todayMid;
+            });
+            return t ? (_bbtToUnit(t, cycleData.bbtUnit||'C').toFixed(2) + '°' + (cycleData.bbtUnit||'C') + ' logged ✓') : 'Log your morning reading';
+          })()}</div>
+        </div>
+      </div>
+      <button class="cyc-log-btn-action" style="background:rgba(255,107,157,.16);color:#c2255c;" onclick="openBbtLogSheet()">Log</button>
+    </div>` : ''}
+    <div class="cyc-log-btn-row">
+      <div class="cyc-log-btn-left">
+        <div class="cyc-log-btn-dot" style="background:#f59e0b;"></div>
+        <div>
+          <div class="cyc-log-btn-label">Mood &amp; symptoms</div>
+          <div class="ssub">${(() => {
+            const todayMid = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+            const loggedToday = (cycleData.symptomLogs||[]).some(s=>{
+              const sd = new Date(s.date); const sm = new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime();
+              return sm === todayMid;
+            });
+            return loggedToday ? 'Logged for today ✓' : 'How are you feeling today?';
+          })()}</div>
+        </div>
+      </div>
+      <button class="cyc-log-btn-action" style="background:rgba(245,158,11,.14);color:#b45309;" onclick="openSymptomLogSheet()">Log</button>
+    </div>
     <div class="cyc-log-btn-row" style="border-bottom:none;">
       <div class="cyc-log-btn-left">
         <div class="cyc-log-btn-dot" style="background:var(--dsub);"></div>
@@ -11769,6 +13258,55 @@ function renderCycleSheet(){
         </div>
       </div>
       <button class="cyc-log-btn-action" style="background:var(--tgbg);color:var(--dtext);" onclick="cyLogByDateOpen()">Pick date</button>
+    </div>
+  </div>
+
+  <!-- ── TTC HISTORY ENTRIES (Intercourse / OPK / BBT) ── -->
+  ${getCycleMode() === 'ttc' ? `
+  <div class="ssec" style="padding-top:0;">
+    <div class="srow" style="cursor:pointer;" onclick="openTtcHistorySheet('bd')">
+      <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(236,72,153,.18),rgba(236,72,153,.08));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💕</div>
+        <div style="min-width:0;">
+          <div class="slbl">Intercourse log</div>
+          <div class="ssub">${(cycleData.intercourseLogs||[]).length} ${(cycleData.intercourseLogs||[]).length===1?'entry':'entries'}</div>
+        </div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="srow" style="cursor:pointer;" onclick="openTtcHistorySheet('opk')">
+      <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(34,197,94,.18),rgba(34,197,94,.08));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🧪</div>
+        <div style="min-width:0;">
+          <div class="slbl">Ovulation test results</div>
+          <div class="ssub">${(cycleData.opkLogs||[]).length} ${(cycleData.opkLogs||[]).length===1?'entry':'entries'}</div>
+        </div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="srow" style="cursor:pointer;border-bottom:none;" onclick="openTtcHistorySheet('bbt')">
+      <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(255,107,157,.2),rgba(255,107,157,.08));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🌡️</div>
+        <div style="min-width:0;">
+          <div class="slbl">BBT chart &amp; log</div>
+          <div class="ssub">${(cycleData.bbtLogs||[]).length} ${(cycleData.bbtLogs||[]).length===1?'entry':'entries'}</div>
+        </div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+  </div>` : ''}
+
+  <!-- ── MOOD & SYMPTOM HISTORY ── -->
+  <div class="ssec" style="padding-top:0;">
+    <div class="srow" style="cursor:pointer;" onclick="openSymptomHistorySheet()">
+      <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(245,158,11,.08));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💭</div>
+        <div style="min-width:0;">
+          <div class="slbl">Mood &amp; symptom history</div>
+          <div class="ssub" id="symptomHistoryEntrySub">${(cycleData.symptomLogs||[]).length} ${(cycleData.symptomLogs||[]).length === 1 ? 'entry' : 'entries'} · tracked by phase</div>
+        </div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
   </div>
 
@@ -11786,6 +13324,9 @@ function renderCycleSheet(){
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
   </div>` : ''}
+
+  <!-- ── CYCLE INSIGHTS & TRENDS ── -->
+  ${!notSet ? renderCycleInsights() : ''}
 
   <!-- ── CYCLE HISTORY ── -->
   ${renderCycleHistory()}
@@ -11860,19 +13401,19 @@ function togglePartnerMode(){
   _partnerModeActive = !_partnerModeActive;
   try{ localStorage.setItem('vikram_partner_mode', _partnerModeActive ? '1' : '0'); }catch(e){}
   _applyPartnerModeUI();
+  closeCycleModePicker();
   renderCycleSheet();
 }
 
-// Update button visuals to reflect current state
+// Update row/switch visuals inside the mode picker to reflect current state
 function _applyPartnerModeUI(){
-  const btn = document.getElementById('partnerModeBtn');
-  const lbl = document.getElementById('partnerModeBtnLabel');
-  const title = document.getElementById('cycleTitleLabel');
-  if(btn){
-    btn.classList.toggle('on', _partnerModeActive);
-    btn.classList.toggle('off', !_partnerModeActive);
-  }
-  if(lbl) lbl.textContent = _partnerModeActive ? 'My View' : 'Partner';
+  const row    = document.getElementById('partnerModeBtn');
+  const sw     = document.getElementById('partnerModeSwitch');
+  const sub    = document.getElementById('partnerModeBtnSub');
+  const title  = document.getElementById('cycleTitleLabel');
+  if(row) row.classList.toggle('on', _partnerModeActive);
+  if(sw)  sw.classList.toggle('on', _partnerModeActive);
+  if(sub) sub.textContent = _partnerModeActive ? 'Showing your partner\'s synced cycle' : 'View your partner\'s synced cycle';
   if(title) title.textContent = _partnerModeActive ? '💑 Partner View' : '🌸 My Cycle';
 }
 
@@ -13273,7 +14814,7 @@ function closePartnerSyncSheet(){
     const existing = origOvHandler.getAttribute('onclick') || '';
     origOvHandler.setAttribute('onclick',
       existing.replace(')(this)',
-        `)(this); if(document.getElementById('partnerSyncSheet')?.classList.contains('open')){closePartnerSyncSheet();}`
+        `)(this); if(document.getElementById('partnerSyncSheet')?.classList.contains('open')){closePartnerSyncSheet();} if(document.getElementById('cycleSettingsSheet')?.classList.contains('open')){closeCycleSettingsSheet();} if(document.getElementById('logHistorySheet')?.classList.contains('open')){closeLogHistorySheet();} if(document.getElementById('symptomLogSheet')?.classList.contains('open')){closeSymptomLogSheet();} if(document.getElementById('symptomHistorySheet')?.classList.contains('open')){closeSymptomHistorySheet();} if(document.getElementById('intercourseLogSheet')?.classList.contains('open')){closeIntercourseLogSheet();} if(document.getElementById('opkLogSheet')?.classList.contains('open')){closeOpkLogSheet();} if(document.getElementById('bbtLogSheet')?.classList.contains('open')){closeBbtLogSheet();} if(document.getElementById('ttcHistorySheet')?.classList.contains('open')){closeTtcHistorySheet();}`
       )
     );
   }
@@ -13315,6 +14856,106 @@ function buildPredictions(lastStart, cl, pl){
     });
   }
   return results;
+}
+
+// ── Cycle Insights & Trends (avg length, variance, sparkline) ────────────────
+function renderCycleInsights(){
+  const logs = (cycleData.logs||[]).filter(l=>l.type==='period_start').sort((a,b)=>a.date-b.date);
+  if(logs.length < 2){
+    return `<div class="cyc-insights-card">
+      <div class="cyc-insights-title">📈 Cycle insights</div>
+      <div class="cyc-insights-empty">Log at least 2 period start dates to see your average length, variance, and trend.</div>
+    </div>`;
+  }
+  // Build all cycle lengths (consecutive period_start gaps), sane range filter
+  const allCycles = [];
+  for(let i = 1; i < logs.length; i++){
+    const len = Math.round((logs[i].date - logs[i-1].date) / 86400000);
+    if(len > 0 && len < 60){
+      allCycles.push({ len, startDate: logs[i-1].date, endDate: logs[i].date });
+    }
+  }
+  if(!allCycles.length){
+    return `<div class="cyc-insights-card">
+      <div class="cyc-insights-title">📈 Cycle insights</div>
+      <div class="cyc-insights-empty">Not enough valid cycle data yet — keep logging period start dates.</div>
+    </div>`;
+  }
+  // Window: cycles whose start falls within the last 6 months, capped to a max of 6 cycles
+  const sixMonthsAgoTs = new Date(TODAY.getFullYear(), TODAY.getMonth()-6, TODAY.getDate()).getTime();
+  let windowCycles = allCycles.filter(c => c.endDate >= sixMonthsAgoTs);
+  if(!windowCycles.length) windowCycles = allCycles.slice(-3); // fallback if all data is older
+  windowCycles = windowCycles.slice(-6);
+  const monthsSpan = Math.max(1, Math.round((TODAY.getTime() - windowCycles[0].startDate) / (30.44*86400000)));
+
+  const n = windowCycles.length;
+  const lens = windowCycles.map(c=>c.len);
+  const avg = lens.reduce((a,b)=>a+b,0) / n;
+  const variance = n > 1 ? lens.reduce((a,b)=>a+Math.pow(b-avg,2),0) / n : 0;
+  const stdDev = Math.sqrt(variance);
+  const range = n > 1 ? Math.max(...lens) - Math.min(...lens) : 0;
+
+  // Trend: compare most recent cycle to the average of the rest
+  let trendCls = 'flat', trendArrow = '→', trendLabel = 'Stable';
+  if(n >= 2){
+    const latest = lens[lens.length-1];
+    const priorAvg = lens.slice(0,-1).reduce((a,b)=>a+b,0) / (n-1);
+    const diff = latest - priorAvg;
+    if(diff >= 1.5){ trendCls='up'; trendArrow='↗'; trendLabel = `+${Math.round(diff)}d vs prior avg`; }
+    else if(diff <= -1.5){ trendCls='down'; trendArrow='↘'; trendLabel = `${Math.round(diff)}d vs prior avg`; }
+    else { trendCls='flat'; trendArrow='→'; trendLabel = 'In line with average'; }
+  }
+
+  // Regularity label based on std dev (clinically: <=7-9d variation across cycles is typical/regular)
+  let regCls = 'reg', regLabel = 'Regular';
+  if(stdDev > 5 || range > 9){ regCls = 'irreg'; regLabel = 'Irregular'; }
+  else if(stdDev > 2.5 || range > 5){ regCls = 'mod'; regLabel = 'Somewhat variable'; }
+
+  // ── Sparkline SVG ──
+  const sparkW = 132, sparkH = 40, padX = 4, padY = 6;
+  const minL = Math.min(...lens), maxL = Math.max(...lens);
+  const spanL = (maxL - minL) || 1;
+  const stepX = n > 1 ? (sparkW - padX*2) / (n-1) : 0;
+  const yFor = v => padY + (1 - (v - minL)/spanL) * (sparkH - padY*2);
+  const pts = lens.map((v,i)=>({ x: padX + i*stepX, y: yFor(v) }));
+  const pathD = pts.map((p,i)=>`${i===0?'M':'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const avgY = yFor(avg);
+  const dots = pts.map((p,i)=>{
+    const isLast = i === pts.length-1;
+    return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${isLast?3.5:2.3}" fill="${isLast?'#C44569':'#FF6B9D'}" ${isLast?'stroke="#fff" stroke-width="1.3"':''}/>`;
+  }).join('');
+  const sparkSvg = `<svg class="cyc-spark-svg" width="${sparkW}" height="${sparkH}" viewBox="0 0 ${sparkW} ${sparkH}">
+    <line x1="${padX}" y1="${avgY.toFixed(1)}" x2="${sparkW-padX}" y2="${avgY.toFixed(1)}" stroke="var(--sbdr)" stroke-width="1" stroke-dasharray="2,3"/>
+    <path d="${pathD}" fill="none" stroke="#FF6B9D" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    ${dots}
+  </svg>`;
+
+  return `<div class="cyc-insights-card">
+    <div class="cyc-insights-title">📈 Cycle insights</div>
+    <div class="cyc-insights-sub">Based on your last ${n} cycle${n===1?'':'s'} · ~${monthsSpan} month${monthsSpan===1?'':'s'}</div>
+    <div class="cyc-insights-stats">
+      <div class="cyc-insights-stat">
+        <div class="cyc-insights-stat-val">${avg.toFixed(1)}d</div>
+        <div class="cyc-insights-stat-lbl">Avg length</div>
+      </div>
+      <div class="cyc-insights-stat">
+        <div class="cyc-insights-stat-val">±${stdDev.toFixed(1)}d</div>
+        <div class="cyc-insights-stat-lbl">Variance</div>
+      </div>
+      <div class="cyc-insights-stat">
+        <div class="cyc-insights-stat-val" style="font-size:14px;">${trendArrow} ${lens[lens.length-1]}d</div>
+        <div class="cyc-insights-stat-lbl">Latest</div>
+        <div class="cyc-insights-stat-trend ${trendCls}">${trendLabel}</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+      <div class="cyc-spark-wrap">${sparkSvg}</div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div class="cyc-insights-regularity ${regCls}">${regLabel}</div>
+        <div style="font-size:9.5px;font-weight:700;color:var(--dsub);margin-top:4px;">Range: ${minL}–${maxL}d</div>
+      </div>
+    </div>
+  </div>`;
 }
 
 // ── Cycle History ─────────────────────────────────────────────────────────────
@@ -18490,6 +20131,208 @@ function svRefreshStorage(){
   </div>
   <div class="sscroll" style="padding:0 0 32px;">
     <div id="logHistorySheetBody"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── MOOD & SYMPTOM LOG ENTRY SHEET ──────────────────────────────────────── -->
+<div class="sheet" id="symptomLogSheet" style="max-height:90vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>💭 <span id="symLogDateLabel">Today</span></span>
+    <button class="ae-close" onclick="closeSymptomLogSheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div class="ssec" style="padding-top:4px;">
+      <div id="symLogPhaseTag" style="margin-bottom:14px;"></div>
+
+      <div class="ssect">Mood</div>
+      <div class="mood-scale" id="symLogMoodScale" style="margin-bottom:18px;"></div>
+
+      <div class="ssect">Symptoms</div>
+      <div class="symptom-chip-grid" id="symLogSymptomGrid" style="margin-bottom:18px;"></div>
+
+      <div class="ssect">Note <span style="font-weight:600;color:var(--dsub);text-transform:none;">(optional)</span></div>
+      <textarea id="symLogNoteInput" class="dc-input" rows="3" maxlength="200" placeholder="Anything else worth remembering…" style="resize:vertical;font-family:'Nunito',sans-serif;margin-bottom:6px;"></textarea>
+    </div>
+    <div class="ssec" style="padding-top:6px;">
+      <button class="dc-modal-save" style="width:100%;background:linear-gradient(135deg,#f59e0b,#ea7e0a);box-shadow:0 6px 18px rgba(245,158,11,.3);" onclick="saveSymptomLog()">Save entry</button>
+    </div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── MOOD & SYMPTOM HISTORY SHEET (list / by-phase tabs) ─────────────────── -->
+<div class="sheet" id="symptomHistorySheet" style="max-height:90vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>💭 Mood &amp; Symptoms</span>
+    <button class="ae-close" onclick="closeSymptomHistorySheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div style="padding:0 16px 10px;">
+    <div id="symHistTabBar" class="up-view-toggle" style="width:100%;">
+      <button class="up-vtbtn on" data-tab="list" onclick="setSymHistTab('list')" style="flex:1;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        All entries
+      </button>
+      <button class="up-vtbtn" data-tab="phase" onclick="setSymHistTab('phase')" style="flex:1;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        By phase
+      </button>
+    </div>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="symptomHistorySheetBody"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── DELETE MOOD/SYMPTOM LOG CONFIRM ─────────────────────────────────────── -->
+<div class="dc-modal-overlay" id="symDeleteLogOverlay" onclick="symDeleteLogClose(event)">
+  <div class="dc-modal" style="text-align:center">
+    <div class="dc-modal-title" style="margin-bottom:8px;">Delete this entry?</div>
+    <div id="symDeleteLogDesc" style="font-size:13px;font-weight:600;line-height:1.5;color:var(--hsub);margin-bottom:6px;"></div>
+    <div class="dc-modal-btns">
+      <button class="dc-modal-cancel" style="flex:1" onclick="symDeleteLogClose()">Cancel</button>
+      <button class="dc-modal-save" style="background:#d6453f;box-shadow:0 6px 18px rgba(214,69,63,.3);" onclick="symDeleteLogConfirm()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── INTERCOURSE LOG ENTRY SHEET ─────────────────────────────────────────── -->
+<div class="sheet" id="intercourseLogSheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>💕 <span id="bdLogDateLabel">Today</span></span>
+    <button class="ae-close" onclick="closeIntercourseLogSheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div class="ssec" style="padding-top:4px;">
+      <div id="bdLogPhaseTag" style="margin-bottom:14px;"></div>
+
+      <div class="ssect">Protection</div>
+      <div class="ttc-result-grid" id="bdLogProtectedRow" style="margin-bottom:18px;">
+        <div class="ttc-result-chip" data-protected="0" onclick="bdLogSelectProtected(false)">
+          <div class="ttc-result-chip-emoji">💗</div>
+          <div class="ttc-result-chip-lbl">Unprotected</div>
+        </div>
+        <div class="ttc-result-chip" data-protected="1" onclick="bdLogSelectProtected(true)">
+          <div class="ttc-result-chip-emoji">🛡️</div>
+          <div class="ttc-result-chip-lbl">Protected</div>
+        </div>
+      </div>
+
+      <div class="ssect">Note <span style="font-weight:600;color:var(--dsub);text-transform:none;">(optional)</span></div>
+      <textarea id="bdLogNoteInput" class="dc-input" rows="2" maxlength="200" placeholder="Anything else worth remembering…" style="resize:vertical;font-family:'Nunito',sans-serif;margin-bottom:6px;"></textarea>
+    </div>
+    <div class="ssec" style="padding-top:6px;">
+      <button class="dc-modal-save" style="width:100%;background:linear-gradient(135deg,#ec4899,#db2777);box-shadow:0 6px 18px rgba(236,72,153,.3);" onclick="saveIntercourseLog()">Save entry</button>
+    </div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── OVULATION TEST (OPK) LOG ENTRY SHEET ────────────────────────────────── -->
+<div class="sheet" id="opkLogSheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>🧪 <span id="opkLogDateLabel">Today</span></span>
+    <button class="ae-close" onclick="closeOpkLogSheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div class="ssec" style="padding-top:4px;">
+      <div id="opkLogPhaseTag" style="margin-bottom:14px;"></div>
+
+      <div class="ssect">Test result</div>
+      <div class="ttc-result-grid" id="opkResultRow" style="margin-bottom:18px;">
+        <div class="ttc-result-chip" data-result="neg" onclick="opkLogSelectResult('neg')">
+          <div class="ttc-result-chip-emoji">⚪</div>
+          <div class="ttc-result-chip-lbl">Negative</div>
+        </div>
+        <div class="ttc-result-chip" data-result="faint" onclick="opkLogSelectResult('faint')">
+          <div class="ttc-result-chip-emoji">🟡</div>
+          <div class="ttc-result-chip-lbl">Faint line</div>
+        </div>
+        <div class="ttc-result-chip" data-result="pos" onclick="opkLogSelectResult('pos')">
+          <div class="ttc-result-chip-emoji">🟢</div>
+          <div class="ttc-result-chip-lbl">Positive</div>
+        </div>
+      </div>
+      <div style="font-size:11px;font-weight:600;color:var(--dsub);margin:-10px 0 18px;line-height:1.5;">A positive result automatically marks ovulation for this date.</div>
+
+      <div class="ssect">Note <span style="font-weight:600;color:var(--dsub);text-transform:none;">(optional)</span></div>
+      <textarea id="opkLogNoteInput" class="dc-input" rows="2" maxlength="200" placeholder="Brand, time of day, anything else…" style="resize:vertical;font-family:'Nunito',sans-serif;margin-bottom:6px;"></textarea>
+    </div>
+    <div class="ssec" style="padding-top:6px;">
+      <button class="dc-modal-save" style="width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);box-shadow:0 6px 18px rgba(34,197,94,.3);" onclick="saveOpkLog()">Save entry</button>
+    </div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── BBT TEMPERATURE LOG ENTRY SHEET ─────────────────────────────────────── -->
+<div class="sheet" id="bbtLogSheet" style="max-height:90vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>🌡️ <span id="bbtLogDateLabel">Today</span></span>
+    <button class="ae-close" onclick="closeBbtLogSheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div class="ssec" style="padding-top:4px;">
+      <div id="bbtLogPhaseTag" style="margin-bottom:14px;"></div>
+
+      <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Temperature</span>
+        <div class="ttc-unit-toggle" id="bbtUnitToggle">
+          <button class="ttc-unit-btn" data-unit="C" onclick="bbtSelectUnit('C')">°C</button>
+          <button class="ttc-unit-btn" data-unit="F" onclick="bbtSelectUnit('F')">°F</button>
+        </div>
+      </div>
+      <div class="ttc-bbt-input-row">
+        <input type="number" inputmode="decimal" step="0.01" id="bbtTempInput" class="dc-input" placeholder="e.g. 36.50">
+      </div>
+
+      <div class="ssect">Time taken</div>
+      <input type="time" id="bbtTimeInput" class="dc-input" style="margin-bottom:18px;">
+
+      <div class="ssect">Note <span style="font-weight:600;color:var(--dsub);text-transform:none;">(optional)</span></div>
+      <textarea id="bbtLogNoteInput" class="dc-input" rows="2" maxlength="200" placeholder="Disrupted sleep, illness, alcohol…" style="resize:vertical;font-family:'Nunito',sans-serif;margin-bottom:6px;"></textarea>
+    </div>
+    <div class="ssec" style="padding-top:6px;">
+      <button class="dc-modal-save" style="width:100%;background:linear-gradient(135deg,#FF6B9D,#C44569);box-shadow:0 6px 18px rgba(196,69,105,.3);" onclick="saveBbtLog()">Save entry</button>
+    </div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── TTC HISTORY SHEET (Intercourse / OPK / BBT tabs) ─────────────────────── -->
+<div class="sheet" id="ttcHistorySheet" style="max-height:90vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>🌱 TTC History</span>
+    <button class="ae-close" onclick="closeTtcHistorySheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div style="padding:0 16px 10px;">
+    <div id="ttcHistTabBar" class="up-view-toggle" style="width:100%;">
+      <button class="up-vtbtn on" data-tab="bd" onclick="setTtcHistTab('bd')" style="flex:1;">💕 Intercourse</button>
+      <button class="up-vtbtn" data-tab="opk" onclick="setTtcHistTab('opk')" style="flex:1;">🧪 OPK</button>
+      <button class="up-vtbtn" data-tab="bbt" onclick="setTtcHistTab('bbt')" style="flex:1;">🌡️ BBT</button>
+    </div>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="ttcHistorySheetBody"></div>
     <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
   </div>
 </div>
