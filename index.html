@@ -2525,6 +2525,19 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .pred-sub{font-size:11px;color:var(--dsub);font-weight:600;margin-top:1px;}
 .pred-badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:8px;background:rgba(255,107,157,.12);color:#FF6B9D;white-space:nowrap;}
 
+/* ── Flow Intensity Picker ── */
+.flow-picker-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:4px;}
+.flow-opt{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 10px;border-radius:14px;border:2px solid transparent;background:var(--tgbg);cursor:pointer;transition:all .15s;font-family:'Nunito',sans-serif;}
+.flow-opt:active{transform:scale(.95);}
+.flow-opt.on{border-color:var(--accent);background:var(--accent-soft);}
+.flow-opt-icon{font-size:22px;line-height:1;}
+.flow-opt-label{font-size:12px;font-weight:800;color:var(--dtext);}
+.flow-opt-desc{font-size:10px;font-weight:600;color:var(--dsub);text-align:center;line-height:1.3;}
+.flow-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:8px;font-size:10px;font-weight:800;letter-spacing:.2px;}
+.flow-badge.spotting{background:rgba(255,154,184,.18);color:#c44569;}
+.flow-badge.light{background:rgba(255,71,87,.14);color:#e03e3e;}
+.flow-badge.medium{background:rgba(255,71,87,.26);color:#c0392b;}
+.flow-badge.heavy{background:rgba(192,57,43,.32);color:#922b21;}
 /* ── Cycle history ── */
 .hist-list{display:flex;flex-direction:column;gap:6px;margin-top:4px;}
 .hist-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:var(--sbg);border:1px solid var(--border);}
@@ -3996,15 +4009,15 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   position:fixed;bottom:0;left:50%;transform:translateX(-50%);
   width:390px;max-width:100vw;
   display:flex;align-items:stretch;
-  background:rgba(255,255,255,.97);
-  border:none;
+  background:rgba(255,255,255,1);
+  border-top:1px solid rgba(0,0,0,.07);
   box-shadow:none;
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  backdrop-filter:none;-webkit-backdrop-filter:none;
   z-index:60;padding-bottom:env(safe-area-inset-bottom,0px);
 }
 [data-theme=dark] .bottom-nav{
-  background:rgba(16,18,28,.97);
-  border:none;
+  background:rgba(16,18,28,1);
+  border-top:1px solid rgba(255,255,255,.07);
   box-shadow:none;
 }
 .bnav-btn{
@@ -6648,6 +6661,45 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
     <div class="dc-modal-btns">
       <button class="dc-modal-cancel" style="flex:1" onclick="cyDeleteLogClose()">Cancel</button>
       <button class="dc-modal-save" style="background:#d6453f;box-shadow:0 6px 18px rgba(214,69,63,.3);" onclick="cyDeleteLogConfirm()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── FLOW INTENSITY PICKER ── -->
+<div class="dc-modal-overlay" id="flowPickerOverlay" onclick="flowPickerClose(event)">
+  <div class="dc-modal" style="text-align:left;max-width:360px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <div>
+        <div class="dc-modal-title" style="margin-bottom:2px;" id="flowPickerTitle">Log Period</div>
+        <div style="font-size:12px;font-weight:600;color:var(--dsub);" id="flowPickerSub">How heavy is your flow today?</div>
+      </div>
+      <button onclick="flowPickerClose()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--dsub);padding:2px 4px;line-height:1;">✕</button>
+    </div>
+    <div class="flow-picker-grid">
+      <button class="flow-opt" id="flowOptSpotting" onclick="flowPickerSelect('spotting')">
+        <span class="flow-opt-icon">🩹</span>
+        <span class="flow-opt-label">Spotting</span>
+        <span class="flow-opt-desc">Very light, barely noticeable</span>
+      </button>
+      <button class="flow-opt" id="flowOptLight" onclick="flowPickerSelect('light')">
+        <span class="flow-opt-icon">🩸</span>
+        <span class="flow-opt-label">Light</span>
+        <span class="flow-opt-desc">Light flow, 1–2 pads/day</span>
+      </button>
+      <button class="flow-opt" id="flowOptMedium" onclick="flowPickerSelect('medium')">
+        <span class="flow-opt-icon">🌊</span>
+        <span class="flow-opt-label">Medium</span>
+        <span class="flow-opt-desc">Moderate, 3–4 pads/day</span>
+      </button>
+      <button class="flow-opt" id="flowOptHeavy" onclick="flowPickerSelect('heavy')">
+        <span class="flow-opt-icon">💧</span>
+        <span class="flow-opt-label">Heavy</span>
+        <span class="flow-opt-desc">Heavy flow, frequent changes</span>
+      </button>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:9px;">
+      <button class="dc-modal-cancel" onclick="flowPickerClose()" style="flex:1;">Cancel</button>
+      <button class="dc-modal-save" id="flowPickerSaveBtn" onclick="flowPickerSave()" style="flex:2;">Log without flow</button>
     </div>
   </div>
 </div>
@@ -13157,7 +13209,13 @@ function renderCycleSheet(){
         <div class="cyc-log-btn-dot" style="background:#FF4757;"></div>
         <div>
           <div class="cyc-log-btn-label">Period started</div>
-          <div class="ssub">First day of bleeding</div>
+          <div class="ssub">${(()=>{
+            const todayMid = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+            const todayLog = (cycleData.logs||[]).slice().reverse().find(l=>l.type==='period_start'&&new Date(l.date).setHours(0,0,0,0)===todayMid);
+            if(todayLog && todayLog.flow) return 'Logged today · ' + todayLog.flow.charAt(0).toUpperCase()+todayLog.flow.slice(1)+' flow ✓';
+            if(todayLog) return 'Logged today ✓';
+            return 'First day of bleeding';
+          })()}</div>
         </div>
       </div>
       <button class="cyc-log-btn-action period" onclick="cyLogPeriodStart()">Today</button>
@@ -13167,7 +13225,13 @@ function renderCycleSheet(){
         <div class="cyc-log-btn-dot" style="background:#22c55e;"></div>
         <div>
           <div class="cyc-log-btn-label">Period ended</div>
-          <div class="ssub">Last day of bleeding</div>
+          <div class="ssub">${(()=>{
+            const todayMid = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+            const todayLog = (cycleData.logs||[]).slice().reverse().find(l=>l.type==='period_end'&&new Date(l.date).setHours(0,0,0,0)===todayMid);
+            if(todayLog && todayLog.flow) return 'Logged today · ' + todayLog.flow.charAt(0).toUpperCase()+todayLog.flow.slice(1)+' flow ✓';
+            if(todayLog) return 'Logged today ✓';
+            return 'Last day of bleeding';
+          })()}</div>
         </div>
       </div>
       <button class="cyc-log-btn-action end" onclick="cyLogPeriodEnd()">Today</button>
@@ -13767,16 +13831,61 @@ function _applyCycleTopToggle(){
   monthBtn.classList.toggle('on', v === 'month');
 }
 
+// ── Flow Intensity Picker ─────────────────────────────────────────────────────
+var _flowPickerType = 'period_start'; // 'period_start' or 'period_end'
+var _flowPickerSelected = null;       // 'spotting'|'light'|'medium'|'heavy'|null
+
 function cyLogPeriodStart(){
-  const today = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
-  cycleData.lastPeriodStart = today;
-  cycleData.logs = [...(cycleData.logs||[]), {type:'period_start',date:today}];
-  saveCycle(); renderCycleSheet();
+  if(typeof haptic === 'function') haptic('light');
+  _flowPickerType = 'period_start';
+  _flowPickerSelected = null;
+  document.getElementById('flowPickerTitle').textContent = '🩸 Period started';
+  document.getElementById('flowPickerSub').textContent = 'How heavy is your flow today?';
+  document.getElementById('flowPickerSaveBtn').textContent = 'Log without flow';
+  document.querySelectorAll('.flow-opt').forEach(b => b.classList.remove('on'));
+  document.getElementById('flowPickerOverlay').classList.add('open');
 }
 function cyLogPeriodEnd(){
+  if(typeof haptic === 'function') haptic('light');
+  _flowPickerType = 'period_end';
+  _flowPickerSelected = null;
+  document.getElementById('flowPickerTitle').textContent = '🌿 Period ended';
+  document.getElementById('flowPickerSub').textContent = 'How was the flow on the last day?';
+  document.getElementById('flowPickerSaveBtn').textContent = 'Log without flow';
+  document.querySelectorAll('.flow-opt').forEach(b => b.classList.remove('on'));
+  document.getElementById('flowPickerOverlay').classList.add('open');
+}
+function flowPickerSelect(level){
+  if(typeof haptic === 'function') haptic('light');
+  _flowPickerSelected = level;
+  document.querySelectorAll('.flow-opt').forEach(b => b.classList.remove('on'));
+  const map = {spotting:'flowOptSpotting', light:'flowOptLight', medium:'flowOptMedium', heavy:'flowOptHeavy'};
+  const el = document.getElementById(map[level]);
+  if(el) el.classList.add('on');
+  const saveBtn = document.getElementById('flowPickerSaveBtn');
+  if(saveBtn) saveBtn.textContent = 'Log as ' + level.charAt(0).toUpperCase() + level.slice(1);
+}
+function flowPickerClose(e){
+  if(e && e.target !== document.getElementById('flowPickerOverlay')) return;
+  _flowPickerSelected = null;
+  document.getElementById('flowPickerOverlay').classList.remove('open');
+}
+function flowPickerSave(){
+  if(typeof haptic === 'function') haptic('medium');
   const today = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
-  cycleData.logs = [...(cycleData.logs||[]), {type:'period_end',date:today}];
-  saveCycle(); renderCycleSheet();
+  const entry = { type: _flowPickerType, date: today };
+  if(_flowPickerSelected) entry.flow = _flowPickerSelected;
+  if(_flowPickerType === 'period_start'){
+    cycleData.lastPeriodStart = today;
+  }
+  cycleData.logs = [...(cycleData.logs||[]), entry];
+  saveCycle();
+  document.getElementById('flowPickerOverlay').classList.remove('open');
+  renderCycleSheet();
+  const flowLabel = _flowPickerSelected ? ' · ' + _flowPickerSelected.charAt(0).toUpperCase() + _flowPickerSelected.slice(1) + ' flow' : '';
+  const typeLabel = _flowPickerType === 'period_start' ? 'Period started' : 'Period ended';
+  if(typeof vikramToast === 'function') vikramToast('✅ ' + typeLabel + flowLabel);
+  _flowPickerSelected = null;
 }
 function cyLogOvulation(){
   const today = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
@@ -14668,6 +14777,7 @@ function renderLogHistorySheet(){
   const logs = cycleData.logs || [];
   const logColors = {period_start:'#FF4757', period_end:'#22c55e', ovulation:'#a855f7'};
   const logLabels = {period_start:'Period started', period_end:'Period ended', ovulation:'Ovulation logged'};
+  const flowIcons = {spotting:'🩹', light:'🩸', medium:'🌊', heavy:'💧'};
   if(!logs.length){
     body.innerHTML = `<div style="padding:40px 24px;text-align:center;font-size:13px;font-weight:700;color:var(--dsub);">No logs yet — start tracking above 🌸</div>`;
     return;
@@ -14680,11 +14790,12 @@ function renderLogHistorySheet(){
     </div>
     ${[...logs].reverse().map((l, revIdx) => {
       const realIdx = logs.length - 1 - revIdx;
+      const flowBadge = l.flow ? `<span class="flow-badge ${l.flow}">${flowIcons[l.flow]||''} ${l.flow.charAt(0).toUpperCase()+l.flow.slice(1)}</span>` : '';
       return `<div class="srow" style="gap:10px;">
         <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
           <div style="width:8px;height:8px;border-radius:50%;background:${logColors[l.type]||'#aaa'};flex-shrink:0;"></div>
           <div style="min-width:0;">
-            <div class="slbl">${logLabels[l.type] || l.type}</div>
+            <div class="slbl" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">${logLabels[l.type] || l.type}${flowBadge}</div>
             <div class="ssub">${new Date(l.date).toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'})}</div>
           </div>
         </div>
