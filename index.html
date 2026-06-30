@@ -12695,7 +12695,7 @@ function cyResetConfirmYes(){
     const sharedTs = d.sharedAt ? new Date(d.sharedAt).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '';
     const lastSync = d.partnerCycleUpdatedAt ? new Date(d.partnerCycleUpdatedAt).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : null;
     const noPartnerData = !pi || pi.noData;
-    const statusLine = (fbOk ? '🟢 Live sync' : '⚠️ Offline') + (sharedTs ? ' · since ' + sharedTs : '') + (lastSync ? ' · ' + lastSync : '');
+    const statusLine = (fbOk ? '🟢' : '⚠️') + (sharedTs ? ' Since ' + sharedTs : '') + (lastSync ? ' · ' + lastSync : '');
     return `
     <div class="pair-paired">
 
