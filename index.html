@@ -9976,7 +9976,54 @@ async function checkEventReminders(){
   }
 }
 
-// ══ RECURRENCE BUILDER STATE & HELPERS ══
+// ── Cycle reminders: predicted period start + BBT morning nudge ────────────
+async function checkCycleReminders(){
+  if(!notifEnabled) return;
+  if(!('Notification' in window)||Notification.permission!=='granted') return;
+  const pr = (cycleData && cycleData.periodReminders) || null;
+  if(!pr || (!pr.periodStart && !pr.bbtMorning)) return;
+  if(!cycleData.lastPeriodStart) return;
+
+  const now = new Date();
+  const todayMid = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const nowHM = hh+':'+mm;
+
+  // Predicted period start — fire once on the morning (08:00 local) of the predicted day
+  if(pr.periodStart){
+    const cl = cycleData.cycleLength || 28;
+    const pl = cycleData.periodLength || 5;
+    const preds = (typeof buildPredictions === 'function') ? buildPredictions(cycleData.lastPeriodStart, cl, pl) : [];
+    const next = preds.find(p => p.daysAway === 0);
+    const key = 'vn_period_'+todayMid;
+    if(next && nowHM >= '08:00' && nowHM < '08:02' && !localStorage.getItem(key)){
+      localStorage.setItem(key,'1');
+      await showNotif('🌸 Period predicted today', 'Your period is predicted to start today — log it when it begins.', 'period-'+todayMid);
+    }
+  }
+
+  // BBT morning reminder — fire once at the configured time if not already logged today
+  if(pr.bbtMorning){
+    const reminderTime = pr.bbtTime || '07:00';
+    const key = 'vn_bbt_'+todayMid;
+    const alreadyLogged = (cycleData.bbtLogs||[]).some(l=>{
+      const sd = new Date(l.date); const sm = new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime();
+      return sm === todayMid;
+    });
+    if(!alreadyLogged && nowHM >= reminderTime && nowHM < _addMinutesHM(reminderTime,2) && !localStorage.getItem(key)){
+      localStorage.setItem(key,'1');
+      await showNotif('🌡️ Log your BBT', "Don't forget to take your temperature this morning.", 'bbt-'+todayMid);
+    }
+  }
+}
+function _addMinutesHM(hm, mins){
+  const [h,m] = hm.split(':').map(Number);
+  const d = new Date(2000,0,1,h,m+mins);
+  return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+}
+
+
 window._recurState = {
   enabled: false,
   freq: 'daily',
@@ -11714,6 +11761,11 @@ function cycleDefaults(){
     opkLogs: cycleData.opkLogs || [],
     bbtLogs: cycleData.bbtLogs || [],
     bbtUnit: cycleData.bbtUnit || 'C',
+    medLogs: cycleData.medLogs || [],
+    medList: cycleData.medList || [],
+    vitalsLogs: cycleData.vitalsLogs || [],
+    weightUnit: cycleData.weightUnit || 'kg',
+    periodReminders: cycleData.periodReminders || { periodStart:false, bbtMorning:false, bbtTime:'07:00' },
   };
 }
 
@@ -12574,6 +12626,307 @@ function ttcDeleteLog(kind, idx){
   if(typeof vikramToast==='function') vikramToast('🗑 Entry deleted');
 }
 
+// ══ MEDICATION / SUPPLEMENT LOG ═══════════════════════════════════════════════
+// cycleData.medList: [{ id, name, dose }]  — the user's tracked items
+// cycleData.medLogs: [{ id, medId, date, taken }] — daily taken/skipped entries
+let _medAddName = '';
+let _medAddDose = '';
+
+function openMedLogSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  renderMedLogSheet();
+  const sheet = document.getElementById('medLogSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closeMedLogSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('medLogSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+function _medTodayMid(){
+  return new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+}
+function _medTakenToday(medId){
+  const today = _medTodayMid();
+  return (cycleData.medLogs||[]).find(l => l.medId===medId && new Date(l.date).setHours(0,0,0,0)===today);
+}
+function renderMedLogSheet(){
+  const body = document.getElementById('medLogSheetBody');
+  if(!body) return;
+  const list = cycleData.medList || [];
+  body.innerHTML = `
+  <div class="ssec" style="padding-top:4px;">
+    <div class="ssect">Add medication or supplement</div>
+    <div style="display:flex;gap:8px;padding:0 0 4px;">
+      <input id="medAddNameInput" type="text" placeholder="Name (e.g. Prenatal vitamin)" maxlength="60"
+        value="${esc(_medAddName)}" oninput="_medAddName=this.value"
+        style="flex:2;min-width:0;padding:11px 12px;border-radius:12px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:13px;font-family:'Nunito',sans-serif;font-weight:700;"/>
+      <input id="medAddDoseInput" type="text" placeholder="Dose" maxlength="30"
+        value="${esc(_medAddDose)}" oninput="_medAddDose=this.value"
+        style="flex:1;min-width:0;padding:11px 12px;border-radius:12px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:13px;font-family:'Nunito',sans-serif;font-weight:700;"/>
+    </div>
+    <button onclick="medAddItem()" style="width:100%;margin-top:8px;padding:11px;border-radius:12px;border:none;background:var(--tgon,#1a1a1a);color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">+ Add to list</button>
+  </div>
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect">Today</div>
+    ${!list.length ? `<div style="padding:24px;text-align:center;font-size:12.5px;font-weight:700;color:var(--dsub);">No medications added yet — add one above 💊</div>` :
+      list.map(m=>{
+        const taken = _medTakenToday(m.id);
+        return `<div class="srow">
+          <div style="min-width:0;flex:1;">
+            <div class="slbl">${esc(m.name)}</div>
+            ${m.dose ? `<div class="ssub">${esc(m.dose)}</div>` : ''}
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+            <button onclick="medToggleTaken('${m.id}')" style="padding:7px 14px;border-radius:10px;border:1.5px solid ${taken?'#22c55e':'var(--sbdr)'};background:${taken?'rgba(34,197,94,.14)':'var(--sbg)'};color:${taken?'#22c55e':'var(--dsub)'};font-size:11.5px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">${taken?'✓ Taken':'Mark taken'}</button>
+            <button class="cyc-log-del" title="Remove" onclick="medRemoveItem('${m.id}')">🗑</button>
+          </div>
+        </div>`;
+      }).join('')}
+  </div>
+  ${(cycleData.medLogs||[]).length ? `
+  <div class="ssec" style="padding-top:0;">
+    <div class="srow" style="cursor:pointer;border-bottom:none;" onclick="openMedHistorySheet()">
+      <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(99,102,241,.07));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📋</div>
+        <div style="min-width:0;">
+          <div class="slbl">Medication history</div>
+          <div class="ssub">${(cycleData.medLogs||[]).length} ${(cycleData.medLogs||[]).length===1?'entry':'entries'}</div>
+        </div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+  </div>` : ''}`;
+}
+function medAddItem(){
+  const name = (_medAddName||'').trim().slice(0,60);
+  if(!name){
+    if(typeof vikramToast==='function') vikramToast('⚠️ Enter a name');
+    return;
+  }
+  if(typeof haptic === 'function') haptic('light');
+  const dose = (_medAddDose||'').trim().slice(0,30);
+  cycleData.medList = cycleData.medList || [];
+  cycleData.medList.push({ id: 'm'+Date.now()+Math.random().toString(36).slice(2,7), name, dose });
+  _medAddName = ''; _medAddDose = '';
+  saveCycle();
+  renderMedLogSheet();
+  if(typeof vikramToast==='function') vikramToast('✅ Added to your list');
+}
+function medRemoveItem(id){
+  if(typeof haptic === 'function') haptic('light');
+  cycleData.medList = (cycleData.medList||[]).filter(m=>m.id!==id);
+  saveCycle();
+  renderMedLogSheet();
+}
+function medToggleTaken(medId){
+  if(typeof haptic === 'function') haptic('light');
+  cycleData.medLogs = cycleData.medLogs || [];
+  const today = _medTodayMid();
+  const idx = cycleData.medLogs.findIndex(l => l.medId===medId && new Date(l.date).setHours(0,0,0,0)===today);
+  if(idx >= 0){
+    cycleData.medLogs.splice(idx,1);
+  } else {
+    cycleData.medLogs.push({ id:'l'+Date.now()+Math.random().toString(36).slice(2,7), medId, date: Date.now(), taken: true });
+  }
+  saveCycle();
+  renderMedLogSheet();
+  renderCycleSheet();
+}
+function openMedHistorySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  renderMedHistorySheet();
+  const sheet = document.getElementById('medHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closeMedHistorySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('medHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+function renderMedHistorySheet(){
+  const body = document.getElementById('medHistorySheetBody');
+  if(!body) return;
+  const logs = cycleData.medLogs || [];
+  const list = cycleData.medList || [];
+  const nameFor = id => { const m = list.find(x=>x.id===id); return m ? m.name : 'Removed item'; };
+  if(!logs.length){
+    body.innerHTML = `<div style="padding:40px 24px;text-align:center;font-size:13px;font-weight:700;color:var(--dsub);">No medication entries yet 💊</div>`;
+    return;
+  }
+  body.innerHTML = `<div class="ssec" style="padding-top:4px;">
+    <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>All entries</span>
+      <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${logs.length} ${logs.length===1?'entry':'entries'}</span>
+    </div>
+    ${[...logs].reverse().map((l)=>{
+      const realIdx = logs.length - 1 - logs.slice().reverse().indexOf(l);
+      return `<div class="srow">
+        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;"></div>
+          <div style="min-width:0;">
+            <div class="slbl">${esc(nameFor(l.medId))}</div>
+            <div class="ssub">${new Date(l.date).toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'})}</div>
+          </div>
+        </div>
+        <button class="cyc-log-del" onclick="medDeleteLog(${realIdx})" title="Delete">🗑</button>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+function medDeleteLog(idx){
+  if(typeof haptic === 'function') haptic('light');
+  const logs = cycleData.medLogs || [];
+  if(idx < 0 || idx >= logs.length) return;
+  logs.splice(idx,1);
+  cycleData.medLogs = logs;
+  saveCycle();
+  renderMedHistorySheet();
+  renderMedLogSheet();
+  renderCycleSheet();
+  if(typeof vikramToast==='function') vikramToast('🗑 Entry deleted');
+}
+
+// ══ WEIGHT & WATER INTAKE LOG ══════════════════════════════════════════════
+// cycleData.vitalsLogs: [{ date, weight, weightUnit, water }] — one entry per day, latest wins
+let _vitalsLogDate = null;
+function openVitalsLogSheet(dateTs){
+  if(typeof haptic === 'function') haptic('light');
+  _vitalsLogDate = dateTs || _medTodayMid();
+  const existing = (cycleData.vitalsLogs||[]).find(s=>{
+    const sd = new Date(s.date); const sm = new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime();
+    return sm === _vitalsLogDate;
+  });
+  const unit = cycleData.weightUnit || 'kg';
+  document.querySelectorAll('#vitalsUnitToggle .ttc-unit-btn').forEach(b=>{
+    b.classList.toggle('on', b.getAttribute('data-unit') === unit);
+  });
+  const wEl = document.getElementById('vitalsWeightInput');
+  if(wEl) wEl.value = existing && existing.weight!=null ? existing.weight : '';
+  const watEl = document.getElementById('vitalsWaterInput');
+  if(watEl) watEl.value = existing && existing.water!=null ? existing.water : '';
+  const titleEl = document.getElementById('vitalsLogDateLabel');
+  if(titleEl){
+    const d = new Date(_vitalsLogDate);
+    const todayMid = _medTodayMid();
+    titleEl.textContent = (_vitalsLogDate === todayMid) ? 'Today' : d.toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'});
+  }
+  const sheet = document.getElementById('vitalsLogSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closeVitalsLogSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('vitalsLogSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+function vitalsSelectUnit(unit){
+  if(typeof haptic === 'function') haptic('light');
+  cycleData.weightUnit = unit;
+  saveCycle();
+  document.querySelectorAll('#vitalsUnitToggle .ttc-unit-btn').forEach(b=>{
+    b.classList.toggle('on', b.getAttribute('data-unit') === unit);
+  });
+}
+function saveVitalsLog(){
+  const wEl = document.getElementById('vitalsWeightInput');
+  const watEl = document.getElementById('vitalsWaterInput');
+  const weightRaw = wEl ? wEl.value.trim() : '';
+  const waterRaw = watEl ? watEl.value.trim() : '';
+  const weight = weightRaw ? parseFloat(weightRaw) : null;
+  const water = waterRaw ? parseFloat(waterRaw) : null;
+  if(weight==null && water==null){
+    if(typeof vikramToast==='function') vikramToast('⚠️ Enter weight or water intake');
+    return;
+  }
+  if(weight!=null && isNaN(weight)){
+    if(typeof vikramToast==='function') vikramToast('⚠️ That weight looks invalid');
+    return;
+  }
+  if(typeof haptic === 'function') haptic('light');
+  const entry = { date: _vitalsLogDate, weight, weightUnit: cycleData.weightUnit||'kg', water };
+  cycleData.vitalsLogs = cycleData.vitalsLogs || [];
+  const idx = cycleData.vitalsLogs.findIndex(s=>{
+    const sd = new Date(s.date); const sm = new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime();
+    return sm === _vitalsLogDate;
+  });
+  if(idx >= 0) cycleData.vitalsLogs[idx] = entry;
+  else cycleData.vitalsLogs.push(entry);
+  cycleData.vitalsLogs.sort((a,b)=>a.date-b.date);
+  saveCycle();
+  closeVitalsLogSheet();
+  renderCycleSheet();
+  if(typeof vikramToast==='function') vikramToast('✅ Logged 📋');
+}
+function openVitalsHistorySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  renderVitalsHistorySheet();
+  const sheet = document.getElementById('vitalsHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closeVitalsHistorySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('vitalsHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+function renderVitalsHistorySheet(){
+  const body = document.getElementById('vitalsHistorySheetBody');
+  if(!body) return;
+  const logs = cycleData.vitalsLogs || [];
+  if(!logs.length){
+    body.innerHTML = `<div style="padding:40px 24px;text-align:center;font-size:13px;font-weight:700;color:var(--dsub);">No weight or water entries yet 📋</div>`;
+    return;
+  }
+  body.innerHTML = `<div class="ssec" style="padding-top:4px;">
+    <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>All entries</span>
+      <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${logs.length} ${logs.length===1?'entry':'entries'}</span>
+    </div>
+    ${[...logs].reverse().map((l, revIdx)=>{
+      const realIdx = logs.length - 1 - revIdx;
+      const parts = [];
+      if(l.weight!=null) parts.push(`${l.weight}${l.weightUnit||'kg'}`);
+      if(l.water!=null) parts.push(`${l.water}L water`);
+      return `<div class="srow">
+        <div style="min-width:0;">
+          <div class="slbl">${parts.join(' · ') || '—'}</div>
+          <div class="ssub">${new Date(l.date).toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'})}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+          <button class="cyc-log-del" title="Edit" onclick="closeVitalsHistorySheet();openVitalsLogSheet(${l.date})">✏️</button>
+          <button class="cyc-log-del" title="Delete" onclick="vitalsDeleteLog(${realIdx})">🗑</button>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+function vitalsDeleteLog(idx){
+  if(typeof haptic === 'function') haptic('light');
+  const logs = cycleData.vitalsLogs || [];
+  if(idx < 0 || idx >= logs.length) return;
+  logs.splice(idx,1);
+  cycleData.vitalsLogs = logs;
+  saveCycle();
+  renderVitalsHistorySheet();
+  renderCycleSheet();
+  if(typeof vikramToast==='function') vikramToast('🗑 Entry deleted');
+}
+
 function getDaysUntilNextPeriod(){
   const day = getDayOfCycle();
   if(!day) return null;
@@ -13048,6 +13401,19 @@ function renderCycleSheet(){
 
 
   body.innerHTML = `
+  <!-- ── REGULARITY ALERT (3+ cycles with high variance) ── -->
+  ${(()=>{
+    const alert = (typeof getCycleRegularityAlert === 'function') ? getCycleRegularityAlert() : null;
+    if(!alert) return '';
+    return `<div style="margin:0 16px 10px;padding:11px 13px;border-radius:14px;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.22);display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="openSymptomHistorySheet();setTimeout(function(){setSymHistTab('phase');},0);">
+      <div style="font-size:18px;flex-shrink:0;">⚠️</div>
+      <div style="min-width:0;flex:1;">
+        <div style="font-size:12.5px;font-weight:800;color:#f43f5e;">Your cycles look irregular</div>
+        <div style="font-size:11px;font-weight:700;color:var(--dsub);margin-top:1px;">${alert.detail} — consider mentioning this at your next checkup.</div>
+      </div>
+    </div>`;
+  })()}
+
   <!-- ── TOP VIEW (Hero or Month Review) ── -->
   ${(()=>{
     if((cfg.cycleTopView||'hero') === 'month'){
@@ -13377,6 +13743,42 @@ function renderCycleSheet(){
     </div>
   </div>
 
+  <!-- ── MEDICATION / SUPPLEMENT LOG ── -->
+  <div class="ssec" style="padding-top:0;">
+    <div class="srow" style="cursor:pointer;border-bottom:none;" onclick="openMedLogSheet()">
+      <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(99,102,241,.08));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💊</div>
+        <div style="min-width:0;">
+          <div class="slbl">Medication &amp; supplements</div>
+          <div class="ssub">${(cycleData.medList||[]).length} tracked · ${(cycleData.medLogs||[]).length} ${(cycleData.medLogs||[]).length===1?'log':'logs'}</div>
+        </div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+  </div>
+
+  <!-- ── WEIGHT & WATER LOG ── -->
+  <div class="ssec" style="padding-top:0;">
+    <div class="srow" style="cursor:pointer;" onclick="openVitalsLogSheet()">
+      <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(14,165,233,.18),rgba(14,165,233,.08));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">⚖️</div>
+        <div style="min-width:0;">
+          <div class="slbl">Weight &amp; water log</div>
+          <div class="ssub">Log today's weight or water intake</div>
+        </div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    ${(cycleData.vitalsLogs||[]).length ? `
+    <div class="srow" style="cursor:pointer;border-bottom:none;" onclick="openVitalsHistorySheet()">
+      <div style="min-width:0;">
+        <div class="slbl">History</div>
+        <div class="ssub">${(cycleData.vitalsLogs||[]).length} ${(cycleData.vitalsLogs||[]).length===1?'entry':'entries'}</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>` : ''}
+  </div>
+
   <!-- ── ALL LOGS ── -->
   ${(cycleData.logs||[]).length ? `
   <div class="ssec" style="padding-top:0;">
@@ -13413,6 +13815,30 @@ function renderCycleSheet(){
         <div id="pairSyncEntryDot" class="pair-status-dot offline" style="flex-shrink:0;"></div>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
+    </div>
+  </div>
+
+  <!-- ── CLINIC VISIT SUMMARY & EXPORT ── -->
+  <div class="ssec" style="padding-top:0;">
+    <div class="srow" style="cursor:pointer;" onclick="openClinicSummarySheet()">
+      <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(34,197,94,.18),rgba(34,197,94,.08));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🩺</div>
+        <div style="min-width:0;">
+          <div class="slbl">Clinic visit summary</div>
+          <div class="ssub">A doctor-ready overview of your recent cycles</div>
+        </div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="srow" style="cursor:pointer;border-bottom:none;" onclick="exportCycleData()">
+      <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(20,184,166,.18),rgba(20,184,166,.08));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📤</div>
+        <div style="min-width:0;">
+          <div class="slbl">Export cycle data</div>
+          <div class="ssub">Download a backup as a CSV file</div>
+        </div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
   </div>
 
@@ -15196,6 +15622,7 @@ function renderCycleSettingsSheet(){
   if(!body) return;
   const cl = cycleData.cycleLength  || 28;
   const pl = cycleData.periodLength || 5;
+  const pr = cycleData.periodReminders || { periodStart:false, bbtMorning:false, bbtTime:'07:00' };
   body.innerHTML = `
   <div class="ssec" style="padding-top:4px;">
     <div class="srow">
@@ -15209,7 +15636,7 @@ function renderCycleSettingsSheet(){
         <button class="cyc-stepper-btn" onclick="cycleData.cycleLength=Math.min(45,(cycleData.cycleLength||28)+1);saveCycle();renderCycleSettingsSheet();renderCycleSheet();">+</button>
       </div>
     </div>
-    <div class="srow">
+    <div class="srow" style="border-bottom:none;">
       <div>
         <div class="slbl">Period length</div>
         <div class="ssub">Average days of bleeding</div>
@@ -15220,6 +15647,31 @@ function renderCycleSettingsSheet(){
         <button class="cyc-stepper-btn" onclick="cycleData.periodLength=Math.min(10,(cycleData.periodLength||5)+1);saveCycle();renderCycleSettingsSheet();renderCycleSheet();">+</button>
       </div>
     </div>
+  </div>
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect">Reminders</div>
+    <div class="srow" style="cursor:pointer;" onclick="cyToggleReminder('periodStart')">
+      <div style="min-width:0;flex:1;">
+        <div class="slbl">Predicted period start</div>
+        <div class="ssub">Notify the morning your period is predicted</div>
+      </div>
+      <div class="cm-opt-switch${pr.periodStart?' on':''}"><div class="cm-opt-switch-knob"></div></div>
+    </div>
+    <div class="srow" style="cursor:pointer;${pr.bbtMorning?'':'border-bottom:none;'}" onclick="cyToggleReminder('bbtMorning')">
+      <div style="min-width:0;flex:1;">
+        <div class="slbl">BBT morning reminder</div>
+        <div class="ssub">Daily nudge to log your temperature</div>
+      </div>
+      <div class="cm-opt-switch${pr.bbtMorning?' on':''}"><div class="cm-opt-switch-knob"></div></div>
+    </div>
+    ${pr.bbtMorning ? `
+    <div class="srow" style="border-bottom:none;">
+      <div class="slbl">Reminder time</div>
+      <input type="time" value="${pr.bbtTime||'07:00'}" onchange="cySetBbtReminderTime(this.value)"
+        style="padding:8px 10px;border-radius:10px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:13px;font-family:'Nunito',sans-serif;font-weight:700;"/>
+    </div>` : ''}
+  </div>
+  <div class="ssec" style="padding-top:0;">
     <div class="srow" style="border-bottom:none;cursor:pointer;" onclick="cyReset()">
       <div class="slbl" style="color:#f43f5e;">🗑 Clear all cycle data</div>
     </div>
@@ -15227,6 +15679,23 @@ function renderCycleSettingsSheet(){
   // Keep entry row subtitle in sync
   const sub = document.getElementById('cycleSettingsEntrySub');
   if(sub) sub.textContent = 'Cycle ' + cl + 'd · Period ' + pl + 'd';
+}
+function cyToggleReminder(key){
+  if(typeof haptic === 'function') haptic('light');
+  cycleData.periodReminders = cycleData.periodReminders || { periodStart:false, bbtMorning:false, bbtTime:'07:00' };
+  cycleData.periodReminders[key] = !cycleData.periodReminders[key];
+  // Request notification permission if turning a reminder on and not yet granted
+  if(cycleData.periodReminders[key] && typeof requestNotifPerm === 'function' && 'Notification' in window && Notification.permission !== 'granted'){
+    requestNotifPerm().then(()=>{ saveCycle(); renderCycleSettingsSheet(); });
+    return;
+  }
+  saveCycle();
+  renderCycleSettingsSheet();
+}
+function cySetBbtReminderTime(val){
+  cycleData.periodReminders = cycleData.periodReminders || { periodStart:false, bbtMorning:false, bbtTime:'07:00' };
+  cycleData.periodReminders.bbtTime = val || '07:00';
+  saveCycle();
 }
 
 function openCycleSettingsSheet(){
@@ -15276,7 +15745,7 @@ function closePartnerSyncSheet(){
     const existing = origOvHandler.getAttribute('onclick') || '';
     origOvHandler.setAttribute('onclick',
       existing.replace(')(this)',
-        `)(this); if(document.getElementById('partnerSyncSheet')?.classList.contains('open')){closePartnerSyncSheet();} if(document.getElementById('cycleSettingsSheet')?.classList.contains('open')){closeCycleSettingsSheet();} if(document.getElementById('logHistorySheet')?.classList.contains('open')){closeLogHistorySheet();} if(document.getElementById('symptomLogSheet')?.classList.contains('open')){closeSymptomLogSheet();} if(document.getElementById('symptomHistorySheet')?.classList.contains('open')){closeSymptomHistorySheet();} if(document.getElementById('intercourseLogSheet')?.classList.contains('open')){closeIntercourseLogSheet();} if(document.getElementById('opkLogSheet')?.classList.contains('open')){closeOpkLogSheet();} if(document.getElementById('bbtLogSheet')?.classList.contains('open')){closeBbtLogSheet();} if(document.getElementById('ttcHistorySheet')?.classList.contains('open')){closeTtcHistorySheet();} if(document.getElementById('partnerSymptomHistorySheet')?.classList.contains('open')){closePartnerSymptomHistorySheet();} if(document.getElementById('partnerTtcHistorySheet')?.classList.contains('open')){closePartnerTtcHistorySheet();}`
+        `)(this); if(document.getElementById('partnerSyncSheet')?.classList.contains('open')){closePartnerSyncSheet();} if(document.getElementById('cycleSettingsSheet')?.classList.contains('open')){closeCycleSettingsSheet();} if(document.getElementById('logHistorySheet')?.classList.contains('open')){closeLogHistorySheet();} if(document.getElementById('symptomLogSheet')?.classList.contains('open')){closeSymptomLogSheet();} if(document.getElementById('symptomHistorySheet')?.classList.contains('open')){closeSymptomHistorySheet();} if(document.getElementById('intercourseLogSheet')?.classList.contains('open')){closeIntercourseLogSheet();} if(document.getElementById('opkLogSheet')?.classList.contains('open')){closeOpkLogSheet();} if(document.getElementById('bbtLogSheet')?.classList.contains('open')){closeBbtLogSheet();} if(document.getElementById('ttcHistorySheet')?.classList.contains('open')){closeTtcHistorySheet();} if(document.getElementById('partnerSymptomHistorySheet')?.classList.contains('open')){closePartnerSymptomHistorySheet();} if(document.getElementById('partnerTtcHistorySheet')?.classList.contains('open')){closePartnerTtcHistorySheet();} if(document.getElementById('medLogSheet')?.classList.contains('open')){closeMedLogSheet();} if(document.getElementById('medHistorySheet')?.classList.contains('open')){closeMedHistorySheet();} if(document.getElementById('vitalsLogSheet')?.classList.contains('open')){closeVitalsLogSheet();} if(document.getElementById('vitalsHistorySheet')?.classList.contains('open')){closeVitalsHistorySheet();} if(document.getElementById('clinicSummarySheet')?.classList.contains('open')){closeClinicSummarySheet();}`
       )
     );
   }
@@ -15318,6 +15787,28 @@ function buildPredictions(lastStart, cl, pl){
     });
   }
   return results;
+}
+
+// ── Cycle regularity alert (proactive banner; needs 3+ cycles of data) ─────
+function getCycleRegularityAlert(){
+  const logs = (cycleData.logs||[]).filter(l=>l.type==='period_start').sort((a,b)=>a.date-b.date);
+  if(logs.length < 4) return null; // need at least 4 starts → 3 cycle lengths
+  const allCycles = [];
+  for(let i = 1; i < logs.length; i++){
+    const len = Math.round((logs[i].date - logs[i-1].date) / 86400000);
+    if(len > 0 && len < 60) allCycles.push(len);
+  }
+  if(allCycles.length < 3) return null;
+  const recent = allCycles.slice(-6);
+  const n = recent.length;
+  const avg = recent.reduce((a,b)=>a+b,0) / n;
+  const variance = recent.reduce((a,b)=>a+Math.pow(b-avg,2),0) / n;
+  const stdDev = Math.sqrt(variance);
+  const range = Math.max(...recent) - Math.min(...recent);
+  if(stdDev > 5 || range > 9){
+    return { detail: `±${stdDev.toFixed(1)}d variance over your last ${n} cycles` };
+  }
+  return null;
 }
 
 // ── Cycle Insights & Trends (avg length, variance, sparkline) ────────────────
@@ -15446,6 +15937,141 @@ function renderCycleHistory(){
     </div>`).join('')}
   </div>`;
 }
+
+// ══ EXPORT CYCLE DATA (CSV BACKUP) ═════════════════════════════════════════
+function _csvEsc(v){
+  if(v === null || v === undefined) return '';
+  const s = String(v).replace(/"/g,'""');
+  return /[",\n]/.test(s) ? `"${s}"` : s;
+}
+function exportCycleData(){
+  if(typeof haptic === 'function') haptic('light');
+  const rows = [['Section','Date','Type','Detail 1','Detail 2','Note']];
+
+  (cycleData.logs||[]).forEach(l=>{
+    rows.push(['Cycle log', new Date(l.date).toLocaleDateString('en-NP'), l.type, l.flow||'', '', '']);
+  });
+  (cycleData.symptomLogs||[]).forEach(l=>{
+    rows.push(['Mood & symptoms', new Date(l.date).toLocaleDateString('en-NP'), l.mood||'', (l.symptoms||[]).join('; '), '', l.note||'']);
+  });
+  (cycleData.intercourseLogs||[]).forEach(l=>{
+    rows.push(['Intercourse', new Date(l.date).toLocaleDateString('en-NP'), l.protected?'Protected':'Unprotected', '', '', l.note||'']);
+  });
+  (cycleData.opkLogs||[]).forEach(l=>{
+    rows.push(['Ovulation test', new Date(l.date).toLocaleDateString('en-NP'), l.result||'', '', '', l.note||'']);
+  });
+  (cycleData.bbtLogs||[]).forEach(l=>{
+    const unit = cycleData.bbtUnit || 'C';
+    const t = (typeof _bbtToUnit === 'function') ? _bbtToUnit(l, unit) : l.temp;
+    rows.push(['BBT', new Date(l.date).toLocaleDateString('en-NP'), t!=null?t.toFixed(2)+'°'+unit:'', l.time||'', '', l.note||'']);
+  });
+  (cycleData.medLogs||[]).forEach(l=>{
+    const med = (cycleData.medList||[]).find(m=>m.id===l.medId);
+    rows.push(['Medication', new Date(l.date).toLocaleDateString('en-NP'), med?med.name:'Removed item', med?med.dose||'':'', '', '']);
+  });
+  (cycleData.vitalsLogs||[]).forEach(l=>{
+    rows.push(['Weight & water', new Date(l.date).toLocaleDateString('en-NP'), l.weight!=null?l.weight+(l.weightUnit||'kg'):'', l.water!=null?l.water+'L':'', '', '']);
+  });
+
+  rows.push([]);
+  rows.push(['Cycle length (avg days)', cycleData.cycleLength || 28]);
+  rows.push(['Period length (avg days)', cycleData.periodLength || 5]);
+  if(cycleData.lastPeriodStart) rows.push(['Last period start', new Date(cycleData.lastPeriodStart).toLocaleDateString('en-NP')]);
+
+  const csv = rows.map(r => r.map(_csvEsc).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const dateStamp = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `vikram-cycle-data-${dateStamp}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  if(typeof vikramToast==='function') vikramToast('📤 Cycle data exported');
+}
+
+// ══ CLINIC VISIT SUMMARY (in-app, read-only overview for a doctor's visit) ═══
+function openClinicSummarySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  renderClinicSummarySheet();
+  const sheet = document.getElementById('clinicSummarySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closeClinicSummarySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('clinicSummarySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+function renderClinicSummarySheet(){
+  const body = document.getElementById('clinicSummarySheetBody');
+  if(!body) return;
+
+  const logs = (cycleData.logs||[]).filter(l=>l.type==='period_start').sort((a,b)=>a.date-b.date);
+  const cycles = [];
+  for(let i = 1; i < logs.length; i++){
+    const len = Math.round((logs[i].date - logs[i-1].date) / 86400000);
+    if(len > 0 && len < 60) cycles.push({ len, startDate: logs[i-1].date });
+  }
+  const recentCycles = cycles.slice(-6);
+  const avgLen = recentCycles.length ? (recentCycles.reduce((a,c)=>a+c.len,0)/recentCycles.length) : null;
+  const stdDev = recentCycles.length > 1 ? Math.sqrt(recentCycles.reduce((a,c)=>a+Math.pow(c.len-avgLen,2),0)/recentCycles.length) : null;
+
+  const sixMoAgo = new Date(TODAY.getFullYear(), TODAY.getMonth()-6, TODAY.getDate()).getTime();
+  const recentSymptoms = (cycleData.symptomLogs||[]).filter(l=>l.date >= sixMoAgo);
+  const symptomCounts = {};
+  recentSymptoms.forEach(l=>(l.symptoms||[]).forEach(sid=>{ symptomCounts[sid]=(symptomCounts[sid]||0)+1; }));
+  const topSymptoms = Object.entries(symptomCounts).sort((a,b)=>b[1]-a[1]).slice(0,6)
+    .map(([sid,count])=>{ const sm = (typeof SYMPTOM_META!=='undefined') ? SYMPTOM_META[sid] : null; return { label: sm?sm.label:sid, emoji: sm?sm.emoji:'•', count }; });
+
+  const recentBbt = (cycleData.bbtLogs||[]).filter(l=>l.date >= sixMoAgo);
+  const recentOpk = (cycleData.opkLogs||[]).filter(l=>l.date >= sixMoAgo);
+  const recentBd  = (cycleData.intercourseLogs||[]).filter(l=>l.date >= sixMoAgo);
+
+  const lastStart = cycleData.lastPeriodStart ? new Date(cycleData.lastPeriodStart).toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'}) : '—';
+
+  body.innerHTML = `
+  <div class="ssec" style="padding-top:4px;">
+    <div style="font-size:11px;font-weight:700;color:var(--dsub);line-height:1.6;padding:0 0 4px;">Generated ${new Date().toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'})} · last 6 months of data</div>
+  </div>
+
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect">Cycle overview</div>
+    <div class="srow"><div class="slbl">Last period start</div><div class="ssub" style="text-align:right;">${lastStart}</div></div>
+    <div class="srow"><div class="slbl">Typical cycle length</div><div class="ssub" style="text-align:right;">${cycleData.cycleLength||28} days</div></div>
+    <div class="srow"><div class="slbl">Typical period length</div><div class="ssub" style="text-align:right;">${cycleData.periodLength||5} days</div></div>
+    <div class="srow" style="border-bottom:none;"><div class="slbl">Avg length (recent ${recentCycles.length || 0} cycles)</div><div class="ssub" style="text-align:right;">${avgLen!=null ? avgLen.toFixed(1)+'d ±'+stdDev.toFixed(1)+'d' : 'Not enough data'}</div></div>
+  </div>
+
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect">Most common symptoms</div>
+    ${topSymptoms.length ? topSymptoms.map(s=>`
+    <div class="srow"><div class="slbl">${s.emoji} ${esc(s.label)}</div><div class="ssub">${s.count}×</div></div>`).join('')
+      : `<div style="padding:14px 4px;font-size:12px;font-weight:700;color:var(--dsub);">No symptoms logged in this period</div>`}
+  </div>
+
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect">TTC activity (6 months)</div>
+    <div class="srow"><div class="slbl">Intercourse entries</div><div class="ssub">${recentBd.length}</div></div>
+    <div class="srow"><div class="slbl">Ovulation tests</div><div class="ssub">${recentOpk.length} · ${recentOpk.filter(l=>l.result==='pos').length} positive</div></div>
+    <div class="srow" style="border-bottom:none;"><div class="slbl">BBT readings</div><div class="ssub">${recentBbt.length}</div></div>
+  </div>
+
+  ${cycleData.medList && cycleData.medList.length ? `
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect">Current medications &amp; supplements</div>
+    ${cycleData.medList.map(m=>`<div class="srow" style="border-bottom:none;"><div class="slbl">${esc(m.name)}</div>${m.dose?`<div class="ssub">${esc(m.dose)}</div>`:''}</div>`).join('')}
+  </div>` : ''}
+
+  <div style="padding:14px 16px 4px;font-size:10.5px;font-weight:700;color:var(--dsub);line-height:1.6;">This is a summary generated from your self-reported logs — it isn't a medical diagnosis. Bring this screen to your appointment, or use Export to download the full data as a CSV.</div>
+  `;
+}
+
 let widgetTab='ios';
 
 function switchWidgetTab(t){
@@ -15689,8 +16315,10 @@ _ric(()=>{
   checkIncomingSharedProfile();
 });
 setTimeout(checkEventReminders, 2500);
+setTimeout(checkCycleReminders, 2700);
 // Re-check every 60 seconds so 30-min and 2-hr triggers are caught within the 2-min window
 setInterval(checkEventReminders, 60000);
+setInterval(checkCycleReminders, 60000);
 
 // ══ PWA — INSTALL BANNER ══
 (function(){
@@ -20837,7 +21465,7 @@ function svRefreshStorage(){
 </div>
 
 <!-- ── CYCLE SETTINGS SHEET ──────────────────────────────────────────────── -->
-<div class="sheet" id="cycleSettingsSheet" style="max-height:72vh;">
+<div class="sheet" id="cycleSettingsSheet" style="max-height:84vh;">
   <div class="shandle"></div>
   <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
     <span>⚙️ Cycle Settings</span>
@@ -20847,6 +21475,102 @@ function svRefreshStorage(){
   </div>
   <div class="sscroll" style="padding:0 0 32px;">
     <div id="cycleSettingsSheetBody"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── MEDICATION / SUPPLEMENT LOG SHEET ─────────────────────────────────── -->
+<div class="sheet" id="medLogSheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>💊 Medication &amp; Supplements</span>
+    <button class="ae-close" onclick="closeMedLogSheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="medLogSheetBody"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── MEDICATION HISTORY SHEET ──────────────────────────────────────────── -->
+<div class="sheet" id="medHistorySheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>📋 Medication History</span>
+    <button class="ae-close" onclick="closeMedHistorySheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="medHistorySheetBody"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── WEIGHT & WATER LOG SHEET ──────────────────────────────────────────── -->
+<div class="sheet" id="vitalsLogSheet" style="max-height:70vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>⚖️ Weight &amp; Water · <span id="vitalsLogDateLabel" style="font-weight:700;color:var(--dsub);font-size:13px;">Today</span></span>
+    <button class="ae-close" onclick="closeVitalsLogSheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 16px 24px;">
+    <div class="ssec" style="padding-top:8px;">
+      <div class="srow">
+        <div class="slbl">Weight unit</div>
+        <div id="vitalsUnitToggle" class="up-view-toggle" style="width:auto;">
+          <button class="ttc-unit-btn on" data-unit="kg" onclick="vitalsSelectUnit('kg')">kg</button>
+          <button class="ttc-unit-btn" data-unit="lb" onclick="vitalsSelectUnit('lb')">lb</button>
+        </div>
+      </div>
+      <div class="srow">
+        <div class="slbl">Weight</div>
+        <input id="vitalsWeightInput" type="number" inputmode="decimal" step="0.1" placeholder="—"
+          style="width:90px;text-align:right;padding:8px 10px;border-radius:10px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:14px;font-family:'Nunito',sans-serif;font-weight:800;"/>
+      </div>
+      <div class="srow" style="border-bottom:none;">
+        <div class="slbl">Water intake (L)</div>
+        <input id="vitalsWaterInput" type="number" inputmode="decimal" step="0.1" placeholder="—"
+          style="width:90px;text-align:right;padding:8px 10px;border-radius:10px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:14px;font-family:'Nunito',sans-serif;font-weight:800;"/>
+      </div>
+    </div>
+    <button onclick="saveVitalsLog()" style="width:100%;margin-top:6px;padding:13px;border-radius:14px;border:none;background:var(--tgon,#1a1a1a);color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">Save</button>
+    <div style="text-align:center;margin-top:12px;">
+      <span style="font-size:12.5px;font-weight:800;color:var(--dsub);cursor:pointer;" onclick="closeVitalsLogSheet();openVitalsHistorySheet();">View history →</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── WEIGHT & WATER HISTORY SHEET ──────────────────────────────────────── -->
+<div class="sheet" id="vitalsHistorySheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>📋 Weight &amp; Water History</span>
+    <button class="ae-close" onclick="closeVitalsHistorySheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="vitalsHistorySheetBody"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── CLINIC VISIT SUMMARY SHEET ────────────────────────────────────────── -->
+<div class="sheet" id="clinicSummarySheet" style="max-height:90vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>🩺 Clinic Visit Summary</span>
+    <button class="ae-close" onclick="closeClinicSummarySheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="clinicSummarySheetBody"></div>
     <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
   </div>
 </div>
