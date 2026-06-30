@@ -13764,6 +13764,106 @@ function renderPartnerModeCycleSheet(body){
       </div>`;
     })()}
 
+    <!-- Pregnancy status (if partner has pregnancy dates set) -->
+    ${(()=>{
+      const preg = p.pregnancy;
+      if(!preg || !preg.lmpDate) return '';
+      const todayMid2 = today0ts;
+      const lmpD = new Date(preg.lmpDate);
+      const lmpMid = new Date(lmpD.getFullYear(), lmpD.getMonth(), lmpD.getDate()).getTime();
+      const daysPregnant = Math.floor((todayMid2 - lmpMid) / 86400000);
+      const pWeek = Math.floor(daysPregnant / 7);
+      const pDayIn = daysPregnant % 7;
+      const dueD = new Date(preg.dueDate);
+      const dueMid = new Date(dueD.getFullYear(), dueD.getMonth(), dueD.getDate()).getTime();
+      const daysToGo = Math.round((dueMid - todayMid2) / 86400000);
+      const trimester = pWeek < 13 ? 1 : pWeek < 27 ? 2 : 3;
+      const overdue = daysToGo < 0;
+      return `<div class="ssec" style="padding-top:0;">
+        <div class="srow" style="border-bottom:none;">
+          <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+            <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(124,92,255,.18),rgba(124,92,255,.08));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🤰</div>
+            <div style="min-width:0;">
+              <div class="slbl">Pregnancy · Week ${pWeek}<span style="font-weight:700;">+${pDayIn}d</span></div>
+              <div class="ssub">Trimester ${trimester} · ${overdue ? Math.abs(daysToGo)+'d overdue' : daysToGo+'d to go'}</div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    })()}
+
+    <!-- Mood & Symptoms history -->
+    ${(()=>{
+      const sLogs = p.symptomLogs || [];
+      if(!sLogs.length) return '';
+      return `<div class="ssec" style="padding-top:0;">
+        <div class="srow" style="cursor:pointer;" onclick="openPartnerSymptomHistorySheet()">
+          <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+            <div style="width:36px;height:36px;border-radius:12px;background:var(--pr-rose-dim2,rgba(232,97,127,.08));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💭</div>
+            <div style="min-width:0;">
+              <div class="slbl">Mood &amp; symptoms</div>
+              <div class="ssub">${sLogs.length} ${sLogs.length===1?'entry':'entries'}</div>
+            </div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>`;
+    })()}
+
+    <!-- Intercourse log -->
+    ${(()=>{
+      const iLogs = p.intercourseLogs || [];
+      if(!iLogs.length) return '';
+      return `<div class="ssec" style="padding-top:0;">
+        <div class="srow" style="cursor:pointer;" onclick="openPartnerTtcHistorySheet('bd')">
+          <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+            <div style="width:36px;height:36px;border-radius:12px;background:var(--pr-rose-dim2,rgba(232,97,127,.08));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💕</div>
+            <div style="min-width:0;">
+              <div class="slbl">Intercourse log</div>
+              <div class="ssub">${iLogs.length} ${iLogs.length===1?'entry':'entries'}</div>
+            </div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>`;
+    })()}
+
+    <!-- Ovulation test (OPK) results -->
+    ${(()=>{
+      const oLogs = p.opkLogs || [];
+      if(!oLogs.length) return '';
+      return `<div class="ssec" style="padding-top:0;">
+        <div class="srow" style="cursor:pointer;" onclick="openPartnerTtcHistorySheet('opk')">
+          <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+            <div style="width:36px;height:36px;border-radius:12px;background:var(--pr-gold-dim,rgba(224,164,88,.16));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🧪</div>
+            <div style="min-width:0;">
+              <div class="slbl">Ovulation test results</div>
+              <div class="ssub">${oLogs.length} ${oLogs.length===1?'entry':'entries'}</div>
+            </div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>`;
+    })()}
+
+    <!-- BBT chart & log -->
+    ${(()=>{
+      const bLogs = p.bbtLogs || [];
+      if(!bLogs.length) return '';
+      return `<div class="ssec" style="padding-top:0;">
+        <div class="srow" style="cursor:pointer;" onclick="openPartnerTtcHistorySheet('bbt')">
+          <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+            <div style="width:36px;height:36px;border-radius:12px;background:var(--pr-gold-dim,rgba(224,164,88,.16));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🌡️</div>
+            <div style="min-width:0;">
+              <div class="slbl">BBT chart &amp; log</div>
+              <div class="ssub">${bLogs.length} ${bLogs.length===1?'entry':'entries'}</div>
+            </div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>`;
+    })()}
+
     <!-- Moments — tappable entry row -->
     <div class="ssec" style="padding-top:0;">
       <div class="srow" style="cursor:pointer;" onclick="openPartnerMomentsSheet()">
@@ -14100,6 +14200,12 @@ function cyResetConfirmYes(){
       cycleLength:     cd.cycleLength     || 28,
       periodLength:    cd.periodLength    || 5,
       logs:            (cd.logs || []).filter(l => l.date >= (cd.lastPeriodStart || 0)),
+      symptomLogs:     cd.symptomLogs     || [],
+      intercourseLogs: cd.intercourseLogs || [],
+      opkLogs:         cd.opkLogs         || [],
+      bbtLogs:         cd.bbtLogs         || [],
+      bbtUnit:         cd.bbtUnit         || 'C',
+      pregnancy:       cd.pregnancy       || null,
       updatedAt:       Date.now()
     };
     const database = db();
@@ -14136,6 +14242,12 @@ function cyResetConfirmYes(){
           cycleLength:     val.cycleLength     || 28,
           periodLength:    val.periodLength    || 5,
           logs:            val.logs            || [],
+          symptomLogs:     val.symptomLogs     || [],
+          intercourseLogs: val.intercourseLogs || [],
+          opkLogs:         val.opkLogs         || [],
+          bbtLogs:         val.bbtLogs         || [],
+          bbtUnit:         val.bbtUnit         || 'C',
+          pregnancy:       val.pregnancy       || null,
         };
         d.partnerCycleUpdatedAt = val.updatedAt || Date.now();
         pairSave(d);
@@ -14785,6 +14897,230 @@ function closePartnerCycleHistorySheet(){
   if(ov)    ov.classList.remove('open');
 }
 
+// ── Partner Mood & Symptom History Sheet ────────────────────────────────────
+function openPartnerSymptomHistorySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  renderPartnerSymptomHistorySheet();
+  const sheet = document.getElementById('partnerSymptomHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closePartnerSymptomHistorySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('partnerSymptomHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+function renderPartnerSymptomHistorySheet(){
+  const body = document.getElementById('partnerSymptomHistorySheetBody');
+  if(!body) return;
+  const d = (typeof _pmPairLoad === 'function') ? _pmPairLoad() : {};
+  const p = d.partnerCycleData || {};
+  const logs = p.symptomLogs || [];
+  if(!logs.length){
+    body.innerHTML = `<div style="padding:40px 24px;text-align:center;font-size:13px;font-weight:700;color:var(--dsub);">No mood or symptom entries logged yet 💭</div>`;
+    return;
+  }
+  body.innerHTML = `
+  <div class="ssec" style="padding-top:4px;">
+    <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>All entries</span>
+      <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${logs.length} ${logs.length===1?'entry':'entries'}</span>
+    </div>
+    ${[...logs].reverse().map(l => {
+      const mood = l.mood ? MOOD_META[l.mood] : null;
+      const dateStr = new Date(l.date).toLocaleDateString('en-NP',{month:'short',day:'numeric',year:'numeric'});
+      return `<div class="symlog-row">
+        <div class="symlog-top">
+          <div class="symlog-date-mood">
+            ${mood ? `<span class="symlog-mood-emoji">${mood.emoji}</span>` : ''}
+            <span class="symlog-date">${dateStr}</span>
+          </div>
+        </div>
+        ${(l.symptoms&&l.symptoms.length) ? `<div class="symlog-symptoms">${l.symptoms.map(sid=>{
+          const sm = SYMPTOM_META[sid]; return sm ? `<span class="symlog-symptom-pill">${sm.emoji} ${sm.label}</span>` : '';
+        }).join('')}</div>` : ''}
+        ${l.note ? `<div class="symlog-note">"${_pmEscHtml(l.note)}"</div>` : ''}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ── Partner TTC History Sheet (Intercourse / OPK / BBT, read-only) ─────────
+let _pmTtcHistTab = 'bd'; // 'bd' | 'opk' | 'bbt'
+function openPartnerTtcHistorySheet(tab){
+  if(typeof haptic === 'function') haptic('light');
+  _pmTtcHistTab = tab || 'bd';
+  renderPartnerTtcHistorySheet();
+  const sheet = document.getElementById('partnerTtcHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closePartnerTtcHistorySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('partnerTtcHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+function setPartnerTtcHistTab(tab){
+  if(typeof haptic === 'function') haptic('light');
+  _pmTtcHistTab = tab;
+  renderPartnerTtcHistorySheet();
+}
+function renderPartnerTtcHistorySheet(){
+  const tabBar = document.getElementById('partnerTtcHistTabBar');
+  if(tabBar){
+    tabBar.querySelectorAll('.up-vtbtn').forEach(b=>{
+      b.classList.toggle('on', b.getAttribute('data-tab') === _pmTtcHistTab);
+    });
+  }
+  const body = document.getElementById('partnerTtcHistorySheetBody');
+  if(!body) return;
+  const d = (typeof _pmPairLoad === 'function') ? _pmPairLoad() : {};
+  const p = d.partnerCycleData || {};
+
+  if(_pmTtcHistTab === 'bd'){
+    const logs = p.intercourseLogs || [];
+    if(!logs.length){
+      body.innerHTML = `<div class="ttc-mode-empty">No intercourse entries logged yet 💕</div>`;
+      return;
+    }
+    body.innerHTML = `<div class="ssec" style="padding-top:4px;">
+      <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>All entries</span>
+        <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${logs.length} ${logs.length===1?'entry':'entries'}</span>
+      </div>
+      ${[...logs].reverse().map(l=>`<div class="ttc-log-row">
+        <div class="ttc-log-top">
+          <div class="ttc-log-left">
+            <div class="ttc-log-icon">💕</div>
+            <div>
+              <div class="ttc-log-date">${_ttcDateStr(l.date)}</div>
+              <div class="ttc-log-detail">${l.protected ? 'Protected' : 'Unprotected'}</div>
+            </div>
+          </div>
+        </div>
+        ${l.note ? `<div class="ttc-log-note">"${_pmEscHtml(l.note)}"</div>` : ''}
+      </div>`).join('')}
+    </div>`;
+    return;
+  }
+
+  if(_pmTtcHistTab === 'opk'){
+    const logs = p.opkLogs || [];
+    if(!logs.length){
+      body.innerHTML = `<div class="ttc-mode-empty">No ovulation test entries logged yet 🧪</div>`;
+      return;
+    }
+    const resultMeta = {neg:{emoji:'⚪',label:'Negative',cls:'neg'},faint:{emoji:'🟡',label:'Faint line',cls:'faint'},pos:{emoji:'🟢',label:'Positive',cls:'pos'}};
+    body.innerHTML = `<div class="ssec" style="padding-top:4px;">
+      <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>All entries</span>
+        <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${logs.length} ${logs.length===1?'entry':'entries'}</span>
+      </div>
+      ${[...logs].reverse().map(l=>{
+        const rm = resultMeta[l.result] || resultMeta.neg;
+        return `<div class="ttc-log-row">
+          <div class="ttc-log-top">
+            <div class="ttc-log-left">
+              <div class="ttc-log-icon">🧪</div>
+              <div>
+                <div class="ttc-log-date">${_ttcDateStr(l.date)}</div>
+                <div class="ttc-log-detail"><span class="ttc-pill ${rm.cls}">${rm.emoji} ${rm.label}</span></div>
+              </div>
+            </div>
+          </div>
+          ${l.note ? `<div class="ttc-log-note">"${_pmEscHtml(l.note)}"</div>` : ''}
+        </div>`;
+      }).join('')}
+    </div>`;
+    return;
+  }
+
+  // BBT tab
+  const logs = p.bbtLogs || [];
+  if(!logs.length){
+    body.innerHTML = `<div class="ttc-mode-empty">No temperature entries logged yet 🌡️</div>`;
+    return;
+  }
+  const unit = p.bbtUnit || 'C';
+  body.innerHTML = `<div class="ssec" style="padding-top:4px;">
+    <div class="ssect">Chart</div>
+    ${renderPartnerTtcBbtChart(logs, p)}
+  </div>
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>All entries</span>
+      <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${logs.length} ${logs.length===1?'entry':'entries'}</span>
+    </div>
+    ${[...logs].reverse().map(l=>{
+      const dispTemp = _bbtToUnit(l, unit);
+      return `<div class="ttc-log-row">
+        <div class="ttc-log-top">
+          <div class="ttc-log-left">
+            <div class="ttc-log-icon">🌡️</div>
+            <div>
+              <div class="ttc-log-date">${_ttcDateStr(l.date)}</div>
+              <div class="ttc-log-detail">${dispTemp.toFixed(2)}°${unit}${l.time ? ' · ' + l.time : ''}</div>
+            </div>
+          </div>
+        </div>
+        ${l.note ? `<div class="ttc-log-note">"${_pmEscHtml(l.note)}"</div>` : ''}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// Partner-aware BBT chart — same visual as own-view chart but reads ovulation
+// markers from the partner's synced logs instead of cycleData.logs
+function renderPartnerTtcBbtChart(logs, p){
+  if(logs.length < 2) return '';
+  const unit = (p && p.bbtUnit) || 'C';
+  const W = Math.max(320, logs.length * 34), H = 140, padL = 34, padR = 12, padT = 14, padB = 22;
+  const vals = logs.map(l => _bbtToUnit(l, unit));
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  if(hi - lo < 0.4){ const mid=(hi+lo)/2; lo = mid-0.4; hi = mid+0.4; }
+  lo -= 0.15; hi += 0.15;
+  const xStep = (W - padL - padR) / Math.max(1, logs.length - 1);
+  const yFor = v => padT + (1 - (v - lo)/(hi - lo)) * (H - padT - padB);
+  const xFor = i => padL + i * xStep;
+  const pathD = logs.map((l,i)=>`${i===0?'M':'L'}${xFor(i).toFixed(1)},${yFor(vals[i]).toFixed(1)}`).join(' ');
+  const ovulSet = new Set(((p && p.logs) || []).filter(l=>l.type==='ovulation').map(l=>{
+    const d=new Date(l.date); return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();
+  }));
+  const dots = logs.map((l,i)=>{
+    const x=xFor(i), y=yFor(vals[i]);
+    const dMid = (()=>{ const d=new Date(l.date); return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime(); })();
+    const isOvul = ovulSet.has(dMid);
+    return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${isOvul?4.5:3}" fill="${isOvul?'#a855f7':'#FF6B9D'}" stroke="${isOvul?'#fff':'none'}" stroke-width="${isOvul?1.5:0}"/>`;
+  }).join('');
+  const xLabels = logs.map((l,i)=>{
+    if(logs.length > 10 && i % Math.ceil(logs.length/8) !== 0 && i !== logs.length-1) return '';
+    const d = new Date(l.date);
+    return `<text x="${xFor(i).toFixed(1)}" y="${H-6}" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--dsub)">${d.getDate()}/${d.getMonth()+1}</text>`;
+  }).join('');
+  const yTicks = [lo + (hi-lo)*0.15, lo + (hi-lo)*0.5, lo + (hi-lo)*0.85];
+  const yLabels = yTicks.map(v=>{
+    const y = yFor(v);
+    return `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W-padR}" y2="${y.toFixed(1)}" stroke="var(--sbdr)" stroke-width="1" stroke-dasharray="3,3"/>
+      <text x="${padL-5}" y="${(y+3).toFixed(1)}" text-anchor="end" font-size="8.5" font-weight="700" fill="var(--dsub)">${v.toFixed(1)}</text>`;
+  }).join('');
+  return `<div class="ttc-bbt-chart-wrap"><svg class="ttc-bbt-chart-svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    ${yLabels}
+    <path d="${pathD}" fill="none" stroke="#FF6B9D" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    ${dots}
+    ${xLabels}
+  </svg></div>
+  <div style="display:flex;gap:14px;padding:0 0 4px;font-size:10px;font-weight:700;color:var(--dsub);">
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:#FF6B9D;display:inline-block;"></span>Temp (°${unit})</span>
+    <span style="display:flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:#a855f7;display:inline-block;"></span>Ovulation logged</span>
+  </div>`;
+}
+
 // ── Log History Sheet open / close / render ───────────────────────────────
 function renderLogHistorySheet(){
   const body = document.getElementById('logHistorySheetBody');
@@ -14940,7 +15276,7 @@ function closePartnerSyncSheet(){
     const existing = origOvHandler.getAttribute('onclick') || '';
     origOvHandler.setAttribute('onclick',
       existing.replace(')(this)',
-        `)(this); if(document.getElementById('partnerSyncSheet')?.classList.contains('open')){closePartnerSyncSheet();} if(document.getElementById('cycleSettingsSheet')?.classList.contains('open')){closeCycleSettingsSheet();} if(document.getElementById('logHistorySheet')?.classList.contains('open')){closeLogHistorySheet();} if(document.getElementById('symptomLogSheet')?.classList.contains('open')){closeSymptomLogSheet();} if(document.getElementById('symptomHistorySheet')?.classList.contains('open')){closeSymptomHistorySheet();} if(document.getElementById('intercourseLogSheet')?.classList.contains('open')){closeIntercourseLogSheet();} if(document.getElementById('opkLogSheet')?.classList.contains('open')){closeOpkLogSheet();} if(document.getElementById('bbtLogSheet')?.classList.contains('open')){closeBbtLogSheet();} if(document.getElementById('ttcHistorySheet')?.classList.contains('open')){closeTtcHistorySheet();}`
+        `)(this); if(document.getElementById('partnerSyncSheet')?.classList.contains('open')){closePartnerSyncSheet();} if(document.getElementById('cycleSettingsSheet')?.classList.contains('open')){closeCycleSettingsSheet();} if(document.getElementById('logHistorySheet')?.classList.contains('open')){closeLogHistorySheet();} if(document.getElementById('symptomLogSheet')?.classList.contains('open')){closeSymptomLogSheet();} if(document.getElementById('symptomHistorySheet')?.classList.contains('open')){closeSymptomHistorySheet();} if(document.getElementById('intercourseLogSheet')?.classList.contains('open')){closeIntercourseLogSheet();} if(document.getElementById('opkLogSheet')?.classList.contains('open')){closeOpkLogSheet();} if(document.getElementById('bbtLogSheet')?.classList.contains('open')){closeBbtLogSheet();} if(document.getElementById('ttcHistorySheet')?.classList.contains('open')){closeTtcHistorySheet();} if(document.getElementById('partnerSymptomHistorySheet')?.classList.contains('open')){closePartnerSymptomHistorySheet();} if(document.getElementById('partnerTtcHistorySheet')?.classList.contains('open')){closePartnerTtcHistorySheet();}`
       )
     );
   }
@@ -20242,6 +20578,43 @@ function svRefreshStorage(){
   </div>
   <div class="sscroll" style="padding:0 0 32px;">
     <div id="partnerCycleHistorySheetBody"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── PARTNER MOOD & SYMPTOM HISTORY SHEET ──────────────────────────────── -->
+<div class="sheet" id="partnerSymptomHistorySheet" style="max-height:90vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>💭 Partner Mood &amp; Symptoms</span>
+    <button class="ae-close" onclick="closePartnerSymptomHistorySheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="partnerSymptomHistorySheetBody"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── PARTNER TTC HISTORY SHEET (Intercourse / OPK / BBT) ───────────────── -->
+<div class="sheet" id="partnerTtcHistorySheet" style="max-height:90vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>🌱 Partner TTC History</span>
+    <button class="ae-close" onclick="closePartnerTtcHistorySheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div style="padding:0 16px 10px;">
+    <div id="partnerTtcHistTabBar" class="up-view-toggle" style="width:100%;">
+      <button class="up-vtbtn on" data-tab="bd" onclick="setPartnerTtcHistTab('bd')" style="flex:1;">💕 Intercourse</button>
+      <button class="up-vtbtn" data-tab="opk" onclick="setPartnerTtcHistTab('opk')" style="flex:1;">🧪 OPK</button>
+      <button class="up-vtbtn" data-tab="bbt" onclick="setPartnerTtcHistTab('bbt')" style="flex:1;">🌡️ BBT</button>
+    </div>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="partnerTtcHistorySheetBody"></div>
     <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
   </div>
 </div>
