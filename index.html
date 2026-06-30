@@ -12000,30 +12000,22 @@ function renderPartnerModeCycleSheet(body){
     </div>` : ''}
 
     <!-- Log history -->
-    ${allLogs.length ? (() => {
-      const logColors = {period_start:'#FF4757', period_end:'#22c55e', ovulation:'#a855f7'};
-      const logLabels = {period_start:'Period started', period_end:'Period ended', ovulation:'Ovulation logged'};
-      const sorted = [...allLogs].sort((a,b) => b.date - a.date).slice(0, 6);
-      return `<div class="ssec" style="padding-top:0;">
-        <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
-          <span>Log history</span>
-          <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${Math.min(allLogs.length, 6)} entries</span>
-        </div>
-        ${sorted.map(l => `
-        <div class="srow" style="gap:10px;">
-          <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
-            <div style="width:8px;height:8px;border-radius:50%;background:${logColors[l.type]||'#aaa'};flex-shrink:0;"></div>
-            <div style="min-width:0;">
-              <div class="slbl">${logLabels[l.type] || l.type}</div>
-              <div class="ssub">${new Date(l.date).toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'})}</div>
-            </div>
+    ${allLogs.length ? `
+    <div class="ssec" style="padding-top:0;">
+      <div class="srow" style="cursor:pointer;" onclick="openPartnerLogHistorySheet(${JSON.stringify(allLogs)})">
+        <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+          <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(255,71,87,.15),rgba(255,71,87,.07));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📋</div>
+          <div style="min-width:0;">
+            <div class="slbl">Log history</div>
+            <div class="ssub">${allLogs.length} ${allLogs.length === 1 ? 'entry' : 'entries'}</div>
           </div>
-        </div>`).join('')}
-      </div>`;
-    })() : ''}
+        </div>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>` : ''}
 
     <!-- Cycle history -->
-    ${(() => {
+    ${(()=>{
       const starts = allLogs.filter(l => l.type === 'period_start').sort((a,b) => a.date - b.date);
       if(starts.length < 2) return '';
       const cycles = [];
@@ -12036,15 +12028,17 @@ function renderPartnerModeCycleSheet(body){
       }
       if(!cycles.length) return '';
       const avg = Math.round(cycles.reduce((a,c) => a+c.len, 0) / cycles.length);
-      const maxLen = Math.max(...cycles.map(c => c.len), 35);
       return `<div class="ssec" style="padding-top:0;">
-        <div class="ssect">Cycle history · avg ${avg}d</div>
-        ${cycles.slice(-6).reverse().map(c => `
-        <div class="cyc-hist-row">
-          <div class="cyc-hist-date">${c.dateStr}</div>
-          <div class="cyc-hist-bar-wrap"><div class="cyc-hist-bar" style="width:${Math.round(c.len/maxLen*100)}%"></div></div>
-          <div class="cyc-hist-len">${c.len}d</div>
-        </div>`).join('')}
+        <div class="srow" style="cursor:pointer;" onclick="openPartnerCycleHistorySheet(${JSON.stringify(cycles)}, ${avg})">
+          <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+            <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(99,102,241,.07));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📊</div>
+            <div style="min-width:0;">
+              <div class="slbl">Cycle history</div>
+              <div class="ssub">Avg ${avg}d · ${cycles.length} cycle${cycles.length===1?'':'s'}</div>
+            </div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
       </div>`;
     })()}
 
@@ -12862,6 +12856,78 @@ function cyResetConfirmYes(){
     }catch(e){}
   };
 })();
+
+// ── Partner Log History Sheet ─────────────────────────────────────────────
+function openPartnerLogHistorySheet(logs){
+  if(typeof haptic === 'function') haptic('light');
+  const body = document.getElementById('partnerLogHistorySheetBody');
+  if(body){
+    const logColors = {period_start:'#FF4757', period_end:'#22c55e', ovulation:'#a855f7'};
+    const logLabels = {period_start:'Period started', period_end:'Period ended', ovulation:'Ovulation logged'};
+    const sorted = [...logs].sort((a,b) => b.date - a.date);
+    body.innerHTML = `
+    <div class="ssec" style="padding-top:4px;">
+      <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>All entries</span>
+        <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${sorted.length} ${sorted.length===1?'entry':'entries'}</span>
+      </div>
+      ${sorted.map(l => `
+      <div class="srow" style="gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+          <div style="width:8px;height:8px;border-radius:50%;background:${logColors[l.type]||'#aaa'};flex-shrink:0;"></div>
+          <div style="min-width:0;">
+            <div class="slbl">${logLabels[l.type]||l.type}</div>
+            <div class="ssub">${new Date(l.date).toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'})}</div>
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }
+  const sheet = document.getElementById('partnerLogHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closePartnerLogHistorySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('partnerLogHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+
+// ── Partner Cycle History Sheet ───────────────────────────────────────────
+function openPartnerCycleHistorySheet(cycles, avg){
+  if(typeof haptic === 'function') haptic('light');
+  const body = document.getElementById('partnerCycleHistorySheetBody');
+  if(body){
+    const maxLen = Math.max(...cycles.map(c => c.len), 35);
+    body.innerHTML = `
+    <div class="ssec" style="padding-top:4px;">
+      <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>All cycles</span>
+        <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">avg ${avg}d</span>
+      </div>
+      ${[...cycles].reverse().map(c => `
+      <div class="cyc-hist-row">
+        <div class="cyc-hist-date">${c.dateStr}</div>
+        <div class="cyc-hist-bar-wrap"><div class="cyc-hist-bar" style="width:${Math.round(c.len/maxLen*100)}%"></div></div>
+        <div class="cyc-hist-len">${c.len}d</div>
+      </div>`).join('')}
+    </div>`;
+  }
+  const sheet = document.getElementById('partnerCycleHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closePartnerCycleHistorySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('partnerCycleHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
 
 // ── Log History Sheet open / close / render ───────────────────────────────
 function renderLogHistorySheet(){
@@ -18151,6 +18217,36 @@ function svRefreshStorage(){
     <button class="ebtn" id="bdtSaveBtn" style="width:100%;">Save Birthday</button>
     <div id="bdtErrMsg" style="display:none;margin-top:8px;padding:8px 12px;border-radius:10px;background:rgba(220,60,60,.12);color:#e53e3e;font-size:13px;font-weight:700;text-align:center;"></div>
     <button id="bdtDeleteBtn" onclick="bdtDelete()" style="display:none;width:100%;margin-top:10px;padding:11px;border-radius:13px;border:none;background:rgba(220,60,60,.1);color:#e53e3e;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">Delete</button>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── PARTNER LOG HISTORY SHEET ─────────────────────────────────────────── -->
+<div class="sheet" id="partnerLogHistorySheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>📋 Partner Log History</span>
+    <button class="ae-close" onclick="closePartnerLogHistorySheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="partnerLogHistorySheetBody"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── PARTNER CYCLE HISTORY SHEET ───────────────────────────────────────── -->
+<div class="sheet" id="partnerCycleHistorySheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>📊 Partner Cycle History</span>
+    <button class="ae-close" onclick="closePartnerCycleHistorySheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="partnerCycleHistorySheetBody"></div>
     <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
   </div>
 </div>
