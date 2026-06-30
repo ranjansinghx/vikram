@@ -24,7 +24,7 @@
     document.documentElement.setAttribute('data-theme',dark?'dark':'light');
     document.documentElement.style.colorScheme=dark?'dark':'light';
     const meta=document.querySelector('meta[name="theme-color"]');
-    if(meta) meta.setAttribute('content',dark?'#11111b':'#ECEEF8');
+    if(meta) meta.setAttribute('content',dark?'#0d0f16':'#ECEEF8');
   }catch(e){}
 })();
 </script>
@@ -8944,7 +8944,7 @@ function applyTheme(){
   root.setAttribute('data-theme',dark?'dark':'light');
   root.style.colorScheme=dark?'dark':'light';
   const meta=document.querySelector('meta[name="theme-color"]');
-  if(meta) meta.setAttribute('content',dark?'#0e1016':'#ECEEF8');
+  if(meta) meta.setAttribute('content',dark?'#0d0f16':'#ECEEF8');
   // Settings toggle
   const tg=document.getElementById('tgDark');
   if(tg) tg.classList.toggle('on',dark);
