@@ -12116,36 +12116,17 @@ function renderPartnerModeCycleSheet(body){
       </div>`;
     })()}
 
-    <!-- Moments section — redesign -->
-    <div class="pm-moments-section">
-      <div class="pm-moments-head">
-        <div class="pm-moments-head-icon">💌</div>
-        <span class="pm-moments-head-title">Moments</span>
-        <span class="pm-moments-head-count" id="pairMomentCount"></span>
-      </div>
-      <div class="pair-quick-emojis">
-        <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('💗')" title="Love">💗</button>
-        <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('🌸')" title="Flower">🌸</button>
-        <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('🤗')" title="Hug">🤗</button>
-        <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('☀️')" title="Sunshine">☀️</button>
-        <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('💆')" title="Relax">💆</button>
-        <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('🍵')" title="Tea">🍵</button>
-        <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('🌙')" title="Moon">🌙</button>
-        <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('💪')" title="Strong">💪</button>
-      </div>
-      <div class="pair-moment-msgs" id="pairMomentMsgs"></div>
-      <div class="pair-moment-compose">
-        <div class="pair-compose-field">
-          <textarea class="pair-moment-input" id="pairMomentInput"
-            placeholder="Type a moment for ${partnerName}…"
-            rows="1"
-            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();pairSendMoment();}"
-            oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px';"
-          ></textarea>
+    <!-- Moments — tappable entry row -->
+    <div class="ssec" style="padding-top:0;">
+      <div class="srow" style="cursor:pointer;" onclick="openPartnerMomentsSheet(${JSON.stringify(partnerName)})">
+        <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+          <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#FF6B9D,#C44569);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 2px 8px rgba(255,107,157,.3);">💌</div>
+          <div style="min-width:0;">
+            <div class="slbl">Moments</div>
+            <div class="ssub" id="pmMomentsEntrySub">Just between you two</div>
+          </div>
         </div>
-        <button class="pair-moment-send" id="pairMomentSendBtn" onclick="pairSendMoment()" title="Send">
-          <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-        </button>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
     </div>
 
@@ -12891,44 +12872,47 @@ function cyResetConfirmYes(){
   }
 
   function renderMoments(){
-    const container = document.getElementById('pairMomentMsgs');
-    const countEl   = document.getElementById('pairMomentCount');
-    if(!container) return;
     const msgs = msgsLoad();
     const d    = pairLoad();
     const meRaw = (d.myCode || '').replace('-','');
     const theirName = escapeHtml(d.partnerName||'Partner');
 
+    const countEl = document.getElementById('pairMomentCount');
     countEl && (countEl.textContent = msgs.length ? msgs.length + (msgs.length===1?' msg':' msgs') : '');
-
-    if(!msgs.length){
-      container.innerHTML = '';
-      return;
-    }
+    const pmSub = document.getElementById('pmMomentsEntrySub');
+    if(pmSub) pmSub.textContent = msgs.length ? msgs.length + (msgs.length===1?' message':' messages') : 'Just between you two';
 
     let html = '';
-    let lastDateStr = '';
-    msgs.forEach(m => {
-      const mine = m.from === meRaw;
-      const dateStr = formatMsgDate(m.ts);
-      const time = new Date(m.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-      const emojiOnly = isEmojiOnly(m.text);
+    if(msgs.length){
+      let lastDateStr = '';
+      msgs.forEach(m => {
+        const mine = m.from === meRaw;
+        const dateStr = formatMsgDate(m.ts);
+        const time = new Date(m.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        const emojiOnly = isEmojiOnly(m.text);
 
-      if(dateStr !== lastDateStr){
-        html += `<div class="pair-date-divider"><span>${dateStr}</span></div>`;
-        lastDateStr = dateStr;
-      }
+        if(dateStr !== lastDateStr){
+          html += `<div class="pair-date-divider"><span>${dateStr}</span></div>`;
+          lastDateStr = dateStr;
+        }
 
-      html += `<div class="pair-msg-bubble ${mine?'mine':'theirs'}${emojiOnly?' emoji-only':''}">
-        <div class="pair-msg-text">${escapeHtml(m.text)}</div>
-        <div class="pair-msg-meta">
-          ${mine ? 'You' : theirName} · ${time}
-          ${mine ? '<span class="pair-msg-tick">✓✓</span>' : ''}
-        </div>
-      </div>`;
+        html += `<div class="pair-msg-bubble ${mine?'mine':'theirs'}${emojiOnly?' emoji-only':''}">
+          <div class="pair-msg-text">${escapeHtml(m.text)}</div>
+          <div class="pair-msg-meta">
+            ${mine ? 'You' : theirName} · ${time}
+            ${mine ? '<span class="pair-msg-tick">✓✓</span>' : ''}
+          </div>
+        </div>`;
+      });
+    }
+
+    // Render into BOTH possible containers (My Cycle sheet + Partner Mode sheet)
+    ['pairMomentMsgs', 'pmPairMomentMsgs'].forEach(id => {
+      const container = document.getElementById(id);
+      if(!container) return;
+      container.innerHTML = html;
+      container.scrollTop = container.scrollHeight;
     });
-    container.innerHTML = html;
-    container.scrollTop = container.scrollHeight;
   }
 
   // Expose so renderPairSection can call it after DOM is set
@@ -12947,20 +12931,23 @@ function cyResetConfirmYes(){
     try{ localStorage.setItem(MSG_KEY, JSON.stringify(msgs)); }catch(e){}
     renderMoments();
 
-    // Send animation on button
-    const sendBtn = document.getElementById('pairMomentSendBtn') || document.querySelector('.pair-moment-send');
-    if(sendBtn){
-      sendBtn.classList.add('sent-anim');
-      setTimeout(()=>sendBtn.classList.remove('sent-anim'), 500);
-    }
+    // Send animation on whichever send button is visible
+    ['pairMomentSendBtn', 'pmPairMomentSendBtn'].forEach(id => {
+      const sendBtn = document.getElementById(id);
+      if(sendBtn){
+        sendBtn.classList.add('sent-anim');
+        setTimeout(()=>sendBtn.classList.remove('sent-anim'), 500);
+      }
+    });
 
     fbSendMsg(d.myCode || myCode(), d.partnerCode, text).then(sent => {
       if(!sent) if(typeof vikramToast==='function') vikramToast('⚠️ Saved locally — sync when back online');
     });
   }
 
-  window.pairSendMoment = function(){
-    const inp = document.getElementById('pairMomentInput');
+  window.pairSendMoment = function(fromPartnerMode){
+    const inpId = fromPartnerMode ? 'pmPairMomentInput' : 'pairMomentInput';
+    const inp = document.getElementById(inpId);
     if(!inp) return;
     const text = inp.value.trim();
     if(!text) return;
@@ -12989,6 +12976,27 @@ function cyResetConfirmYes(){
     }catch(e){}
   };
 })();
+
+// ── Partner Moments Sheet ──────────────────────────────────────────────────
+function openPartnerMomentsSheet(partnerName){
+  if(typeof haptic === 'function') haptic('light');
+  const inp = document.getElementById('pairMomentInput');
+  if(inp) inp.placeholder = 'Say something to ' + (partnerName || 'your partner') + '…';
+  const sheet = document.getElementById('partnerMomentsSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+  setTimeout(function(){
+    if(typeof window.renderPairMoments === 'function') window.renderPairMoments();
+  }, 30);
+}
+function closePartnerMomentsSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('partnerMomentsSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
 
 // ── Partner Log History Sheet ─────────────────────────────────────────────
 function openPartnerLogHistorySheet(logs){
@@ -18351,6 +18359,43 @@ function svRefreshStorage(){
     <div id="bdtErrMsg" style="display:none;margin-top:8px;padding:8px 12px;border-radius:10px;background:rgba(220,60,60,.12);color:#e53e3e;font-size:13px;font-weight:700;text-align:center;"></div>
     <button id="bdtDeleteBtn" onclick="bdtDelete()" style="display:none;width:100%;margin-top:10px;padding:11px;border-radius:13px;border:none;background:rgba(220,60,60,.1);color:#e53e3e;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;">Delete</button>
     <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── PARTNER MOMENTS SHEET ─────────────────────────────────────────────── -->
+<div class="sheet" id="partnerMomentsSheet" style="max-height:84vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>💌 Moments</span>
+    <button class="ae-close" onclick="closePartnerMomentsSheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0;display:flex;flex-direction:column;">
+    <div class="pair-quick-emojis" style="padding:10px 16px 0;">
+      <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('💗')" title="Love">💗</button>
+      <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('🌸')" title="Flower">🌸</button>
+      <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('🤗')" title="Hug">🤗</button>
+      <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('☀️')" title="Sunshine">☀️</button>
+      <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('💆')" title="Relax">💆</button>
+      <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('🍵')" title="Tea">🍵</button>
+      <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('🌙')" title="Moon">🌙</button>
+      <button class="pair-quick-emoji" onclick="pairSendQuickEmoji('💪')" title="Strong">💪</button>
+    </div>
+    <div class="pair-moment-msgs" id="pmPairMomentMsgs" style="max-height:none;flex:1;padding:12px 16px 6px;"></div>
+    <div class="pair-moment-compose" style="padding:8px 14px calc(10px + env(safe-area-inset-bottom,0px));">
+      <div class="pair-compose-field">
+        <textarea class="pair-moment-input" id="pmPairMomentInput"
+          placeholder="Type a moment…"
+          rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();pairSendMoment(true);}"
+          oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px';"
+        ></textarea>
+      </div>
+      <button class="pair-moment-send" id="pmPairMomentSendBtn" onclick="pairSendMoment(true)" title="Send">
+        <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
   </div>
 </div>
 
