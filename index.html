@@ -12038,15 +12038,6 @@ function renderPartnerModeCycleSheet(body){
   body.innerHTML = `
   <div class="partner-cycle-view">
 
-    <!-- Partner banner -->
-    <div class="partner-mode-banner">
-      <div class="partner-mode-banner-icon">💑</div>
-      <div class="partner-mode-banner-body">
-        <div class="partner-mode-banner-title">${partnerName}'s cycle</div>
-        <div class="partner-mode-banner-sub">${fbOk ? '🟢 Live sync' : '⚠️ Offline'}${lastSync ? ' · updated ' + lastSync : ''}</div>
-      </div>
-    </div>
-
     <!-- Hero card — same layout as own view -->
     <div class="cyc-hero">
       <div class="cyc-hero-bg" style="background:${heroBg};">
@@ -12169,6 +12160,10 @@ function renderPartnerModeCycleSheet(body){
         </div>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
+    </div>
+
+    <div style="text-align:center;font-size:10.5px;font-weight:700;color:var(--dsub);padding:14px 0 4px;">
+      ${partnerName}'s cycle updated ${lastSync ? lastSync : '—'}
     </div>
 
   </div>`;
