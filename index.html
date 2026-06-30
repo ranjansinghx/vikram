@@ -11896,6 +11896,7 @@ function renderPartnerModeCycleSheet(body){
 
   // ── Log-aware: read partner's synced logs ──────────────────────────────────
   const allLogs      = p.logs || [];
+  window._pmAllLogs  = allLogs; // stash for openPartnerLogHistorySheet (avoid unsafe inline JSON in onclick)
   const cycleStartTs = p.lastPeriodStart || 0;
 
   const periodEndLog = notSet ? null :
@@ -12076,7 +12077,7 @@ function renderPartnerModeCycleSheet(body){
     <!-- Log history -->
     ${allLogs.length ? `
     <div class="ssec" style="padding-top:0;">
-      <div class="srow" style="cursor:pointer;" onclick="openPartnerLogHistorySheet(${JSON.stringify(allLogs)})">
+      <div class="srow" style="cursor:pointer;" onclick="openPartnerLogHistorySheet()">
         <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
           <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(255,71,87,.15),rgba(255,71,87,.07));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📋</div>
           <div style="min-width:0;">
@@ -12102,8 +12103,10 @@ function renderPartnerModeCycleSheet(body){
       }
       if(!cycles.length) return '';
       const avg = Math.round(cycles.reduce((a,c) => a+c.len, 0) / cycles.length);
+      window._pmCycles = cycles; // stash for openPartnerCycleHistorySheet (avoid unsafe inline JSON in onclick)
+      window._pmCyclesAvg = avg;
       return `<div class="ssec" style="padding-top:0;">
-        <div class="srow" style="cursor:pointer;" onclick="openPartnerCycleHistorySheet(${JSON.stringify(cycles)}, ${avg})">
+        <div class="srow" style="cursor:pointer;" onclick="openPartnerCycleHistorySheet()">
           <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
             <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(99,102,241,.07));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📊</div>
             <div style="min-width:0;">
@@ -12118,7 +12121,7 @@ function renderPartnerModeCycleSheet(body){
 
     <!-- Moments — tappable entry row -->
     <div class="ssec" style="padding-top:0;">
-      <div class="srow" style="cursor:pointer;" onclick="openPartnerMomentsSheet(${JSON.stringify(partnerName)})">
+      <div class="srow" style="cursor:pointer;" onclick="openPartnerMomentsSheet()">
         <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
           <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#FF6B9D,#C44569);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 2px 8px rgba(255,107,157,.3);">💌</div>
           <div style="min-width:0;">
@@ -12978,10 +12981,17 @@ function cyResetConfirmYes(){
 })();
 
 // ── Partner Moments Sheet ──────────────────────────────────────────────────
-function openPartnerMomentsSheet(partnerName){
+function openPartnerMomentsSheet(){
   if(typeof haptic === 'function') haptic('light');
-  const inp = document.getElementById('pairMomentInput');
-  if(inp) inp.placeholder = 'Say something to ' + (partnerName || 'your partner') + '…';
+  const inp = document.getElementById('pmPairMomentInput');
+  if(inp){
+    let pname = 'your partner';
+    try{
+      const d = JSON.parse(localStorage.getItem('vikram_pair_v1')||'{}');
+      if(d.partnerName) pname = d.partnerName;
+    }catch(e){}
+    inp.placeholder = 'Say something to ' + pname + '…';
+  }
   const sheet = document.getElementById('partnerMomentsSheet');
   const ov    = document.getElementById('ov');
   if(sheet) sheet.classList.add('open');
@@ -12999,8 +13009,9 @@ function closePartnerMomentsSheet(){
 }
 
 // ── Partner Log History Sheet ─────────────────────────────────────────────
-function openPartnerLogHistorySheet(logs){
+function openPartnerLogHistorySheet(){
   if(typeof haptic === 'function') haptic('light');
+  const logs = window._pmAllLogs || [];
   const body = document.getElementById('partnerLogHistorySheetBody');
   if(body){
     const logColors = {period_start:'#FF4757', period_end:'#22c55e', ovulation:'#a855f7'};
@@ -13038,8 +13049,10 @@ function closePartnerLogHistorySheet(){
 }
 
 // ── Partner Cycle History Sheet ───────────────────────────────────────────
-function openPartnerCycleHistorySheet(cycles, avg){
+function openPartnerCycleHistorySheet(){
   if(typeof haptic === 'function') haptic('light');
+  const cycles = window._pmCycles || [];
+  const avg    = window._pmCyclesAvg || 0;
   const body = document.getElementById('partnerCycleHistorySheetBody');
   if(body){
     const maxLen = Math.max(...cycles.map(c => c.len), 35);
