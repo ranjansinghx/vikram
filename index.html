@@ -2771,42 +2771,6 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   transition:background .2s,transform .15s;
 }
 
-/* ── COMPACT MODE ── */
-.pair-paired{gap:8px;}
-.pair-cycle-card{gap:12px;padding:12px 13px;border-radius:14px;}
-.pair-ring-wrap{width:64px;height:64px;}
-.pair-ring-day-num{font-size:18px;}
-.pair-ring-day-lbl{font-size:7.5px;margin-top:1px;}
-.pair-cycle-info{gap:5px;}
-.pair-partner-phase-badge{padding:3px 9px;font-size:10px;}
-.pair-cycle-meta-row{flex-direction:row;gap:14px;}
-.pair-cycle-meta-item{flex-direction:column;align-items:flex-start;gap:0;}
-.pair-cycle-meta-val{font-size:12.5px;}
-.pair-cycle-meta-lbl{font-size:9px;}
-.pair-card-sync-row{margin-top:5px;padding-top:6px;}
-.pair-card-sync-status{font-size:9.5px;}
-.pair-card-disconnect-btn{padding:4px 8px;font-size:9px;border-radius:8px;}
-.pair-waiting-row{padding:9px 13px;border-radius:13px;}
-.pair-waiting-text{font-size:11px;}
-.pair-resync-btn{padding:6px 11px;font-size:10px;}
-.pair-heartbeat{padding:0;margin:-2px 0;}
-.pair-hb-icon{font-size:11px;}
-.pair-moment-wrap{border-radius:16px;}
-.pair-moment-head{padding:10px 13px 9px;gap:8px;}
-.pair-moment-head-icon{width:26px;height:26px;font-size:12px;border-radius:8px;}
-.pair-moment-head-title{font-size:12.5px;}
-.pair-moment-head-sub{font-size:9.5px;}
-.pair-moment-head-count{font-size:9px;padding:3px 7px;}
-.pair-quick-emojis{padding:8px 11px;gap:5px;}
-.pair-quick-emoji{width:28px;height:28px;font-size:12.5px;}
-.pair-moment-msgs{min-height:56px;max-height:160px;padding:10px 13px 6px;gap:4px;}
-.pair-msg-text{padding:7px 11px;font-size:12px;border-radius:13px;}
-.pair-msg-meta{font-size:9px;margin-top:3px;}
-.pair-moment-compose{padding:8px 11px;gap:7px;}
-.pair-compose-field{padding:5px 11px;min-height:32px;border-radius:15px;}
-.pair-moment-input{font-size:12.5px;min-height:20px;}
-.pair-moment-send{width:32px;height:32px;}
-.pair-moment-send svg{width:13px;height:13px;}
 .pair-nudge-btn:active{transform:scale(.97);}
 .pair-nudge-sent{
   text-align:center;padding:8px 0 4px;
@@ -18541,7 +18505,7 @@ function svRefreshStorage(){
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   </div>
-  <div class="sscroll" style="padding:0 0 calc(32px + env(safe-area-inset-bottom,0px));">
+  <div class="sscroll" style="padding:14px 0 calc(32px + env(safe-area-inset-bottom,0px));">
     <div id="partnerSyncSheetBody"></div>
   </div>
 </div>
