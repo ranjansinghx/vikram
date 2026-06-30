@@ -2511,91 +2511,98 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 }
 .pair-connect-btn:active{transform:scale(.95);opacity:.9;}
 
-/* ── PAIRED STATE ── */
-.pair-paired{padding:0;}
-
-/* Connected banner */
-.pair-connected-banner{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 12px;
-  background:linear-gradient(135deg,rgba(255,107,157,.07),rgba(196,69,105,.03));
-  border-bottom:1px solid var(--border);
+/* ── PAIRED STATE — REDESIGN (rose/gold duotone) ── */
+:root{
+  --pr-rose:#e8617f; --pr-rose-dim:rgba(232,97,127,.16); --pr-rose-dim2:rgba(232,97,127,.08);
+  --pr-rose-grad:linear-gradient(155deg,#ff9bb1,#e8617f);
+  --pr-gold:#e0a458; --pr-gold-dim:rgba(224,164,88,.16);
+  --pr-card:var(--card,#fff); --pr-card2:rgba(127,127,150,.08);
 }
-[data-theme=dark] .pair-connected-banner{
-  background:linear-gradient(135deg,rgba(255,107,157,.11),rgba(100,40,80,.07));
-  border-bottom-color:rgba(255,107,157,.12);
+[data-theme=dark]{
+  --pr-card:#1b1e29; --pr-card2:#20232f;
+}
+.pair-paired{padding:0 0 4px;display:flex;flex-direction:column;gap:12px;}
+
+/* Connected banner — now a standalone rounded card */
+.pair-connected-banner{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;
+  background:var(--pr-card);
+  border:1px solid var(--border);
+  border-radius:18px;
 }
 .pair-partner-avatar{
-  width:30px;height:30px;border-radius:50%;
-  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  width:44px;height:44px;border-radius:14px;
+  background:var(--pr-rose-grad);
   display:flex;align-items:center;justify-content:center;
-  font-size:15px;flex-shrink:0;
-  box-shadow:0 2px 8px rgba(255,107,157,.28);
+  font-size:19px;flex-shrink:0;
 }
 .pair-partner-info{flex:1;min-width:0;}
-.pair-partner-name{font-size:13px;font-weight:900;color:var(--htext);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.pair-partner-status{font-size:10px;font-weight:700;color:var(--hsub);margin-top:1px;}
+.pair-partner-name{font-size:14.5px;font-weight:900;color:var(--htext);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pair-partner-status{font-size:11px;font-weight:700;color:var(--hsub);margin-top:3px;display:flex;align-items:center;gap:5px;}
 .pair-disconnect-btn{
-  padding:4px 9px;border-radius:7px;border:1.5px solid rgba(244,63,94,.2);cursor:pointer;
-  background:rgba(244,63,94,.07);color:#f43f5e;
-  font-size:10px;font-weight:800;font-family:'Nunito',sans-serif;
-  transition:background .2s,transform .15s;white-space:nowrap;flex-shrink:0;
+  padding:7px 12px;border-radius:11px;border:1px solid var(--border);cursor:pointer;
+  background:transparent;color:var(--hsub);
+  font-size:11px;font-weight:800;font-family:'Nunito',sans-serif;
+  transition:border-color .2s,color .2s,transform .15s;white-space:nowrap;flex-shrink:0;
 }
+.pair-disconnect-btn:hover{border-color:var(--pr-rose);color:var(--pr-rose);}
 .pair-disconnect-btn:active{transform:scale(.93);}
 
-/* Cycle stats strip */
-.pair-cycle-strip{
-  display:grid;grid-template-columns:1fr 1fr;
-  padding:0;border-bottom:1px solid var(--border);
+/* Cycle card — ring + phase pill + meta, replaces flat stat strip */
+.pair-cycle-card{
+  display:flex;align-items:center;gap:18px;
+  padding:18px 16px;
+  background:var(--pr-card);
+  border:1px solid var(--border);
+  border-radius:18px;
 }
-.pair-cycle-stat{
-  padding:13px 16px;
-  display:flex;flex-direction:column;gap:2px;
-}
-.pair-cycle-stat:first-child{border-right:1px solid var(--border);}
-.pair-cycle-stat-emoji{font-size:13px;line-height:1;margin-bottom:1px;}
-.pair-cycle-stat-val{font-size:18px;font-weight:900;color:var(--htext);line-height:1.1;letter-spacing:-.3px;}
-.pair-cycle-stat-lbl{font-size:10.5px;font-weight:700;color:var(--hsub);}
+.pair-ring-wrap{position:relative;width:96px;height:96px;flex-shrink:0;}
+.pair-ring-wrap svg{width:100%;height:100%;transform:rotate(-90deg);}
+.pair-ring-bg{fill:none;stroke:var(--pr-card2);stroke-width:8;}
+.pair-ring-fg{fill:none;stroke:var(--pr-rose);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s ease;}
+.pair-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.pair-ring-day-num{font-size:25px;font-weight:900;color:var(--htext);line-height:1;letter-spacing:-.5px;}
+.pair-ring-day-lbl{font-size:9px;font-weight:800;color:var(--hsub);text-transform:uppercase;letter-spacing:.4px;margin-top:3px;}
+.pair-cycle-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:9px;}
 
 /* Phase pill row */
-.pair-phase-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:11px 16px;
-  border-bottom:1px solid var(--border);
-  gap:10px;
-}
+.pair-phase-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 .pair-phase-label{font-size:11px;font-weight:700;color:var(--hsub);}
 .pair-partner-phase-badge{
-  padding:4px 11px;border-radius:20px;
-  font-size:11px;font-weight:800;color:#fff;white-space:nowrap;
+  padding:5px 12px;border-radius:20px;
+  font-size:11.5px;font-weight:800;color:#fff;white-space:nowrap;
 }
+.pair-cycle-meta-row{display:flex;flex-direction:column;gap:5px;}
+.pair-cycle-meta-item{display:flex;align-items:baseline;gap:6px;}
+.pair-cycle-meta-val{font-size:14px;font-weight:900;color:var(--htext);}
+.pair-cycle-meta-lbl{font-size:10.5px;font-weight:700;color:var(--hsub);}
 
 /* Waiting state */
 .pair-waiting-row{
   display:flex;align-items:center;justify-content:space-between;
   padding:12px 16px;gap:10px;
-  border-bottom:1px solid var(--border);
-  background:var(--tgbg);
+  border-radius:16px;
+  background:var(--pr-rose-dim2);
+  border:1px solid var(--pr-rose-dim);
 }
 .pair-waiting-text{font-size:12px;font-weight:700;color:var(--hsub);line-height:1.4;}
 .pair-resync-btn{
-  flex-shrink:0;padding:6px 13px;border-radius:9px;border:none;
-  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  flex-shrink:0;padding:7px 13px;border-radius:11px;border:none;
+  background:var(--pr-rose-grad);
   color:#fff;font-size:11px;font-weight:800;cursor:pointer;
   font-family:'Nunito',sans-serif;
-  box-shadow:0 3px 10px rgba(255,107,157,.25);
   transition:transform .15s,opacity .2s;
 }
 .pair-resync-btn:active{transform:scale(.93);}
 
-/* Heartbeat line */
+/* Heartbeat divider */
 .pair-heartbeat{
   display:flex;align-items:center;justify-content:center;gap:8px;
-  padding:10px 16px;
-  border-bottom:1px solid var(--border);
+  padding:0 6px;
 }
-.pair-hb-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,107,157,.2),transparent);}
-.pair-hb-icon{font-size:15px;animation:pairHb 1.4s ease-in-out infinite;}
+.pair-hb-line{flex:1;height:1px;background:var(--border);}
+.pair-hb-icon{font-size:14px;opacity:.75;animation:pairHb 1.4s ease-in-out infinite;}
 @keyframes pairHb{
   0%,100%{transform:scale(1);}
   14%{transform:scale(1.28);}
@@ -2604,56 +2611,54 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   56%{transform:scale(1);}
 }
 
-/* ── MOMENT MESSAGES ── */
 /* ── MOMENTS REDESIGN ───────────────────────────────────────── */
 .pair-moment-wrap{
   overflow:hidden;
   border-radius:20px;
-  border:1px solid rgba(255,107,157,.15);
-  background:var(--card);
-  margin:0 0 4px;
+  border:1px solid var(--border);
+  background:var(--pr-card);
+  margin:0;
+  display:flex;flex-direction:column;
 }
 .pair-moment-head{
   display:flex;align-items:center;gap:10px;
-  padding:13px 16px 11px;
-  background:linear-gradient(135deg,rgba(255,107,157,.08),rgba(196,69,105,.04));
-  border-bottom:1px solid rgba(255,107,157,.10);
+  padding:14px 16px 12px;
+  border-bottom:1px solid var(--border);
 }
-.pair-moment-head-left{display:flex;align-items:center;gap:9px;flex:1;min-width:0;}
+.pair-moment-head-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0;}
 .pair-moment-head-icon{
   width:32px;height:32px;border-radius:10px;flex-shrink:0;
-  background:linear-gradient(135deg,#FF6B9D,#C44569);
-  display:flex;align-items:center;justify-content:center;font-size:16px;
-  box-shadow:0 2px 8px rgba(255,107,157,.3);
+  background:var(--pr-gold-dim);
+  display:flex;align-items:center;justify-content:center;font-size:15px;
 }
 .pair-moment-head-title{
-  font-size:13px;font-weight:900;color:var(--htext);letter-spacing:-.1px;
+  font-size:14px;font-weight:900;color:var(--htext);letter-spacing:-.1px;
 }
 .pair-moment-head-sub{
-  font-size:10.5px;font-weight:700;color:var(--hsub);margin-top:1px;
+  font-size:11px;font-weight:700;color:var(--hsub);margin-top:1px;
 }
 .pair-moment-head-count{
-  font-size:10px;font-weight:800;color:#FF6B9D;
-  background:rgba(255,107,157,.12);padding:2px 8px;border-radius:20px;
-  border:1px solid rgba(255,107,157,.2);
+  font-size:10.5px;font-weight:800;color:var(--hsub);
+  background:var(--pr-card2);padding:4px 9px;border-radius:20px;
 }
 /* Quick emoji strip */
 .pair-quick-emojis{
-  display:flex;gap:6px;padding:8px 14px 0;
+  display:flex;gap:7px;padding:11px 14px;
   overflow-x:auto;scrollbar-width:none;
+  border-bottom:1px solid var(--border);
 }
 .pair-quick-emojis::-webkit-scrollbar{display:none;}
 .pair-quick-emoji{
-  flex-shrink:0;width:34px;height:34px;border-radius:10px;border:none;cursor:pointer;
-  background:var(--tgbg);font-size:17px;display:flex;align-items:center;
+  flex-shrink:0;width:34px;height:34px;border-radius:50%;border:1px solid var(--border);cursor:pointer;
+  background:var(--pr-card2);font-size:15px;display:flex;align-items:center;
   justify-content:center;transition:transform .12s,background .15s;
-  border:1px solid var(--border);
 }
+.pair-quick-emoji:hover{background:var(--pr-rose-dim2);}
 .pair-quick-emoji:active{transform:scale(.82);}
 /* Message list */
 .pair-moment-msgs{
   min-height:80px;max-height:220px;overflow-y:auto;
-  padding:12px 14px 6px;
+  padding:14px 16px 8px;
   display:flex;flex-direction:column;gap:6px;
   scroll-behavior:smooth;
 }
@@ -2672,77 +2677,74 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .pair-msg-bubble.mine{ align-self:flex-end;align-items:flex-end; }
 .pair-msg-bubble.theirs{ align-self:flex-start;align-items:flex-start; }
 .pair-msg-text{
-  padding:9px 13px;border-radius:18px;
-  font-size:13px;font-weight:700;line-height:1.5;
+  padding:9px 13px;border-radius:16px;
+  font-size:13.5px;font-weight:700;line-height:1.4;
   word-break:break-word;position:relative;
 }
 .pair-msg-bubble.mine .pair-msg-text{
-  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  background:var(--pr-rose-grad);
   color:#fff;border-bottom-right-radius:5px;
-  box-shadow:0 2px 10px rgba(255,107,157,.28);
 }
 .pair-msg-bubble.theirs .pair-msg-text{
-  background:var(--tgbg);color:var(--htext);
+  background:var(--pr-card2);color:var(--htext);
   border-bottom-left-radius:5px;
-  border:1px solid var(--border);
 }
 /* Emoji-only large bubble */
 .pair-msg-bubble.emoji-only .pair-msg-text{
   background:none!important;border:none!important;box-shadow:none!important;
-  padding:2px 4px;font-size:32px;line-height:1.2;
+  padding:2px 4px;font-size:30px;line-height:1.2;
 }
 .pair-msg-meta{
-  font-size:9.5px;font-weight:700;color:var(--hsub);
-  margin-top:3px;padding:0 4px;display:flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;color:var(--hsub);
+  margin-top:4px;padding:0 3px;display:flex;align-items:center;gap:4px;
 }
-.pair-msg-meta .pair-msg-tick{color:#22c55e;font-size:10px;}
+.pair-msg-meta .pair-msg-tick{color:#5fd393;font-size:10px;}
 /* Date divider */
 .pair-date-divider{
-  display:flex;align-items:center;gap:8px;margin:6px 0;
+  display:flex;align-items:center;gap:8px;margin:8px 0 12px;
 }
 .pair-date-divider span{
   font-size:10px;font-weight:800;color:var(--hsub);
-  background:var(--tgbg);padding:2px 10px;border-radius:20px;
-  border:1px solid var(--border);white-space:nowrap;
+  background:var(--pr-card2);padding:4px 11px;border-radius:20px;
+  text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;
 }
 .pair-date-divider::before,.pair-date-divider::after{
   content:'';flex:1;height:1px;background:var(--border);
 }
 /* Compose bar */
 .pair-moment-compose{
-  border-top:1px solid rgba(255,107,157,.10);
-  padding:8px 10px 16px;
-  display:flex;align-items:flex-end;gap:7px;
-  background:var(--card);
+  border-top:1px solid var(--border);
+  padding:11px 14px;
+  display:flex;align-items:flex-end;gap:9px;
+  background:var(--pr-card);
 }
 .pair-compose-field{
   flex:1;display:flex;align-items:flex-end;
-  background:var(--tgbg);border-radius:20px;
-  border:1.5px solid var(--border);
-  padding:6px 12px;gap:6px;
+  background:var(--pr-card2);border-radius:18px;
+  border:1px solid var(--border);
+  padding:7px 13px;gap:6px;
   transition:border-color .2s;min-height:38px;
 }
-.pair-compose-field:focus-within{border-color:rgba(255,107,157,.45);}
+.pair-compose-field:focus-within{border-color:var(--pr-rose);}
 .pair-moment-input{
   flex:1;resize:none;border:none;outline:none;
   background:transparent;
   min-height:24px;max-height:90px;
-  font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;
-  color:var(--htext);line-height:1.45;overflow-y:auto;
+  font-family:'Nunito',sans-serif;font-size:13.5px;font-weight:700;
+  color:var(--htext);line-height:1.4;overflow-y:auto;
   padding:2px 0;
 }
 .pair-moment-input::placeholder{color:var(--hsub);}
 .pair-moment-send{
   width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;
-  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  background:var(--pr-rose-grad);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  box-shadow:0 3px 10px rgba(255,107,157,.35);
   transition:transform .13s,opacity .13s,background .2s;
 }
 .pair-moment-send:active{transform:scale(.88);opacity:.85;}
 .pair-moment-send svg{width:15px;height:15px;stroke:#fff;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round;}
 .pair-moment-send.sent-anim{
-  background:linear-gradient(135deg,#22c55e,#16a34a)!important;
+  background:linear-gradient(155deg,#5fd393,#3aa86c)!important;
   transform:scale(.88)!important;
 }
 
@@ -2780,38 +2782,42 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   border:1.5px solid var(--border);
 }
 .partner-mode-toggle-btn.on{
-  background:linear-gradient(135deg,#FF6B9D,#C44569);color:#fff;
+  background:var(--pr-rose-grad,linear-gradient(155deg,#ff9bb1,#e8617f));color:#fff;
   border:1.5px solid transparent;
-  box-shadow:0 4px 14px rgba(255,107,157,.35);
 }
 .partner-mode-toggle-btn:active{transform:scale(.93);}
 .partner-mode-toggle-btn .pm-icon{font-size:14px;line-height:1;}
 
 /* Partner view header banner */
 .partner-mode-banner{
-  margin:0 18px 10px;padding:7px 12px;
-  border-radius:12px;
-  background:linear-gradient(135deg,rgba(255,107,157,.10),rgba(196,69,105,.05));
-  border:1px solid rgba(255,107,157,.2);
-  display:flex;align-items:center;gap:7px;
+  margin:0 18px 14px;padding:13px 14px;
+  border-radius:16px;
+  background:var(--pr-card,var(--card));
+  border:1px solid var(--border);
+  display:flex;align-items:center;gap:11px;
   animation:pmBannerIn .22s cubic-bezier(.22,.85,.25,1);
 }
 @keyframes pmBannerIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
-.partner-mode-banner-icon{font-size:16px;flex-shrink:0;line-height:1;}
+.partner-mode-banner-icon{
+  width:38px;height:38px;border-radius:13px;flex-shrink:0;
+  background:var(--pr-rose-grad,linear-gradient(155deg,#ff9bb1,#e8617f));
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;line-height:1;
+}
 .partner-mode-banner-body{flex:1;min-width:0;}
-.partner-mode-banner-title{font-size:12px;font-weight:900;color:var(--htext);line-height:1.2;}
-.partner-mode-banner-sub{font-size:10px;font-weight:700;color:var(--hsub);margin-top:1px;line-height:1.3;}
+.partner-mode-banner-title{font-size:13.5px;font-weight:900;color:var(--htext);line-height:1.2;}
+.partner-mode-banner-sub{font-size:11px;font-weight:700;color:var(--hsub);margin-top:2px;line-height:1.3;display:flex;align-items:center;gap:5px;}
 
 /* Unpair button */
 .pm-unpair-btn{
-  padding:7px 13px;border-radius:10px;border:none;cursor:pointer;
-  background:rgba(244,63,94,.1);color:#f43f5e;
+  padding:7px 13px;border-radius:11px;cursor:pointer;
+  background:transparent;color:var(--hsub);
   font-size:11px;font-weight:800;font-family:'Nunito',sans-serif;
-  border:1.5px solid rgba(244,63,94,.18);
-  transition:background .2s,transform .15s;
+  border:1px solid var(--border);
+  transition:border-color .2s,color .2s,transform .15s;
   white-space:nowrap;flex-shrink:0;
 }
-.pm-unpair-btn:hover{background:rgba(244,63,94,.18);}
+.pm-unpair-btn:hover{border-color:var(--pr-rose,#e8617f);color:var(--pr-rose,#e8617f);}
 .pm-unpair-btn:active{transform:scale(.93);}
 
 /* Partner mode cycle view wrapper */
@@ -2880,10 +2886,9 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .pm-no-partner-sub{font-size:12px;font-weight:600;color:var(--hsub);line-height:1.5;margin-bottom:14px;}
 .pm-no-partner-btn{
   padding:10px 22px;border-radius:12px;border:none;cursor:pointer;
-  background:linear-gradient(135deg,#FF6B9D,#C44569);
+  background:var(--pr-rose-grad,linear-gradient(155deg,#ff9bb1,#e8617f));
   color:#fff;font-size:13px;font-weight:900;
   font-family:'Nunito',sans-serif;
-  box-shadow:0 4px 14px rgba(255,107,157,.3);
   transition:opacity .2s,transform .15s;
 }
 .pm-no-partner-btn:active{transform:scale(.96);}
@@ -12069,7 +12074,7 @@ function renderPartnerModeCycleSheet(body){
     ${notSet && fbOk ? `
     <div style="margin:0 18px 14px;display:flex;justify-content:center;">
       <button onclick="if(window._fbPair){window._fbPair.forceSync();if(typeof vikramToast==='function')vikramToast('🔄 Syncing…');}"
-        style="padding:9px 20px;border-radius:11px;border:none;background:linear-gradient(135deg,#FF6B9D,#C44569);color:#fff;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 3px 10px rgba(255,107,157,.28);">
+        style="padding:9px 20px;border-radius:13px;border:none;background:var(--pr-rose-grad,linear-gradient(155deg,#ff9bb1,#e8617f));color:#fff;font-size:12px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">
         🔄 Re-sync partner data
       </button>
     </div>` : ''}
@@ -12079,7 +12084,7 @@ function renderPartnerModeCycleSheet(body){
     <div class="ssec" style="padding-top:0;">
       <div class="srow" style="cursor:pointer;" onclick="openPartnerLogHistorySheet()">
         <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
-          <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(255,71,87,.15),rgba(255,71,87,.07));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📋</div>
+          <div style="width:36px;height:36px;border-radius:12px;background:var(--pr-rose-dim2,rgba(232,97,127,.08));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📋</div>
           <div style="min-width:0;">
             <div class="slbl">Log history</div>
             <div class="ssub">${allLogs.length} ${allLogs.length === 1 ? 'entry' : 'entries'}</div>
@@ -12108,7 +12113,7 @@ function renderPartnerModeCycleSheet(body){
       return `<div class="ssec" style="padding-top:0;">
         <div class="srow" style="cursor:pointer;" onclick="openPartnerCycleHistorySheet()">
           <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
-            <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(99,102,241,.07));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📊</div>
+            <div style="width:36px;height:36px;border-radius:12px;background:var(--pr-gold-dim,rgba(224,164,88,.16));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">📊</div>
             <div style="min-width:0;">
               <div class="slbl">Cycle history</div>
               <div class="ssub">Avg ${avg}d · ${cycles.length} cycle${cycles.length===1?'':'s'}</div>
@@ -12123,7 +12128,7 @@ function renderPartnerModeCycleSheet(body){
     <div class="ssec" style="padding-top:0;">
       <div class="srow" style="cursor:pointer;" onclick="openPartnerMomentsSheet()">
         <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
-          <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,#FF6B9D,#C44569);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 2px 8px rgba(255,107,157,.3);">💌</div>
+          <div style="width:36px;height:36px;border-radius:12px;background:var(--pr-rose-grad,linear-gradient(155deg,#ff9bb1,#e8617f));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💌</div>
           <div style="min-width:0;">
             <div class="slbl">Moments</div>
             <div class="ssub" id="pmMomentsEntrySub">Just between you two</div>
@@ -12697,23 +12702,33 @@ function cyResetConfirmYes(){
         ${fbOk ? '<button class="pair-resync-btn" onclick="if(window._fbPair){window._fbPair.forceSync();if(typeof vikramToast===\'function\')vikramToast(\'\U0001f504 Syncing…\');}">Re-sync</button>' : ''}
       </div>` : ''}
 
-      <!-- Phase pill -->
-      <div class="pair-phase-row">
-        <span class="pair-phase-label">🌸 ${escapeHtml(d.partnerName||'Partner')}’s phase</span>
-        ${pi && !pi.noData ? `<div class="pair-partner-phase-badge" style="background:${pi.phaseColor}">${pi.phase}</div>` : '<div class="pair-partner-phase-badge" style="background:var(--dim);color:var(--htext);">Logging…</div>'}
-      </div>
-
-      <!-- Cycle stat strip -->
-      <div class="pair-cycle-strip">
-        <div class="pair-cycle-stat">
-          <div class="pair-cycle-stat-emoji">📅</div>
-          <div class="pair-cycle-stat-val">${pi && !pi.noData ? 'Day '+pi.day : '—'}</div>
-          <div class="pair-cycle-stat-lbl">of ${pi ? pi.cl : 28}-day cycle</div>
+      <!-- Cycle card: ring + phase + meta -->
+      <div class="pair-cycle-card">
+        <div class="pair-ring-wrap">
+          <svg viewBox="0 0 100 100">
+            <circle class="pair-ring-bg" cx="50" cy="50" r="42"></circle>
+            <circle class="pair-ring-fg" cx="50" cy="50" r="42"
+              stroke-dasharray="${(2*Math.PI*42).toFixed(1)}"
+              stroke-dashoffset="${pi && !pi.noData ? (2*Math.PI*42 - Math.min(pi.day/pi.cl,1)*2*Math.PI*42).toFixed(1) : (2*Math.PI*42).toFixed(1)}"
+            ></circle>
+          </svg>
+          <div class="pair-ring-center">
+            <div class="pair-ring-day-num">${pi && !pi.noData ? pi.day : '—'}</div>
+            <div class="pair-ring-day-lbl">of ${pi ? pi.cl : 28}</div>
+          </div>
         </div>
-        <div class="pair-cycle-stat">
-          <div class="pair-cycle-stat-emoji">🔮</div>
-          <div class="pair-cycle-stat-val">${pi && !pi.noData ? pi.dNext+'d' : '—'}</div>
-          <div class="pair-cycle-stat-lbl">until next period</div>
+        <div class="pair-cycle-info">
+          ${pi && !pi.noData ? `<div class="pair-phase-row"><span class="pair-partner-phase-badge" style="background:${pi.phaseColor}">🌸 ${pi.phase}</span></div>` : `<div class="pair-phase-row"><span class="pair-partner-phase-badge" style="background:var(--dim);color:var(--htext);">Logging…</span></div>`}
+          <div class="pair-cycle-meta-row">
+            <div class="pair-cycle-meta-item">
+              <span class="pair-cycle-meta-val">${pi && !pi.noData ? pi.dNext+' days' : '—'}</span>
+              <span class="pair-cycle-meta-lbl">until next period</span>
+            </div>
+            <div class="pair-cycle-meta-item">
+              <span class="pair-cycle-meta-val">${escapeHtml(d.partnerName||'Partner')}</span>
+              <span class="pair-cycle-meta-lbl">'s cycle</span>
+            </div>
+          </div>
         </div>
       </div>
 
