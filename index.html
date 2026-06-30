@@ -2577,6 +2577,20 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .pair-cycle-meta-item{display:flex;align-items:baseline;gap:6px;}
 .pair-cycle-meta-val{font-size:14px;font-weight:900;color:var(--htext);}
 .pair-cycle-meta-lbl{font-size:10.5px;font-weight:700;color:var(--hsub);}
+.pair-card-sync-row{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin-top:8px;padding-top:9px;
+  border-top:1px solid var(--border);
+}
+.pair-card-sync-status{font-size:10.5px;font-weight:700;color:var(--hsub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pair-card-disconnect-btn{
+  flex-shrink:0;padding:5px 10px;border-radius:9px;border:1px solid var(--border);cursor:pointer;
+  background:transparent;color:var(--hsub);
+  font-size:10px;font-weight:800;font-family:'Nunito',sans-serif;
+  transition:border-color .2s,color .2s,transform .15s;white-space:nowrap;
+}
+.pair-card-disconnect-btn:hover{border-color:var(--pr-rose);color:var(--pr-rose);}
+.pair-card-disconnect-btn:active{transform:scale(.93);}
 
 /* Waiting state */
 .pair-waiting-row{
@@ -12728,6 +12742,10 @@ function cyResetConfirmYes(){
               <span class="pair-cycle-meta-val">${escapeHtml(d.partnerName||'Partner')}</span>
               <span class="pair-cycle-meta-lbl">'s cycle</span>
             </div>
+          </div>
+          <div class="pair-card-sync-row">
+            <span class="pair-card-sync-status">${statusLine}</span>
+            <button class="pair-card-disconnect-btn" onclick="pairDisconnect()">Disconnect</button>
           </div>
         </div>
       </div>
