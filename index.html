@@ -13622,8 +13622,8 @@ setInterval(checkEventReminders, 60000);
     start_url:location.href,
     display:'standalone',
     orientation:'portrait',
-    background_color:'#ECEEF8',
-    theme_color:'#1a1a1a',
+    background_color: dark ? '#0d0f16' : '#ECEEF8',
+    theme_color: dark ? '#0d0f16' : '#ECEEF8',
     icons
   };
   const blob=new Blob([JSON.stringify(manifest)],{type:'application/json'});
