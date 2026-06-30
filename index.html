@@ -12699,16 +12699,6 @@ function cyResetConfirmYes(){
     return `
     <div class="pair-paired">
 
-      <!-- Connected banner -->
-      <div class="pair-connected-banner">
-        <div class="pair-partner-avatar">💑</div>
-        <div class="pair-partner-info">
-          <div class="pair-partner-name">${escapeHtml(d.partnerName||'Partner')}</div>
-          <div class="pair-partner-status">${statusLine}</div>
-        </div>
-        <button class="pair-disconnect-btn" onclick="pairDisconnect()">Disconnect</button>
-      </div>
-
       <!-- Waiting / no data row -->
       ${noPartnerData ? `
       <div class="pair-waiting-row">
