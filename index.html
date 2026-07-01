@@ -2283,6 +2283,8 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 /* ── CYCLE HERO CARD (stays custom — lives above the native design system) ── */
 .cyc-hero{margin:0 16px 4px;border-radius:22px;overflow:hidden;box-shadow:0 6px 24px rgba(255,107,157,.16);}
 [data-theme=dark] .cyc-hero{box-shadow:0 6px 24px rgba(0,0,0,.32);}
+.cyc-hero.tappable{cursor:pointer;transition:transform .15s cubic-bezier(.22,.85,.25,1);}
+.cyc-hero.tappable:active{transform:scale(.98);}
 .cyc-hero-bg{padding:20px 18px 16px;position:relative;}
 .cyc-hero-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px;}
 .cyc-hero-phase{display:flex;flex-direction:column;gap:2px;}
@@ -13430,6 +13432,74 @@ function getDaysUntilOvulation(){
 }
 
 // ── Hero ring SVG (compact donut for hero card) ─────────────────────────────
+// ── Month Review card HTML (calendar grid with phase-colored days) ──────────
+// dataSrc: optional {lastPeriodStart, logs} — defaults to the user's own cycleData
+function buildMonthReviewCard(notSet, cl, pl, dataSrc){
+  try {
+    const src = dataSrc || cycleData;
+    const curY = TODAYBS.y, curM = TODAYBS.m;
+    const monthDays = BS[curY] ? BS[curY][curM-1] : 0;
+    if(!monthDays) return '';
+    const firstAD = bsToAd(curY, curM, 1);
+    const startDow = (firstAD.getDay() - cfg.fd + 7) % 7;
+    const dowLabels = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+    const orderedDow = [];
+    for(let i=0;i<7;i++) orderedDow.push(dowLabels[(cfg.fd+i)%7]);
+    let cells = '';
+    for(let p=0;p<startDow;p++) cells += `<div></div>`;
+    for(let d=1;d<=monthDays;d++){
+      const adDate = new Date(firstAD.getTime()+(d-1)*86400000);
+      const isToday = adDate.toDateString()===TODAY.toDateString();
+      let phaseBg = 'var(--tgbg)', phaseLabel = '', textColor = 'var(--cell-text)';
+      if(!notSet && src.lastPeriodStart){
+        const baseTs = new Date(src.lastPeriodStart); baseTs.setHours(0,0,0,0);
+        const adDateMid = new Date(adDate.getFullYear(), adDate.getMonth(), adDate.getDate());
+        const dayNum = Math.round((adDateMid.getTime() - baseTs.getTime()) / 86400000) + 1;
+        const dayLogs = (src.logs||[]).filter(l=>{ const ld=new Date(l.date);ld.setHours(0,0,0,0);return ld.getTime()===adDateMid.getTime(); });
+        const hasOvulLog = dayLogs.some(l=>l.type==='ovulation');
+        // Find period_end log for this cycle
+        const cycleStartTs_ = baseTs.getTime();
+        const periodEndLog_ = (src.logs||[]).filter(l=>l.type==='period_end'&&l.date>=cycleStartTs_).sort((a,b)=>a.date-b.date)[0];
+        // A day is still "period" only if it's within pl AND before/on the period_end log date (if logged)
+        const periodEndDayNum_ = periodEndLog_ ? Math.round((periodEndLog_.date - cycleStartTs_) / 86400000) + 1 : pl;
+        const effectivePl_ = periodEndLog_ ? Math.min(pl, periodEndDayNum_) : pl;
+        if(dayNum >= 1 && dayNum <= cl){
+          const ovDay2_ = cl - 14, fertileStart_ = ovDay2_ - 4;
+          if(dayNum >= 1 && dayNum <= effectivePl_)               { phaseBg='rgba(255,71,87,.75)';   phaseLabel='🩸'; textColor='#fff'; }
+          else if(hasOvulLog)                                      { phaseBg='rgba(168,85,247,.75)';  phaseLabel='✨'; textColor='#fff'; }
+          else if(dayNum >= fertileStart_ && dayNum <= ovDay2_)   { phaseBg='rgba(99,102,241,.65)';  textColor='#fff'; }
+          else if(dayNum > ovDay2_)                                { phaseBg='rgba(33,150,243,.55)';  textColor='rgba(255,255,255,.9)'; }
+          else                                                     { phaseBg='rgba(255,107,157,.45)'; }
+        }
+      }
+      const todayRing = isToday ? 'box-shadow:0 0 0 2px var(--accent);' : '';
+      cells += `<div style="aspect-ratio:1;border-radius:6px;background:${phaseBg};${todayRing}display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:${textColor};line-height:1.1;">${phaseLabel?`<span style="font-size:9px;line-height:1;">${phaseLabel}</span>`:''}<span>${d}</span></div>`;
+    }
+    const legend = [
+      {bg:'rgba(255,71,87,.75)',   label:'Period'},
+      {bg:'rgba(255,107,157,.45)', label:'Follicular'},
+      {bg:'rgba(99,102,241,.65)',  label:'Fertile'},
+      {bg:'rgba(168,85,247,.75)',  label:'Ovulation'},
+      {bg:'rgba(33,150,243,.55)',  label:'Luteal'},
+    ];
+    return `<div style="margin:0 16px 4px;">
+      <div style="background:var(--card);border-radius:18px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span style="font-size:13px;font-weight:900;color:var(--htext);">Month Review</span>
+          <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${MEN[curM-1]} ${curY}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:10px;">
+          ${orderedDow.map(d=>`<div style="text-align:center;font-size:9px;font-weight:800;color:var(--dsub);padding-bottom:2px;">${d}</div>`).join('')}
+          ${cells}
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;padding-top:8px;border-top:1px solid var(--border);">
+          ${legend.map(l=>`<div style="display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:var(--dsub);"><div style="width:10px;height:10px;border-radius:3px;background:${l.bg};flex-shrink:0;"></div>${l.label}</div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  } catch(e){ return ''; }
+}
+
 function buildHeroRing(dayOfCycle, color){
   const R = 33, SW = 5.5, CX = 40, CY = 40;
   const C = 2 * Math.PI * R;
@@ -13906,73 +13976,11 @@ function renderCycleSheet(){
   <!-- ── TOP VIEW (Hero or Month Review) ── -->
   ${(()=>{
     if((cfg.cycleTopView||'hero') === 'month'){
-      // ── MONTH REVIEW at top ──
-      try {
-        const curY = TODAYBS.y, curM = TODAYBS.m;
-        const monthDays = BS[curY] ? BS[curY][curM-1] : 0;
-        if(!monthDays) return '';
-        const firstAD = bsToAd(curY, curM, 1);
-        const startDow = (firstAD.getDay() - cfg.fd + 7) % 7;
-        const dowLabels = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-        const orderedDow = [];
-        for(let i=0;i<7;i++) orderedDow.push(dowLabels[(cfg.fd+i)%7]);
-        let cells = '';
-        for(let p=0;p<startDow;p++) cells += `<div></div>`;
-        for(let d=1;d<=monthDays;d++){
-          const adDate = new Date(firstAD.getTime()+(d-1)*86400000);
-          const isToday = adDate.toDateString()===TODAY.toDateString();
-          let phaseBg = 'var(--tgbg)', phaseLabel = '', textColor = 'var(--cell-text)';
-          if(!notSet){
-            const baseTs = new Date(cycleData.lastPeriodStart); baseTs.setHours(0,0,0,0);
-            const adDateMid = new Date(adDate.getFullYear(), adDate.getMonth(), adDate.getDate());
-            const dayNum = Math.round((adDateMid.getTime() - baseTs.getTime()) / 86400000) + 1;
-            const dayLogs = (cycleData.logs||[]).filter(l=>{ const ld=new Date(l.date);ld.setHours(0,0,0,0);return ld.getTime()===adDateMid.getTime(); });
-            const hasOvulLog = dayLogs.some(l=>l.type==='ovulation');
-            // Find period_end log for this cycle
-            const cycleStartTs_ = baseTs.getTime();
-            const periodEndLog_ = (cycleData.logs||[]).filter(l=>l.type==='period_end'&&l.date>=cycleStartTs_).sort((a,b)=>a.date-b.date)[0];
-            // A day is still "period" only if it's within pl AND before/on the period_end log date (if logged)
-            const periodEndDayNum_ = periodEndLog_ ? Math.round((periodEndLog_.date - cycleStartTs_) / 86400000) + 1 : pl;
-            const effectivePl_ = periodEndLog_ ? Math.min(pl, periodEndDayNum_) : pl;
-            if(dayNum >= 1 && dayNum <= cl){
-              const ovDay2_ = cl - 14, fertileStart_ = ovDay2_ - 4;
-              if(dayNum >= 1 && dayNum <= effectivePl_)               { phaseBg='rgba(255,71,87,.75)';   phaseLabel='🩸'; textColor='#fff'; }
-              else if(hasOvulLog)                                      { phaseBg='rgba(168,85,247,.75)';  phaseLabel='✨'; textColor='#fff'; }
-              else if(dayNum >= fertileStart_ && dayNum <= ovDay2_)   { phaseBg='rgba(99,102,241,.65)';  textColor='#fff'; }
-              else if(dayNum > ovDay2_)                                { phaseBg='rgba(33,150,243,.55)';  textColor='rgba(255,255,255,.9)'; }
-              else                                                     { phaseBg='rgba(255,107,157,.45)'; }
-            }
-          }
-          const todayRing = isToday ? 'box-shadow:0 0 0 2px var(--accent);' : '';
-          cells += `<div style="aspect-ratio:1;border-radius:6px;background:${phaseBg};${todayRing}display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:${textColor};line-height:1.1;">${phaseLabel?`<span style="font-size:9px;line-height:1;">${phaseLabel}</span>`:''}<span>${d}</span></div>`;
-        }
-        const legend = [
-          {bg:'rgba(255,71,87,.75)',   label:'Period'},
-          {bg:'rgba(255,107,157,.45)', label:'Follicular'},
-          {bg:'rgba(99,102,241,.65)',  label:'Fertile'},
-          {bg:'rgba(168,85,247,.75)',  label:'Ovulation'},
-          {bg:'rgba(33,150,243,.55)',  label:'Luteal'},
-        ];
-        return `<div style="margin:0 16px 4px;">
-          <div style="background:var(--card);border-radius:18px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-              <span style="font-size:13px;font-weight:900;color:var(--htext);">Month Review</span>
-              <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${MEN[curM-1]} ${curY}</span>
-            </div>
-            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:10px;">
-              ${orderedDow.map(d=>`<div style="text-align:center;font-size:9px;font-weight:800;color:var(--dsub);padding-bottom:2px;">${d}</div>`).join('')}
-              ${cells}
-            </div>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;padding-top:8px;border-top:1px solid var(--border);">
-              ${legend.map(l=>`<div style="display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:var(--dsub);"><div style="width:10px;height:10px;border-radius:3px;background:${l.bg};flex-shrink:0;"></div>${l.label}</div>`).join('')}
-            </div>
-          </div>
-        </div>`;
-      } catch(e){ return ''; }
+      return buildMonthReviewCard(notSet, cl, pl);
     }
     // ── HERO CARD (default) ──
     return `
-  <div class="cyc-hero">
+  <div class="cyc-hero${notSet ? '' : ' tappable'}"${notSet ? '' : ' onclick="openCycleDetailSheet()"'}>
     <div class="cyc-hero-bg" style="background:${heroBg};">
       <div class="cyc-hero-top">
         <div class="cyc-hero-phase">
@@ -14671,11 +14679,48 @@ function renderPartnerModeCycleSheet(body){
         </svg>`;
       })();
 
+  // ── Stash computed values for the detail sheet ──────────────────────────────
+  const conceptionChance = notSet ? '—'
+    : (ovulLog && ovulDaysAgo <= 1) ? 'Peak'
+    : ovulLog ? 'Low'
+    : inFertile ? 'High'
+    : (dFertileStart !== null && dFertileStart > 0 && dFertileStart <= 3) ? 'Rising'
+    : 'Low';
+  const nextDate = notSet ? null : (() => {
+    const dd = ovulLog ? Math.max(0, 14 - ovulDaysAgo) : dNext;
+    const target = new Date(today0ts + dd*86400000);
+    return `${ADMEN[target.getMonth()]} ${target.getDate()}`;
+  })();
+  window._pmHeroDetail = {
+    notSet, partnerName, day, cl, pl, phaseName, phaseDesc, heroBg,
+    periodEndedLabel, periodLabel, fertileLabel, ovulLabel, ovulSubLabel, nextLabel, nextDate,
+    ovDay2, fertileStart, ovulLog, periodEndLog, conceptionChance,
+    cyclePct: notSet ? 0 : Math.min(1, day/cl),
+    dCycleLeft: notSet ? 0 : Math.max(0, cl - day),
+    rawData: { lastPeriodStart: p.lastPeriodStart, logs: allLogs },
+  };
+
   body.innerHTML = `
   <div class="partner-cycle-view">
 
+    <!-- Card / Month toggle -->
+    ${notSet ? '' : `
+    <div class="ssec" style="padding:0 16px 8px;display:flex;justify-content:flex-end;">
+      <div id="pmCycleTopToggle" class="up-view-toggle">
+        <button id="pmCycTopHeroBtn" class="up-vtbtn${(cfg.partnerCycleTopView||'hero')==='hero'?' on':''}" onclick="setPartnerCycleTopView('hero')">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M3 9h18"/></svg>
+          Card
+        </button>
+        <button id="pmCycTopMonthBtn" class="up-vtbtn${(cfg.partnerCycleTopView||'hero')==='month'?' on':''}" onclick="setPartnerCycleTopView('month')">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Month
+        </button>
+      </div>
+    </div>`}
+
+    ${(!notSet && (cfg.partnerCycleTopView||'hero') === 'month') ? buildMonthReviewCard(false, cl, pl, { lastPeriodStart: p.lastPeriodStart, logs: allLogs }) : `
     <!-- Hero card — same layout as own view -->
-    <div class="cyc-hero">
+    <div class="cyc-hero${notSet ? '' : ' tappable'}"${notSet ? '' : ' onclick="openPartnerCycleDetailSheet()"'}>
       <div class="cyc-hero-bg" style="background:${heroBg};">
         <div class="cyc-hero-top">
           <div class="cyc-hero-phase">
@@ -14728,7 +14773,7 @@ function renderPartnerModeCycleSheet(body){
           </div>
         </div>
       </div>
-    </div>
+    </div>`}
 
     <!-- Re-sync button if needed -->
     ${notSet && fbOk ? `
@@ -14974,6 +15019,13 @@ function _applyCycleTopToggle(){
   if(!heroBtn || !monthBtn) return;
   heroBtn.classList.toggle('on',  v === 'hero');
   monthBtn.classList.toggle('on', v === 'month');
+}
+
+function setPartnerCycleTopView(v){
+  if(typeof haptic==='function') haptic('light');
+  cfg.partnerCycleTopView = v;
+  try{ localStorage.setItem('vikram_cfg', JSON.stringify(cfg)); }catch(e){}
+  renderCycleSheet();
 }
 
 // ── Flow Intensity Picker ─────────────────────────────────────────────────────
@@ -16315,6 +16367,376 @@ function openCycleSettingsSheet(){
   if(ov)    ov.classList.add('open');
 }
 
+// ── Cycle Detail Sheet — expanded view opened by tapping the hero card ──────
+function renderCycleDetailSheet(){
+  const body = document.getElementById('cycleDetailSheetBody');
+  if(!body) return;
+  const d = cycleDefaults();
+  cycleData = {...d, ...cycleData};
+
+  const day    = getDayOfCycle();
+  const phase  = getPhase();
+  const pi     = phase ? PHASE_INFO[phase.name] : null;
+  const dNext  = getDaysUntilNextPeriod();
+  const dOvul  = getDaysUntilOvulation();
+  const cl     = d.cycleLength, pl = d.periodLength;
+  const notSet = !cycleData.lastPeriodStart;
+
+  if(notSet){
+    body.innerHTML = `<div style="padding:32px 18px;text-align:center;color:var(--dsub);font-size:13px;font-weight:700;">Log your first period to see cycle detail here.</div>`;
+    return;
+  }
+
+  const today0ts     = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+  const cycleStartTs = cycleData.lastPeriodStart;
+  const allLogs      = cycleData.logs || [];
+
+  const periodEndLog = (allLogs.filter(l => l.type === 'period_end' && l.date >= cycleStartTs)
+    .sort((a,b) => b.date - a.date)[0] || null);
+  const ovulLog = (allLogs.filter(l => l.type === 'ovulation' && l.date >= cycleStartTs)
+    .sort((a,b) => b.date - a.date)[0] || null);
+
+  const ovDay2       = cl - 14;
+  const fertileStart = ovDay2 - 4;
+  const ovulDaysAgo      = ovulLog      ? Math.round((today0ts - ovulLog.date)      / 86400000) : null;
+  const periodEndDaysAgo = periodEndLog ? Math.round((today0ts - periodEndLog.date) / 86400000) : null;
+
+  const periodEndedLabel = periodEndLog
+    ? (periodEndDaysAgo === 0 ? 'Today' : periodEndDaysAgo === 1 ? 'Yesterday' : periodEndDaysAgo + 'd ago')
+    : null;
+  const periodLabel = periodEndLog ? 'Done'
+    : day <= pl ? 'Day ' + day + '/' + pl
+    : day > (cl - 3) ? 'Soon' : 'Done';
+
+  const inFertile     = !ovulLog && day >= fertileStart && day <= ovDay2;
+  const dFertileStart = fertileStart - day;
+  const dFertileEnd   = ovDay2 - day;
+  const fertileLabel  = ovulLog   ? 'Passed'
+    : inFertile ? (dFertileEnd <= 0 ? 'Last day' : dFertileEnd + 'd left')
+    : dFertileStart > 0 ? 'In ' + dFertileStart + 'd'
+    : 'Passed';
+
+  const ovulLabel = ovulLog ? 'Logged'
+    : dOvul === null ? 'Passed' : dOvul === 0 ? 'Today!' : 'In ' + dOvul + 'd';
+  const ovulSubLabel = ovulLog
+    ? (ovulDaysAgo === 0 ? 'Today' : ovulDaysAgo === 1 ? 'Yesterday' : ovulDaysAgo + 'd ago')
+    : null;
+
+  const nextLabel = (() => {
+    if(ovulLog){ const dFromOvul = 14 - ovulDaysAgo; return dFromOvul <= 0 ? 'Today' : dFromOvul + 'd'; }
+    return dNext === 0 ? 'Today' : dNext + 'd';
+  })();
+
+  const nextDate = (() => {
+    const dd = ovulLog ? Math.max(0, 14 - ovulDaysAgo) : dNext;
+    const target = new Date(today0ts + dd*86400000);
+    return `${ADMEN[target.getMonth()]} ${target.getDate()}`;
+  })();
+
+  const cyclePct = Math.min(1, day / cl);
+  const cyclePctStr = Math.round(cyclePct * 100) + '%';
+  const dCycleLeft = Math.max(0, cl - day);
+
+  const conceptionChance = (ovulLog && ovulDaysAgo <= 1) ? 'Peak'
+    : ovulLog ? 'Low'
+    : inFertile ? 'High'
+    : (dFertileStart !== null && dFertileStart > 0 && dFertileStart <= 3) ? 'Rising'
+    : 'Low';
+  const conceptionColor = {Peak:'#a855f7',High:'#22c55e',Rising:'#f59e0b',Low:'var(--dsub)'}[conceptionChance];
+
+  const phaseRows = [
+    {name:'Menstrual',  range:`Day 1–${pl}`},
+    {name:'Follicular', range:`Day ${pl+1}–${ovDay2-3}`},
+    {name:'Ovulation',  range:`Day ${ovDay2-2}–${ovDay2+2}`},
+    {name:'Luteal',     range:`Day ${ovDay2+3}–${cl}`},
+  ];
+
+  body.innerHTML = `
+  <div class="cyc-hero" style="margin:0 16px 14px;">
+    <div class="cyc-hero-bg" style="background:${heroBgFromPhase(phase ? phase.name : null)};">
+      <div class="cyc-hero-top">
+        <div class="cyc-hero-phase">
+          <div class="cyc-hero-phase-label">Current Phase</div>
+          <div class="cyc-hero-phase-name">${phase ? phase.name : '—'}</div>
+          <div class="cyc-hero-phase-desc">${pi ? pi.desc : ''} · Day ${phase ? phase.dayIn : day} of ${phase ? phase.of : cl}</div>
+          ${periodEndedLabel ? `<div style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:3px 9px;border-radius:20px;background:rgba(34,197,94,.18);border:1px solid rgba(34,197,94,.35);width:fit-content;"><span style="font-size:11px;">🌿</span><span style="font-size:11px;font-weight:800;color:rgba(255,255,255,.9);letter-spacing:.2px;">Period ended · ${periodEndedLabel}</span></div>` : ''}
+        </div>
+        <div class="cyc-hero-ring-wrap">
+          ${buildHeroRing(day, pi ? pi.color : '#fff')}
+          <div class="cyc-hero-ring-center">
+            <div class="cyc-hero-ring-day">${day}</div>
+            <div class="cyc-hero-ring-of">of ${cl}</div>
+          </div>
+        </div>
+      </div>
+      <div class="cyc-timeline">${buildPhaseTimeline(day)}</div>
+    </div>
+  </div>
+
+  ${buildMonthReviewCard(notSet, cl, pl)}
+
+  <div class="ssec" style="padding-top:4px;">
+    <div class="ssect">Key dates</div>
+    <div class="srow">
+      <div><div class="slbl">📅 Next period</div><div class="ssub">${nextDate}</div></div>
+      <div style="text-align:right;">
+        <div class="slbl">${nextLabel}</div>
+        <div class="ssub" style="color:${ovulLog?'#22c55e':'var(--dsub)'};">${ovulLog ? '✓ Logged' : '~ Predicted'}</div>
+      </div>
+    </div>
+    <div class="srow">
+      <div><div class="slbl">🩸 Period</div><div class="ssub">${pl} day${pl===1?'':'s'} average</div></div>
+      <div style="text-align:right;">
+        <div class="slbl">${periodLabel}</div>
+        <div class="ssub" style="color:${periodEndLog?'#22c55e':'var(--dsub)'};">${periodEndLog ? '✓ Logged' : '~ Predicted'}</div>
+      </div>
+    </div>
+    <div class="srow">
+      <div><div class="slbl">🌸 Fertile window</div><div class="ssub">Day ${fertileStart}–${ovDay2}</div></div>
+      <div style="text-align:right;">
+        <div class="slbl">${fertileLabel}</div>
+        <div class="ssub" style="color:${ovulLog?'#22c55e':'var(--dsub)'};">${ovulLog ? '✓ Logged' : '~ Predicted'}</div>
+      </div>
+    </div>
+    <div class="srow" style="border-bottom:none;">
+      <div><div class="slbl">✨ Ovulation</div><div class="ssub">Day ${ovDay2}</div></div>
+      <div style="text-align:right;">
+        <div class="slbl">${ovulLabel}</div>
+        <div class="ssub" style="color:${ovulLog?'#22c55e':'var(--dsub)'};">${ovulSubLabel ? ovulSubLabel : (ovulLog ? '✓ Logged' : '~ Predicted')}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect">Cycle stats</div>
+    <div class="srow">
+      <div class="slbl">Cycle progress</div>
+      <div class="slbl">${cyclePctStr} · ${dCycleLeft}d left</div>
+    </div>
+    <div class="srow">
+      <div class="slbl">Cycle length</div>
+      <div class="slbl">${cl} days</div>
+    </div>
+    <div class="srow">
+      <div class="slbl">Conception chance today</div>
+      <div class="slbl" style="color:${conceptionColor};">${conceptionChance}</div>
+    </div>
+    <div class="srow" style="border-bottom:none;">
+      <div class="slbl">Cycle day</div>
+      <div class="slbl">${day} of ${cl}</div>
+    </div>
+  </div>
+
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect">Phases</div>
+    ${phaseRows.map(p=>{
+      const info = PHASE_INFO[p.name];
+      const active = phase && phase.name === p.name;
+      return `<div class="srow" style="${active?'background:'+info.color+'14;border-radius:10px;padding:9px 8px;margin:0 -8px;border-bottom:none;':''}">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:15px;">${info.emoji}</span>
+          <div>
+            <div class="slbl">${p.name}${active ? ' · Now' : ''}</div>
+            <div class="ssub">${info.desc}</div>
+          </div>
+        </div>
+        <div class="ssub">${p.range}</div>
+      </div>`;
+    }).join('')}
+  </div>
+
+  <div class="ssec" style="padding-top:0;">
+    <div class="srow" style="cursor:pointer;" onclick="closeCycleDetailSheet();openCycleSettingsSheet();">
+      <div class="slbl">⚙️ Cycle settings</div>
+    </div>
+  </div>`;
+}
+
+function heroBgFromPhase(phaseName){
+  const heroGradients = {
+    Menstrual:  'linear-gradient(145deg,#c0392b,#e74c3c,#ff6b6b)',
+    Follicular: 'linear-gradient(145deg,#c44569,#FF6B9D,#ffb3cc)',
+    Ovulation:  'linear-gradient(145deg,#6c5ce7,#a29bfe,#c9b8ff)',
+    Luteal:     'linear-gradient(145deg,#1565c0,#2196F3,#64b5f6)',
+  };
+  return heroGradients[phaseName] || heroGradients.Follicular;
+}
+
+function openCycleDetailSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  renderCycleDetailSheet();
+  const sheet = document.getElementById('cycleDetailSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+
+function closeCycleDetailSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('cycleDetailSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+
+// ── Partner Cycle Detail Sheet — expanded view opened by tapping the partner hero card ──
+function renderPartnerCycleDetailSheet(){
+  const body = document.getElementById('partnerCycleDetailSheetBody');
+  if(!body) return;
+  const s = window._pmHeroDetail;
+  if(!s || s.notSet){
+    body.innerHTML = `<div style="padding:32px 18px;text-align:center;color:var(--dsub);font-size:13px;font-weight:700;">Waiting for ${s ? s.partnerName : 'your partner'} to log their cycle.</div>`;
+    return;
+  }
+
+  const conceptionColor = {Peak:'#a855f7',High:'#22c55e',Rising:'#f59e0b',Low:'var(--dsub)'}[s.conceptionChance];
+  const PHASE_INFO_PM = {
+    Menstrual:  { emoji:'🔴', color:'#FF4757', desc:'Period phase'   },
+    Follicular: { emoji:'🌱', color:'#FF6B9D', desc:'Building phase'  },
+    Ovulation:  { emoji:'✨', color:'#5a5a68', desc:'Fertile window' },
+    Luteal:     { emoji:'🌙', color:'#3B82F6', desc:'Premenstrual'   },
+  };
+  const phaseRows = [
+    {name:'Menstrual',  range:`Day 1–${s.pl}`},
+    {name:'Follicular', range:`Day ${s.pl+1}–${s.ovDay2-3}`},
+    {name:'Ovulation',  range:`Day ${s.ovDay2-2}–${s.ovDay2+2}`},
+    {name:'Luteal',     range:`Day ${s.ovDay2+3}–${s.cl}`},
+  ];
+
+  const ringHTML = (() => {
+    const R=33, SW=5.5, CX=40, CY=40, C=2*Math.PI*R;
+    const filled = (s.cyclePct*C).toFixed(2);
+    return `<svg viewBox="0 0 80 80" width="80" height="80">
+      <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="${SW}"/>
+      <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="${SW}"
+        stroke-dasharray="${filled} ${C.toFixed(2)}" stroke-dashoffset="${C*0.25}"
+        stroke-linecap="round" style="transition:stroke-dasharray .5s ease;"/>
+    </svg>`;
+  })();
+
+  const timelineHTML = (() => {
+    const segments = [
+      {start:0,       end:s.pl,        color:'#FF4757'},
+      {start:s.pl,    end:s.ovDay2-2,  color:'#FF6B9D'},
+      {start:s.ovDay2-2,end:s.ovDay2+2,color:'rgba(255,255,255,.6)'},
+      {start:s.ovDay2+2,end:s.cl,      color:'#7dd3fc'},
+    ];
+    return segments.map(seg=>{
+      const w=((seg.end-seg.start)/s.cl*100).toFixed(1);
+      return `<div class="cyc-timeline-seg active" style="width:${w}%;background:${seg.color};"></div>`;
+    }).join('');
+  })();
+
+  body.innerHTML = `
+  <div class="cyc-hero" style="margin:0 16px 14px;">
+    <div class="cyc-hero-bg" style="background:${s.heroBg};">
+      <div class="cyc-hero-top">
+        <div class="cyc-hero-phase">
+          <div class="cyc-hero-phase-label">Current Phase</div>
+          <div class="cyc-hero-phase-name">${s.phaseName}</div>
+          <div class="cyc-hero-phase-desc">${s.phaseDesc} · Day ${s.day} of ${s.cl}</div>
+          ${s.periodEndedLabel ? `<div style="display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:3px 9px;border-radius:20px;background:rgba(34,197,94,.18);border:1px solid rgba(34,197,94,.35);width:fit-content;"><span style="font-size:11px;">🌿</span><span style="font-size:11px;font-weight:800;color:rgba(255,255,255,.9);letter-spacing:.2px;">Period ended · ${s.periodEndedLabel}</span></div>` : ''}
+        </div>
+        <div class="cyc-hero-ring-wrap">
+          ${ringHTML}
+          <div class="cyc-hero-ring-center">
+            <div class="cyc-hero-ring-day">${s.day}</div>
+            <div class="cyc-hero-ring-of">of ${s.cl}</div>
+          </div>
+        </div>
+      </div>
+      <div class="cyc-timeline">${timelineHTML}</div>
+    </div>
+  </div>
+
+  ${buildMonthReviewCard(false, s.cl, s.pl, s.rawData)}
+
+  <div class="ssec" style="padding-top:4px;">
+    <div class="ssect">Key dates</div>
+    <div class="srow">
+      <div><div class="slbl">📅 Next period</div><div class="ssub">${s.nextDate}</div></div>
+      <div style="text-align:right;">
+        <div class="slbl">${s.nextLabel}</div>
+        <div class="ssub" style="color:${s.ovulLog?'#22c55e':'var(--dsub)'};">${s.ovulLog ? '✓ Logged' : '~ Predicted'}</div>
+      </div>
+    </div>
+    <div class="srow">
+      <div><div class="slbl">🩸 Period</div><div class="ssub">${s.pl} day${s.pl===1?'':'s'} average</div></div>
+      <div style="text-align:right;">
+        <div class="slbl">${s.periodLabel}</div>
+        <div class="ssub" style="color:${s.periodEndLog?'#22c55e':'var(--dsub)'};">${s.periodEndLog ? '✓ Logged' : '~ Predicted'}</div>
+      </div>
+    </div>
+    <div class="srow">
+      <div><div class="slbl">🌸 Fertile window</div><div class="ssub">Day ${s.fertileStart}–${s.ovDay2}</div></div>
+      <div style="text-align:right;">
+        <div class="slbl">${s.fertileLabel}</div>
+        <div class="ssub" style="color:${s.ovulLog?'#22c55e':'var(--dsub)'};">${s.ovulLog ? '✓ Logged' : '~ Predicted'}</div>
+      </div>
+    </div>
+    <div class="srow" style="border-bottom:none;">
+      <div><div class="slbl">✨ Ovulation</div><div class="ssub">Day ${s.ovDay2}</div></div>
+      <div style="text-align:right;">
+        <div class="slbl">${s.ovulLabel}</div>
+        <div class="ssub" style="color:${s.ovulLog?'#22c55e':'var(--dsub)'};">${s.ovulSubLabel ? s.ovulSubLabel : (s.ovulLog ? '✓ Logged' : '~ Predicted')}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect">Cycle stats</div>
+    <div class="srow">
+      <div class="slbl">Cycle progress</div>
+      <div class="slbl">${Math.round(s.cyclePct*100)}% · ${s.dCycleLeft}d left</div>
+    </div>
+    <div class="srow">
+      <div class="slbl">Cycle length</div>
+      <div class="slbl">${s.cl} days</div>
+    </div>
+    <div class="srow" style="border-bottom:none;">
+      <div class="slbl">Conception chance today</div>
+      <div class="slbl" style="color:${conceptionColor};">${s.conceptionChance}</div>
+    </div>
+  </div>
+
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect">Phases</div>
+    ${phaseRows.map(p=>{
+      const info = PHASE_INFO_PM[p.name];
+      const active = s.phaseName === p.name;
+      return `<div class="srow" style="${active?'background:'+info.color+'14;border-radius:10px;padding:9px 8px;margin:0 -8px;border-bottom:none;':''}">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:15px;">${info.emoji}</span>
+          <div>
+            <div class="slbl">${p.name}${active ? ' · Now' : ''}</div>
+            <div class="ssub">${info.desc}</div>
+          </div>
+        </div>
+        <div class="ssub">${p.range}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function openPartnerCycleDetailSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  renderPartnerCycleDetailSheet();
+  const sheet = document.getElementById('partnerCycleDetailSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+
+function closePartnerCycleDetailSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('partnerCycleDetailSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+
+
+
 function closeCycleSettingsSheet(){
   if(typeof haptic === 'function') haptic('light');
   const sheet = document.getElementById('cycleSettingsSheet');
@@ -16353,7 +16775,7 @@ function closePartnerSyncSheet(){
     const existing = origOvHandler.getAttribute('onclick') || '';
     origOvHandler.setAttribute('onclick',
       existing.replace(')(this)',
-        `)(this); if(document.getElementById('partnerSyncSheet')?.classList.contains('open')){closePartnerSyncSheet();} if(document.getElementById('cycleSettingsSheet')?.classList.contains('open')){closeCycleSettingsSheet();} if(document.getElementById('logHistorySheet')?.classList.contains('open')){closeLogHistorySheet();} if(document.getElementById('symptomLogSheet')?.classList.contains('open')){closeSymptomLogSheet();} if(document.getElementById('symptomHistorySheet')?.classList.contains('open')){closeSymptomHistorySheet();} if(document.getElementById('intercourseLogSheet')?.classList.contains('open')){closeIntercourseLogSheet();} if(document.getElementById('opkLogSheet')?.classList.contains('open')){closeOpkLogSheet();} if(document.getElementById('bbtLogSheet')?.classList.contains('open')){closeBbtLogSheet();} if(document.getElementById('ttcHistorySheet')?.classList.contains('open')){closeTtcHistorySheet();} if(document.getElementById('partnerSymptomHistorySheet')?.classList.contains('open')){closePartnerSymptomHistorySheet();} if(document.getElementById('partnerTtcHistorySheet')?.classList.contains('open')){closePartnerTtcHistorySheet();} if(document.getElementById('medLogSheet')?.classList.contains('open')){closeMedLogSheet();} if(document.getElementById('medHistorySheet')?.classList.contains('open')){closeMedHistorySheet();} if(document.getElementById('vitalsLogSheet')?.classList.contains('open')){closeVitalsLogSheet();} if(document.getElementById('vitalsHistorySheet')?.classList.contains('open')){closeVitalsHistorySheet();} if(document.getElementById('clinicSummarySheet')?.classList.contains('open')){closeClinicSummarySheet();} if(document.getElementById('mucusLogSheet')?.classList.contains('open')){closeMucusLogSheet();} if(document.getElementById('contraSetupSheet')?.classList.contains('open')){closeContraSetupSheet();} if(document.getElementById('contraHistorySheet')?.classList.contains('open')){closeContraHistorySheet();} if(document.getElementById('phaseReminderSheet')?.classList.contains('open')){closePhaseReminderSheet();}`
+        `)(this); if(document.getElementById('partnerSyncSheet')?.classList.contains('open')){closePartnerSyncSheet();} if(document.getElementById('cycleSettingsSheet')?.classList.contains('open')){closeCycleSettingsSheet();} if(document.getElementById('cycleDetailSheet')?.classList.contains('open')){closeCycleDetailSheet();} if(document.getElementById('partnerCycleDetailSheet')?.classList.contains('open')){closePartnerCycleDetailSheet();} if(document.getElementById('logHistorySheet')?.classList.contains('open')){closeLogHistorySheet();} if(document.getElementById('symptomLogSheet')?.classList.contains('open')){closeSymptomLogSheet();} if(document.getElementById('symptomHistorySheet')?.classList.contains('open')){closeSymptomHistorySheet();} if(document.getElementById('intercourseLogSheet')?.classList.contains('open')){closeIntercourseLogSheet();} if(document.getElementById('opkLogSheet')?.classList.contains('open')){closeOpkLogSheet();} if(document.getElementById('bbtLogSheet')?.classList.contains('open')){closeBbtLogSheet();} if(document.getElementById('ttcHistorySheet')?.classList.contains('open')){closeTtcHistorySheet();} if(document.getElementById('partnerSymptomHistorySheet')?.classList.contains('open')){closePartnerSymptomHistorySheet();} if(document.getElementById('partnerTtcHistorySheet')?.classList.contains('open')){closePartnerTtcHistorySheet();} if(document.getElementById('medLogSheet')?.classList.contains('open')){closeMedLogSheet();} if(document.getElementById('medHistorySheet')?.classList.contains('open')){closeMedHistorySheet();} if(document.getElementById('vitalsLogSheet')?.classList.contains('open')){closeVitalsLogSheet();} if(document.getElementById('vitalsHistorySheet')?.classList.contains('open')){closeVitalsHistorySheet();} if(document.getElementById('clinicSummarySheet')?.classList.contains('open')){closeClinicSummarySheet();} if(document.getElementById('mucusLogSheet')?.classList.contains('open')){closeMucusLogSheet();} if(document.getElementById('contraSetupSheet')?.classList.contains('open')){closeContraSetupSheet();} if(document.getElementById('contraHistorySheet')?.classList.contains('open')){closeContraHistorySheet();} if(document.getElementById('phaseReminderSheet')?.classList.contains('open')){closePhaseReminderSheet();}`
       )
     );
   }
@@ -22206,6 +22628,38 @@ function svRefreshStorage(){
     <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
   </div>
 </div>
+
+<!-- ── CYCLE DETAIL SHEET ─────────────────────────────────────────────────── -->
+<div class="sheet" id="cycleDetailSheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>🌸 Cycle Detail</span>
+    <button class="ae-close" onclick="closeCycleDetailSheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="cycleDetailSheetBody"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── PARTNER CYCLE DETAIL SHEET ────────────────────────────────────────── -->
+<div class="sheet" id="partnerCycleDetailSheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>💞 Cycle Detail</span>
+    <button class="ae-close" onclick="closePartnerCycleDetailSheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="partnerCycleDetailSheetBody"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+
 
 <!-- ── MEDICATION / SUPPLEMENT LOG SHEET ─────────────────────────────────── -->
 <div class="sheet" id="medLogSheet" style="max-height:88vh;">
