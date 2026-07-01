@@ -6,7 +6,7 @@
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="X-Frame-Options" content="DENY">
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <title>Vikram</title>
 <meta name="theme-color" content="#ECEEF8">
 <script>
@@ -973,8 +973,8 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 [data-theme=dark] .bdg-h{background:#3a1a1a;color:#ff8080;}
 
 /* ── SHEET ── */
-.sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(102%);width:390px;max-width:100vw;background:var(--sbg);border-radius:24px 24px 0 0;z-index:70;transition:transform .2s cubic-bezier(.32,.72,0,1),box-shadow .2s;box-shadow:none;}
-.sheet.open{transform:translateX(-50%) translateY(0);box-shadow:0 -8px 40px rgba(0,0,0,.2);}
+.sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(102%);width:390px;max-width:100vw;background:var(--sbg);border-radius:24px 24px 0 0;z-index:70;transition:transform .2s cubic-bezier(.32,.72,0,1),box-shadow .2s,visibility 0s .2s;box-shadow:none;visibility:hidden;}
+.sheet.open{transform:translateX(-50%) translateY(0);box-shadow:0 -8px 40px rgba(0,0,0,.2);visibility:visible;transition:transform .2s cubic-bezier(.32,.72,0,1),box-shadow .2s,visibility 0s;}
 .sheet.cycle-fullscreen{left:0;right:0;top:0;bottom:0;width:100vw;max-width:none;height:100vh;border-radius:0;box-shadow:none;transform:translateY(102%) scale(.99);display:flex;flex-direction:column;background:var(--sheet-bg);}
 .sheet.cycle-fullscreen.open{
   transform:translateY(0) scale(1);
@@ -4013,22 +4013,26 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
 /* ── BOTTOM NAV BAR ── */
 .bottom-nav{
-  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  position:fixed;bottom:0;left:0;right:0;margin:0 auto;
   width:390px;max-width:100vw;
   display:flex;align-items:stretch;
   background:rgba(255,255,255,1);
   border-top:1px solid rgba(0,0,0,.07);
   box-shadow:none !important;
+  -webkit-box-shadow:none !important;
   filter:none !important;
-  overflow:hidden;
+  -webkit-filter:none !important;
+  overflow:visible;
   backdrop-filter:none;-webkit-backdrop-filter:none;
   z-index:60;padding-bottom:env(safe-area-inset-bottom,0px);
 }
 [data-theme=dark] .bottom-nav{
   background:rgba(16,18,28,1);
-  border-top:1px solid rgba(255,255,255,.07);
+  border-top:1px solid rgba(255,255,255,.03);
   box-shadow:none !important;
+  -webkit-box-shadow:none !important;
   filter:none !important;
+  -webkit-filter:none !important;
 }
 .bnav-btn{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -4038,7 +4042,7 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   transition:color .18s;-webkit-tap-highlight-color:transparent;
   position:relative;
 }
-[data-theme=dark] .bnav-btn{ color:#5a607e; }
+[data-theme=dark] .bnav-btn{ color:#8890b0; }
 .bnav-btn svg{
   width:26px;height:26px;stroke:currentColor;fill:none;
   stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;
