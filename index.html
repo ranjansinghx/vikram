@@ -2990,6 +2990,11 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   background:linear-gradient(155deg,#b18cff,#7c5cff);
   color:#fff;border-color:transparent;
 }
+.cycle-mode-toggle-btn.mode-avoid{
+  background:linear-gradient(155deg,rgba(56,189,248,.22),rgba(14,165,233,.14));
+  color:#0369a1;border-color:rgba(14,165,233,.35);
+}
+[data-theme="dark"] .cycle-mode-toggle-btn.mode-avoid{color:#7dd3fc;}
 .cycle-mode-toggle-btn .cm-icon{font-size:14px;line-height:1;}
 
 /* ── Mode picker modal options ── */
@@ -6729,6 +6734,13 @@ var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this
           <div class="cm-opt-sub">Highlights fertile window &amp; conception odds</div>
         </div>
       </div>
+      <div class="cm-opt" data-mode="avoid" onclick="selectCycleMode('avoid')">
+        <div class="cm-opt-icon">🛡️</div>
+        <div class="cm-opt-body">
+          <div class="cm-opt-title">Avoiding Pregnancy</div>
+          <div class="cm-opt-sub">Flags higher-risk fertile days &amp; tracks contraception</div>
+        </div>
+      </div>
       <div class="cm-opt" data-mode="pregnant" onclick="selectCycleMode('pregnant')">
         <div class="cm-opt-icon">🤰</div>
         <div class="cm-opt-body">
@@ -9981,8 +9993,10 @@ async function checkCycleReminders(){
   if(!notifEnabled) return;
   if(!('Notification' in window)||Notification.permission!=='granted') return;
   const pr = (cycleData && cycleData.periodReminders) || null;
-  if(!pr || (!pr.periodStart && !pr.bbtMorning)) return;
-  if(!cycleData.lastPeriodStart) return;
+  const contraOn = cycleData && cycleData.contraception && cycleData.contraception.reminderOn;
+  const phaseRemindersOn = (cycleData && (cycleData.phaseReminders||[]).length > 0);
+  const periodRemindersOn = pr && (pr.periodStart || pr.bbtMorning) && cycleData.lastPeriodStart;
+  if(!periodRemindersOn && !contraOn && !phaseRemindersOn) return;
 
   const now = new Date();
   const todayMid = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -9991,7 +10005,7 @@ async function checkCycleReminders(){
   const nowHM = hh+':'+mm;
 
   // Predicted period start — fire once on the morning (08:00 local) of the predicted day
-  if(pr.periodStart){
+  if(periodRemindersOn && pr.periodStart){
     const cl = cycleData.cycleLength || 28;
     const pl = cycleData.periodLength || 5;
     const preds = (typeof buildPredictions === 'function') ? buildPredictions(cycleData.lastPeriodStart, cl, pl) : [];
@@ -10004,7 +10018,7 @@ async function checkCycleReminders(){
   }
 
   // BBT morning reminder — fire once at the configured time if not already logged today
-  if(pr.bbtMorning){
+  if(periodRemindersOn && pr.bbtMorning){
     const reminderTime = pr.bbtTime || '07:00';
     const key = 'vn_bbt_'+todayMid;
     const alreadyLogged = (cycleData.bbtLogs||[]).some(l=>{
@@ -10016,13 +10030,199 @@ async function checkCycleReminders(){
       await showNotif('🌡️ Log your BBT', "Don't forget to take your temperature this morning.", 'bbt-'+todayMid);
     }
   }
+
+  // Birth control daily reminder — fire once at the configured time if not yet marked taken today
+  const c = cycleData.contraception;
+  if(c && c.reminderOn){
+    const reminderTime = c.reminderTime || '08:00';
+    const key = 'vn_contra_'+todayMid;
+    if(!contraTakenToday() && nowHM >= reminderTime && nowHM < _addMinutesHM(reminderTime,2) && !localStorage.getItem(key)){
+      localStorage.setItem(key,'1');
+      const tm = CONTRA_TYPES[c.type] || CONTRA_TYPES.pill;
+      await showNotif(`${tm.emoji} Time for your ${tm.label.toLowerCase()}`, "Don't forget today's dose.", 'contra-'+todayMid);
+    }
+  }
+
+  // Phase-aware custom reminders
+  for(const r of (cycleData.phaseReminders||[])){
+    const key = 'vn_pr_'+r.id+'_'+todayMid;
+    if(nowHM >= (r.time||'08:00') && nowHM < _addMinutesHM(r.time||'08:00',2) && !localStorage.getItem(key)){
+      if(_phaseReminderShouldFireToday(r)){
+        localStorage.setItem(key,'1');
+        await showNotif('🔔 '+r.label, _phaseReminderSubtitle(r), 'pr-'+r.id+'-'+todayMid);
+      }
+    }
+  }
 }
+function _phaseReminderSubtitle(r){
+  if(r.triggerType==='phase_start')        return `Start of your ${r.triggerPhase} phase`;
+  if(r.triggerType==='phase_day')          return `Day ${r.triggerDayIn} of your ${r.triggerPhase} phase`;
+  if(r.triggerType==='cycle_day')          return `Cycle day ${r.triggerCycleDay}`;
+  if(r.triggerType==='days_before_period') return `${r.triggerDaysBefore} days before your next period`;
+  return '';
+}
+
 function _addMinutesHM(hm, mins){
   const [h,m] = hm.split(':').map(Number);
   const d = new Date(2000,0,1,h,m+mins);
   return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
 }
 
+// ══ PHASE-AWARE CUSTOM REMINDERS ══════════════════════════════════════════
+// cycleData.phaseReminders: [{ id, label, time, triggerType, triggerPhase, triggerDayIn, triggerCycleDay, triggerDaysBefore }]
+// triggerType: 'phase_start' | 'phase_day' | 'cycle_day' | 'days_before_period'
+const PHASE_REMINDER_PHASES = ['Menstrual','Follicular','Ovulation','Luteal'];
+let _prEditId = null;
+
+function openPhaseReminderSheet(editId){
+  if(typeof haptic === 'function') haptic('light');
+  _prEditId = editId || null;
+  renderPhaseReminderSheet();
+  const sheet = document.getElementById('phaseReminderSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closePhaseReminderSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('phaseReminderSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+function renderPhaseReminderSheet(){
+  const body = document.getElementById('phaseReminderSheetBody');
+  if(!body) return;
+  const existing = _prEditId ? (cycleData.phaseReminders||[]).find(r=>r.id===_prEditId) : null;
+  const r = existing || { label:'', time:'08:00', triggerType:'phase_start', triggerPhase:'Menstrual', triggerDayIn:1, triggerCycleDay:1, triggerDaysBefore:2 };
+
+  body.innerHTML = `
+  <div class="ssec" style="padding-top:4px;">
+    <div class="ssect">Reminder name</div>
+    <input id="prLabelInput" type="text" placeholder="e.g. Take ibuprofen, Prenatal vitamin…" maxlength="80"
+      value="${esc(r.label)}"
+      style="width:100%;box-sizing:border-box;padding:11px 13px;border-radius:12px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:13px;font-family:'Nunito',sans-serif;font-weight:700;"/>
+  </div>
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect">When to remind</div>
+    <div class="srow">
+      <div class="slbl">Trigger type</div>
+      <select id="prTriggerType" onchange="renderPhaseReminderTriggerDetail()"
+        style="padding:8px 10px;border-radius:10px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:12.5px;font-family:'Nunito',sans-serif;font-weight:700;">
+        <option value="phase_start"         ${r.triggerType==='phase_start'?'selected':''}>Start of phase</option>
+        <option value="phase_day"           ${r.triggerType==='phase_day'?'selected':''}>Day N of a phase</option>
+        <option value="cycle_day"           ${r.triggerType==='cycle_day'?'selected':''}>Specific cycle day</option>
+        <option value="days_before_period"  ${r.triggerType==='days_before_period'?'selected':''}>Days before next period</option>
+      </select>
+    </div>
+    <div id="prTriggerDetail"></div>
+  </div>
+  <div class="ssec" style="padding-top:0;">
+    <div class="srow" style="border-bottom:none;">
+      <div class="slbl">Reminder time</div>
+      <input id="prTimeInput" type="time" value="${r.time||'08:00'}"
+        style="padding:8px 10px;border-radius:10px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:13px;font-family:'Nunito',sans-serif;font-weight:700;"/>
+    </div>
+  </div>
+  <div class="ssec" style="padding-top:0;">
+    <button onclick="savePhaseReminder()" style="width:100%;padding:13px;border-radius:14px;border:none;background:var(--tgon,#1a1a1a);color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">${_prEditId?'Update reminder':'Add reminder'}</button>
+  </div>`;
+
+  window._prInitPhase      = r.triggerPhase    || 'Menstrual';
+  window._prInitDayIn      = r.triggerDayIn    || 1;
+  window._prInitCycleDay   = r.triggerCycleDay || 1;
+  window._prInitDaysBefore = r.triggerDaysBefore || 2;
+  renderPhaseReminderTriggerDetail();
+}
+function renderPhaseReminderTriggerDetail(){
+  const detail = document.getElementById('prTriggerDetail');
+  if(!detail) return;
+  const type = document.getElementById('prTriggerType')?.value || 'phase_start';
+  if(type === 'phase_start' || type === 'phase_day'){
+    detail.innerHTML = `
+    <div class="srow" ${type==='phase_start'?'style="border-bottom:none;"':''}>
+      <div class="slbl">Phase</div>
+      <select id="prPhaseSelect"
+        style="padding:8px 10px;border-radius:10px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:13px;font-family:'Nunito',sans-serif;font-weight:700;">
+        ${PHASE_REMINDER_PHASES.map(p=>`<option value="${p}" ${(window._prInitPhase||'Menstrual')===p?'selected':''}>${p}</option>`).join('')}
+      </select>
+    </div>
+    ${type==='phase_day'?`
+    <div class="srow" style="border-bottom:none;">
+      <div class="slbl">Day within phase</div>
+      <input id="prDayInInput" type="number" min="1" max="20" value="${window._prInitDayIn||1}"
+        style="width:60px;text-align:right;padding:8px 10px;border-radius:10px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:14px;font-family:'Nunito',sans-serif;font-weight:800;"/>
+    </div>`:''}`;
+  } else if(type === 'cycle_day'){
+    detail.innerHTML = `<div class="srow" style="border-bottom:none;">
+      <div class="slbl">Cycle day</div>
+      <input id="prCycleDayInput" type="number" min="1" max="60" value="${window._prInitCycleDay||1}"
+        style="width:60px;text-align:right;padding:8px 10px;border-radius:10px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:14px;font-family:'Nunito',sans-serif;font-weight:800;"/>
+    </div>`;
+  } else {
+    detail.innerHTML = `<div class="srow" style="border-bottom:none;">
+      <div class="slbl">Days before next period</div>
+      <input id="prDaysBeforeInput" type="number" min="1" max="14" value="${window._prInitDaysBefore||2}"
+        style="width:60px;text-align:right;padding:8px 10px;border-radius:10px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:14px;font-family:'Nunito',sans-serif;font-weight:800;"/>
+    </div>`;
+  }
+}
+function savePhaseReminder(){
+  const label = (document.getElementById('prLabelInput')?.value||'').trim().slice(0,80);
+  if(!label){ if(typeof vikramToast==='function') vikramToast('⚠️ Add a name for this reminder'); return; }
+  const time           = document.getElementById('prTimeInput')?.value || '08:00';
+  const triggerType    = document.getElementById('prTriggerType')?.value || 'phase_start';
+  const triggerPhase   = document.getElementById('prPhaseSelect')?.value || 'Menstrual';
+  const triggerDayIn   = parseInt(document.getElementById('prDayInInput')?.value,10) || 1;
+  const triggerCycleDay= parseInt(document.getElementById('prCycleDayInput')?.value,10) || 1;
+  const triggerDaysBefore = parseInt(document.getElementById('prDaysBeforeInput')?.value,10) || 2;
+  if(typeof haptic === 'function') haptic('light');
+  const entry = {
+    id: _prEditId || ('pr'+Date.now()+Math.random().toString(36).slice(2,6)),
+    label, time, triggerType, triggerPhase, triggerDayIn, triggerCycleDay, triggerDaysBefore
+  };
+  cycleData.phaseReminders = cycleData.phaseReminders || [];
+  const idx = cycleData.phaseReminders.findIndex(r=>r.id===entry.id);
+  if(idx>=0) cycleData.phaseReminders[idx] = entry;
+  else cycleData.phaseReminders.push(entry);
+  saveCycle();
+  closePhaseReminderSheet();
+  renderCycleSheet();
+  if(typeof vikramToast==='function') vikramToast('✅ Reminder saved');
+}
+function deletePhaseReminder(id){
+  if(typeof haptic === 'function') haptic('light');
+  cycleData.phaseReminders = (cycleData.phaseReminders||[]).filter(r=>r.id!==id);
+  saveCycle();
+  renderCycleSheet();
+  if(typeof vikramToast==='function') vikramToast('🗑 Reminder removed');
+}
+function _phaseReminderShouldFireToday(r){
+  if(!cycleData.lastPeriodStart) return false;
+  const cl = cycleData.cycleLength || 28;
+  const pl = cycleData.periodLength || 5;
+  const todayMid = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+  const anchor = new Date(cycleData.lastPeriodStart);
+  const anchorMid = new Date(anchor.getFullYear(),anchor.getMonth(),anchor.getDate()).getTime();
+  const diffDays = Math.round((todayMid - anchorMid)/86400000);
+  const day = ((diffDays % cl)+cl)%cl+1;
+
+  if(r.triggerType === 'cycle_day')          return day === (r.triggerCycleDay||1);
+  if(r.triggerType === 'days_before_period') return (cl - day + 1) === (r.triggerDaysBefore||2);
+
+  const ovDay   = cl - 14;
+  const follEnd = ovDay - 3;
+  const ovEnd   = ovDay + 2;
+  let phase, dayInPhase;
+  if(day<=pl)        { phase='Menstrual';  dayInPhase=day; }
+  else if(day<=follEnd){ phase='Follicular'; dayInPhase=day-pl; }
+  else if(day<=ovEnd)  { phase='Ovulation';  dayInPhase=day-(ovDay-2)+1; }
+  else                  { phase='Luteal';     dayInPhase=day-ovEnd; }
+
+  if(r.triggerType === 'phase_start') return phase===r.triggerPhase && dayInPhase===1;
+  if(r.triggerType === 'phase_day')   return phase===r.triggerPhase && dayInPhase===(r.triggerDayIn||1);
+  return false;
+}
 
 window._recurState = {
   enabled: false,
@@ -11766,6 +11966,10 @@ function cycleDefaults(){
     vitalsLogs: cycleData.vitalsLogs || [],
     weightUnit: cycleData.weightUnit || 'kg',
     periodReminders: cycleData.periodReminders || { periodStart:false, bbtMorning:false, bbtTime:'07:00' },
+    mucusLogs: cycleData.mucusLogs || [],
+    contraception: cycleData.contraception || null,
+    contraceptionLogs: cycleData.contraceptionLogs || [],
+    phaseReminders: cycleData.phaseReminders || [],
   };
 }
 
@@ -12334,6 +12538,238 @@ function saveOpkLog(){
   if(typeof vikramToast==='function') vikramToast(msgs[_opkLogResult] || '✅ Logged');
 }
 
+// ── Cervical mucus log ──────────────────────────────────────────────────────
+const MUCUS_TYPES = {
+  dry:    { emoji:'⚪', label:'Dry',        fertility:'Low'  },
+  sticky: { emoji:'🟤', label:'Sticky',     fertility:'Low'  },
+  creamy: { emoji:'🟡', label:'Creamy',     fertility:'Medium' },
+  watery: { emoji:'💧', label:'Watery',     fertility:'High' },
+  eggwhite:{ emoji:'🥚', label:'Egg white', fertility:'Peak' },
+};
+let _mucusLogDate = null;
+let _mucusLogType = null;
+function openMucusLogSheet(dateTs){
+  if(typeof haptic === 'function') haptic('light');
+  _mucusLogDate = dateTs || new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+  const existing = (cycleData.mucusLogs||[]).find(s=>{
+    const sd = new Date(s.date); const sm = new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime();
+    return sm === _mucusLogDate;
+  });
+  _mucusLogType = existing ? existing.type : null;
+  const noteEl = document.getElementById('mucusLogNoteInput');
+  if(noteEl) noteEl.value = existing ? (existing.note||'') : '';
+  renderMucusLogSheet();
+  const sheet = document.getElementById('mucusLogSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closeMucusLogSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('mucusLogSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+function renderMucusLogSheet(){
+  const titleEl = document.getElementById('mucusLogDateLabel');
+  if(titleEl){
+    const d = new Date(_mucusLogDate);
+    const todayMid = new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+    titleEl.textContent = (_mucusLogDate === todayMid) ? 'Today' : d.toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'});
+  }
+  const phaseEl = document.getElementById('mucusLogPhaseTag');
+  if(phaseEl){
+    const ph = (typeof getPhaseForDate === 'function') ? getPhaseForDate(_mucusLogDate) : null;
+    phaseEl.innerHTML = ph ? phaseTagHTML(ph.name) + `<span style="font-size:11px;font-weight:700;color:var(--dsub);margin-left:6px;">Day ${ph.dayIn}</span>` : `<span style="font-size:11px;font-weight:700;color:var(--dsub);">Log a period start date to see phase</span>`;
+  }
+  document.querySelectorAll('#mucusTypeRow .ttc-result-chip').forEach(c=>{
+    const v = c.getAttribute('data-mucus');
+    c.classList.toggle('selected', v === _mucusLogType);
+  });
+}
+function mucusLogSelectType(val){
+  if(typeof haptic === 'function') haptic('light');
+  _mucusLogType = (_mucusLogType === val) ? null : val;
+  renderMucusLogSheet();
+}
+function saveMucusLog(){
+  if(!_mucusLogType){
+    if(typeof vikramToast==='function') vikramToast('⚠️ Pick a mucus type');
+    return;
+  }
+  if(typeof haptic === 'function') haptic('light');
+  const note = (document.getElementById('mucusLogNoteInput')?.value || '').trim().slice(0,200);
+  const entry = { date: _mucusLogDate, type: _mucusLogType, note };
+  cycleData.mucusLogs = cycleData.mucusLogs || [];
+  const idx = cycleData.mucusLogs.findIndex(s=>{
+    const sd = new Date(s.date); const sm = new Date(sd.getFullYear(),sd.getMonth(),sd.getDate()).getTime();
+    return sm === _mucusLogDate;
+  });
+  if(idx >= 0) cycleData.mucusLogs[idx] = entry;
+  else cycleData.mucusLogs.push(entry);
+  cycleData.mucusLogs.sort((a,b)=>a.date-b.date);
+  saveCycle();
+  closeMucusLogSheet();
+  renderCycleSheet();
+  const mm = MUCUS_TYPES[_mucusLogType];
+  if(typeof vikramToast==='function') vikramToast(`✅ ${mm.label} mucus logged`);
+}
+function mucusDeleteLog(idx){
+  if(typeof haptic === 'function') haptic('light');
+  const logs = cycleData.mucusLogs || [];
+  if(idx < 0 || idx >= logs.length) return;
+  logs.splice(idx,1);
+  cycleData.mucusLogs = logs;
+  saveCycle();
+  renderTtcHistorySheet();
+  renderCycleSheet();
+  if(typeof vikramToast==='function') vikramToast('🗑 Entry deleted');
+}
+
+// ══ BIRTH CONTROL / CONTRACEPTION TRACKING ════════════════════════════════
+// cycleData.contraception: { type:'pill'|'patch'|'ring'|'other', packLength:21|28, placeboLength:7, startDate, reminderTime, reminderOn }
+// cycleData.contraceptionLogs: [{ date, taken:bool }] — one entry per day
+const CONTRA_TYPES = {
+  pill:  { emoji:'💊', label:'Birth control pill' },
+  patch: { emoji:'🩹', label:'Patch' },
+  ring:  { emoji:'⭕', label:'Ring' },
+  other: { emoji:'💉', label:'Other' },
+};
+function _contraTodayMid(){
+  return new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()).getTime();
+}
+function contraPackDayInfo(){
+  const c = cycleData.contraception;
+  if(!c || !c.startDate) return null;
+  const start = new Date(c.startDate); const startMid = new Date(start.getFullYear(),start.getMonth(),start.getDate()).getTime();
+  const todayMid = _contraTodayMid();
+  const totalLen = (c.packLength||21) + (c.placeboLength||0);
+  const daysSince = Math.floor((todayMid - startMid) / 86400000);
+  const dayInPack = ((daysSince % totalLen) + totalLen) % totalLen + 1; // 1-indexed
+  const isPlacebo = c.placeboLength > 0 && dayInPack > (c.packLength||21);
+  return { dayInPack, totalLen, isPlacebo, activeLen: c.packLength||21 };
+}
+function contraTakenToday(){
+  const today = _contraTodayMid();
+  return (cycleData.contraceptionLogs||[]).some(l=>{
+    const ld = new Date(l.date); return new Date(ld.getFullYear(),ld.getMonth(),ld.getDate()).getTime()===today && l.taken;
+  });
+}
+function openContraSetupSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const c = cycleData.contraception || { type:'pill', packLength:21, placeboLength:7, startDate:null, reminderTime:'08:00', reminderOn:false };
+  const typeEl = document.getElementById('contraTypeSelect');
+  if(typeEl) typeEl.value = c.type || 'pill';
+  const plEl = document.getElementById('contraPackLenInput');
+  if(plEl) plEl.value = c.packLength || 21;
+  const phEl = document.getElementById('contraPlaceboLenInput');
+  if(phEl) phEl.value = c.placeboLength != null ? c.placeboLength : 7;
+  const sdEl = document.getElementById('contraStartDateInput');
+  if(sdEl) sdEl.value = c.startDate ? new Date(c.startDate).toISOString().slice(0,10) : '';
+  const rtEl = document.getElementById('contraReminderTimeInput');
+  if(rtEl) rtEl.value = c.reminderTime || '08:00';
+  const sheet = document.getElementById('contraSetupSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closeContraSetupSheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('contraSetupSheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+function saveContraSetup(){
+  const type = document.getElementById('contraTypeSelect')?.value || 'pill';
+  const packLength = Math.max(1, parseInt(document.getElementById('contraPackLenInput')?.value,10) || 21);
+  const placeboLength = Math.max(0, parseInt(document.getElementById('contraPlaceboLenInput')?.value,10) || 0);
+  const startRaw = document.getElementById('contraStartDateInput')?.value;
+  if(!startRaw){
+    if(typeof vikramToast==='function') vikramToast('⚠️ Pick a pack start date');
+    return;
+  }
+  const startDate = new Date(startRaw + 'T00:00:00').getTime();
+  const reminderTime = document.getElementById('contraReminderTimeInput')?.value || '08:00';
+  if(typeof haptic === 'function') haptic('light');
+  cycleData.contraception = {
+    type, packLength, placeboLength, startDate, reminderTime,
+    reminderOn: (cycleData.contraception && cycleData.contraception.reminderOn) || false
+  };
+  saveCycle();
+  closeContraSetupSheet();
+  renderCycleSheet();
+  if(typeof vikramToast==='function') vikramToast('✅ Birth control tracking set up');
+}
+function contraToggleReminder(){
+  if(typeof haptic === 'function') haptic('light');
+  cycleData.contraception = cycleData.contraception || {};
+  cycleData.contraception.reminderOn = !cycleData.contraception.reminderOn;
+  if(cycleData.contraception.reminderOn && typeof requestNotifPerm === 'function' && 'Notification' in window && Notification.permission !== 'granted'){
+    requestNotifPerm().then(()=>{ saveCycle(); renderCycleSheet(); });
+    return;
+  }
+  saveCycle();
+  renderCycleSheet();
+}
+function contraMarkTaken(){
+  if(typeof haptic === 'function') haptic('light');
+  const today = _contraTodayMid();
+  cycleData.contraceptionLogs = cycleData.contraceptionLogs || [];
+  const idx = cycleData.contraceptionLogs.findIndex(l=>{
+    const ld = new Date(l.date); return new Date(ld.getFullYear(),ld.getMonth(),ld.getDate()).getTime()===today;
+  });
+  if(idx >= 0) cycleData.contraceptionLogs[idx].taken = !cycleData.contraceptionLogs[idx].taken;
+  else cycleData.contraceptionLogs.push({ date: Date.now(), taken: true });
+  saveCycle();
+  renderCycleSheet();
+  if(typeof vikramToast==='function') vikramToast(contraTakenToday() ? '✅ Marked taken' : '↩️ Unmarked');
+}
+function contraRemove(){
+  if(typeof haptic === 'function') haptic('light');
+  cycleData.contraception = null;
+  saveCycle();
+  renderCycleSheet();
+  if(typeof vikramToast==='function') vikramToast('🗑 Birth control tracking removed');
+}
+function openContraHistorySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  renderContraHistorySheet();
+  const sheet = document.getElementById('contraHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.classList.add('open');
+}
+function closeContraHistorySheet(){
+  if(typeof haptic === 'function') haptic('light');
+  const sheet = document.getElementById('contraHistorySheet');
+  const ov    = document.getElementById('ov');
+  if(sheet) sheet.classList.remove('open');
+  if(ov)    ov.classList.remove('open');
+}
+function renderContraHistorySheet(){
+  const body = document.getElementById('contraHistorySheetBody');
+  if(!body) return;
+  const logs = (cycleData.contraceptionLogs||[]).filter(l=>l.taken).sort((a,b)=>b.date-a.date);
+  if(!logs.length){
+    body.innerHTML = `<div style="padding:40px 24px;text-align:center;font-size:13px;font-weight:700;color:var(--dsub);">No doses logged yet 💊</div>`;
+    return;
+  }
+  body.innerHTML = `<div class="ssec" style="padding-top:4px;">
+    <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>Taken doses</span>
+      <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${logs.length}</span>
+    </div>
+    ${logs.map(l=>`<div class="srow" style="border-bottom:none;">
+      <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;"></div>
+        <div class="slbl">${new Date(l.date).toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'})}</div>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
 // ── BBT (basal body temperature) log ──
 let _bbtLogDate = null;
 function openBbtLogSheet(dateTs){
@@ -12455,13 +12891,13 @@ function _ttcDateStr(ts){
 function renderTtcBbtChart(logs){
   if(logs.length < 2) return '';
   const unit = cycleData.bbtUnit || 'C';
-  const W = Math.max(320, logs.length * 34), H = 140, padL = 34, padR = 12, padT = 14, padB = 22;
+  const W = Math.max(320, logs.length * 34), H = 168, padL = 34, padR = 12, padT = 14, padB = 46;
   const vals = logs.map(l => _bbtToUnit(l, unit));
   let lo = Math.min(...vals), hi = Math.max(...vals);
   if(hi - lo < 0.4){ const mid=(hi+lo)/2; lo = mid-0.4; hi = mid+0.4; }
   lo -= 0.15; hi += 0.15;
   const xStep = (W - padL - padR) / Math.max(1, logs.length - 1);
-  const yFor = v => padT + (1 - (v - lo)/(hi - lo)) * (H - padT - padB);
+  const yFor = v => padT + (1 - (v - lo)/(hi - lo)) * (H - padT - padB - 22);
   const xFor = i => padL + i * xStep;
   const pathD = logs.map((l,i)=>`${i===0?'M':'L'}${xFor(i).toFixed(1)},${yFor(vals[i]).toFixed(1)}`).join(' ');
   const ovulSet = new Set((cycleData.logs||[]).filter(l=>l.type==='ovulation').map(l=>{
@@ -12476,7 +12912,7 @@ function renderTtcBbtChart(logs){
   const xLabels = logs.map((l,i)=>{
     if(logs.length > 10 && i % Math.ceil(logs.length/8) !== 0 && i !== logs.length-1) return '';
     const d = new Date(l.date);
-    return `<text x="${xFor(i).toFixed(1)}" y="${H-6}" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--dsub)">${d.getDate()}/${d.getMonth()+1}</text>`;
+    return `<text x="${xFor(i).toFixed(1)}" y="${H-30}" text-anchor="middle" font-size="8.5" font-weight="700" fill="var(--dsub)">${d.getDate()}/${d.getMonth()+1}</text>`;
   }).join('');
   const yTicks = [lo + (hi-lo)*0.15, lo + (hi-lo)*0.5, lo + (hi-lo)*0.85];
   const yLabels = yTicks.map(v=>{
@@ -12484,15 +12920,31 @@ function renderTtcBbtChart(logs){
     return `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${W-padR}" y2="${y.toFixed(1)}" stroke="var(--sbdr)" stroke-width="1" stroke-dasharray="3,3"/>
       <text x="${padL-5}" y="${(y+3).toFixed(1)}" text-anchor="end" font-size="8.5" font-weight="700" fill="var(--dsub)">${v.toFixed(1)}</text>`;
   }).join('');
+  // Cervical mucus row underneath the temperature line — same day-by-day x positions
+  const mucusColors = { dry:'#d4d4d8', sticky:'#a78bfa', creamy:'#fbbf24', watery:'#38bdf8', eggwhite:'#22c55e' };
+  const mucusRowY = H - 16;
+  const mucusRow = logs.map((l,i)=>{
+    const dMid = (()=>{ const d=new Date(l.date); return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime(); })();
+    const ml = (cycleData.mucusLogs||[]).find(m=>{
+      const md = new Date(m.date); return new Date(md.getFullYear(),md.getMonth(),md.getDate()).getTime() === dMid;
+    });
+    if(!ml) return '';
+    const x = xFor(i);
+    const color = mucusColors[ml.type] || '#d4d4d8';
+    return `<circle cx="${x.toFixed(1)}" cy="${mucusRowY}" r="3.5" fill="${color}"/>`;
+  }).join('');
+  const hasMucusRow = (cycleData.mucusLogs||[]).length > 0;
   return `<div class="ttc-bbt-chart-wrap"><svg class="ttc-bbt-chart-svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
     ${yLabels}
     <path d="${pathD}" fill="none" stroke="#FF6B9D" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
     ${dots}
     ${xLabels}
+    ${hasMucusRow ? `<text x="${padL-5}" y="${mucusRowY+3}" text-anchor="end" font-size="8" font-weight="700" fill="var(--dsub)">🥚</text>${mucusRow}` : ''}
   </svg></div>
-  <div style="display:flex;gap:14px;padding:0 0 4px;font-size:10px;font-weight:700;color:var(--dsub);">
+  <div style="display:flex;gap:14px;padding:0 0 4px;font-size:10px;font-weight:700;color:var(--dsub);flex-wrap:wrap;">
     <span style="display:flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:#FF6B9D;display:inline-block;"></span>Temp (°${unit})</span>
     <span style="display:flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:#a855f7;display:inline-block;"></span>Ovulation logged</span>
+    ${hasMucusRow ? `<span style="display:flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:#22c55e;display:inline-block;"></span>Mucus (egg-white = peak)</span>` : ''}
   </div>`;
 }
 function renderTtcHistorySheet(){
@@ -12575,6 +13027,41 @@ function renderTtcHistorySheet(){
     return;
   }
 
+  if(_ttcHistTab === 'mucus'){
+    const logs = cycleData.mucusLogs || [];
+    if(!logs.length){
+      body.innerHTML = `<div class="ttc-mode-empty">No cervical mucus entries yet — log above 🥚</div>`;
+      return;
+    }
+    body.innerHTML = `<div class="ssec" style="padding-top:4px;">
+      <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>All entries</span>
+        <span style="font-size:10px;font-weight:700;color:var(--dsub);background:var(--tgbg);padding:2px 8px;border-radius:8px;">${logs.length} ${logs.length===1?'entry':'entries'}</span>
+      </div>
+      ${[...logs].reverse().map((l, revIdx)=>{
+        const realIdx = logs.length - 1 - revIdx;
+        const mm = MUCUS_TYPES[l.type] || MUCUS_TYPES.dry;
+        return `<div class="ttc-log-row">
+          <div class="ttc-log-top">
+            <div class="ttc-log-left">
+              <div class="ttc-log-icon">${mm.emoji}</div>
+              <div>
+                <div class="ttc-log-date">${_ttcDateStr(l.date)}</div>
+                <div class="ttc-log-detail">${mm.label} · ${mm.fertility} fertility</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
+              <button class="cyc-log-del" title="Edit" onclick="closeTtcHistorySheet();openMucusLogSheet(${l.date})">✏️</button>
+              <button class="cyc-log-del" title="Delete" onclick="mucusDeleteLog(${realIdx})">🗑</button>
+            </div>
+          </div>
+          ${l.note ? `<div class="ttc-log-note">"${esc(l.note)}"</div>` : ''}
+        </div>`;
+      }).join('')}
+    </div>`;
+    return;
+  }
+
   // BBT tab
   const logs = cycleData.bbtLogs || [];
   if(!logs.length){
@@ -12615,7 +13102,7 @@ function renderTtcHistorySheet(){
 }
 function ttcDeleteLog(kind, idx){
   if(typeof haptic === 'function') haptic('light');
-  const key = kind==='bd' ? 'intercourseLogs' : kind==='opk' ? 'opkLogs' : 'bbtLogs';
+  const key = kind==='bd' ? 'intercourseLogs' : kind==='opk' ? 'opkLogs' : kind==='mucus' ? 'mucusLogs' : 'bbtLogs';
   const logs = cycleData[key] || [];
   if(idx < 0 || idx >= logs.length) return;
   logs.splice(idx, 1);
@@ -12987,7 +13474,7 @@ function cycRing(pct, emoji){ return ''; }
 function cycCard(cls, pct, emoji, val, sub){ return ''; }
 
 // ══ CYCLE MODE — Cycle Tracking / Trying to Conceive / Pregnant ══════════════
-// Persisted on cycleData.mode: 'cycle' | 'ttc' | 'pregnant'
+// Persisted on cycleData.mode: 'cycle' | 'ttc' | 'avoid' | 'pregnant'
 // Pregnancy dates persisted on cycleData.pregnancy: { lmpDate, dueDate, setAt }
 
 function getCycleMode(){
@@ -12998,6 +13485,7 @@ function _cycleModeMeta(mode){
   return {
     cycle:    { icon:'🌸', label:'Mode',      title:'🌸 My Cycle' },
     ttc:      { icon:'🌱', label:'TTC',       title:'🌱 Trying to Conceive' },
+    avoid:    { icon:'🛡️', label:'Avoiding',  title:'🛡️ Avoiding Pregnancy' },
     pregnant: { icon:'🤰', label:'Pregnant',  title:'🤰 Pregnancy' },
   }[mode] || { icon:'🌸', label:'Mode', title:'🌸 My Cycle' };
 }
@@ -13011,9 +13499,10 @@ function _applyCycleModeUI(){
   const lbl  = document.getElementById('cycleModeBtnLabel');
   const title= document.getElementById('cycleTitleLabel');
   if(btn){
-    btn.classList.remove('mode-ttc','mode-pregnant');
+    btn.classList.remove('mode-ttc','mode-pregnant','mode-avoid');
     if(mode==='ttc') btn.classList.add('mode-ttc');
     if(mode==='pregnant') btn.classList.add('mode-pregnant');
+    if(mode==='avoid') btn.classList.add('mode-avoid');
   }
   if(icon) icon.textContent = meta.icon;
   if(lbl)  lbl.textContent  = meta.label;
@@ -13558,6 +14047,29 @@ function renderCycleSheet(){
     </div>
   </div>` : ''}
 
+  <!-- ── AVOIDING PREGNANCY MODE BANNER ── -->
+  ${getCycleMode() === 'avoid' && !notSet ? `
+  <div class="ttc-banner" style="background:linear-gradient(155deg,rgba(56,189,248,.12),rgba(14,165,233,.06));border-color:rgba(14,165,233,.22);">
+    <div class="ttc-banner-icon">🛡️</div>
+    <div class="ttc-banner-body">
+      <div class="ttc-banner-title">Pregnancy risk today: ${conceptionChance === 'Peak' ? 'High' : conceptionChance === 'High' ? 'Elevated' : conceptionChance === 'Rising' ? 'Rising' : 'Low'}</div>
+      <div class="ttc-banner-sub">${
+        inFertile ? 'You\'re in your fertile window — use protection or abstain if avoiding pregnancy.'
+        : ovulLog ? 'Ovulation logged this cycle. Fertile window has passed — risk is low.'
+        : (dFertileStart !== null && dFertileStart > 0) ? `Fertile window opens in ${dFertileStart}d — plan ahead.`
+        : 'Track ovulation to know exactly when your risk window opens.'
+      }</div>
+    </div>
+  </div>` : ''}
+  ${getCycleMode() === 'avoid' && notSet ? `
+  <div class="ttc-banner" style="background:linear-gradient(155deg,rgba(56,189,248,.12),rgba(14,165,233,.06));border-color:rgba(14,165,233,.22);">
+    <div class="ttc-banner-icon">🛡️</div>
+    <div class="ttc-banner-body">
+      <div class="ttc-banner-title">Avoiding Pregnancy mode</div>
+      <div class="ttc-banner-sub">Log your last period below so we can flag your higher-risk fertile days.</div>
+    </div>
+  </div>` : ''}
+
   <!-- ── LOG TODAY ── -->
   <div class="ssec" style="padding-bottom:6px;">
     <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
@@ -13615,7 +14127,7 @@ function renderCycleSheet(){
       </div>
       <button class="cyc-log-btn-action ovul" onclick="cyLogOvulation()">Today</button>
     </div>
-    ${getCycleMode() === 'ttc' ? `
+    ${(getCycleMode() === 'ttc' || getCycleMode() === 'avoid') ? `
     <div class="cyc-log-btn-row">
       <div class="cyc-log-btn-left">
         <div class="cyc-log-btn-dot" style="background:#ec4899;"></div>
@@ -13695,7 +14207,7 @@ function renderCycleSheet(){
   </div>
 
   <!-- ── TTC HISTORY ENTRIES (Intercourse / OPK / BBT) ── -->
-  ${getCycleMode() === 'ttc' ? `
+  ${(getCycleMode() === 'ttc' || getCycleMode() === 'avoid') ? `
   <div class="ssec" style="padding-top:0;">
     <div class="srow" style="cursor:pointer;" onclick="openTtcHistorySheet('bd')">
       <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
@@ -13713,6 +14225,16 @@ function renderCycleSheet(){
         <div style="min-width:0;">
           <div class="slbl">Ovulation test results</div>
           <div class="ssub">${(cycleData.opkLogs||[]).length} ${(cycleData.opkLogs||[]).length===1?'entry':'entries'}</div>
+        </div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>
+    <div class="srow" style="cursor:pointer;" onclick="openTtcHistorySheet('mucus')">
+      <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(34,197,94,.18),rgba(34,197,94,.08));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🥚</div>
+        <div style="min-width:0;">
+          <div class="slbl">Cervical mucus</div>
+          <div class="ssub">${(cycleData.mucusLogs||[]).length} ${(cycleData.mucusLogs||[]).length===1?'entry':'entries'}</div>
         </div>
       </div>
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -13755,6 +14277,49 @@ function renderCycleSheet(){
       </div>
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
+  </div>
+
+  <!-- ── BIRTH CONTROL / CONTRACEPTION ── -->
+  <div class="ssec" style="padding-top:0;">
+    ${(()=>{
+      const c = cycleData.contraception;
+      if(!c){
+        return `<div class="srow" style="cursor:pointer;border-bottom:none;" onclick="openContraSetupSheet()">
+          <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+            <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(236,72,153,.18),rgba(236,72,153,.08));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">💊</div>
+            <div style="min-width:0;">
+              <div class="slbl">Birth control</div>
+              <div class="ssub">Set up pill, patch, or ring tracking</div>
+            </div>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>`;
+      }
+      const info = contraPackDayInfo();
+      const taken = contraTakenToday();
+      const tm = CONTRA_TYPES[c.type] || CONTRA_TYPES.pill;
+      return `<div class="srow">
+        <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:0;">
+          <div style="width:36px;height:36px;border-radius:12px;background:linear-gradient(135deg,rgba(236,72,153,.18),rgba(236,72,153,.08));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">${tm.emoji}</div>
+          <div style="min-width:0;">
+            <div class="slbl">${tm.label}${info ? ` · Day ${info.dayInPack}/${info.totalLen}` : ''}</div>
+            <div class="ssub">${info && info.isPlacebo ? 'Placebo / reminder week' : info ? 'Active dose week' : 'Set a start date'}</div>
+          </div>
+        </div>
+        <button onclick="contraMarkTaken()" style="padding:7px 14px;border-radius:10px;border:1.5px solid ${taken?'#22c55e':'var(--sbdr)'};background:${taken?'rgba(34,197,94,.14)':'var(--sbg)'};color:${taken?'#22c55e':'var(--dsub)'};font-size:11.5px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;flex-shrink:0;">${taken?'✓ Taken':'Mark taken'}</button>
+      </div>
+      <div class="srow" style="cursor:pointer;" onclick="contraToggleReminder()">
+        <div class="slbl">Daily reminder</div>
+        <div class="cm-opt-switch${c.reminderOn?' on':''}"><div class="cm-opt-switch-knob"></div></div>
+      </div>
+      <div class="srow" style="border-bottom:none;">
+        <span style="font-size:12px;font-weight:800;color:var(--dsub);cursor:pointer;" onclick="openContraHistorySheet()">View history</span>
+        <div style="display:flex;gap:10px;">
+          <span style="font-size:12px;font-weight:800;color:var(--dsub);cursor:pointer;" onclick="openContraSetupSheet()">Edit</span>
+          <span style="font-size:12px;font-weight:800;color:#f43f5e;cursor:pointer;" onclick="contraRemove()">Remove</span>
+        </div>
+      </div>`;
+    })()}
   </div>
 
   <!-- ── WEIGHT & WATER LOG ── -->
@@ -13816,6 +14381,35 @@ function renderCycleSheet(){
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dsub)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
     </div>
+  </div>
+
+  <!-- ── PHASE-AWARE CUSTOM REMINDERS ── -->
+  <div class="ssec" style="padding-top:0;">
+    <div class="ssect" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>Cycle reminders</span>
+      <button onclick="openPhaseReminderSheet()" style="font-size:11px;font-weight:800;color:var(--tf,#1a1a1a);background:var(--tgbg);border:none;border-radius:8px;padding:4px 10px;cursor:pointer;font-family:'Nunito',sans-serif;">+ Add</button>
+    </div>
+    ${(()=>{
+      const prs = cycleData.phaseReminders || [];
+      if(!prs.length) return `<div style="padding:12px 4px;font-size:12px;font-weight:700;color:var(--dsub);">No cycle reminders yet — add one to get notified at the right phase 🔔</div>`;
+      return prs.map(r=>{
+        const sub = _phaseReminderSubtitle(r);
+        const fires = _phaseReminderShouldFireToday(r);
+        return `<div class="srow" style="border-bottom:none;">
+          <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+            <div style="width:8px;height:8px;border-radius:50%;background:${fires?'#22c55e':'var(--dsub)'};flex-shrink:0;"></div>
+            <div style="min-width:0;">
+              <div class="slbl">${esc(r.label)}</div>
+              <div class="ssub">${sub} · ${r.time||'08:00'}${fires?' · <span style="color:#22c55e;font-weight:800;">fires today</span>':''}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+            <button class="cyc-log-del" title="Edit" onclick="openPhaseReminderSheet('${r.id}')">✏️</button>
+            <button class="cyc-log-del" title="Delete" onclick="deletePhaseReminder('${r.id}')">🗑</button>
+          </div>
+        </div>`;
+      }).join('');
+    })()}
   </div>
 
   <!-- ── CLINIC VISIT SUMMARY & EXPORT ── -->
@@ -15745,7 +16339,7 @@ function closePartnerSyncSheet(){
     const existing = origOvHandler.getAttribute('onclick') || '';
     origOvHandler.setAttribute('onclick',
       existing.replace(')(this)',
-        `)(this); if(document.getElementById('partnerSyncSheet')?.classList.contains('open')){closePartnerSyncSheet();} if(document.getElementById('cycleSettingsSheet')?.classList.contains('open')){closeCycleSettingsSheet();} if(document.getElementById('logHistorySheet')?.classList.contains('open')){closeLogHistorySheet();} if(document.getElementById('symptomLogSheet')?.classList.contains('open')){closeSymptomLogSheet();} if(document.getElementById('symptomHistorySheet')?.classList.contains('open')){closeSymptomHistorySheet();} if(document.getElementById('intercourseLogSheet')?.classList.contains('open')){closeIntercourseLogSheet();} if(document.getElementById('opkLogSheet')?.classList.contains('open')){closeOpkLogSheet();} if(document.getElementById('bbtLogSheet')?.classList.contains('open')){closeBbtLogSheet();} if(document.getElementById('ttcHistorySheet')?.classList.contains('open')){closeTtcHistorySheet();} if(document.getElementById('partnerSymptomHistorySheet')?.classList.contains('open')){closePartnerSymptomHistorySheet();} if(document.getElementById('partnerTtcHistorySheet')?.classList.contains('open')){closePartnerTtcHistorySheet();} if(document.getElementById('medLogSheet')?.classList.contains('open')){closeMedLogSheet();} if(document.getElementById('medHistorySheet')?.classList.contains('open')){closeMedHistorySheet();} if(document.getElementById('vitalsLogSheet')?.classList.contains('open')){closeVitalsLogSheet();} if(document.getElementById('vitalsHistorySheet')?.classList.contains('open')){closeVitalsHistorySheet();} if(document.getElementById('clinicSummarySheet')?.classList.contains('open')){closeClinicSummarySheet();}`
+        `)(this); if(document.getElementById('partnerSyncSheet')?.classList.contains('open')){closePartnerSyncSheet();} if(document.getElementById('cycleSettingsSheet')?.classList.contains('open')){closeCycleSettingsSheet();} if(document.getElementById('logHistorySheet')?.classList.contains('open')){closeLogHistorySheet();} if(document.getElementById('symptomLogSheet')?.classList.contains('open')){closeSymptomLogSheet();} if(document.getElementById('symptomHistorySheet')?.classList.contains('open')){closeSymptomHistorySheet();} if(document.getElementById('intercourseLogSheet')?.classList.contains('open')){closeIntercourseLogSheet();} if(document.getElementById('opkLogSheet')?.classList.contains('open')){closeOpkLogSheet();} if(document.getElementById('bbtLogSheet')?.classList.contains('open')){closeBbtLogSheet();} if(document.getElementById('ttcHistorySheet')?.classList.contains('open')){closeTtcHistorySheet();} if(document.getElementById('partnerSymptomHistorySheet')?.classList.contains('open')){closePartnerSymptomHistorySheet();} if(document.getElementById('partnerTtcHistorySheet')?.classList.contains('open')){closePartnerTtcHistorySheet();} if(document.getElementById('medLogSheet')?.classList.contains('open')){closeMedLogSheet();} if(document.getElementById('medHistorySheet')?.classList.contains('open')){closeMedHistorySheet();} if(document.getElementById('vitalsLogSheet')?.classList.contains('open')){closeVitalsLogSheet();} if(document.getElementById('vitalsHistorySheet')?.classList.contains('open')){closeVitalsHistorySheet();} if(document.getElementById('clinicSummarySheet')?.classList.contains('open')){closeClinicSummarySheet();} if(document.getElementById('mucusLogSheet')?.classList.contains('open')){closeMucusLogSheet();} if(document.getElementById('contraSetupSheet')?.classList.contains('open')){closeContraSetupSheet();} if(document.getElementById('contraHistorySheet')?.classList.contains('open')){closeContraHistorySheet();} if(document.getElementById('phaseReminderSheet')?.classList.contains('open')){closePhaseReminderSheet();}`
       )
     );
   }
@@ -15960,6 +16554,9 @@ function exportCycleData(){
   (cycleData.opkLogs||[]).forEach(l=>{
     rows.push(['Ovulation test', new Date(l.date).toLocaleDateString('en-NP'), l.result||'', '', '', l.note||'']);
   });
+  (cycleData.mucusLogs||[]).forEach(l=>{
+    rows.push(['Cervical mucus', new Date(l.date).toLocaleDateString('en-NP'), l.type||'', '', '', l.note||'']);
+  });
   (cycleData.bbtLogs||[]).forEach(l=>{
     const unit = cycleData.bbtUnit || 'C';
     const t = (typeof _bbtToUnit === 'function') ? _bbtToUnit(l, unit) : l.temp;
@@ -16032,6 +16629,7 @@ function renderClinicSummarySheet(){
   const recentBbt = (cycleData.bbtLogs||[]).filter(l=>l.date >= sixMoAgo);
   const recentOpk = (cycleData.opkLogs||[]).filter(l=>l.date >= sixMoAgo);
   const recentBd  = (cycleData.intercourseLogs||[]).filter(l=>l.date >= sixMoAgo);
+  const recentMucus = (cycleData.mucusLogs||[]).filter(l=>l.date >= sixMoAgo);
 
   const lastStart = cycleData.lastPeriodStart ? new Date(cycleData.lastPeriodStart).toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'}) : '—';
 
@@ -16042,6 +16640,7 @@ function renderClinicSummarySheet(){
 
   <div class="ssec" style="padding-top:0;">
     <div class="ssect">Cycle overview</div>
+    <div class="srow"><div class="slbl">Tracking goal</div><div class="ssub" style="text-align:right;">${_cycleModeMeta(getCycleMode()).title.replace(/^[^\s]+\s/,'')}</div></div>
     <div class="srow"><div class="slbl">Last period start</div><div class="ssub" style="text-align:right;">${lastStart}</div></div>
     <div class="srow"><div class="slbl">Typical cycle length</div><div class="ssub" style="text-align:right;">${cycleData.cycleLength||28} days</div></div>
     <div class="srow"><div class="slbl">Typical period length</div><div class="ssub" style="text-align:right;">${cycleData.periodLength||5} days</div></div>
@@ -16059,6 +16658,7 @@ function renderClinicSummarySheet(){
     <div class="ssect">TTC activity (6 months)</div>
     <div class="srow"><div class="slbl">Intercourse entries</div><div class="ssub">${recentBd.length}</div></div>
     <div class="srow"><div class="slbl">Ovulation tests</div><div class="ssub">${recentOpk.length} · ${recentOpk.filter(l=>l.result==='pos').length} positive</div></div>
+    <div class="srow"><div class="slbl">Cervical mucus entries</div><div class="ssub">${recentMucus.length}</div></div>
     <div class="srow" style="border-bottom:none;"><div class="slbl">BBT readings</div><div class="ssub">${recentBbt.length}</div></div>
   </div>
 
@@ -16070,6 +16670,53 @@ function renderClinicSummarySheet(){
 
   <div style="padding:14px 16px 4px;font-size:10.5px;font-weight:700;color:var(--dsub);line-height:1.6;">This is a summary generated from your self-reported logs — it isn't a medical diagnosis. Bring this screen to your appointment, or use Export to download the full data as a CSV.</div>
   `;
+
+  // Stash the data this render used so the PDF export can reuse it without recomputation
+  window._clinicSummaryData = { lastStart, avgLen, stdDev, recentCycles, topSymptoms, recentBd, recentOpk, recentMucus, recentBbt };
+}
+
+function exportClinicSummaryPDF(){
+  if(typeof haptic === 'function') haptic('light');
+  const d = window._clinicSummaryData;
+  if(!d){
+    if(typeof vikramToast==='function') vikramToast('⚠️ Open the summary first');
+    return;
+  }
+  const goalTitle = _cycleModeMeta(getCycleMode()).title.replace(/^[^\s]+\s/,'');
+  const genDate = new Date().toLocaleDateString('en-NP',{month:'long',day:'numeric',year:'numeric'});
+  const area = document.getElementById('clinicPrintArea');
+  if(!area) return;
+  area.innerHTML = `
+    <div class="cpa-h1">🩺 Clinic Visit Summary</div>
+    <div class="cpa-meta">Generated ${genDate} · last 6 months of data</div>
+
+    <div class="cpa-sect">Cycle overview</div>
+    <div class="cpa-row"><span>Tracking goal</span><span>${esc(goalTitle)}</span></div>
+    <div class="cpa-row"><span>Last period start</span><span>${esc(d.lastStart)}</span></div>
+    <div class="cpa-row"><span>Typical cycle length</span><span>${cycleData.cycleLength||28} days</span></div>
+    <div class="cpa-row"><span>Typical period length</span><span>${cycleData.periodLength||5} days</span></div>
+    <div class="cpa-row"><span>Avg length (recent ${d.recentCycles.length||0} cycles)</span><span>${d.avgLen!=null ? d.avgLen.toFixed(1)+'d ±'+d.stdDev.toFixed(1)+'d' : 'Not enough data'}</span></div>
+
+    <div class="cpa-sect">Most common symptoms</div>
+    ${d.topSymptoms.length ? d.topSymptoms.map(s=>`<div class="cpa-row"><span>${esc(s.emoji)} ${esc(s.label)}</span><span>${s.count}×</span></div>`).join('') : `<div class="cpa-row"><span>No symptoms logged in this period</span><span></span></div>`}
+
+    <div class="cpa-sect">TTC / fertility activity (6 months)</div>
+    <div class="cpa-row"><span>Intercourse entries</span><span>${d.recentBd.length}</span></div>
+    <div class="cpa-row"><span>Ovulation tests</span><span>${d.recentOpk.length} · ${d.recentOpk.filter(l=>l.result==='pos').length} positive</span></div>
+    <div class="cpa-row"><span>Cervical mucus entries</span><span>${d.recentMucus.length}</span></div>
+    <div class="cpa-row"><span>BBT readings</span><span>${d.recentBbt.length}</span></div>
+
+    ${cycleData.medList && cycleData.medList.length ? `
+    <div class="cpa-sect">Current medications &amp; supplements</div>
+    ${cycleData.medList.map(m=>`<div class="cpa-row"><span>${esc(m.name)}</span><span>${m.dose?esc(m.dose):''}</span></div>`).join('')}` : ''}
+
+    ${cycleData.contraception ? `
+    <div class="cpa-sect">Contraception</div>
+    <div class="cpa-row"><span>Method</span><span>${esc((CONTRA_TYPES[cycleData.contraception.type]||CONTRA_TYPES.pill).label)}</span></div>` : ''}
+
+    <div class="cpa-foot">This is a summary generated from self-reported logs in the Vikram app — it is not a medical diagnosis.</div>
+  `;
+  setTimeout(()=>window.print(), 80);
 }
 
 let widgetTab='ios';
@@ -17490,7 +18137,25 @@ window.pomoSkip  = pomoSkip;
 .cv-divider{border:none;border-top:1.5px solid var(--border);margin:4px 0 14px;}
 .cv-quick-title{font-size:12px;font-weight:800;color:var(--dsub);letter-spacing:.4px;text-transform:uppercase;margin-bottom:10px;}
 .cv-today-chip{display:inline-flex;align-items:center;gap:6px;background:var(--chip-bg);color:var(--chip-text);border-radius:10px;padding:6px 12px;font-size:13px;font-weight:700;margin-bottom:6px;}
+
+/* ── CLINIC SUMMARY PRINT / PDF EXPORT ── */
+#clinicPrintArea{display:none;}
+@media print{
+  body *{visibility:hidden;}
+  #clinicPrintArea, #clinicPrintArea *{visibility:visible;}
+  #clinicPrintArea{display:block;position:absolute;top:0;left:0;width:100%;padding:24px;background:#fff;color:#1a1a1a;}
+  .cpa-h1{font-size:20px;font-weight:900;margin:0 0 2px;color:#1a1a1a;}
+  .cpa-meta{font-size:11px;font-weight:600;color:#666;margin:0 0 18px;}
+  .cpa-sect{font-size:13px;font-weight:800;color:#1a1a1a;margin:18px 0 8px;padding-bottom:4px;border-bottom:1.5px solid #ddd;}
+  .cpa-row{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px solid #eee;}
+  .cpa-row span:first-child{font-weight:700;color:#1a1a1a;}
+  .cpa-row span:last-child{color:#444;}
+  .cpa-foot{font-size:10px;color:#888;margin-top:24px;line-height:1.5;}
+  @page{margin:14mm;}
+}
 </style>
+
+<div id="clinicPrintArea"></div>
 
 <div class="cv-today-chip">✦ Today: ${MONTHS_EN[today.m-1]} ${today.d}, ${today.y} BS &nbsp;·&nbsp; ${ADMON[ad.getMonth()]} ${ad.getDate()}, ${ad.getFullYear()} AD</div>
 
@@ -21405,6 +22070,54 @@ function svRefreshStorage(){
   </div>
 </div>
 
+<!-- ── CERVICAL MUCUS LOG ENTRY SHEET ──────────────────────────────────────── -->
+<div class="sheet" id="mucusLogSheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>🥚 <span id="mucusLogDateLabel">Today</span></span>
+    <button class="ae-close" onclick="closeMucusLogSheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div class="ssec" style="padding-top:4px;">
+      <div id="mucusLogPhaseTag" style="margin-bottom:14px;"></div>
+
+      <div class="ssect">Mucus type</div>
+      <div class="ttc-result-grid" id="mucusTypeRow" style="margin-bottom:8px;flex-wrap:wrap;">
+        <div class="ttc-result-chip" data-mucus="dry" onclick="mucusLogSelectType('dry')">
+          <div class="ttc-result-chip-emoji">⚪</div>
+          <div class="ttc-result-chip-lbl">Dry</div>
+        </div>
+        <div class="ttc-result-chip" data-mucus="sticky" onclick="mucusLogSelectType('sticky')">
+          <div class="ttc-result-chip-emoji">🟤</div>
+          <div class="ttc-result-chip-lbl">Sticky</div>
+        </div>
+        <div class="ttc-result-chip" data-mucus="creamy" onclick="mucusLogSelectType('creamy')">
+          <div class="ttc-result-chip-emoji">🟡</div>
+          <div class="ttc-result-chip-lbl">Creamy</div>
+        </div>
+        <div class="ttc-result-chip" data-mucus="watery" onclick="mucusLogSelectType('watery')">
+          <div class="ttc-result-chip-emoji">💧</div>
+          <div class="ttc-result-chip-lbl">Watery</div>
+        </div>
+        <div class="ttc-result-chip" data-mucus="eggwhite" onclick="mucusLogSelectType('eggwhite')">
+          <div class="ttc-result-chip-emoji">🥚</div>
+          <div class="ttc-result-chip-lbl">Egg white</div>
+        </div>
+      </div>
+      <div style="font-size:11px;font-weight:600;color:var(--dsub);margin:4px 0 18px;line-height:1.5;">Egg-white consistency marks peak fertility — typically 1–2 days before ovulation.</div>
+
+      <div class="ssect">Note <span style="font-weight:600;color:var(--dsub);text-transform:none;">(optional)</span></div>
+      <textarea id="mucusLogNoteInput" class="dc-input" rows="2" maxlength="200" placeholder="Anything else worth noting…" style="resize:vertical;font-family:'Nunito',sans-serif;margin-bottom:6px;"></textarea>
+    </div>
+    <div class="ssec" style="padding-top:6px;">
+      <button class="dc-modal-save" style="width:100%;background:linear-gradient(135deg,#22c55e,#16a34a);box-shadow:0 6px 18px rgba(34,197,94,.3);" onclick="saveMucusLog()">Save entry</button>
+    </div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
 <!-- ── BBT TEMPERATURE LOG ENTRY SHEET ─────────────────────────────────────── -->
 <div class="sheet" id="bbtLogSheet" style="max-height:90vh;">
   <div class="shandle"></div>
@@ -21452,10 +22165,11 @@ function svRefreshStorage(){
     </button>
   </div>
   <div style="padding:0 16px 10px;">
-    <div id="ttcHistTabBar" class="up-view-toggle" style="width:100%;">
-      <button class="up-vtbtn on" data-tab="bd" onclick="setTtcHistTab('bd')" style="flex:1;">💕 Intercourse</button>
-      <button class="up-vtbtn" data-tab="opk" onclick="setTtcHistTab('opk')" style="flex:1;">🧪 OPK</button>
-      <button class="up-vtbtn" data-tab="bbt" onclick="setTtcHistTab('bbt')" style="flex:1;">🌡️ BBT</button>
+    <div id="ttcHistTabBar" class="up-view-toggle" style="width:100%;overflow-x:auto;scrollbar-width:none;">
+      <button class="up-vtbtn on" data-tab="bd" onclick="setTtcHistTab('bd')" style="flex:1;white-space:nowrap;">💕 Intercourse</button>
+      <button class="up-vtbtn" data-tab="opk" onclick="setTtcHistTab('opk')" style="flex:1;white-space:nowrap;">🧪 OPK</button>
+      <button class="up-vtbtn" data-tab="mucus" onclick="setTtcHistTab('mucus')" style="flex:1;white-space:nowrap;">🥚 Mucus</button>
+      <button class="up-vtbtn" data-tab="bbt" onclick="setTtcHistTab('bbt')" style="flex:1;white-space:nowrap;">🌡️ BBT</button>
     </div>
   </div>
   <div class="sscroll" style="padding:0 0 32px;">
@@ -21569,8 +22283,89 @@ function svRefreshStorage(){
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   </div>
+  <div style="padding:0 16px 8px;">
+    <button onclick="exportClinicSummaryPDF()" style="width:100%;padding:11px;border-radius:12px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:13px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download as PDF
+    </button>
+  </div>
   <div class="sscroll" style="padding:0 0 32px;">
     <div id="clinicSummarySheetBody"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── BIRTH CONTROL SETUP SHEET ─────────────────────────────────────────── -->
+<div class="sheet" id="contraSetupSheet" style="max-height:78vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>💊 Birth Control Setup</span>
+    <button class="ae-close" onclick="closeContraSetupSheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 16px 24px;">
+    <div class="ssec" style="padding-top:8px;">
+      <div class="srow">
+        <div class="slbl">Method</div>
+        <select id="contraTypeSelect" style="padding:8px 12px;border-radius:10px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:13px;font-family:'Nunito',sans-serif;font-weight:700;">
+          <option value="pill">Pill</option>
+          <option value="patch">Patch</option>
+          <option value="ring">Ring</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="srow">
+        <div class="slbl">Active days</div>
+        <input id="contraPackLenInput" type="number" min="1" max="84" value="21"
+          style="width:70px;text-align:right;padding:8px 10px;border-radius:10px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:14px;font-family:'Nunito',sans-serif;font-weight:800;"/>
+      </div>
+      <div class="srow">
+        <div class="slbl">Placebo/reminder days</div>
+        <input id="contraPlaceboLenInput" type="number" min="0" max="14" value="7"
+          style="width:70px;text-align:right;padding:8px 10px;border-radius:10px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:14px;font-family:'Nunito',sans-serif;font-weight:800;"/>
+      </div>
+      <div class="srow">
+        <div class="slbl">Pack start date</div>
+        <input id="contraStartDateInput" type="date"
+          style="padding:8px 10px;border-radius:10px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:13px;font-family:'Nunito',sans-serif;font-weight:700;"/>
+      </div>
+      <div class="srow" style="border-bottom:none;">
+        <div class="slbl">Reminder time</div>
+        <input id="contraReminderTimeInput" type="time" value="08:00"
+          style="padding:8px 10px;border-radius:10px;border:1.5px solid var(--sbdr);background:var(--sbg);color:var(--dtext);font-size:13px;font-family:'Nunito',sans-serif;font-weight:700;"/>
+      </div>
+    </div>
+    <button onclick="saveContraSetup()" style="width:100%;margin-top:10px;padding:13px;border-radius:14px;border:none;background:var(--tgon,#1a1a1a);color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">Save</button>
+  </div>
+</div>
+
+<!-- ── BIRTH CONTROL HISTORY SHEET ───────────────────────────────────────── -->
+<div class="sheet" id="contraHistorySheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>📋 Birth Control History</span>
+    <button class="ae-close" onclick="closeContraHistorySheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="contraHistorySheetBody"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
+  </div>
+</div>
+
+<!-- ── PHASE-AWARE CUSTOM REMINDER SHEET ─────────────────────────────────── -->
+<div class="sheet" id="phaseReminderSheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>🔔 Cycle Reminder</span>
+    <button class="ae-close" onclick="closePhaseReminderSheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="phaseReminderSheetBody"></div>
     <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
   </div>
 </div>
