@@ -4130,16 +4130,19 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   display:flex;flex-direction:column;gap:2px;
 }
 .dc-fab-inline{
-  width:42px;height:42px;
-  border-radius:13px;border:none;cursor:pointer;
-  background:var(--tf);color:#fff;
+  position:fixed;bottom:20px;right:20px;
+  width:54px;height:54px;
+  border-radius:50%;border:none;cursor:pointer;
+  background:var(--fab,var(--tf));color:#fff;
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 14px rgba(60,60,70,.4);
+  box-shadow:0 6px 20px rgba(60,60,70,.45);
   transition:transform .18s,box-shadow .18s;
   flex-shrink:0;
+  z-index:20;
 }
-.dc-fab-inline:hover{transform:scale(1.07);box-shadow:0 6px 18px rgba(60,60,70,.5);}
-.dc-fab-inline:active{transform:scale(.93);}
+.dc-fab-inline:hover{transform:scale(1.07);box-shadow:0 8px 24px rgba(60,60,70,.55);}
+.dc-fab-inline:active{transform:scale(.92);}
+.dc-fab-inline svg{width:24px;height:24px;}
 .dc-page-label{
   font-size:11px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
   color:var(--dsub);
@@ -4150,37 +4153,72 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 
 /* ── HERO SUMMARY CARD ── */
 .dc-hero{
-  display:flex;align-items:center;gap:16px;
-  margin:0 14px 16px;padding:16px 18px;
+  display:flex;flex-direction:column;gap:14px;
+  margin:0 14px 16px;padding:18px 18px 16px;
   background:
-    radial-gradient(ellipse 120% 100% at 100% 0%,rgba(34,197,94,.10),transparent 60%),
+    radial-gradient(ellipse 130% 110% at 100% 0%,rgba(34,197,94,.12),transparent 62%),
     var(--card);
-  border:1px solid var(--border);border-radius:22px;
-  box-shadow:0 4px 18px rgba(80,70,160,.06);
-  transition:background .28s, border-color .28s;
+  border:1px solid var(--border);border-radius:24px;
+  box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 6px 22px rgba(80,70,160,.07);
+  transition:background .28s, border-color .28s, box-shadow .3s;
 }
 [data-theme=dark] .dc-hero{
   background:
-    radial-gradient(ellipse 120% 100% at 100% 0%,rgba(34,197,94,.10),transparent 60%),
+    radial-gradient(ellipse 130% 110% at 100% 0%,rgba(34,197,94,.13),transparent 62%),
     rgba(255,255,255,.04);
   border-color:rgba(255,255,255,.09);
-  box-shadow:0 4px 18px rgba(0,0,0,.28);
+  box-shadow:0 1px 0 rgba(255,255,255,.03) inset,0 6px 22px rgba(0,0,0,.3);
 }
+.dc-hero.complete{
+  border-color:rgba(34,197,94,.35);
+  box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 6px 24px rgba(34,197,94,.16);
+}
+[data-theme=dark] .dc-hero.complete{
+  box-shadow:0 1px 0 rgba(255,255,255,.03) inset,0 6px 24px rgba(34,197,94,.2);
+}
+.dc-hero-top{display:flex;align-items:center;gap:16px;}
 .dc-hero-ring{position:relative;width:72px;height:72px;flex-shrink:0;}
 .dc-hero-ring svg{transform:rotate(-90deg);width:100%;height:100%;}
 .dc-hero-ring-bg{stroke:var(--border);stroke-width:7;fill:none;}
-.dc-hero-ring-fg{stroke:#22c55e;stroke-width:7;fill:none;stroke-linecap:round;transition:stroke-dashoffset .6s cubic-bezier(.22,.85,.25,1);}
+.dc-hero-ring-fg{stroke:url(#dcHeroGrad);stroke-width:7;fill:none;stroke-linecap:round;transition:stroke-dashoffset .6s cubic-bezier(.22,.85,.25,1),filter .3s;}
 [data-theme=dark] .dc-hero-ring-bg{stroke:rgba(255,255,255,.10);}
+.dc-hero.complete .dc-hero-ring-fg{filter:drop-shadow(0 0 5px rgba(34,197,94,.6));animation:dcRingPulse 2.2s ease-in-out infinite;}
+@media (prefers-reduced-motion:reduce){ .dc-hero.complete .dc-hero-ring-fg{animation:none;} }
+@keyframes dcRingPulse{
+  0%,100%{filter:drop-shadow(0 0 4px rgba(34,197,94,.5));}
+  50%{filter:drop-shadow(0 0 9px rgba(34,197,94,.75));}
+}
 .dc-hero-ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.dc-hero-ring-num{font-size:17px;font-weight:900;color:var(--htext);line-height:1;font-variant-numeric:tabular-nums;}
-.dc-hero-ring-sub{font-size:7.5px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+.dc-hero-ring-num{font-size:17px;font-weight:900;color:var(--htext);line-height:1;font-variant-numeric:tabular-nums;transition:opacity .2s;}
+.dc-hero-ring-sub{font-size:7.5px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;transition:color .2s;}
+.dc-hero-ring-check{width:22px;height:22px;color:#16a34a;display:none;}
+[data-theme=dark] .dc-hero-ring-check{color:#4ade80;}
+.dc-hero.complete .dc-hero-ring-num{display:none;}
+.dc-hero.complete .dc-hero-ring-check{display:block;}
+.dc-hero.complete .dc-hero-ring-sub{color:#16a34a;}
+[data-theme=dark] .dc-hero.complete .dc-hero-ring-sub{color:#4ade80;}
 .dc-hero-div{width:1px;align-self:stretch;background:var(--border);flex-shrink:0;}
 .dc-hero-stats{flex:1;min-width:0;display:flex;gap:14px;}
-.dc-hero-stat{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0;}
-.dc-hero-stat-top{display:flex;align-items:baseline;gap:5px;}
-.dc-hero-stat-icon{font-size:17px;line-height:1;}
-.dc-hero-stat-num{font-size:23px;font-weight:900;color:var(--htext);line-height:1;letter-spacing:-.5px;font-variant-numeric:tabular-nums;}
+.dc-hero-stat{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0;}
+.dc-hero-stat-top{display:flex;align-items:center;gap:7px;}
+.dc-hero-stat-icon{
+  font-size:13px;line-height:1;flex-shrink:0;
+  width:26px;height:26px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+}
+.dc-hero-stat-icon.flame{background:rgba(224,140,46,.14);}
+.dc-hero-stat-icon.list{background:rgba(58,127,224,.12);}
+[data-theme=dark] .dc-hero-stat-icon.flame{background:rgba(230,176,90,.18);}
+[data-theme=dark] .dc-hero-stat-icon.list{background:rgba(120,160,255,.16);}
+.dc-hero-stat-num{font-size:22px;font-weight:900;color:var(--htext);line-height:1;letter-spacing:-.5px;font-variant-numeric:tabular-nums;}
 .dc-hero-stat-lbl{font-size:10px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;}
+.dc-hero-status{
+  font-size:12px;font-weight:800;color:var(--dsub);
+  padding-top:12px;border-top:1px solid var(--border);
+  transition:color .2s,border-color .2s;
+}
+.dc-hero.complete .dc-hero-status{color:#16a34a;}
+[data-theme=dark] .dc-hero.complete .dc-hero-status{color:#4ade80;}
 
 /* Focus Timer quick-tool card */
 .dc-tool-card{
@@ -18962,13 +19000,16 @@ function switchTab(tab) {
     return {prev: MILESTONES[MILESTONES.length-1], target: MILESTONES[MILESTONES.length-1]+1000};
   }
   function dayKeyFor(d){ return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
-  const RING_C = 2*Math.PI*24; // r=24
+  const RING_C = 2*Math.PI*24; // r=24 (habit card rings)
+  const HERO_RING_C = 2*Math.PI*33; // r=33 (hero "Today" ring — must match dcHeroRingFg's r in HTML)
 
   function dcUpdateStats(arr) {
     const totalEl = document.getElementById('dcStatTotal');
     const bestEl = document.getElementById('dcStatBest');
     const ringFg = document.getElementById('dcHeroRingFg');
     const ringNum = document.getElementById('dcHeroRingNum');
+    const heroEl = document.getElementById('dcHero');
+    const statusEl = document.getElementById('dcHeroStatus');
     if(!totalEl) return;
     const now = Date.now();
     const tk = todayKey();
@@ -18984,8 +19025,21 @@ function switchTab(tab) {
     if(ringNum) ringNum.textContent = checkedToday + '/' + arr.length;
     if(ringFg){
       const frac = arr.length ? checkedToday/arr.length : 0;
-      ringFg.style.strokeDasharray = RING_C;
-      ringFg.style.strokeDashoffset = RING_C * (1-frac);
+      ringFg.style.strokeDasharray = HERO_RING_C;
+      ringFg.style.strokeDashoffset = HERO_RING_C * (1-frac);
+    }
+
+    const isComplete = arr.length > 0 && checkedToday === arr.length;
+    if(heroEl) heroEl.classList.toggle('complete', isComplete);
+    if(statusEl){
+      if(arr.length === 0){
+        statusEl.textContent = 'Add a habit to start your streak';
+      } else if(isComplete){
+        statusEl.textContent = '🎉 All habits checked in today';
+      } else {
+        const left = arr.length - checkedToday;
+        statusEl.textContent = left + ' habit' + (left===1?'':'s') + ' left to check in today';
+      }
     }
   }
 
@@ -19114,9 +19168,7 @@ function switchTab(tab) {
       haptic('medium');
       const arr = dcLoad(); const c = arr.find(function(x){return x.id===id;});
       if(!c) return;
-      // if was checked in today, unlog it
-      const tk = todayKey();
-      c.startTs = Date.now(); c.lastCheckin = null;
+      c.startTs = Date.now(); c.lastCheckin = null; c.history = [];
       dcSaveAll(arr); dcRender();
     });
   };
@@ -19185,40 +19237,50 @@ function switchTab(tab) {
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
       <button class="dc-fab-inline" id="dcFab" onclick="dcOpenAdd()" title="Add counter" style="display:none">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       </button>
     </div>
   </div>
 
   <!-- HERO SUMMARY CARD -->
   <div class="dc-hero" id="dcHero">
-    <div class="dc-hero-ring">
-      <svg viewBox="0 0 80 80">
-        <circle class="dc-hero-ring-bg" cx="40" cy="40" r="33"/>
-        <circle class="dc-hero-ring-fg" id="dcHeroRingFg" cx="40" cy="40" r="33" stroke-dasharray="207.3" stroke-dashoffset="207.3"/>
-      </svg>
-      <div class="dc-hero-ring-label">
-        <span class="dc-hero-ring-num" id="dcHeroRingNum">0/0</span>
-        <span class="dc-hero-ring-sub">Today</span>
+    <div class="dc-hero-top">
+      <div class="dc-hero-ring">
+        <svg viewBox="0 0 80 80">
+          <defs>
+            <linearGradient id="dcHeroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#4ade80"/>
+              <stop offset="100%" stop-color="#16a34a"/>
+            </linearGradient>
+          </defs>
+          <circle class="dc-hero-ring-bg" cx="40" cy="40" r="33"/>
+          <circle class="dc-hero-ring-fg" id="dcHeroRingFg" cx="40" cy="40" r="33" stroke-dasharray="207.3" stroke-dashoffset="207.3"/>
+        </svg>
+        <div class="dc-hero-ring-label">
+          <svg class="dc-hero-ring-check" id="dcHeroRingCheck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span class="dc-hero-ring-num" id="dcHeroRingNum">0/0</span>
+          <span class="dc-hero-ring-sub" id="dcHeroRingSub">Today</span>
+        </div>
+      </div>
+      <div class="dc-hero-div"></div>
+      <div class="dc-hero-stats">
+        <div class="dc-hero-stat">
+          <div class="dc-hero-stat-top">
+            <span class="dc-hero-stat-icon flame">🔥</span>
+            <span class="dc-hero-stat-num" id="dcStatBest">0</span>
+          </div>
+          <span class="dc-hero-stat-lbl">Best Streak</span>
+        </div>
+        <div class="dc-hero-stat">
+          <div class="dc-hero-stat-top">
+            <span class="dc-hero-stat-icon list">📋</span>
+            <span class="dc-hero-stat-num" id="dcStatTotal">0</span>
+          </div>
+          <span class="dc-hero-stat-lbl">Habits</span>
+        </div>
       </div>
     </div>
-    <div class="dc-hero-div"></div>
-    <div class="dc-hero-stats">
-      <div class="dc-hero-stat">
-        <div class="dc-hero-stat-top">
-          <span class="dc-hero-stat-icon">🔥</span>
-          <span class="dc-hero-stat-num" id="dcStatBest">0</span>
-        </div>
-        <span class="dc-hero-stat-lbl">Best Streak</span>
-      </div>
-      <div class="dc-hero-stat">
-        <div class="dc-hero-stat-top">
-          <span class="dc-hero-stat-icon">📋</span>
-          <span class="dc-hero-stat-num" id="dcStatTotal">0</span>
-        </div>
-        <span class="dc-hero-stat-lbl">Habits</span>
-      </div>
-    </div>
+    <div class="dc-hero-status" id="dcHeroStatus">Add a habit to start your streak</div>
   </div>
 
   <div class="dc-section-lbl" id="dcListLabel" style="display:none">
