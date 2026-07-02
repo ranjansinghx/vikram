@@ -4176,27 +4176,50 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 [data-theme=dark] .dc-hero.complete{
   box-shadow:0 1px 0 rgba(255,255,255,.03) inset,0 6px 24px rgba(34,197,94,.2);
 }
+.dc-hero.tappable{cursor:pointer;transition:transform .15s cubic-bezier(.22,.85,.25,1),background .28s,border-color .28s,box-shadow .3s;}
+.dc-hero.tappable:active{transform:scale(.98);}
 .dc-hero-top{display:flex;align-items:center;gap:16px;}
 .dc-hero-ring{position:relative;width:72px;height:72px;flex-shrink:0;}
 .dc-hero-ring svg{transform:rotate(-90deg);width:100%;height:100%;}
 .dc-hero-ring-bg{stroke:var(--border);stroke-width:7;fill:none;}
 .dc-hero-ring-fg{stroke:url(#dcHeroGrad);stroke-width:7;fill:none;stroke-linecap:round;transition:stroke-dashoffset .6s cubic-bezier(.22,.85,.25,1),filter .3s;}
 [data-theme=dark] .dc-hero-ring-bg{stroke:rgba(255,255,255,.10);}
-.dc-hero.complete .dc-hero-ring-fg{filter:drop-shadow(0 0 5px rgba(34,197,94,.6));animation:dcRingPulse 2.2s ease-in-out infinite;}
+.dc-hero.complete .dc-hero-ring-fg{filter:drop-shadow(0 0 4px rgba(34,197,94,.6));animation:dcRingPulse 2.2s ease-in-out infinite;}
 @media (prefers-reduced-motion:reduce){ .dc-hero.complete .dc-hero-ring-fg{animation:none;} }
 @keyframes dcRingPulse{
-  0%,100%{filter:drop-shadow(0 0 4px rgba(34,197,94,.5));}
-  50%{filter:drop-shadow(0 0 9px rgba(34,197,94,.75));}
+  0%,100%{filter:drop-shadow(0 0 3px rgba(34,197,94,.45));}
+  50%{filter:drop-shadow(0 0 6px rgba(34,197,94,.7));}
 }
-.dc-hero-ring-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.dc-hero-ring-num{font-size:17px;font-weight:900;color:var(--htext);line-height:1;font-variant-numeric:tabular-nums;transition:opacity .2s;}
-.dc-hero-ring-sub{font-size:7.5px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;transition:color .2s;}
-.dc-hero-ring-check{width:22px;height:22px;color:#16a34a;display:none;}
-[data-theme=dark] .dc-hero-ring-check{color:#4ade80;}
-.dc-hero.complete .dc-hero-ring-num{display:none;}
-.dc-hero.complete .dc-hero-ring-check{display:block;}
-.dc-hero.complete .dc-hero-ring-sub{color:#16a34a;}
-[data-theme=dark] .dc-hero.complete .dc-hero-ring-sub{color:#4ade80;}
+/* Center content — number and checkmark cross-fade in place, no cramped stacking */
+.dc-hero-ring-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+.dc-hero-ring-num{
+  position:absolute;font-size:19px;font-weight:900;color:var(--htext);line-height:1;
+  font-variant-numeric:tabular-nums;letter-spacing:-.3px;
+  transition:opacity .25s ease,transform .3s cubic-bezier(.34,1.56,.64,1);
+  opacity:1;transform:scale(1);
+}
+.dc-hero-ring-check{
+  position:absolute;width:26px;height:26px;color:#16a34a;
+  opacity:0;transform:scale(.4);
+  transition:opacity .25s ease,transform .35s cubic-bezier(.34,1.56,.64,1);
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.15));
+}
+[data-theme=dark] .dc-hero-ring-check{color:#eafff2;}
+.dc-hero.complete .dc-hero-ring-num{opacity:0;transform:scale(.5);}
+.dc-hero.complete .dc-hero-ring-check{opacity:1;transform:scale(1);}
+/* "Today" badge — a small floating pill anchored to the ring's bottom edge */
+.dc-hero-ring-badge{
+  position:absolute;left:50%;bottom:-7px;transform:translateX(-50%);
+  background:var(--card);border:1.5px solid var(--border);
+  padding:2.5px 8px;border-radius:999px;
+  font-size:8px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;
+  color:var(--dsub);white-space:nowrap;
+  box-shadow:0 2px 5px rgba(30,30,60,.10);
+  transition:color .2s,border-color .2s,background .2s;
+}
+[data-theme=dark] .dc-hero-ring-badge{background:#1c2030;border-color:rgba(255,255,255,.10);box-shadow:0 2px 6px rgba(0,0,0,.35);}
+.dc-hero.complete .dc-hero-ring-badge{color:#16a34a;border-color:rgba(34,197,94,.4);}
+[data-theme=dark] .dc-hero.complete .dc-hero-ring-badge{color:#d7f9e4;border-color:rgba(34,197,94,.45);}
 .dc-hero-div{width:1px;align-self:stretch;background:var(--border);flex-shrink:0;}
 .dc-hero-stats{flex:1;min-width:0;display:flex;gap:14px;}
 .dc-hero-stat{flex:1;display:flex;flex-direction:column;gap:5px;min-width:0;}
@@ -4425,6 +4448,48 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
 .dc-empty-title{font-size:17px;font-weight:900;color:var(--dtext);}
 .dc-empty-sub{font-size:13px;font-weight:600;line-height:1.5;color:var(--hsub);}
 
+/* ══════════════════════════════════════════════════════════════════════
+   ACTIVITY HEATMAP (GitHub-style contribution graph for habit check-ins)
+   ══════════════════════════════════════════════════════════════════════ */
+.act-card{
+  margin:6px 16px 18px;padding:18px 16px 16px;
+  background:var(--card);border:1px solid var(--border);border-radius:22px;
+  box-shadow:0 4px 18px rgba(80,70,160,.06);
+}
+[data-theme=dark] .act-card{
+  background:rgba(255,255,255,.04);
+  border-color:rgba(255,255,255,.09);
+  box-shadow:0 4px 18px rgba(0,0,0,.28);
+}
+.act-header{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.act-title{font-size:16px;font-weight:900;color:var(--htext);letter-spacing:-.2px;}
+.act-sub{font-size:11.5px;font-weight:700;color:var(--dsub);}
+.act-scroll{overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;}
+.act-scroll::-webkit-scrollbar{height:0;}
+.act-graph{display:inline-flex;flex-direction:column;min-width:100%;}
+.act-months-row{display:flex;margin-bottom:5px;}
+.act-months-spacer{width:26px;flex-shrink:0;}
+.act-months{display:grid;gap:3px;}
+.act-month-lbl{font-size:10px;font-weight:800;color:var(--dsub);white-space:nowrap;}
+.act-body-row{display:flex;gap:4px;}
+.act-daylabels{display:grid;width:22px;flex-shrink:0;}
+.act-daylabel{font-size:9px;font-weight:800;color:var(--dsub);display:flex;align-items:center;line-height:1;}
+.act-grid{display:grid;grid-template-rows:repeat(7,1fr);grid-auto-flow:column;}
+.act-cell{width:11px;height:11px;border-radius:3px;background:var(--border);box-sizing:border-box;}
+[data-theme=dark] .act-cell{background:rgba(255,255,255,.06);}
+.act-cell.act-future{background:transparent;}
+.act-cell.act-l0{background:var(--border);}
+[data-theme=dark] .act-cell.act-l0{background:rgba(255,255,255,.06);}
+.act-cell.act-l1{background:#9be9a8;}
+.act-cell.act-l2{background:#40c463;}
+.act-cell.act-l3{background:#30a14e;}
+.act-cell.act-l4{background:#216e39;}
+[data-theme=dark] .act-cell.act-l1{background:#0e4429;}
+[data-theme=dark] .act-cell.act-l2{background:#006d32;}
+[data-theme=dark] .act-cell.act-l3{background:#26a641;}
+[data-theme=dark] .act-cell.act-l4{background:#39d353;}
+.act-legend{display:flex;align-items:center;justify-content:flex-end;gap:4px;margin-top:14px;font-size:10.5px;font-weight:700;color:var(--dsub);}
+.act-legend .act-cell{width:11px;height:11px;flex-shrink:0;}
 
 /* FAB */
 .dc-add-btn{display:none;}
@@ -19205,6 +19270,141 @@ function switchTab(tab) {
     document.getElementById('dcConfirmOverlay').classList.remove('open');
     _dcConfirmCb = null;
   };
+
+  // ══════════════════════════════════════════════════════════════════════
+  // ACTIVITY SHEET — GitHub-style check-in heatmap, opened from the hero card
+  // ══════════════════════════════════════════════════════════════════════
+  const ACT_WEEKS = 18; // ≈ 4 months of history
+
+  function dcBuildActivityGrid(weeksToShow){
+    const arr = dcLoad();
+    const counts = {}; // dayKeyFor() key -> number of habits checked in that day
+    arr.forEach(function(c){
+      (c.history||[]).forEach(function(k){ counts[k] = (counts[k]||0) + 1; });
+    });
+
+    const today = new Date(); today.setHours(0,0,0,0);
+    const curSunday = new Date(today); curSunday.setDate(today.getDate() - today.getDay());
+    const gridStart = new Date(curSunday); gridStart.setDate(curSunday.getDate() - (weeksToShow-1)*7);
+
+    let totalCheckins = 0;
+    const cols = [];
+    for(let w=0; w<weeksToShow; w++){
+      const colDays = [];
+      for(let d=0; d<7; d++){
+        const day = new Date(gridStart);
+        day.setDate(gridStart.getDate() + w*7 + d);
+        const isFuture = day.getTime() > today.getTime();
+        const key = dayKeyFor(day);
+        const cnt = isFuture ? 0 : (counts[key]||0);
+        if(!isFuture) totalCheckins += cnt;
+        colDays.push({date:day, count:cnt, isFuture:isFuture});
+      }
+      cols.push(colDays);
+    }
+    return {cols:cols, totalCheckins:totalCheckins};
+  }
+
+  window.openActivitySheet = function(){
+    if(typeof haptic === 'function') haptic('light');
+    renderActivitySheet();
+    const sheet = document.getElementById('activitySheet');
+    const ov    = document.getElementById('ov');
+    if(sheet) sheet.classList.add('open');
+    if(ov)    ov.classList.add('open');
+  };
+  window.closeActivitySheet = function(){
+    if(typeof haptic === 'function') haptic('light');
+    const sheet = document.getElementById('activitySheet');
+    const ov    = document.getElementById('ov');
+    if(sheet) sheet.classList.remove('open');
+    if(ov)    ov.classList.remove('open');
+  };
+
+  function renderActivitySheet(){
+    const body = document.getElementById('activitySheetBody');
+    if(!body) return;
+    try{
+      const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const DOW_LABELS  = ['','Mon','','Wed','','Fri',''];
+      const CELL = 11, GAP = 3;
+
+      const data = dcBuildActivityGrid(ACT_WEEKS);
+      const cols = data.cols;
+      const colCount = cols.length;
+
+      // Month labels: one label per calendar month, placed above the first
+      // column whose week begins in that month.
+      let lastMonth = null;
+      const monthLabels = [];
+      cols.forEach(function(colDays, idx){
+        const mo = colDays[0].date.getMonth();
+        if(mo !== lastMonth){ monthLabels.push({col:idx, label:MONTH_NAMES[mo]}); lastMonth = mo; }
+      });
+      const monthsCount = monthLabels.length;
+
+      let monthsHtml = '';
+      cols.forEach(function(_, idx){
+        const m = monthLabels.find(function(x){ return x.col === idx; });
+        monthsHtml += '<div class="act-month-lbl">' + (m ? m.label : '') + '</div>';
+      });
+
+      let dayLabelsHtml = '';
+      DOW_LABELS.forEach(function(l){ dayLabelsHtml += '<div class="act-daylabel">' + l + '</div>'; });
+
+      // NOTE: iterate column-major (week, then day-of-week) to match the
+      // act-grid's `grid-auto-flow:column` placement order.
+      let gridHtml = '';
+      for(let col=0; col<colCount; col++){
+        for(let row=0; row<7; row++){
+          const day = cols[col][row];
+          if(day.isFuture){
+            gridHtml += '<div class="act-cell act-future"></div>';
+            continue;
+          }
+          const level = Math.max(0, Math.min(3, day.count));
+          const dateStr = day.date.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});
+          const title = day.count > 0
+            ? (day.count + ' check-in' + (day.count===1?'':'s') + ' on ' + dateStr)
+            : ('No check-ins on ' + dateStr);
+          gridHtml += '<div class="act-cell act-l' + level + '" title="' + title + '"></div>';
+        }
+      }
+
+      const total = data.totalCheckins;
+
+      body.innerHTML = ''
+        + '<div class="act-card">'
+        +   '<div class="act-header">'
+        +     '<div class="act-title">Activity</div>'
+        +     '<div class="act-sub">' + total + ' check-in' + (total===1?'':'s') + ' in the last ' + monthsCount + ' month' + (monthsCount===1?'':'s') + '</div>'
+        +   '</div>'
+        +   '<div class="act-scroll">'
+        +     '<div class="act-graph">'
+        +       '<div class="act-months-row">'
+        +         '<div class="act-months-spacer"></div>'
+        +         '<div class="act-months" style="grid-template-columns:repeat(' + colCount + ',' + CELL + 'px);">' + monthsHtml + '</div>'
+        +       '</div>'
+        +       '<div class="act-body-row">'
+        +         '<div class="act-daylabels" style="grid-template-rows:repeat(7,' + CELL + 'px);gap:' + GAP + 'px;">' + dayLabelsHtml + '</div>'
+        +         '<div class="act-grid" style="grid-template-columns:repeat(' + colCount + ',' + CELL + 'px);grid-template-rows:repeat(7,' + CELL + 'px);gap:' + GAP + 'px;">' + gridHtml + '</div>'
+        +       '</div>'
+        +     '</div>'
+        +   '</div>'
+        +   '<div class="act-legend">'
+        +     '<span>Less</span>'
+        +     '<div class="act-cell act-l0"></div>'
+        +     '<div class="act-cell act-l1"></div>'
+        +     '<div class="act-cell act-l2"></div>'
+        +     '<div class="act-cell act-l3"></div>'
+        +     '<span>More</span>'
+        +   '</div>'
+        + '</div>';
+    }catch(err){
+      console.error('[Vikram] renderActivitySheet error:', err);
+      body.innerHTML = '<div style="padding:32px 18px;text-align:center;color:var(--dsub);font-size:13px;font-weight:700;">Couldn\'t load activity.</div>';
+    }
+  }
 })();
 
 </script>
@@ -19243,7 +19443,7 @@ function switchTab(tab) {
   </div>
 
   <!-- HERO SUMMARY CARD -->
-  <div class="dc-hero" id="dcHero">
+  <div class="dc-hero tappable" id="dcHero" onclick="openActivitySheet()">
     <div class="dc-hero-top">
       <div class="dc-hero-ring">
         <svg viewBox="0 0 80 80">
@@ -19256,11 +19456,11 @@ function switchTab(tab) {
           <circle class="dc-hero-ring-bg" cx="40" cy="40" r="33"/>
           <circle class="dc-hero-ring-fg" id="dcHeroRingFg" cx="40" cy="40" r="33" stroke-dasharray="207.3" stroke-dashoffset="207.3"/>
         </svg>
-        <div class="dc-hero-ring-label">
-          <svg class="dc-hero-ring-check" id="dcHeroRingCheck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <div class="dc-hero-ring-center">
           <span class="dc-hero-ring-num" id="dcHeroRingNum">0/0</span>
-          <span class="dc-hero-ring-sub" id="dcHeroRingSub">Today</span>
+          <svg class="dc-hero-ring-check" id="dcHeroRingCheck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
+        <div class="dc-hero-ring-badge" id="dcHeroRingSub">Today</div>
       </div>
       <div class="dc-hero-div"></div>
       <div class="dc-hero-stats">
@@ -19325,6 +19525,21 @@ function switchTab(tab) {
       <button class="dc-modal-cancel" style="flex:1" onclick="dcConfirmClose()">Cancel</button>
       <button class="dc-modal-save" id="dcConfirmBtn" onclick="dcConfirmYes()">Confirm</button>
     </div>
+  </div>
+</div>
+
+<!-- ── ACTIVITY SHEET — expanded view opened by tapping the habit tracker hero card ── -->
+<div class="sheet" id="activitySheet" style="max-height:88vh;">
+  <div class="shandle"></div>
+  <div class="stitle" style="display:flex;align-items:center;justify-content:space-between;">
+    <span>🔥 Activity</span>
+    <button class="ae-close" onclick="closeActivitySheet()" aria-label="Close" style="margin-right:2px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="sscroll" style="padding:0 0 32px;">
+    <div id="activitySheetBody"></div>
+    <div style="height:env(safe-area-inset-bottom,0px);min-height:8px;"></div>
   </div>
 </div>
 
