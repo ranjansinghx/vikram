@@ -19028,7 +19028,7 @@ function switchTab(tab) {
     document.getElementById('dcTypeBuild').classList.add('selected');
     document.getElementById('dcTypeQuit').classList.remove('selected');
     document.getElementById('dcNameInput').value = '';
-    const d = new Date();
+    const d = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
     const iso = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
     document.getElementById('dcDateInput').value = iso;
     document.getElementById('dcModalOverlay').classList.add('open');
@@ -19058,7 +19058,7 @@ function switchTab(tab) {
   };
 
   function daysBetween(ts1, ts2){ return Math.floor((ts2-ts1)/(1000*60*60*24)); }
-  function todayKey(){ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
+  function todayKey(){ return TODAY.getFullYear()+'-'+(TODAY.getMonth()+1)+'-'+TODAY.getDate(); }
   const COLORS=['#1a1a1a','#e0507a','#3a9e6e','#e08c2e','#3a7fe0','#9e3adb'];
 
   // ── HEATMAP ──
@@ -19066,14 +19066,16 @@ function switchTab(tab) {
     const grid = document.getElementById('dcHeatmapGrid');
     const monthsBar = document.getElementById('dcHeatmapMonths');
     const totalEl = document.getElementById('dcHeatmapTotal');
+    const periodEl = document.getElementById('dcHeatmapPeriod');
     const scrollWrap = document.getElementById('dcHeatmapScroll');
     if(!grid) return;
 
     const log = logLoad();
 
     // Build ~53 weeks (~1 rolling year) ending today — GitHub-style
-    const today = new Date();
-    today.setHours(0,0,0,0);
+    // Use the app's Kathmandu-based TODAY (not browser-local time) so it always
+    // matches the date shown everywhere else in the app.
+    const today = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
     // start ~370 days back, then snap to the preceding Sunday
     const startDay = new Date(today);
     startDay.setDate(today.getDate() - 370);
@@ -19141,8 +19143,25 @@ function switchTab(tab) {
     });
     monthsBar.innerHTML = mHtml;
 
-    // Scroll heatmap to the right (most recent) — months + grid scroll together
-    requestAnimationFrame(function(){ if(scrollWrap) scrollWrap.scrollLeft = scrollWrap.scrollWidth; });
+    // Explicit date range in the header — e.g. "Jul 3, 2025 – Jul 2, 2026" — so the
+    // exact end date (today, per the app's calendar) is always plainly visible.
+    if(periodEl){
+      const fmt = function(d){ return d.toLocaleDateString('default',{month:'short',day:'numeric',year:'numeric'}); };
+      periodEl.textContent = fmt(startDay) + ' \u2013 ' + fmt(today);
+    }
+
+    // Scroll heatmap to the right (most recent) — months + grid scroll together.
+    // Uses a double-rAF + timeout fallback since some mobile browsers haven't
+    // finished laying out the just-revealed tab by the first animation frame.
+    function scrollToToday(){
+      if(scrollWrap) scrollWrap.scrollLeft = scrollWrap.scrollWidth;
+    }
+    scrollToToday();
+    requestAnimationFrame(function(){
+      requestAnimationFrame(scrollToToday);
+    });
+    setTimeout(scrollToToday, 150);
+    setTimeout(scrollToToday, 400);
   };
 
   const MILESTONES=[7,14,30,60,100,180,365,1000];
@@ -19198,7 +19217,7 @@ function switchTab(tab) {
     if(lbl) lbl.style.display = 'flex';
     if(cnt) cnt.textContent = arr.length;
     const now = Date.now();
-    const today = new Date(); today.setHours(0,0,0,0);
+    const today = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
     const tk = todayKey();
     dcUpdateStats(arr);
     list.innerHTML = arr.map(function(c, idx) {
@@ -19876,7 +19895,7 @@ function switchTab(tab) {
   function formatDueLabel(due){
     const parts = due.split('-').map(Number);
     const d = new Date(parts[0], parts[1]-1, parts[2]);
-    const today = new Date(); today.setHours(0,0,0,0);
+    const today = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
     const diffDays = Math.round((d - today)/86400000);
     const dateStr = (typeof ADMEN!=='undefined' ? ADMEN[d.getMonth()].slice(0,3) : d.toLocaleDateString([], {month:'short'})) + ' ' + d.getDate();
     if(diffDays < 0) return {text:'Overdue · '+dateStr, overdue:true};
