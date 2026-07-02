@@ -4487,42 +4487,52 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   box-shadow:0 4px 18px rgba(0,0,0,.28);
 }
 .dc-heatmap-header{
-  display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;
+  display:flex;align-items:center;justify-content:space-between;
   margin-bottom:14px;
 }
+.dc-heatmap-title{
+  font-size:13px;font-weight:900;color:var(--htext);
+  display:flex;align-items:center;gap:9px;letter-spacing:.1px;
+}
+.dc-heatmap-icon{
+  width:28px;height:28px;border-radius:9px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(34,197,94,.22),rgba(34,197,94,.08));
+}
+.dc-heatmap-title svg{width:15px;height:15px;stroke:#22c55e;fill:none;stroke-width:2.3;}
 .dc-heatmap-total{
-  font-size:17px;font-weight:900;color:var(--htext);letter-spacing:-.1px;
+  font-size:11px;font-weight:800;color:#fff;
+  background:linear-gradient(135deg,#3ad48a,#22c55e);
+  padding:5px 12px;border-radius:20px;
+  box-shadow:0 4px 12px rgba(34,197,94,.28);
+  white-space:nowrap;
 }
-.dc-heatmap-period{
-  font-size:12px;font-weight:700;color:var(--hsub);
+.dc-heatmap-months{
+  display:flex;gap:0;margin-bottom:5px;padding-left:18px;
 }
-.dc-heatmap-body{
+.dc-heatmap-month-lbl{
+  font-size:9px;font-weight:800;color:var(--hsub);
+  text-transform:uppercase;letter-spacing:.6px;
+  flex:1;text-align:left;
+}
+.dc-heatmap-grid-wrap{
   display:flex;gap:6px;
 }
 .dc-heatmap-days-col{
   display:flex;flex-direction:column;gap:3px;justify-content:space-between;
-  padding-top:1px;flex-shrink:0;
+  padding-top:1px;
 }
 .dc-heatmap-day-lbl{
   font-size:8px;font-weight:800;color:var(--hsub);
   height:11px;line-height:11px;
 }
-.dc-heatmap-scroll{
-  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
-  flex:1;min-width:0;
-}
-.dc-heatmap-scroll::-webkit-scrollbar{display:none;}
-.dc-heatmap-months{
-  display:flex;gap:0;margin-bottom:5px;width:max-content;
-}
-.dc-heatmap-month-lbl{
-  font-size:9px;font-weight:800;color:var(--hsub);
-  text-transform:uppercase;letter-spacing:.6px;
-  flex-shrink:0;text-align:left;white-space:nowrap;
-}
 .dc-heatmap-grid{
-  display:flex;gap:3px;width:max-content;
+  display:flex;gap:3px;overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;flex:1;
+  padding-bottom:1px;
 }
+.dc-heatmap-grid::-webkit-scrollbar{display:none;}
 .dc-heatmap-col{
   display:flex;flex-direction:column;gap:3px;flex-shrink:0;
 }
@@ -4547,11 +4557,9 @@ html,body{width:100%;min-height:100vh;background:var(--app-bg);display:flex;just
   outline:2px solid #22c55e;outline-offset:1px;
 }
 .dc-heatmap-legend{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;
+  display:flex;align-items:center;justify-content:flex-end;gap:6px;margin-top:12px;
   padding-top:10px;border-top:1px solid var(--border);
 }
-.dc-heatmap-legend-caption{font-size:10px;font-weight:700;color:var(--hsub);}
-.dc-heatmap-legend-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
 .dc-heatmap-legend-lbl{font-size:9px;font-weight:800;color:var(--hsub);text-transform:uppercase;letter-spacing:.5px;}
 .dc-heatmap-legend-cells{display:flex;gap:3px;align-items:center;}
 .dc-heatmap-legend-cell{width:10px;height:10px;border-radius:3px;}
@@ -19028,7 +19036,7 @@ function switchTab(tab) {
     document.getElementById('dcTypeBuild').classList.add('selected');
     document.getElementById('dcTypeQuit').classList.remove('selected');
     document.getElementById('dcNameInput').value = '';
-    const d = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
+    const d = new Date();
     const iso = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
     document.getElementById('dcDateInput').value = iso;
     document.getElementById('dcModalOverlay').classList.add('open');
@@ -19058,7 +19066,7 @@ function switchTab(tab) {
   };
 
   function daysBetween(ts1, ts2){ return Math.floor((ts2-ts1)/(1000*60*60*24)); }
-  function todayKey(){ return TODAY.getFullYear()+'-'+(TODAY.getMonth()+1)+'-'+TODAY.getDate(); }
+  function todayKey(){ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); }
   const COLORS=['#1a1a1a','#e0507a','#3a9e6e','#e08c2e','#3a7fe0','#9e3adb'];
 
   // ── HEATMAP ──
@@ -19066,23 +19074,17 @@ function switchTab(tab) {
     const grid = document.getElementById('dcHeatmapGrid');
     const monthsBar = document.getElementById('dcHeatmapMonths');
     const totalEl = document.getElementById('dcHeatmapTotal');
-    const periodEl = document.getElementById('dcHeatmapPeriod');
-    const scrollWrap = document.getElementById('dcHeatmapScroll');
     if(!grid) return;
 
     const log = logLoad();
 
-    // Build ~53 weeks (~1 rolling year) ending today — GitHub-style
-    // Use the app's Kathmandu-based TODAY (not browser-local time) so it always
-    // matches the date shown everywhere else in the app.
-    const today = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
-    // start ~370 days back, then snap to the preceding Sunday
+    // Build 17 weeks (119 days) ending today
+    const WEEKS = 17;
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    // start from Sunday of the week 17 weeks ago
     const startDay = new Date(today);
-    startDay.setDate(today.getDate() - 370);
-    startDay.setDate(startDay.getDate() - startDay.getDay());
-    // recompute week count so the grid always reaches today (snapping can add up to 6 extra days)
-    const spanDays = Math.round((today - startDay) / 86400000) + 1;
-    const WEEKS = Math.ceil(spanDays / 7);
+    startDay.setDate(today.getDate() - (WEEKS * 7 - 1));
 
     // total checkins
     let total = 0;
@@ -19120,8 +19122,8 @@ function switchTab(tab) {
           + ' title="' + k + (count?' · '+count+' check-in'+(count>1?'s':''):'') + '"'
           + '></div>';
 
-        // month label tracking — only mark the first FULL week whose Sunday falls in the new month
-        if(dow===0 && d.getMonth() !== lastMonth){
+        // month label tracking
+        if(d.getMonth() !== lastMonth){
           lastMonth = d.getMonth();
           monthLabels.push({col: w, label: d.toLocaleString('default',{month:'short'})});
         }
@@ -19130,38 +19132,15 @@ function switchTab(tab) {
     }
     grid.innerHTML = html;
 
-    // Month labels — position each label as a spacer (empty columns) + the label itself,
-    // so it lines up with the exact week-column it belongs to (GitHub-style).
-    const COL_W = 14; // 11px cell + 3px gap
+    // Month labels
     let mHtml = '';
-    let prevCol = 0;
     monthLabels.forEach(function(m){
-      const gapCols = m.col - prevCol;
-      if(gapCols > 0) mHtml += '<div style="flex-shrink:0;width:'+(gapCols*COL_W)+'px;"></div>';
-      mHtml += '<div class="dc-heatmap-month-lbl">' + m.label + '</div>';
-      prevCol = m.col;
+      mHtml += '<div class="dc-heatmap-month-lbl" style="min-width:'+(m.col===0?0:1)+'px">' + m.label + '</div>';
     });
     monthsBar.innerHTML = mHtml;
 
-    // Explicit date range in the header — e.g. "Jul 3, 2025 – Jul 2, 2026" — so the
-    // exact end date (today, per the app's calendar) is always plainly visible.
-    if(periodEl){
-      const fmt = function(d){ return d.toLocaleDateString('default',{month:'short',day:'numeric',year:'numeric'}); };
-      periodEl.textContent = fmt(startDay) + ' \u2013 ' + fmt(today);
-    }
-
-    // Scroll heatmap to the right (most recent) — months + grid scroll together.
-    // Uses a double-rAF + timeout fallback since some mobile browsers haven't
-    // finished laying out the just-revealed tab by the first animation frame.
-    function scrollToToday(){
-      if(scrollWrap) scrollWrap.scrollLeft = scrollWrap.scrollWidth;
-    }
-    scrollToToday();
-    requestAnimationFrame(function(){
-      requestAnimationFrame(scrollToToday);
-    });
-    setTimeout(scrollToToday, 150);
-    setTimeout(scrollToToday, 400);
+    // Scroll heatmap to the right (most recent)
+    requestAnimationFrame(function(){ grid.scrollLeft = grid.scrollWidth; });
   };
 
   const MILESTONES=[7,14,30,60,100,180,365,1000];
@@ -19217,7 +19196,7 @@ function switchTab(tab) {
     if(lbl) lbl.style.display = 'flex';
     if(cnt) cnt.textContent = arr.length;
     const now = Date.now();
-    const today = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
+    const today = new Date(); today.setHours(0,0,0,0);
     const tk = todayKey();
     dcUpdateStats(arr);
     list.innerHTML = arr.map(function(c, idx) {
@@ -19436,10 +19415,16 @@ function switchTab(tab) {
   <!-- ACTIVITY HEATMAP -->
   <div class="dc-heatmap-section" id="dcHeatmapSection">
     <div class="dc-heatmap-header">
+      <div class="dc-heatmap-title">
+        <span class="dc-heatmap-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </span>
+        Activity
+      </div>
       <div class="dc-heatmap-total" id="dcHeatmapTotal">0 check-ins</div>
-      <div class="dc-heatmap-period" id="dcHeatmapPeriod">in the last year</div>
     </div>
-    <div class="dc-heatmap-body">
+    <div class="dc-heatmap-months" id="dcHeatmapMonths"></div>
+    <div class="dc-heatmap-grid-wrap">
       <div class="dc-heatmap-days-col">
         <div class="dc-heatmap-day-lbl"></div>
         <div class="dc-heatmap-day-lbl">Mon</div>
@@ -19449,24 +19434,18 @@ function switchTab(tab) {
         <div class="dc-heatmap-day-lbl">Fri</div>
         <div class="dc-heatmap-day-lbl"></div>
       </div>
-      <div class="dc-heatmap-scroll" id="dcHeatmapScroll">
-        <div class="dc-heatmap-months" id="dcHeatmapMonths"></div>
-        <div class="dc-heatmap-grid" id="dcHeatmapGrid"></div>
-      </div>
+      <div class="dc-heatmap-grid" id="dcHeatmapGrid"></div>
     </div>
     <div class="dc-heatmap-legend">
-      <span class="dc-heatmap-legend-caption">Every square is a day you checked in</span>
-      <div class="dc-heatmap-legend-right">
-        <span class="dc-heatmap-legend-lbl">Less</span>
-        <div class="dc-heatmap-legend-cells">
-          <div class="dc-heatmap-legend-cell" style="background:var(--border)"></div>
-          <div class="dc-heatmap-legend-cell" style="background:rgba(34,197,94,.25)"></div>
-          <div class="dc-heatmap-legend-cell" style="background:rgba(34,197,94,.5)"></div>
-          <div class="dc-heatmap-legend-cell" style="background:rgba(34,197,94,.78)"></div>
-          <div class="dc-heatmap-legend-cell" style="background:#22c55e"></div>
-        </div>
-        <span class="dc-heatmap-legend-lbl">More</span>
+      <span class="dc-heatmap-legend-lbl">Less</span>
+      <div class="dc-heatmap-legend-cells">
+        <div class="dc-heatmap-legend-cell" style="background:var(--border)"></div>
+        <div class="dc-heatmap-legend-cell" style="background:rgba(34,197,94,.25)"></div>
+        <div class="dc-heatmap-legend-cell" style="background:rgba(34,197,94,.5)"></div>
+        <div class="dc-heatmap-legend-cell" style="background:rgba(34,197,94,.78)"></div>
+        <div class="dc-heatmap-legend-cell" style="background:#22c55e"></div>
       </div>
+      <span class="dc-heatmap-legend-lbl">More</span>
     </div>
   </div>
 
@@ -19895,7 +19874,7 @@ function switchTab(tab) {
   function formatDueLabel(due){
     const parts = due.split('-').map(Number);
     const d = new Date(parts[0], parts[1]-1, parts[2]);
-    const today = new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate());
+    const today = new Date(); today.setHours(0,0,0,0);
     const diffDays = Math.round((d - today)/86400000);
     const dateStr = (typeof ADMEN!=='undefined' ? ADMEN[d.getMonth()].slice(0,3) : d.toLocaleDateString([], {month:'short'})) + ' ' + d.getDate();
     if(diffDays < 0) return {text:'Overdue · '+dateStr, overdue:true};
