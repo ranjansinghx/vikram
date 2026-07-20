@@ -1,0 +1,288 @@
+/* ══ HOME TAB: QUICK TOOLS GRID ══ */
+.home-tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.home-tool-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px 6px;border-radius:16px;background:var(--card);border:1px solid var(--border);background:color-mix(in srgb, var(--tclr) 12%, var(--card));border:1px solid color-mix(in srgb, var(--tclr) 22%, transparent);cursor:pointer;transition:transform .12s;}
+.home-tool-tile:active{transform:scale(.95);}
+.home-tool-icon{font-size:24px;line-height:1;}
+.home-tool-lbl{font-size:11px;font-weight:800;color:var(--dtext);text-align:center;line-height:1.25;}
+
+/* ══ KHARCHA (EXPENSE TRACKER) ══ */
+.kh-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+.kh-sum-card{background:var(--tgbg);border-radius:14px;padding:12px 10px;text-align:center;}
+.kh-sum-val{font-size:15px;font-weight:900;color:var(--dtext);}
+.kh-sum-lbl{font-size:10px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+.kh-type-row{display:flex;gap:8px;margin-bottom:10px;}
+.kh-type-btn{flex:1;padding:9px;border-radius:11px;border:1.5px solid var(--border);background:var(--tgbg);color:var(--dtext);font-weight:800;font-size:12.5px;cursor:pointer;font-family:'Nunito',sans-serif;}
+.kh-type-btn.on{background:var(--tgon);color:#fff;border-color:var(--tgon);}
+.kh-cat-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.kh-cat-chip{padding:6px 12px;border-radius:14px;font-size:11.5px;font-weight:700;background:var(--chip);color:var(--chipt);border:none;cursor:pointer;}
+.kh-cat-chip.on{background:var(--tgon);color:#fff;}
+.kh-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--sbdr);}
+.kh-row:last-child{border-bottom:none;}
+.kh-row-main{display:flex;align-items:center;gap:10px;min-width:0;}
+.kh-row-icon{width:32px;height:32px;border-radius:9px;background:var(--tgbg);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.kh-row-cat{font-size:13px;font-weight:700;color:var(--dtext);}
+.kh-row-note{font-size:10.5px;color:var(--dsub);margin-top:1px;}
+.kh-row-amt{font-size:13.5px;font-weight:900;flex-shrink:0;}
+.kh-row-amt.income{color:#2f9e63;}
+.kh-row-amt.expense{color:#e0473a;}
+.kh-row-del{width:22px;height:22px;border-radius:50%;border:none;background:none;color:var(--dsub);cursor:pointer;flex-shrink:0;margin-left:6px;}
+.kh-chart{display:flex;align-items:flex-end;gap:8px;height:110px;padding:10px 2px 0;}
+.kh-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+.kh-bar{width:100%;max-width:26px;border-radius:6px 6px 3px 3px;background:linear-gradient(180deg,var(--accent,#6366f1),rgba(99,102,241,.55));min-height:3px;}
+.kh-bar-lbl{font-size:9.5px;font-weight:700;color:var(--dsub);margin-top:6px;}
+
+/* ══ ALARMS ══ */
+.al-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--sbdr);}
+.al-row:last-child{border-bottom:none;}
+.al-time{font-size:20px;font-weight:900;color:var(--dtext);}
+.al-lbl{font-size:11.5px;color:var(--dsub);font-weight:700;margin-top:2px;}
+.al-days{display:flex;gap:4px;margin-top:5px;}
+.al-day-dot{width:16px;height:16px;border-radius:50%;background:var(--tgbg);color:var(--dsub);font-size:8px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.al-day-dot.on{background:var(--tgon);color:#fff;}
+.al-del{width:26px;height:26px;border-radius:50%;border:none;background:var(--tgbg);color:var(--dsub);cursor:pointer;flex-shrink:0;}
+.al-wd-row{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0;}
+.al-wd-btn{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--border);background:var(--tgbg);color:var(--dtext);font-size:10.5px;font-weight:800;cursor:pointer;}
+.al-wd-btn.on{background:var(--tgon);color:#fff;border-color:var(--tgon);}
+
+/* ══ DAILY INSIGHTS (weather / gold-forex / muhurat) ══ */
+.ins-tabs{display:flex;gap:6px;padding:2px 2px 12px;}
+.ins-tab-btn{flex:1;padding:9px 4px;border-radius:11px;border:none;background:var(--tgbg);color:var(--dsub);font-weight:800;font-size:12px;cursor:pointer;font-family:'Nunito',sans-serif;}
+.ins-tab-btn.on{background:var(--tgon);color:#fff;}
+.ins-weather-card{display:flex;align-items:center;gap:16px;background:linear-gradient(135deg,rgba(59,130,246,.10),rgba(14,165,233,.06));border-radius:18px;padding:18px;margin-bottom:12px;}
+.ins-weather-icon{font-size:44px;line-height:1;}
+.ins-weather-temp{font-size:30px;font-weight:900;color:var(--dtext);}
+.ins-weather-desc{font-size:12.5px;font-weight:700;color:var(--dsub);margin-top:2px;}
+.ins-weather-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px;}
+.ins-weather-mini{background:var(--tgbg);border-radius:12px;padding:9px;text-align:center;}
+.ins-weather-mini-val{font-size:13px;font-weight:800;color:var(--dtext);}
+.ins-weather-mini-lbl{font-size:9.5px;color:var(--dsub);font-weight:700;text-transform:uppercase;margin-top:2px;}
+.ins-fx-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--sbdr);}
+.ins-fx-row:last-child{border-bottom:none;}
+.ins-fx-name{font-size:13px;font-weight:800;color:var(--dtext);}
+.ins-fx-val{font-size:13.5px;font-weight:900;color:var(--dtext);}
+.ins-muhurat-card{background:linear-gradient(135deg,rgba(236,72,153,.09),rgba(244,63,94,.05));border:1.5px solid rgba(236,72,153,.16);border-radius:16px;padding:14px 16px;margin-bottom:10px;}
+.ins-muhurat-title{font-size:11px;font-weight:800;color:#ec4899;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.ins-muhurat-time{font-size:15px;font-weight:800;color:var(--dtext);}
+.ins-muhurat-sub{font-size:11.5px;color:var(--dsub);margin-top:2px;}
+.ins-empty{text-align:center;padding:30px 20px;color:var(--dsub);font-size:12.5px;font-weight:600;line-height:1.6;}
+
+/* ══ LOADING SKELETONS ══ */
+.skel{position:relative;overflow:hidden;background:var(--border);border-radius:8px;isolation:isolate;}
+.skel::after{content:'';position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:skel-shimmer 1.4s ease-in-out infinite;}
+[data-theme="dark"] .skel::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent);}
+@keyframes skel-shimmer{100%{transform:translateX(100%);}}
+@media (prefers-reduced-motion: reduce){.skel::after{animation:none;display:none;}}
+.skel-wx{display:flex;align-items:center;gap:14px;padding:4px 2px 16px;}
+.skel-wx-icon{width:44px;height:44px;border-radius:50%;flex-shrink:0;}
+.skel-wx-lines{flex:1;display:flex;flex-direction:column;gap:8px;}
+.skel-line{height:12px;border-radius:6px;}
+.skel-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.skel-grid3 .skel{height:38px;border-radius:10px;}
+.skel-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--sbdr);}
+.skel-row:last-child{border-bottom:none;}
+.skel-block{height:56px;border-radius:16px;margin-bottom:10px;}
+
+/* ══ RASHIFAL ══ */
+.rf-sign-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;-webkit-overflow-scrolling:touch;}
+.rf-sign-chip{flex-shrink:0;width:56px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:14px;background:var(--tgbg);cursor:pointer;border:1.5px solid transparent;}
+.rf-sign-chip.on{border-color:var(--tgon);background:rgba(99,102,241,.10);}
+.rf-sign-emoji{font-size:20px;}
+.rf-sign-name{font-size:9.5px;font-weight:700;color:var(--dsub);}
+.rf-card{background:linear-gradient(135deg,rgba(139,92,246,.10),rgba(99,102,241,.06));border-radius:18px;padding:18px;margin-top:6px;}
+.rf-card-sign{font-size:16px;font-weight:900;color:var(--dtext);display:flex;align-items:center;gap:8px;}
+.rf-card-date{font-size:11px;color:var(--dsub);font-weight:700;margin-top:2px;}
+.rf-card-text{font-size:13px;color:var(--dtext);line-height:1.7;margin-top:12px;}
+.rf-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+.rf-card-item{background:var(--card);border-radius:12px;padding:9px 12px;}
+.rf-card-item-lbl{font-size:9.5px;font-weight:800;color:var(--dsub);text-transform:uppercase;letter-spacing:.4px;}
+.rf-card-item-val{font-size:13px;font-weight:800;color:var(--dtext);margin-top:2px;}
+
+/* ══ FAMILY SHARE ══ */
+.fam-pair-card{background:var(--tgbg);border-radius:16px;padding:18px;text-align:center;}
+.fam-code{font-size:24px;font-weight:900;letter-spacing:3px;color:var(--dtext);margin:10px 0;}
+.fam-seg{display:flex;gap:8px;margin-bottom:14px;}
+.fam-seg-btn{flex:1;padding:9px;border-radius:11px;border:none;background:var(--tgbg);color:var(--dsub);font-weight:800;font-size:12.5px;cursor:pointer;font-family:'Nunito',sans-serif;}
+.fam-seg-btn.on{background:var(--tgon);color:#fff;}
+.fam-item-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--sbdr);gap:8px;}
+.fam-item-row:last-child{border-bottom:none;}
+.fam-item-check{width:22px;height:22px;border-radius:7px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.fam-item-check.on{background:#2f9e63;border-color:#2f9e63;color:#fff;}
+.fam-item-text{flex:1;font-size:13px;font-weight:700;color:var(--dtext);}
+.fam-item-text.done{text-decoration:line-through;color:var(--dsub);}
+.fam-item-del{width:22px;height:22px;border-radius:50%;border:none;background:none;color:var(--dsub);cursor:pointer;flex-shrink:0;}
+
+/* ══ NOTES: checklist items ══ */
+.note-check{display:flex;align-items:flex-start;gap:8px;margin:4px 0;}
+.nc-box{width:17px;height:17px;border-radius:5px;border:2px solid var(--dsub);flex-shrink:0;margin-top:1px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:#fff;}
+.nc-box.checked{background:#2f9e63;border-color:#2f9e63;}
+.nc-text{flex:1;outline:none;}
+.nc-text.nc-done{text-decoration:line-through;color:var(--dsub);}
+
+/* ══ RECURRING EVENT TEMPLATES ══ */
+.tpl-row{display:flex;gap:7px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;}
+.tpl-chip{flex-shrink:0;display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:14px;background:var(--tgbg);color:var(--dtext);font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);white-space:nowrap;}
+.tpl-chip-del{color:var(--dsub);font-size:12px;margin-left:2px;}
+.tpl-add-chip{flex-shrink:0;padding:7px 12px;border-radius:14px;background:rgba(99,102,241,.10);color:#6366f1;font-size:12px;font-weight:800;cursor:pointer;border:1.5px dashed rgba(99,102,241,.35);white-space:nowrap;}
+
+/* ══ SIMPLE CALENDAR MODE — hide everything except the month calendar itself.
+   The header (title/Today/Search/⚙️ menu) stays so Settings is always
+   reachable to turn this back off. ══ */
+body.simple-calendar-mode .modebar,
+body.simple-calendar-mode .upcoming,
+body.simple-calendar-mode #festivalBanner,
+body.simple-calendar-mode #onThisDayCard,
+body.simple-calendar-mode #todayCard,
+body.simple-calendar-mode #homeWeatherCard,
+body.simple-calendar-mode #goldFxHomeCard,
+body.simple-calendar-mode #muhuratHomeCard,
+body.simple-calendar-mode #rashifalHomeCard,
+body.simple-calendar-mode #mmView,
+body.simple-calendar-mode #scheduleView,
+body.simple-calendar-mode #weekView,
+body.simple-calendar-mode #dayView,
+body.simple-calendar-mode #monthTabView,
+body.simple-calendar-mode .bottom-nav,
+body.simple-calendar-mode .dc-fab-inline,
+body.simple-calendar-mode #calExpandHandle,
+body.simple-calendar-mode #calWeekDots{
+  display:none !important;
+}
+/* Reclaim the space the bottom nav normally reserves, in case any other
+   tab's view container is still mounted underneath. */
+body.simple-calendar-mode .daycounter-view{
+  bottom:0 !important;
+}
+/* #settingsView has its own standalone positioning rule (bottom:62px, reserved
+   for the bottom nav) rather than using the shared .daycounter-view class, so
+   it needs its own override too — otherwise Settings shows a blank gap where
+   the now-hidden bottom nav used to be, instead of running full screen. */
+body.simple-calendar-mode #settingsView{
+  bottom:0 !important;
+}
+/* Today's cell normally gets a solid black/dark gradient badge — too heavy
+   for a stripped-down "just the calendar" view. Swap it for a light outline
+   in the user's accent color instead, keeping the date legible. */
+/* Today's cell normally gets a solid black/dark gradient badge — too heavy
+   for a stripped-down "just the calendar" view. Swap it for a light outline
+   in the user's accent color instead, keeping the date legible.
+   NOTE: the "selected day" cell (.cell.sel) has its own separate dark
+   gradient background rule, and today is selected by default on load, so
+   both .today and .sel must be overridden or the dark gradient still shows
+   through underneath the outline. */
+/* The calendar card has a decorative dark radial-gradient "glow" that shows
+   at the bottom of the card whenever it's expanded (.ccard.cal-expanded).
+   Simple Mode always keeps the calendar expanded and removes the bottom nav
+   that used to sit over/mask that glow, so it was showing through as a dark
+   smudge at the bottom of the screen — suppress it here. */
+body.simple-calendar-mode .ccard::before{
+  opacity:0 !important;
+}
+body.simple-calendar-mode .cell.today,
+body.simple-calendar-mode .cell.sel{
+  background:transparent !important;
+  box-shadow:none !important;
+}
+body.simple-calendar-mode .cell.today{
+  border:1.5px solid var(--accent,#6366f1);
+}
+body.simple-calendar-mode .cell.today .ndate,
+body.simple-calendar-mode .cell.sel .ndate{
+  color:var(--accent,#6366f1) !important;
+}
+body.simple-calendar-mode .cell.today .gdate,
+body.simple-calendar-mode .cell.sel .gdate{
+  color:var(--dsub) !important;
+  opacity:1 !important;
+}
+body.simple-calendar-mode .cell.today .tlbl,
+body.simple-calendar-mode .cell.sel .tlbl{
+  color:var(--dsub) !important;
+}
+body.simple-calendar-mode .cell.today .hdot,
+body.simple-calendar-mode .cell.sel .hdot{
+  background:var(--accent,#6366f1) !important;
+  opacity:1;
+}
+body.simple-calendar-mode .cell.today .evt-dot,
+body.simple-calendar-mode .cell.sel .evt-dot{
+  background:var(--accent,#6366f1) !important;
+  box-shadow:none !important;
+}
+body.simple-calendar-mode .cell.today .cell-chip,
+body.simple-calendar-mode .cell.sel .cell-chip{
+  background:var(--tgbg) !important;
+  color:var(--dtext) !important;
+}
+/* ══ Simple Mode — Option A "minimal grid" restyle ══
+   Airier spacing, a plainer header (no AD sub-range line), and no
+   secondary Gregorian date under each number — just the big Nepali
+   (BS) date in a clean grid. */
+body.simple-calendar-mode .ccard{
+  border:none !important;
+  background:transparent !important;
+  padding-left:2px;padding-right:2px;
+}
+body.simple-calendar-mode .nsub{
+  display:none !important;
+}
+body.simple-calendar-mode .nav{
+  padding:2px 2px 14px;
+}
+body.simple-calendar-mode .nlbl{
+  font-size:19px;
+  font-weight:500;
+}
+body.simple-calendar-mode .nbtn{
+  background:transparent !important;
+  box-shadow:none !important;
+  border:none !important;
+}
+body.simple-calendar-mode .dhdr{
+  font-size:11px;
+  font-weight:500;
+  color:var(--dsub);
+}
+body.simple-calendar-mode .cgrid{
+  gap:16px 7px;
+}
+body.simple-calendar-mode .cell{
+  min-height:40px;
+  border-radius:50%;
+}
+body.simple-calendar-mode .gdate{
+  display:none !important;
+}
+body.simple-calendar-mode .ndate{
+  font-size:16px;
+  font-weight:500;
+}
+body.simple-calendar-mode .cell.today{
+  border-width:1.5px;
+}
+body.simple-calendar-mode .cell-chips,
+body.simple-calendar-mode .cell-weeknum,
+body.simple-calendar-mode .cell-tithi{
+  display:none !important;
+}
+/* Exit button for Simple Calendar Mode — hidden in normal use, shown only
+   right under the calendar while Simple Mode is on, since the bottom nav
+   (and its Settings tab) is hidden and would otherwise be unreachable. */
+#simpleModeExitBtn{ display:none; }
+body.simple-calendar-mode #simpleModeExitBtn{
+  display:flex !important;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  margin:14px 16px 0;
+  padding:12px 16px;
+  border-radius:14px;
+  border:1.5px solid var(--border);
+  background:var(--tgbg);
+  color:var(--dtext);
+  font-size:13px;
+  font-weight:700;
+  cursor:pointer;
+}
+body.simple-calendar-mode #simpleModeExitBtn svg{
+  width:16px;height:16px;flex-shrink:0;
+}

@@ -1,0 +1,7 @@
+/* System font fallback stack when Google Fonts can't load (offline) */
+@supports (font-family: 'Nunito') {
+  /* Will be overridden when Nunito loads */
+}
+body, .ne, [class*="splash"] {
+  font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
