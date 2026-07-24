@@ -1,3 +1,4 @@
+"use strict";
 // ── NOTES (multi-note list + editor) ──
 (function () {
     const STORAGE_KEY = 'vikram_notes_v2';

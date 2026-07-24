@@ -1,3 +1,4 @@
+"use strict";
 // Early stub: vikramSignIn waits for Firebase to be ready before signing in.
 // This prevents "function not defined" errors if the button is clicked
 // before the async Firebase SDK finishes loading.

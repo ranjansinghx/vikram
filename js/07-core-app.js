@@ -1,3 +1,4 @@
+"use strict";
 // ══ SAFE LOCALSTORAGE (falls back to in-memory if blocked, e.g. sandboxed previews) ══
 // @ts-ignore -- intentionally shadows the DOM lib's ambient `localStorage` with a safe fallback
 let localStorage;

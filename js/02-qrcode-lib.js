@@ -1,3 +1,4 @@
+"use strict";
 // @ts-nocheck -- vendored third-party minified library (qrcodejs), left untouched
 /* qrcodejs 1.0.0 - inlined for offline support */
 var QRCode;

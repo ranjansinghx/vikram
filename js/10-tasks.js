@@ -1,3 +1,4 @@
+"use strict";
 // ── TASKS (list + editor, opened from "Tasks" pill next to "Upcoming") ──
 (function () {
     const STORAGE_KEY = 'vikram_tasks_v1';

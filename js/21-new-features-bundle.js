@@ -1,3 +1,4 @@
+"use strict";
 // ══════════════════════════════════════════════════════════════════════════════
 // NEW FEATURES BUNDLE — Kharcha, Alarms, Daily Insights, Rashifal, Family Share,
 // Notes checklist, Recurring event templates, PDF export, search highlighting.

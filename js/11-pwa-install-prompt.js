@@ -1,3 +1,4 @@
+"use strict";
 (function () {
     const INSTALLED_KEY = 'vikram_installed';
     let deferredPrompt = null;

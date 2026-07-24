@@ -1,3 +1,4 @@
+"use strict";
 (function () {
     // Only load Firebase if we're online — it's not needed for core calendar function
     function loadFirebase() {

@@ -1,3 +1,4 @@
+"use strict";
 // ── Always open on Home tab on page load ──
 (function () {
     try {

@@ -1,3 +1,4 @@
+"use strict";
 // Global Google UI updater - safe to call anytime
 window.updateGoogleUI = function (user) {
     var btn = document.getElementById('googleSignInBtn');

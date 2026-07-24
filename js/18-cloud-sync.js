@@ -1,3 +1,4 @@
+"use strict";
 // ══ VIKRAM CLOUD SYNC ═════════════════════════════════════════════════════════
 // Syncs all user data to Firebase RTDB under /users/{uid}/
 // On sign-in: pulls cloud → merges with local (cloud wins for newer timestamps)
