@@ -470,7 +470,11 @@ function renderYearInReview(bsYear){
   let bdSet = new Set();
   try{
     const bds = JSON.parse(localStorage.getItem('vikram_birthdays_v1')||'[]');
-    bds.forEach(b=>{ if(b.bsYear&&b.bsMonth&&b.bsDay) bdSet.add(`${bsYear}-${b.bsMonth}-${b.bsDay}`); });
+    bds.forEach(b=>{ if(b.y && b.m && b.d) bdSet.add(`${bsYear}-${b.m}-${b.d}`); });
+    const p = JSON.parse(localStorage.getItem('vikram_profile')||'{}');
+    if(p.bday && p.bday.y && p.bday.m && p.bday.d){
+      bdSet.add(`${bsYear}-${p.bday.m}-${p.bday.d}`);
+    }
   }catch(e){}
 
   const months = BS[bsYear];

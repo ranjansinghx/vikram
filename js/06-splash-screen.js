@@ -1,3 +1,4 @@
+"use strict";
 // Dismiss splash once page is fully loaded and first render settles
 (function () {
     var splashDone = false;

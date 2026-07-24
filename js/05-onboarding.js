@@ -1,3 +1,4 @@
+"use strict";
 (function () {
     var ONB_KEY = 'vikram_onboarding_seen';
     var steps = [

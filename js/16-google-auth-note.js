@@ -1,3 +1,4 @@
+"use strict";
 // ── GOOGLE AUTH — now handled inside async Firebase loader above ────────────
 (function () {
     // This block intentionally left minimal; auth wiring moved to loadFirebase()

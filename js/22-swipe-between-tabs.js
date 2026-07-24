@@ -1,3 +1,4 @@
+"use strict";
 // ══════════════════════════════════════════════════════════════════════════════
 // 15. SWIPE BETWEEN BOTTOM-NAV TABS (Home ↔ My Cycle ↔ Tracker ↔ Profile)
 // Swipe right = move to the previous tab.

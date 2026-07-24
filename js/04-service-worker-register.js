@@ -1,3 +1,4 @@
+"use strict";
 // ── Service Worker: registered as the very first thing on the page, before
 // any other rendering/init work, so it has the best possible chance of
 // completing even on a slow or first-time visit. This is what lets the app

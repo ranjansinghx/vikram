@@ -1,3 +1,4 @@
+"use strict";
 (function () {
     try {
         const autoOn = localStorage.getItem('vikram_theme_auto') === '1';

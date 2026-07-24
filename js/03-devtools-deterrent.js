@@ -1,3 +1,4 @@
+"use strict";
 // ── Casual deterrent: block right-click / view-source / devtools shortcuts ──
 // Note: this only stops the everyday "right click → View Page Source" or
 // Ctrl+U / F12 paths. It cannot stop anyone using browser dev tools proper,
